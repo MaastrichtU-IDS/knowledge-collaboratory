@@ -1,0 +1,27 @@
+version: "3.3"
+services:
+
+  backend:
+    restart: unless-stopped
+    environment:
+      - FRONTEND_URL=https://collaboratory.semanticscience.org
+      - VIRTUAL_HOST=api.collaboratory.semanticscience.org
+      - LETSENCRYPT_HOST=api.collaboratory.semanticscience.org
+      - VIRTUAL_PORT=80
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # FRONTEND_ENV: dev
+        ORCID_CLIENT_ID: ${ORCID_CLIENT_ID}
+        ORCID_CLIENT_SECRET: ${ORCID_CLIENT_SECRET}
+        OAUTH_REDIRECT_FRONTEND: ${OAUTH_REDIRECT_FRONTEND}
+    restart: unless-stopped
+    # ports:
+    #   - 5000:4000
+    environment:
+      API_URL: https://api.collaboratory.semanticscience.org
+      VIRTUAL_HOST: collaboratory.semanticscience.org
+      LETSENCRYPT_HOST: collaboratory.semanticscience.org
+      VIRTUAL_PORT: 4000

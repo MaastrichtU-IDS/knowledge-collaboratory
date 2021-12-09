@@ -1,0 +1,37 @@
+version: "3.3"
+services:
+
+  backend:
+    ports:
+      - "80:80"
+    command: /start-reload.sh
+    volumes:
+      - ./backend:/app
+    environment:
+      - FRONTEND_URL=http://localhost:19006
+      - DEV_MODE=true
+      # - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:8888
+      # - SERVER_HOST=http://${DOMAIN?Variable not set}
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-true}
+        INSTALL_JUPYTER: ${INSTALL_JUPYTER-false}
+
+  ## We recommend to use `yarn dev` locally to start it (easier than in docker for dev)
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     args:
+  #       FRONTEND_ENV: dev
+  #       API_URL: http://localhost
+  #   ports:
+  #     - 19006:19006
+  #     - 4000:4000
+  #   command: "yarn dev"
+  #   environment:
+  #     - API_URL=http://localhost
+  #   # volumes:
+  #   #   - ./frontend:/webapp
+

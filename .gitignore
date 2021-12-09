@@ -1,0 +1,10 @@
+.vscode
+.mypy_cache
+docker-stack.yml
+
+.expo
+node_modules
+
+/frontend/public
+
+.env

@@ -1,0 +1,783 @@
+{
+    "metric_specification": "https://doi.org/10.5281/zenodo.4081213",
+    "metric_version": "metrics_v0.4.yaml",
+    "request": {
+        "metadata_service_endpoint": "https://maastrichtu-ids.github.io/fairificator/",
+        "metadata_service_type": "oai_pmh",
+        "oaipmh_endpoint": null,
+        "object_identifier": "https://maastrichtu-ids.github.io/fairificator/",
+        "test_debug": true,
+        "use_datacite": true
+    },
+    "results": [
+        {
+            "id": 1,
+            "maturity": 3,
+            "metric_identifier": "FsF-F1-01D",
+            "metric_name": "Data is assigned a globally unique identifier.",
+            "metric_tests": {
+                "FsF-F1-01D-1": {
+                    "metric_test_maturity": 3,
+                    "metric_test_name": "Identifier is resolvable and follows a defined unique identifier syntax (IRI, URL)",
+                    "metric_test_score": 1,
+                    "metric_test_status": "pass"
+                },
+                "FsF-F1-01D-2": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Identifier is not resolvable but follows an UUID or HASH type syntax",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                }
+            },
+            "output": {
+                "guid": "https://maastrichtu-ids.github.io/fairificator/",
+                "guid_scheme": "url"
+            },
+            "score": {
+                "earned": 1,
+                "total": 1
+            },
+            "test_debug": [
+                "INFO: Using idutils schemes",
+                "SUCCESS: Unique identifier schemes found ['url']",
+                "INFO: Finalized unique identifier scheme - url"
+            ],
+            "test_status": "pass"
+        },
+        {
+            "id": 2,
+            "maturity": 0,
+            "metric_identifier": "FsF-F1-02D",
+            "metric_name": "Data is assigned a persistent identifier.",
+            "metric_tests": {
+                "FsF-F1-02D-1": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Identifier follows a defined persistent identifier syntax",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-F1-02D-2": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Persistent identifier is resolvable",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                }
+            },
+            "output": {
+                "pid": null,
+                "pid_scheme": null,
+                "resolvable_status": true,
+                "resolved_url": "https://maastrichtu-ids.github.io/fairificator/"
+            },
+            "score": {
+                "earned": 0,
+                "total": 1
+            },
+            "test_debug": [
+                "INFO: PID schemes-based assessment supported by the assessment service - ['ark', 'arxiv', 'bioproject', 'biosample', 'doi', 'ensembl', 'genome', 'gnd', 'handle', 'lsid', 'pmid', 'pmcid', 'purl', 'refseq', 'sra', 'uniprot', 'urn']",
+                "INFO: Retrieving page -: https://maastrichtu-ids.github.io/fairificator/ as text/html, application/xhtml+xml, application/xml;q=0.5, text/xml;q=0.5, application/rdf+xml;q=0.5",
+                "INFO: Content negotiation accept=text/html, application/xhtml+xml, application/xml;q=0.5, text/xml;q=0.5, application/rdf+xml;q=0.5, status=200",
+                "INFO: Found HTML page!",
+                "INFO: Object identifier active (status code = 200)",
+                "WARNING: Not a persistent identifier scheme -: url"
+            ],
+            "test_status": "fail"
+        },
+        {
+            "id": 3,
+            "maturity": 0,
+            "metric_identifier": "FsF-F2-01M",
+            "metric_name": "Metadata includes descriptive core elements (creator, title, data identifier, publisher, publication date, summary and keywords) to support data findability.",
+            "metric_tests": {
+                "FsF-F2-01M-1": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Metadata has been made available via common web methods",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-F2-01M-1a": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Metadata is embedded in the landing page XHTML/HTML code",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-F2-01M-1b": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Metadata is accessible through content negotiation",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-F2-01M-1c": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Metadata is accessible via typed links",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-F2-01M-1d": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Metadata is accessible via signposting links",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-F2-01M-2": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Core data citation metadata is available",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-F2-01M-3": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Core descriptive metadata is available",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                }
+            },
+            "output": {
+                "core_metadata_found": {},
+                "core_metadata_source": [],
+                "core_metadata_status": "insufficient metadata"
+            },
+            "score": {
+                "earned": 0,
+                "total": 2
+            },
+            "test_debug": [
+                "INFO: Starting to identify EMBEDDED metadata at -: https://maastrichtu-ids.github.io/fairificator/",
+                "INFO: Trying to retrieve schema.org JSON-LD metadata from html page",
+                "INFO: Could not identify JSON-LD schema.org metadata",
+                "INFO: schema.org JSON-LD metadata in html page UNAVAILABLE",
+                "INFO: Trying to retrieve Dublin Core metadata from html page",
+                "INFO: DublinCore metadata UNAVAILABLE",
+                "INFO: Trying to retrieve Microdata metadata from html page",
+                "INFO: Could not identify Microdata metadata",
+                "INFO: Trying to retrieve RDFa metadata from html page",
+                "INFO: RDFa metadata parsing exception, probably no RDFa embedded in HTML -:RDFa parsing Error! syntax error: line 1, column 0",
+                "INFO: Trying to retrieve OpenGraph metadata from html page",
+                "INFO: OpenGraph metadata UNAVAILABLE",
+                "INFO: Trying to identify Typed Links in html page",
+                "INFO: Starting to identify EXTERNAL metadata through content negotiation or typed links",
+                "INFO: Trying to retrieve XML metadata through content negotiation",
+                "INFO: Retrieving page -: https://maastrichtu-ids.github.io/fairificator/ as application/xml, text/xml;q=0.5",
+                "INFO: Content negotiation accept=application/xml, text/xml;q=0.5, status=200",
+                "INFO: Ignoring HTML response",
+                "INFO: Trying to extract/parse metadata from -: Generic XML (Negotiated)",
+                "INFO: Expected XML but content negotiation responded -: html",
+                "INFO: Trying to retrieve schema.org JSON-LD metadata through content negotiation",
+                "INFO: Retrieving page -: https://maastrichtu-ids.github.io/fairificator/ as application/vnd.schemaorg.ld+json, application/ld+json",
+                "INFO: Content negotiation accept=application/vnd.schemaorg.ld+json, application/ld+json, status=200",
+                "INFO: Ignoring HTML response",
+                "INFO: Could not identify JSON-LD schema.org metadata",
+                "INFO: Schema.org metadata through content negotiation UNAVAILABLE",
+                "INFO: Trying to retrieve RDF metadata through content negotiation",
+                "INFO: Retrieving page -: https://maastrichtu-ids.github.io/fairificator/ as text/turtle, application/turtle, application/x-turtle;q=0.8, application/rdf+xml, text/n3;q=0.9, text/rdf+n3;q=0.9,application/ld+json",
+                "INFO: Content negotiation accept=text/turtle, application/turtle, application/x-turtle;q=0.8, application/rdf+xml, text/n3;q=0.9, text/rdf+n3;q=0.9,application/ld+json, status=200",
+                "INFO: Ignoring HTML response",
+                "INFO: Expected RDF Graph but received -: text/html",
+                "INFO: Linked Data metadata UNAVAILABLE",
+                "INFO: Not a PID, therefore Datacite metadata (json) not requested.",
+                "INFO: Type of object described by the metadata -: None",
+                "INFO: Testing for required core descriptive metadata elements -: ['creator', 'title', 'publisher', 'publication_date', 'summary', 'keywords', 'object_identifier', 'object_type']",
+                "WARNING: Not all required core descriptive metadata elements exist, missing -: ['creator', 'object_type', 'title', 'keywords', 'summary', 'publisher', 'publication_date', 'object_identifier']",
+                "INFO: Testing for required core citation metadata elements -: ['creator', 'title', 'object_identifier', 'publication_date', 'publisher', 'object_type']",
+                "WARNING: Not all required citation metadata elements exist, missing -: ['creator', 'publisher', 'object_type', 'title', 'publication_date', 'object_identifier']"
+            ],
+            "test_status": "fail"
+        },
+        {
+            "id": 4,
+            "maturity": 0,
+            "metric_identifier": "FsF-F3-01M",
+            "metric_name": "Metadata includes the identifier of the data it describes.",
+            "metric_tests": {
+                "FsF-F3-01M-1": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Metadata contains data content related information (file name, size, type)",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-F3-01M-2": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Metadata contains a PID or URL which indicates the location of the downloadable data content",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                }
+            },
+            "output": {
+                "object_content_identifier_included": [],
+                "object_identifier_included": null
+            },
+            "score": {
+                "earned": 0,
+                "total": 1
+            },
+            "test_debug": [
+                "WARNING: Data (content) identifier is missing."
+            ],
+            "test_status": "fail"
+        },
+        {
+            "id": 5,
+            "maturity": 0,
+            "metric_identifier": "FsF-F4-01M",
+            "metric_name": "Metadata is offered in such a way that it can be retrieved programmatically.",
+            "metric_tests": {
+                "FsF-F4-01M-1": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Metadata is given in a way major search engines can ingest it for their catalogues (JSON-LD, Dublin Core, RDFa)",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-F4-01M-2": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Metadata is registered in major research data registries (DataCite)",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                }
+            },
+            "output": {
+                "search_mechanisms": []
+            },
+            "score": {
+                "earned": 0,
+                "total": 2
+            },
+            "test_debug": [
+                "INFO: Supported tests of metadata retrieval/extraction -: 'Embedded DublinCore', 'Embedded OpenGraph', 'Schema.org JSON-LD (Embedded)', 'Schema.org JSON-LD (Negotiated)', 'Datacite Search', 'Typed Links', 'Signposting Typed Links', 'RDF-based Typed Links', 'Linked Data (RDF)', 'B2FIND Metadata Aggregator', 'Guessed XML Link', 'Generic XML (Negotiated)', 'Embedded RDFa', 'Embedded Microdata', 'OAI-ORE'",
+                "WARNING: Metadata is NOT found through -: ['Schema.org JSON-LD (Negotiated)', 'Schema.org JSON-LD (Embedded)', 'Embedded DublinCore', 'Embedded RDFa']",
+                "WARNING: Google Search DOI File does not exist, see F-UJI installation instructions",
+                "WARNING: Google Search URL File does not exist, see F-UJI installation instructions",
+                "INFO: Querying Google Dataset Search cache for -:https://maastrichtu-ids.github.io/fairificator/",
+                "INFO: Identifier not listed in Google Dataset Search cache -:https://maastrichtu-ids.github.io/fairificator/",
+                "INFO: Querying Mendeley Data API for -:https://maastrichtu-ids.github.io/fairificator/",
+                "INFO: Identifier not listed in Mendeley Data catalogue -:https://maastrichtu-ids.github.io/fairificator/",
+                "WARNING: Metadata is NOT found through registries considered by the assessment service  -: ['Datacite Search', 'DataCite Registry', <Sources.MENDELEY_DATA: 'Mendeley Data'>, <Sources.GOOGLE_DATASET: 'Google Dataset Search'>]"
+            ],
+            "test_status": "fail"
+        },
+        {
+            "id": 6,
+            "maturity": 0,
+            "metric_identifier": "FsF-A1-01M",
+            "metric_name": "Metadata contains access level and access conditions of the data.",
+            "metric_tests": {
+                "FsF-A1-01M-1": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Information about access restrictions or rights can be identified in metadata",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-A1-01M-2": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Data access information is machine readable",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-A1-01M-3": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Data access information is indicated by (not machine readable) standard terms",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                }
+            },
+            "output": {
+                "access_details": {},
+                "access_level": null
+            },
+            "score": {
+                "earned": 0,
+                "total": 1
+            },
+            "test_debug": [
+                "WARNING: NO access information is available in metadata",
+                "WARNING: Unable to determine the access level"
+            ],
+            "test_status": "fail"
+        },
+        {
+            "id": 10,
+            "maturity": 0,
+            "metric_identifier": "FsF-I1-01M",
+            "metric_name": "Metadata is represented using a formal knowledge representation language.",
+            "metric_tests": {
+                "FsF-I1-01M-1": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Parsable, structured metadata (JSON-LD, RDFa) is embedded in the landing page XHTML/HTML code",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-I1-01M-2": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Parsable, graph data (RDF, JSON-LD) is accessible through content negotiation, typed links or sparql endpoint",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                }
+            },
+            "output": [],
+            "score": {
+                "earned": 0,
+                "total": 2
+            },
+            "test_debug": [
+                "INFO: Check of structured data (RDF serialization) embedded in the data page",
+                "INFO: NO structured data (RDF serialization) embedded in the data page",
+                "INFO: Check if RDF-based typed link included",
+                "INFO: NO RDF-based typed link found",
+                "INFO: Check if RDF metadata available through content negotiation",
+                "INFO: NO RDF metadata available through content negotiation",
+                "WARNING: NO SPARQL endpoint found through re3data based on the object URI provided"
+            ],
+            "test_status": "fail"
+        },
+        {
+            "id": 11,
+            "maturity": 0,
+            "metric_identifier": "FsF-I1-02M",
+            "metric_name": "Metadata uses semantic resources",
+            "metric_tests": {
+                "FsF-I1-02M-1": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Vocabulary namespace URIs can be identified in metadata",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-I1-02M-2": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Namespaces of known semantic resources can be identified in metadata",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                }
+            },
+            "output": [],
+            "score": {
+                "earned": 0,
+                "total": 1
+            },
+            "test_debug": [
+                "INFO: Number of vocabulary namespaces extracted from all RDF-based metadata -: 0",
+                "WARNING: NO namespaces of semantic vocabularies found in the metadata"
+            ],
+            "test_status": "fail"
+        },
+        {
+            "id": 12,
+            "maturity": 0,
+            "metric_identifier": "FsF-I3-01M",
+            "metric_name": "Metadata includes links between the data and its related entities.",
+            "metric_tests": {
+                "FsF-I3-01M-1": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Related resources are explicitly mentioned in metadata",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-I3-01M-2": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Related resources are indicated by machine readable links or identifiers",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                }
+            },
+            "output": {},
+            "score": {
+                "earned": 0,
+                "total": 1
+            },
+            "test_debug": [
+                "INFO: Total number of related resources extracted -: 0"
+            ],
+            "test_status": "fail"
+        },
+        {
+            "id": 13,
+            "maturity": 0,
+            "metric_identifier": "FsF-R1-01MD",
+            "metric_name": "Metadata specifies the content of the data.",
+            "metric_tests": {
+                "FsF-R1-01MD-1": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Minimal information about available data content is given in metadata",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-R1-01MD-1a": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Resource type (e.g. dataset) is given in metadata",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-R1-01MD-1b": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Information about data content (e.g. links) is given in metadata",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-R1-01MD-2": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Verifiable data descriptors (file info, measured variables or observation types) are specified in metadata",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-R1-01MD-2a": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "File size and type information are specified in metadata",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-R1-01MD-2b": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Measured variables or observation types are specified in metadata",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-R1-01MD-3": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Data content matches file type and size specified in metadata",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-R1-01MD-4": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Data content matches measured variables or observation types specified in metadata",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                }
+            },
+            "output": {
+                "data_content_descriptor": [],
+                "object_type": null
+            },
+            "score": {
+                "earned": 0,
+                "total": 4
+            },
+            "test_debug": [
+                "INFO: Object landing page accessible status -: True",
+                "WARNING: NO resource type specified",
+                "WARNING: NO data object content available/accessible to perform file descriptors (type and size) tests",
+                "WARNING: NO measured variables found in metadata, skip 'measured_variable' test.",
+                "WARNING: Measured variables given in metadata do not match data object content"
+            ],
+            "test_status": "fail"
+        },
+        {
+            "id": 14,
+            "maturity": 0,
+            "metric_identifier": "FsF-R1.1-01M",
+            "metric_name": "Metadata includes license information under which data can be reused.",
+            "metric_tests": {
+                "FsF-R1.1-01M-1": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Licence information is given in an appropriate metadata element",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-R1.1-01M-2": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Recognized licence is valid and registered at SPDX",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                }
+            },
+            "output": [],
+            "score": {
+                "earned": 0,
+                "total": 2
+            },
+            "test_debug": [
+                "WARNING: License information unavailable in metadata"
+            ],
+            "test_status": "fail"
+        },
+        {
+            "id": 15,
+            "maturity": 0,
+            "metric_identifier": "FsF-R1.2-01M",
+            "metric_name": "Metadata includes provenance information about data creation or generation.",
+            "metric_tests": {
+                "FsF-R1.2-01M-1": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Metadata contains elements which hold provenance information and can be mapped to PROV",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-R1.2-01M-2": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Metadata contains provenance information using formal provenance ontologies (PROV-O)",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                }
+            },
+            "output": {
+                "provenance_metadata_included": {
+                    "is_available": false,
+                    "provenance_metadata": []
+                },
+                "structured_provenance_available": {
+                    "is_available": false,
+                    "provenance_metadata": []
+                }
+            },
+            "score": {
+                "earned": 0,
+                "total": 2
+            },
+            "test_debug": [
+                "INFO: Check if provenance information is available in descriptive metadata",
+                "INFO: Check if provenance information is available in metadata about related resources",
+                "INFO: No provenance information found in metadata about related resources",
+                "INFO: Check if provenance specific namespaces are listed in metadata",
+                "WARNING: Formal provenance metadata is unavailable"
+            ],
+            "test_status": "fail"
+        },
+        {
+            "id": 16,
+            "maturity": 0,
+            "metric_identifier": "FsF-R1.3-01M",
+            "metric_name": "Metadata follows a standard recommended by the target research community of the data.",
+            "metric_tests": {
+                "FsF-R1.3-01M-1": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Community specific metadata standard is detected using namespaces or schemas found in provided metadata or metadata services outputs",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-R1.3-01M-2": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Community specific metadata standard is listed in the re3data record of the responsible repository",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-R1.3-01M-3": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Multidisciplinary but community endorsed metadata (RDA Metadata Standards Catalog) standard is listed in the re3data record or detected by namespace",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                }
+            },
+            "output": [],
+            "score": {
+                "earned": 0,
+                "total": 1
+            },
+            "test_debug": [
+                "INFO: Retrieving API and Standards",
+                "INFO: re3data/datacite client id -: None",
+                "INFO: Metadata service endpoint (oai_pmh) provided as part of the request -: https://maastrichtu-ids.github.io/fairificator/",
+                "INFO: Trying to retrieve metadata info from re3data/datacite services using client id -: None",
+                "INFO: Use OAI-PMH endpoint to retrieve standards used by the repository -: https://maastrichtu-ids.github.io/fairificator/",
+                "INFO: Retrieving page -: https://maastrichtu-ids.github.io/fairificator/?verb=ListMetadataFormats as application/xml, text/xml;q=0.5",
+                "INFO: Content negotiation accept=application/xml, text/xml;q=0.5, status=200",
+                "INFO: Ignoring HTML response",
+                "WARNING: NO metadata standard(s) of the repository specified in re3data",
+                "WARNING: Unable to determine community standard(s)"
+            ],
+            "test_status": "fail"
+        },
+        {
+            "id": 17,
+            "maturity": 0,
+            "metric_identifier": "FsF-R1.3-02D",
+            "metric_name": "Data is available in a file format recommended by the target research community.",
+            "metric_tests": {
+                "FsF-R1.3-02D-1": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "The format of a data file given in the metadata is listed in the long term file formats, open file formats or scientific file formats controlled list",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-R1.3-02D-1a": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "The format of the data file is an open format",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-R1.3-02D-1b": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "The format of the data file is a long term format",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                },
+                "FsF-R1.3-02D-1c": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "The format of the data file is a scientific format",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                }
+            },
+            "output": [],
+            "score": {
+                "earned": 0,
+                "total": 1
+            },
+            "test_debug": [
+                "WARNING: Could not perform file format checks as data content identifier(s) unavailable/inaccesible"
+            ],
+            "test_status": "fail"
+        },
+        {
+            "id": 8,
+            "maturity": 0,
+            "metric_identifier": "FsF-A1-03D",
+            "metric_name": "Data is accessible through a standardized communication protocol.",
+            "metric_tests": {
+                "FsF-A1-03D-1": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Metadata includes a resolvable link to data based on standardized web communication protocols.",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                }
+            },
+            "output": {
+                "standard_data_protocol": null
+            },
+            "score": {
+                "earned": 0,
+                "total": 1
+            },
+            "test_debug": [
+                "INFO: NO content (data) identifier is given in metadata"
+            ],
+            "test_status": "fail"
+        },
+        {
+            "id": 7,
+            "maturity": 0,
+            "metric_identifier": "FsF-A1-02M",
+            "metric_name": "Metadata is accessible through a standardized communication protocol.",
+            "metric_tests": {
+                "FsF-A1-02M-1": {
+                    "metric_test_maturity": null,
+                    "metric_test_name": "Landing page link is based on standardized web communication protocols.",
+                    "metric_test_score": 0,
+                    "metric_test_status": "fail"
+                }
+            },
+            "output": {
+                "standard_metadata_protocol": null
+            },
+            "score": {
+                "earned": 0,
+                "total": 1
+            },
+            "test_debug": [
+                "WARNING: No metadata given or found, therefore the protocol of given PID was not assessed. See: FsF-F2-01M"
+            ],
+            "test_status": "fail"
+        }
+    ],
+    "software_version": "v1.3.7",
+    "summary": {
+        "maturity": {
+            "A": 0,
+            "A1": 0,
+            "F": 1,
+            "F1": 2,
+            "F2": 0,
+            "F3": 0,
+            "F4": 0,
+            "FAIR": 1,
+            "I": 0,
+            "I1": 0,
+            "I3": 0,
+            "R": 0,
+            "R1": 0,
+            "R1.1": 0,
+            "R1.2": 0,
+            "R1.3": 0
+        },
+        "score_earned": {
+            "A": 0,
+            "A1": 0,
+            "F": 1,
+            "F1": 1,
+            "F2": 0,
+            "F3": 0,
+            "F4": 0,
+            "FAIR": 1,
+            "I": 0,
+            "I1": 0,
+            "I3": 0,
+            "R": 0,
+            "R1": 0,
+            "R1.1": 0,
+            "R1.2": 0,
+            "R1.3": 0
+        },
+        "score_percent": {
+            "A": 0,
+            "A1": 0,
+            "F": 14.29,
+            "F1": 50,
+            "F2": 0,
+            "F3": 0,
+            "F4": 0,
+            "FAIR": 4.17,
+            "I": 0,
+            "I1": 0,
+            "I3": 0,
+            "R": 0,
+            "R1": 0,
+            "R1.1": 0,
+            "R1.2": 0,
+            "R1.3": 0
+        },
+        "score_total": {
+            "A": 3,
+            "A1": 3,
+            "F": 7,
+            "F1": 2,
+            "F2": 2,
+            "F3": 1,
+            "F4": 2,
+            "FAIR": 24,
+            "I": 4,
+            "I1": 3,
+            "I3": 1,
+            "R": 10,
+            "R1": 4,
+            "R1.1": 2,
+            "R1.2": 2,
+            "R1.3": 2
+        },
+        "status_passed": {
+            "A": 0,
+            "A1": 0,
+            "F": 1,
+            "F1": 1,
+            "F2": 0,
+            "F3": 0,
+            "F4": 0,
+            "FAIR": 1,
+            "I": 0,
+            "I1": 0,
+            "I3": 0,
+            "R": 0,
+            "R1": 0,
+            "R1.1": 0,
+            "R1.2": 0,
+            "R1.3": 0
+        },
+        "status_total": {
+            "A": 3,
+            "A1": 3,
+            "F": 5,
+            "F1": 2,
+            "F2": 1,
+            "F3": 1,
+            "F4": 1,
+            "FAIR": 16,
+            "I": 3,
+            "I1": 2,
+            "I3": 1,
+            "R": 5,
+            "R1": 1,
+            "R1.1": 1,
+            "R1.2": 1,
+            "R1.3": 2
+        }
+    },
+    "test_id": "d825cc3357af2df9314320e6aa7ff1e394843a77",
+    "timestamp": "2021-09-11T07:34:53Z",
+    "total_metrics": 16
+}

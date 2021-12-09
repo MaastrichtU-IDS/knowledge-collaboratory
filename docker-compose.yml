@@ -1,0 +1,12 @@
+version: "3.3"
+services:
+
+  backend:
+    # image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-false}
+    env_file:
+      - .env

@@ -1,0 +1,56 @@
+@import url("https://fonts.googleapis.com/css?family=Open+Sans");
+
+/* https://mui.com/guides/migration-v4/ */
+
+.flexGrow {
+  flex-grow: 1; 
+}
+
+.mainContainer {
+  margin-top: 30px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+pre {
+  border: 2px solid grey;
+  padding: 1em;
+  /* background: #22272e; */
+}
+
+code {
+  font-family: monospace, monospace;
+  border-radius: 10px;
+  padding: 3px;
+  /* color: white; */
+  /* background-color: #757575; */
+  /* background-color: #78909c; */
+}
+
+pre, code {
+  font-family: monospace, monospace;
+  border-radius: 6px;
+  /* padding: 2px; */
+  color: #adbac7;
+  background: #22272e;
+  /* padding: 0.5em; */
+  /* padding: 5px; */
+  /* color: white;
+  background-color: #757575; */
+  /* background-color: #78909c; */
+}
+
+a {
+  text-decoration: none;
+}
+
+/* a:hover {
+  color: #ff7043;
+  text-decoration: none
+} */
+
+/* @import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+body {
+  margin: 0;
+  padding: 0;
+  text-align: center; } */

@@ -1,0 +1,51 @@
+[tool.poetry]
+name = "app"
+version = "0.1.0"
+description = ""
+authors = ["Admin <admin@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+uvicorn = "^0.15.0"
+fastapi = "^0.68.1"
+python-multipart = "^0.0.5"
+requests = "^2.23.0"
+celery = "^4.4.2"
+tenacity = "^6.1.0"
+pydantic = "^1.4"
+gunicorn = "^20.0.4"
+pytest = "^5.4.1"
+motor = "^2.5.1"
+Authlib = "^0.15.4"
+itsdangerous = "^2.0.1"
+httpx = "0.21.1"
+extruct = "^0.13.0"
+rdflib = {git = "https://github.com/RDFLib/rdflib.git", rev = "master"}
+#rdflib = "^6.0.1"
+PyLD = "^2.0.3"
+google = "^3.0.0"
+beautifulsoup4 = "^4.10.0"
+strawberry-graphql = {extras = ["asgi"], version = "^0.83.4"}
+reasoner-pydantic = ">=1.2.0.4"
+reasoner-validator = "^2.1.0"
+SPARQLWrapper = "^1.8.5"
+
+[tool.poetry.dev-dependencies]
+mypy = "^0.770"
+black = "^19.10b0"
+isort = "^4.3.21"
+autoflake = "^1.3.1"
+flake8 = "^3.7.9"
+pytest = "^5.4.1"
+pytest-cov = "^2.8.1"
+trio = "^0.19.0"
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+line_length = 88
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
