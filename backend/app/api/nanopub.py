@@ -161,6 +161,9 @@ async def publish_assertion(
     g.bind("prov", PROV)
     g.bind("dct", DCTERMS)
     g.bind("npx", NPX)
+    g.bind("schema", URIRef('http://schema.org/'))
+    g.bind("schemaorg", URIRef('https://schema.org/'))
+    g.bind("biolink", URIRef('https://w3id.org/biolink/vocab/'))
     
     BASE_URI = URIRef(str(BASE))
 

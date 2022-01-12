@@ -89,7 +89,7 @@ export default function JsonldUploader({ renderObject, onChange }: any) {
   };
 
   return(
-    <Card style={{margin: theme.spacing(4,0)}}>
+    <Card style={{margin: theme.spacing(2,0)}}>
         <CardHeader
           style={{ textAlign: 'center'}}
           action={

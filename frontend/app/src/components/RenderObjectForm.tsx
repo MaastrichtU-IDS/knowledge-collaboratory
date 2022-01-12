@@ -79,8 +79,8 @@ export default function RenderObjectForm(props: any) {
       textAlign: 'left'
     },
     paperPadding: {
-      padding: theme.spacing(2, 2),
-      margin: theme.spacing(2, 2),
+      padding: theme.spacing(1, 1),
+      margin: theme.spacing(0.5, 0),
       width: '100%'
     },
     paperTitle: {
@@ -222,23 +222,25 @@ export default function RenderObjectForm(props: any) {
       // Search for matching concepts in the ontology JSON-LD
       let conceptsArray: any = []
       const ontologyGraph = ontologyObject['@graph']
-      if (Array.isArray(ontologyGraph)) {
-        // If @graph is array of entities (e.g. schema.org)
-        conceptsArray = ontologyGraph
-          .filter((concept: any) => {
-            return getConceptSearchDescription(concept).toLowerCase().indexOf( inputText.toLowerCase() ) !== -1
+      if (ontologyGraph) {
+        if (Array.isArray(ontologyGraph)) {
+          // If @graph is array of entities (e.g. schema.org)
+          conceptsArray = ontologyGraph
+            .filter((concept: any) => {
+              return getConceptSearchDescription(concept).toLowerCase().indexOf( inputText.toLowerCase() ) !== -1
+            })
+        } else {
+          // If @graph is object of arrays of entities (e.g. csvw)
+          Object.keys(ontologyGraph).map((graphLabel: any) => {
+            if (ontologyGraph[graphLabel] && Array.isArray(ontologyGraph[graphLabel])) {
+              conceptsArray = conceptsArray.concat(ontologyGraph[graphLabel]
+                .filter((concept: any) => {
+                  return getConceptSearchDescription(concept).toLowerCase().indexOf( inputText.toLowerCase() ) !== -1
+                })
+              )
+            }
           })
-      } else {
-        // If @graph is object of arrays of entities (e.g. csvw)
-        Object.keys(ontologyGraph).map((graphLabel: any) => {
-          if (ontologyGraph[graphLabel] && Array.isArray(ontologyGraph[graphLabel])) {
-            conceptsArray = conceptsArray.concat(ontologyGraph[graphLabel]
-              .filter((concept: any) => {
-                return getConceptSearchDescription(concept).toLowerCase().indexOf( inputText.toLowerCase() ) !== -1
-              })
-            )
-          }
-        })
+        }
       }
       updateState({
         autocompleteOntologyOptions: conceptsArray.sort((a: any, b: any) => {
@@ -255,7 +257,7 @@ export default function RenderObjectForm(props: any) {
 
   // https://betterprogramming.pub/recursive-rendering-with-react-components-10fa07c45456
   return (
-    <div>
+    <div style={{marginLeft: theme.spacing(2)}}>
       {Object.keys(renderObject).map((property: any, key: number) => (
         <div key={key}>
           {/* Ignore all properties starting by @wizard */}
@@ -271,11 +273,10 @@ export default function RenderObjectForm(props: any) {
                     </Typography>
                   </Grid>
                 }
-                {property !== '@context' && (editEnabled || Array.isArray(renderObject)) &&
+                {/* {property !== '@context' && (editEnabled || Array.isArray(renderObject)) &&
                   // Button to delete any property object. Hide for objects if edit disabled
                   <Grid item>
-                    {/* <Tooltip title='Delete the property {} and its child objects'> */}
-                    <Tooltip title={<Typography style={{textAlign: 'center'}}>Delete the <code>{property}</code> property<br/>and its children</Typography>}>
+                    <Tooltip title={<Typography style={{textAlign: 'center'}}>Delete the property <code>{property}</code><br/>and its children</Typography>}>
                       <IconButton onClick={(subSelections: any) => handleRemoveProperty(property, subSelections)}
                         style={{ margin: theme.spacing(1,1) }}
                         className={classes.editButtons} 
@@ -285,7 +286,7 @@ export default function RenderObjectForm(props: any) {
                       </IconButton>
                     </Tooltip>
                   </Grid>
-                }
+                } */}
                 {property === '@type' &&
                   <Grid item xs={11} md={9}>
                     {/* Autocomplete for @types */}
@@ -293,6 +294,7 @@ export default function RenderObjectForm(props: any) {
                       key={property + key}
                       id={property}
                       disabled={!editEnabled}
+                      freeSolo={true}
                       // value={ { ['rdfs:label']: renderObject[property]}}
                       defaultValue={{'rdfs:label': renderObject[property]}}
                       options={state.autocompleteOntologyOptions}
@@ -368,7 +370,6 @@ export default function RenderObjectForm(props: any) {
                           className={classes.formInput}
                         />
                       )}
-                      // freeSolo={true}
                       // includeInputInList={true}
                       // ListboxProps={{
                       //   className: classes.formInput,
@@ -389,6 +390,7 @@ export default function RenderObjectForm(props: any) {
                           key={property + key}
                           id={property}
                           disabled={!editEnabled}
+                          freeSolo={true}
                           className={classes.autocomplete}
                           // value={ { ['rdfs:label']: renderObject[property]}}
                           defaultValue={{'rdfs:label': property}}
@@ -522,7 +524,7 @@ export default function RenderObjectForm(props: any) {
                       //   // boxShadow: 'none',
                       // }
                     >
-                      <Grid container>
+                      <Grid container spacing={1}>
                         { Array.isArray(renderObject) &&
                           <Grid item>
                             <Chip style={{ marginBottom: theme.spacing(1), marginLeft: theme.spacing(1)}} 
@@ -537,6 +539,7 @@ export default function RenderObjectForm(props: any) {
                               key={property + key}
                               id={property}
                               disabled={!editEnabled}
+                              freeSolo={true}
                               // value={ { ['rdfs:label']: renderObject[property]}}
                               defaultValue={{'rdfs:label': property}}
                               options={jsonld_properties.concat(state.autocompleteOntologyOptions)}
@@ -613,7 +616,6 @@ export default function RenderObjectForm(props: any) {
                                   className={classes.formInput}
                                 />
                               )}
-                              // freeSolo={true}
                               // includeInputInList={true}
                               // ListboxProps={{
                               //   className: classes.formInput,
@@ -621,6 +623,7 @@ export default function RenderObjectForm(props: any) {
                               // defaultValue={[top100Films[13]]}
                               // multiple
                             />
+
                           </Grid>
                         }
                         {/* Display question in Object (duplicate with before every object) */}
@@ -644,11 +647,12 @@ export default function RenderObjectForm(props: any) {
                             </Button>
                           </Grid>
                         } */}
+
                         { Array.isArray(renderObject[property]) &&
                           <Grid item>
                             {/* Create Add entry button at the top of the list, if the property value is an array */}
                             <Button onClick={(subSelections: any) => handleAddEntry(property, subSelections)}
-                              style={{marginTop: theme.spacing(3)}}
+                              style={{marginTop: theme.spacing(1), marginLeft: theme.spacing(1)}}
                               variant="contained" 
                               size="small"
                               className={classes.editButtons} 
@@ -669,11 +673,13 @@ export default function RenderObjectForm(props: any) {
                         editEnabled={editEnabled}
                         parentProperty={property}
                         parentType={renderObject['@type']}
+                        style={{marginLeft: theme.spacing(2)}}
                       />
+
                       { Array.isArray(renderObject[property]) &&
                         // Create Add entry button at the bottom of the list, if the property value is an array
                         <Button onClick={(subSelections: any) => handleAddEntry(property, subSelections)}
-                          style={{marginTop: theme.spacing(1)}}
+                          style={{marginTop: theme.spacing(0.5), marginBottom: theme.spacing(0.5)}}
                           variant="contained" 
                           size="small"
                           className={classes.editButtons} 
@@ -685,6 +691,21 @@ export default function RenderObjectForm(props: any) {
                     </Card>
                   </Grid>
                 }
+                {property !== '@context' && (editEnabled || Array.isArray(renderObject)) &&
+                  // Button to delete any property object. Hide for objects if edit disabled
+                  <Grid item>
+                    {/* <Tooltip title='Delete the property {} and its child objects'> */}
+                    <Tooltip title={<Typography style={{textAlign: 'center'}}>Delete the property <code>{property}</code><br/>and its children</Typography>}>
+                      <IconButton onClick={(subSelections: any) => handleRemoveProperty(property, subSelections)}
+                        style={{ margin: theme.spacing(1,1) }}
+                        className={classes.editButtons} 
+                        // disabled={property === '0' || property === '@type'}
+                        color="default" >
+                          <RemoveIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Grid>
+                }
               {/* </Box> */}
               </Grid>
             </>
@@ -693,7 +714,7 @@ export default function RenderObjectForm(props: any) {
       ))}
       {typeof renderObject === 'object' && !Array.isArray(renderObject) && editEnabled &&
         // Buttons to add new properties or arrays for each object
-        <>
+        <Box style={{textAlign: 'right'}}>
           {/* <GridList cols={1}>
             <GridListTile key={tile.img} cols={tile.cols || 1}>
             <img src={tile.img} alt={tile.title} />
@@ -732,7 +753,7 @@ export default function RenderObjectForm(props: any) {
                 <AddObjectArrayIcon />
             </IconButton>
           </Tooltip>
-        </>
+        </Box>
       }
       {/* { typeof renderObject === 'object' && !Array.isArray(renderObject) &&
         // Buttons to add new properties or arrays for each object

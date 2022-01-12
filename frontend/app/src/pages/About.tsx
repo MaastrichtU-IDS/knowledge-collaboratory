@@ -2,9 +2,11 @@ import React from 'react';
 import { makeStyles } from '@mui/styles';
 import { useTheme } from '@mui/material/styles';
 import { Container, Typography, List, ListItem, ListItemAvatar, Avatar, ListItemText  } from "@mui/material";
-import EvaluationIcon from '@mui/icons-material/NetworkCheck';
-import CollectionIcon from '@mui/icons-material/PlaylistAddCheck';
+import WebappIcon from '@mui/icons-material/Computer';
+import ApiIcon from '@mui/icons-material/Storage';
 import AssessmentIcon from '@mui/icons-material/Biotech';
+import SearchIcon from '@mui/icons-material/Search';
+import PublishIcon from '@mui/icons-material/Outbox';
 // import AssessmentIcon from '@mui/icons-material/CheckCircle';
 
 import {getUrlHtml} from '../settings'
@@ -53,62 +55,65 @@ export default function About() {
       </Typography>
 
       <Typography variant="body1" className={classes.mainText}>
-        Knowledge Collaboratory is a web service to evaluate how much online resources follow to the <a href="https://www.go-fair.org/fair-principles" className={classes.link} target="_blank" rel="noopener noreferrer">FAIR principles ♻️</a> (Findable, Accessible, Interoperable, Reusable).
-      </Typography>
-
-      <Typography variant="body1" className={classes.mainText}>
-        Developed and hosted by the <a href="https://www.maastrichtuniversity.nl/research/institute-data-science" className={classes.link} target="_blank" rel="noopener noreferrer">Institute of Data Science</a> at Maastricht University.
-      </Typography>
-
-      <Typography variant="body1" className={classes.mainText}>
-        This platform take inspiration from existing FAIR evaluation implementations: the <a href="https://fairsharing.github.io/FAIR-Evaluator-FrontEnd/#!/" className={classes.link} target="_blank" rel="noopener noreferrer">FAIR evaluator</a>, 
-        FAIRsFAIR's <a href="https://f-uji.net/" className={classes.link} target="_blank" rel="noopener noreferrer">F-UJI</a>, 
-        and <a href="https://foops.linkeddata.es/FAIR_validator.html" className={classes.link} target="_blank" rel="noopener noreferrer">FOOPS!</a> ontology validator.
-      </Typography>
-      
-
-      <Typography variant="h4" className={classes.mainText} style={{margin: theme.spacing(2,0)}}>
-        How it works
-      </Typography>
-
-
-      <Typography variant="body1" className={classes.mainText}>
-        An <b>evaluation</b> runs a <b>collection</b> of <b>assessments</b> against the resource to evaluate.
+        The Knowledge Collaboratory is a web service to query and publish Nanopublications for the NCATS Biomedical Data Translator project.
       </Typography>
 
       <List>
         <ListItem>
           <ListItemAvatar>
             <Avatar>
-              <EvaluationIcon />
+              <SearchIcon />
             </Avatar>
           </ListItemAvatar>
           <ListItemText>
-            <b>Evaluations</b> can be created by anyone without authentication. An evaluation takes the URI of the resource to evaluate, and a collection of assessments to run against this resource. 
+            <b>Browse Nanopublications</b> through the web UI, or query them using the <b>Translator Reasoner API (TRAPI)</b> specifications
           </ListItemText>
         </ListItem>
         <ListItem>
           <ListItemAvatar>
             <Avatar>
-              <CollectionIcon />
+              <PublishIcon />
             </Avatar>
           </ListItemAvatar>
           <ListItemText>
-            <b>Collections</b> can be created through the API after authenticating with ORCID. A collection is a sorted list of assessments
+            <b>Publish Nanopublications</b> after login with ORCID, and uploading your authentication keys to the server
+          </ListItemText>
+        </ListItem>
+      </List>
+
+      <Typography variant="body1" className={classes.mainText}>
+        Developed and hosted by the <a href="https://www.maastrichtuniversity.nl/research/institute-data-science" className={classes.link} target="_blank" rel="noopener noreferrer">Institute of Data Science</a> at Maastricht University.
+      </Typography>
+
+
+      <Typography variant="h4" className={classes.mainText} style={{margin: theme.spacing(2,0)}}>
+        How it works
+      </Typography>
+
+      <Typography variant="body1" className={classes.mainText}>
+        The Knowledge Collaboratory consists in an OpenAPI service and a user-friendly web UI to query the Nanopublications network, 
+        store Nanopublication authentication keys, and publish Nanopublications.
+      </Typography>
+
+      <List>
+        <ListItem>
+          <ListItemAvatar>
+            <Avatar>
+              <ApiIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText>
+            <b>Backend API</b>: an OpenAPI built with Python and FastAPI
           </ListItemText>
         </ListItem>
         <ListItem>
           <ListItemAvatar>
             <Avatar>
-              <AssessmentIcon />
+              <WebappIcon />
             </Avatar>
           </ListItemAvatar>
-          <ListItemText> 
-            <b>Assessments</b> are tests written in Python that can be part of a collection. 
-            Each assessment run some tests against the resource to evaluate, 
-            record the results, and pass the results to the next assessment in the collection. 
-            To create a test you will need to add a python file in the folder <a href="https://github.com/MaastrichtU-IDS/fair-enough/tree/main/backend/app/assessments" className={classes.link} target="_blank" rel="noopener noreferrer">backend/app/assessments</a> and
-            send us a pull request
+          <ListItemText>
+            <b>Webapp frontend</b>: a website built with TypeScript and React
           </ListItemText>
         </ListItem>
       </List>

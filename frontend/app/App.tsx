@@ -11,6 +11,7 @@ import NavBar from "./src/components/NavBar";
 import Footer from "./src/components/Footer";
 import PublishNanopub from "./src/pages/PublishNanopub";
 import About from "./src/pages/About";
+import BrowseNanopub from "./src/pages/BrowseNanopub";
 import UserContext from "./src/UserContext";
 import { AuthProvider, useAuth } from 'oidc-react';
 
@@ -35,6 +36,7 @@ import { AuthProvider, useAuth } from 'oidc-react';
 const theme = createTheme({
   palette: {
     primary: { light: '#63a4ff', main: blue[700], dark: '#004ba0' }, // blue
+    // secondary: { light: '#4caf50', main: '#087f23', dark: '#00600f' }, // green
     secondary: { light: '#4caf50', main: '#087f23', dark: '#00600f' }, // green
     // primary: { light: blue[50], main: blue[600], dark: blue[900] },
     // secondary: { light: '#ffcc80', main: '#ffa726', dark: '#c88719' }, // Orange
@@ -92,7 +94,8 @@ const App = () => {
           <NavBar />
 
           <Route path="/about" component={About} />
-          <Route exact path="/" component={PublishNanopub} />
+          <Route path="/publish" component={PublishNanopub} />
+          <Route exact path="/" component={BrowseNanopub} />
           <Footer />
         </View>
       {/* </HashRouter> */}

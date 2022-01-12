@@ -1,23 +1,34 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useLocation } from "react-router-dom";
 import { useTheme } from '@mui/material/styles';
 import { makeStyles, withStyles } from '@mui/styles';
-import { Typography, Container, Button, Card, FormControl, Snackbar, TextField } from "@mui/material";
+import { Typography, Container, Button, Card, FormControl, Snackbar, TextField, Select, MenuItem, InputLabel } from "@mui/material";
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import DownloadJsonldIcon from '@mui/icons-material/Description';
 import UploadTriplestoreIcon from '@mui/icons-material/Share';
+import UploadIcon from '@mui/icons-material/FileUpload';
 import axios from 'axios';
+
 const $rdf = require('rdflib')
 // import { LoggedIn, LoggedOut, Value } from '@solid/react';
 // import * as jsonld from 'jsonld'
 // import {$rdf} from 'rdflib'
 // const jsonld = require('jsonld')
 
+// import hljs from 'highlight.js/lib/core';
+// import 'highlight.js/styles/github-dark-dimmed.css';
+// import turtle from 'highlightjs-turtle';
+// var hljsDefineTurtle = require('highlightjs-turtle');
+// hljs.registerLanguage('turtle', turtle);
+
 import JsonldUploader from "../components/JsonldUploader";
 import RenderObjectForm from "../components/RenderObjectForm";
+import { settings, samples } from '../settings';
+import UserContext from '../UserContext'
 
 export default function PublishNanopub() {
   const theme = useTheme();
+  const { user }: any = useContext(UserContext)
 
   const useStyles = makeStyles(() => ({
     link: {
@@ -83,8 +94,12 @@ export default function PublishNanopub() {
     open: false,
     dialogOpen: false,
     wizard_jsonld: wizard_jsonld,
+    sample_selected: 'Drug indication with the BioLink model',
+    published_nanopub: '',
     csvwColumnsArray: [],
     jsonld_uri_provided: null,
+    // ontology_list: ['https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.ttl'],
+    ontology_list: [],
     ontology_jsonld: {},
     edit_enabled: true,
     ontoload_error_open: false,
@@ -115,6 +130,11 @@ export default function PublishNanopub() {
       // Disable edit if toysrus=closed
       updateState({ edit_enabled: false })
     }
+    for (const onto_url of state.ontology_list) {
+      console.log('ontology url', onto_url);
+      downloadOntology(onto_url)
+    }
+    
     if (jsonld_uri_provided) {
       axios.get(jsonld_uri_provided)
         .then(res => {
@@ -122,13 +142,14 @@ export default function PublishNanopub() {
             wizard_jsonld: res.data,
             jsonld_uri_provided: jsonld_uri_provided,
           })
-          downloadOntology(res.data['@context'])
+          // downloadOntology(res.data['@context'])
         })
-    } else {
-      downloadOntology(state.wizard_jsonld['@context'])
-    }
+    } 
+    // else {
+    //   downloadOntology(state.wizard_jsonld['@context'])
+    // }
     
-  }, [state.wizard_jsonld['@context']])
+  }, [state.wizard_jsonld])
 
   const downloadOntology  = (contextUrl: string) => {
     // Download the ontology JSON-LD 
@@ -220,17 +241,83 @@ export default function PublishNanopub() {
     })
   }
 
+  const handleUploadKeys  = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log('eeevent', event);
+    console.log(event.currentTarget);
+    // console.log(event.currentTarget.elements.publicKey.value);
+    // axios.post(event.target.files)
+    const formData = new FormData();
+    // @ts-ignore
+    formData.append("publicKey", event.currentTarget.elements.publicKey.value);
+    // @ts-ignore
+    formData.append("privateKey", event.currentTarget.elements.privateKey.value);
+
+    // axios({
+    //   method: "POST",
+    //   url: serverUrl + "/multiplefiles",
+    //   data: formData,
+    //   headers: {
+    //     "Content-Type": "multipart/form-data"
+    //   }
+    // })
+
+    const access_token = user['access_token']
+    axios.post(
+        settings.apiUrl + '/upload-keys', 
+        formData, 
+        { 
+          headers: { 
+            Authorization: `Bearer ${access_token}`,
+            "Content-Type": "multipart/form-data",
+            "type": "formData"
+          }
+        } 
+      )
+      .then(res => {
+        updateState({
+          open: true,
+          published_nanopub: res.data
+        })
+        console.log(res)
+      })
+      .catch(error => {
+        console.log(error)
+      })
+  }
+
   const handleSubmit  = (event: React.FormEvent) => {
     // Trigger JSON-LD file download
     event.preventDefault();
-    var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/turtle;charset=utf-8,' + encodeURIComponent(JSON.stringify(state.wizard_jsonld, null, 4)));
-    element.setAttribute('download', 'metadata.json');
-    element.style.display = 'none';
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-    setState({...state, open: true})
+    // var element = document.createElement('a');
+    console.log(user);
+    if (!user.error) {
+      const access_token = user['access_token']
+      axios.post(
+          settings.apiUrl + '/assertion', 
+          state.wizard_jsonld, 
+          { headers: { Authorization: `Bearer ${access_token}` }} 
+        )
+        .then(res => {
+          updateState({
+            open: true,
+            published_nanopub: res.data
+          })
+          console.log(res)
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    } else {
+      console.log('You need to be logged in with ORCID to publish a Nanopublication')
+    }
+    // element.setAttribute('href', 'data:text/turtle;charset=utf-8,' + encodeURIComponent(JSON.stringify(state.wizard_jsonld, null, 4)));
+    // element.setAttribute('download', 'metadata.json');
+    // element.style.display = 'none';
+    // document.body.appendChild(element);
+    // element.click();
+    // document.body.removeChild(element);
+    // setState({...state, open: true})
   }
 
   // Close Snackbars
@@ -245,39 +332,86 @@ export default function PublishNanopub() {
   const handleTextFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     updateState({[event.target.id]: event.target.value})
   }
-  const handleUploadToSparql  = (event: any) => {
-    // TODO: Use UpdateManager.update? Or iterate store and generate INSERT
-    // https://github.com/linkeddata/rdflib.js/issues/310
-    // var friends = store.each(me, FOAF('knows'), undefined)
-    // for (var i=0; i<friends.length;i++) {
-    //     friend = friends[i]
-    //     console.log(friend.uri) // the WebID of a friend
-    //     ...
-    // }
-    // https://github.com/MaastrichtU-IDS/translator-openpredict/blob/master/openpredict/rdf_utils.py#L58
-    // Then run POST query providing username and password
-    event.preventDefault();
-    console.log('Uploading RDF to: ' + state.sparql_endpoint);
-    console.log('With username: ' + state.sparql_username);
-    console.log('With password: ' + state.sparql_password);
-    console.log('WORK IN PROGRESS: triplestore upload currently not implemented');
-  }
+  const handleSelectSample = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // TODO: not working properly
+    // updateState({wizard_jsonld: null})
+    const wizard_jsonld = samples[event.target.value]
+    updateState({wizard_jsonld})
+    updateState({sample_selected: event.target.value})
+    // console.log(samples[event.target.value]);
+    // setState({...state, wizard_jsonld: samples[event.target.value]})
+  };
 
   return(
     <Container className='mainContainer'>
-      <Typography variant="h4" style={{textAlign: 'center', marginBottom: theme.spacing(1)}}>
-        🔬 Knowledge Collaboratory 📬️
+      <Typography variant="h4" style={{textAlign: 'center', margin: theme.spacing(1, 0)}}>
+        📬️ Publish Nanopublications
       </Typography>
 
       {/* <Typography variant="body1" style={{textAlign: 'center', marginBottom: theme.spacing(1)}}>
-        Load and edit <a href="https://json-ld.org/" className={classes.link} target="_blank" rel="noopener noreferrer">JSON-LD</a> <a href="https://en.wikipedia.org/wiki/Resource_Description_Framework" className={classes.link} target="_blank" rel="noopener noreferrer">RDF</a> files in a user-friendly web interface, with autocomplete based on the classes and properties of the ontology magically loaded from <code>@context</code> ✨️
+        Load and edit <a href="https://json-ld.org/" className={classes.link} target="_blank" rel="noopener noreferrer">JSON-LD</a> <a href="https://en.wikipedia.org/wiki/Resource_Description_Framework" className={classes.link} target="_blank" rel="noopener noreferrer">RDF</a> files in a user-friendly web interface, with autocomplete based on the classes and properties of the ontology loaded ✨️
       </Typography> */}
 
-      {/* Display the JSON-LD file uploader (if no ?edit= URL param provided) */}
-      {!state.jsonld_uri_provided &&
-        <JsonldUploader renderObject={state.wizard_jsonld} 
-          onChange={(wizard_jsonld: any) => {updateState({wizard_jsonld})}} />
-      }
+      <Card className={classes.paperPadding} style={{textAlign: 'center'}}>
+        { !user.id &&
+          <Typography>
+            🔒️ You need to login with ORCID to publish Nanopublications
+          </Typography>
+        }
+        { user.id && user.keyfiles_loaded && 
+          <Typography>
+            ✅ Your authentications keys are successfully loaded, you can start publishing Nanopublications
+          </Typography>
+        }
+
+        { user.id && !user.keyfiles_loaded && 
+          <>
+            <Typography>
+              🔑 You need to upload the authentications keys binded to your ORCID for Nanopublications publishing (public and private encryption keys). 
+              You can do it via the API
+            </Typography>
+            <form encType="multipart/form-data" action="" onSubmit={handleUploadKeys}>
+              <input type="file" id="publicKey" />
+              <input type="file" id="privateKey" />
+              {/* <input type="submit" value="upload" onClick={handleUploadKeys}></input> */}
+              <Button type="submit" 
+                variant="contained" 
+                className={classes.saveButton} 
+                startIcon={<UploadIcon />}
+                style={{textTransform: 'none'}}
+                color="secondary" >
+                  Upload your keys
+              </Button>
+            </form>
+          </>
+        }
+
+        <InputLabel id="demo-simple-select-label" style={{ marginTop: theme.spacing(2) }}>
+          Load a template:
+        </InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={state.sample_selected}
+          label="Load a template"
+          // style={{ backgroundColor: '#ffffff'}}
+          onChange={handleSelectSample}
+        >
+          { Object.keys(samples).map((query_label: any, key: number) => (
+            <MenuItem key={key} value={query_label}>{query_label}</MenuItem>
+          ))}
+        </Select>
+
+        <Typography style={{marginTop: theme.spacing(1)}}>
+          Or
+        </Typography>
+
+        {/* Display the JSON-LD file uploader (if no ?edit= URL param provided) */}
+        {!state.jsonld_uri_provided &&
+          <JsonldUploader renderObject={state.wizard_jsonld} 
+            onChange={(wizard_jsonld: any) => {updateState({wizard_jsonld})}} />
+        }
+      </Card>
 
       {/* <CsvUploader 
         csvwColumnsArray={state.csvwColumnsArray}
@@ -321,192 +455,55 @@ export default function PublishNanopub() {
           </div>
         </FormControl>
       </form>
+      {state.published_nanopub &&
+        <pre style={{whiteSpace: 'pre-wrap'}} className="language-turtle">
+          <code>
+            {state.published_nanopub}
+          </code>
+        </pre>
+      }
     </Container>
   )
 }
 
-
+// https://purl.org/np/RAuN1kyW1BD9754LCUVWozDOhkrUaLUyb5LTu0HcsulIE
 const wizard_jsonld = {
-  "@context": "https://schema.org",
+  "@context": "https://raw.githubusercontent.com/biolink/biolink-model/master/context.jsonld",
   "@wizardQuestions": {
-    'name': 'Provide the name of this entity:',
-    'description': 'Give a short description of the content:',
-    'creator': 'Provide the details of the person who created, or initiated, the creation of this work:',
-    'contributor': 'Other persons who contributed to, or co-authored, the dataset:',
-    'publisher': 'Person, or organization, who published this work:',
-    'inLanguage': 'What language is used in the description of this dataset? Use ISO 2 language code e.g. EN for English',
-    'version': 'What is the version number for this dataset? e.g. 1.1.1 or v1.2',
-    'license': 'Link to the full text of the terms of use (license) for this dataset:',
-    'encodingFormat': 'What is the file format of this data?',
-    'url': 'Link to the website or homepage:',
-    'temporalCoverage': 'What is the creation or publishing date range for the documents or contents of this dataset? Use https://en.wikipedia.org/wiki/ISO_8601#Time_intervals format - e.g. 2007-03-01/2008-05-11:',
-    'keywords': 'Provide keywords describing the content in this dataset:',
-    'distribution': 'Supply a direct download link for this dataset:',
-    'contentSize': 'How large is the download file size e.g. 128KB, 54MB, 1.5GB?',
-    'isBasedOn': 'Was this dataset generated with the aid of or using a piece of software?',
-    'applicationCategory': 'Indicate type of software e.g. Python script or Java GUI application:',
-    'citation': 'Is there an academic publication which describes or centrally makes use of this dataset?',
-    'datePublished': 'On what date was the dataset published? YYYY-MM-DD',
-    'dateCreated': 'On what date was the dataset created? YYYY-MM-DD',
-    'affiliation': 'This person is affiliated to or employed by:',
-    'logo': 'Link to an image depicting the logo of this organisation:',
-    'image': 'Provide a link (URL) to a profile photo of the author of the dataset:',
-    'sameAs': 'Provide a Digital Object Identifier (DOI) for this publication:',
-    'frequency': 'How often does a new version get published for this dataset? e.g. daily, weekly, monthly',
-    // 'encodingFormat': 'What is the download file format e.g. Zip archive, CSV file, JSON file etc:',
+    'rdf:subject': 'Subject of the association:',
+    'rdf:predicate': 'Predicate of the association:',
+    'rdf:object': 'Object of the association:',
+    'biolink:provided_by': 'Association provided by dataset:',
+    'biolink:publications': 'Publication supporting the association:',
+    'biolink:association_type': 'Type of the association:',
+    'biolink:relation': 'Type of drug indication:',
+    'biolink:has_population_context': 'Population context of the drug indication:'
   },
-  "@type": "Dataset",
-  "name": "ECJ case law text similarity analysis",
-  "description": "results from a study to analyse how closely the textual similarity of ECJ cases resembles the citation network of the cases.",
-  "version": "v2.0",
-  "url": "https://doi.org/10.5281/zenodo.4228652",
-  "license": "https://www.gnu.org/licenses/agpl-3.0.txt",
-  "encodingFormat": "CSV",
-  "temporalCoverage": "2019-09-14/2020-07-01",
-  "dateCreated": {
-      "@type": "Date",
-      "@value": "2019-09-14"
+  "@type": "rdf:Statement",
+  "rdfs:label": "An atypical drug is now increasingly used as an off-label indication for the management of cancer patients",
+  "rdf:subject": {
+    "@id": "https://go.drugbank.com/drugs/DB00334",
+    "@type": "biolink:Drug"
   },
-  "datePublished": {
-      "@type": "Date",
-      "@value": "2020-07-01"
+  "rdf:predicate": {
+    "@id": "biolink:treats"
   },
-  "distribution": {
-      "@type": "DataDownload",
-      "contentUrl": {
-          "@type": "URL",
-          "@value": "https://zenodo.org/record/4228652/files/docona_cjeu_results_2018_v2_html.zip?download=1"
-      },
-      "encodingFormat": "application/zip",
-      "contentSize": "1.1MB"
+  "rdf:object": {
+    "@id": "https://identifiers.org/HP:0002017",
+    "@type": "biolink:Disease"
   },
-  "inLanguage": {
-      "@type": "Language",
-      "name": "EN",
-      "alternateName": "EN"
+  "biolink:association_type": {
+    "@id": "biolink:ChemicalToDiseaseOrPhenotypicFeatureAssociation"
   },
-  "keywords": [
-      "case law",
-      "court decisions",
-      "text similarity",
-      "network analysis",
-  ],
-  "creator": {
-      "@type": "Person",
-      "name": "concat @givenName @familyName",
-      "givenName": "Kody",
-      "familyName": "Moodley",
-      "image": "https://www.maastrichtuniversity.nl/sites/default/files/styles/text_with_image_mobile_portrait/public/profile/kody.moodley/kody.moodley_photo_kmoodley.jpg?itok=bN7b8s_-&timestamp=1583505301",
-      "jobTitle": "Postdoctoral researcher",
-      "email": "kody.moodley@maastrichtuniversity.nl",
-      "affiliation": {
-          "@type": "Organization",
-          "name": "Maastricht Law & Tech Lab",
-          "url": {
-              "@type": "URL",
-              "@value": "https://www.maastrichtuniversity.nl/about-um/faculties/law/research/law-and-tech-lab"
-          },
-          "logo": {
-              "@type": "ImageObject",
-              "contentUrl": "https://www.maastrichtuniversity.nl/sites/default/files/styles/page_photo/public/compacte20versie20law20and20tech20lab.jpg?itok=7lm6PEQF"
-          }
-      }
-  },
-  "contributor": [
-      {
-          "@type": "Person",
-          "givenName": "Pedro",
-          "familyName": "Hernandez Serrano",
-          "jobTitle": "Data Scientist",
-          "email": "p.hernandezserrano@maastrichtuniversity.nl",
-          "image": "https://www.maastrichtuniversity.nl/sites/default/files/styles/text_with_image_mobile_portrait/public/profile/p.hernandezserrano/p.hernandezserrano_PP%20%287%20of%2013%29.jpg?itok=IUdreoIw&timestamp=1610395201",
-          "affiliation": {
-              "@type": "Organization",
-              "name": "Institute of Data Science",
-              "url": {
-                  "@type": "URL",
-                  "@value": "https://www.maastrichtuniversity.nl/research/institute-data-science"
-              },
-              "logo": {
-                  "@type": "ImageObject",
-                  "contentUrl": "https://avatars.githubusercontent.com/u/36262526?s=280&v=4"
-              }
-          }
-      }
-  ],
-  "publisher": {
-      "@type": "Person",
-      "name": "Kody Moodley",
-      "givenName": "Kody",
-      "familyName": "Moodley",
-      "jobTitle": "Postdoctoral researcher",
-      "image": "https://www.maastrichtuniversity.nl/sites/default/files/styles/text_with_image_mobile_portrait/public/profile/kody.moodley/kody.moodley_photo_kmoodley.jpg?itok=bN7b8s_-&timestamp=1583505301",
-      "email": "kody.moodley@maastrichtuniversity.nl",
-      "affiliation": {
-          "@type": "Organization",
-          "name": "Maastricht Law & Tech Lab",
-          "url": {
-              "@type": "URL",
-              "@value": "https://www.maastrichtuniversity.nl/about-um/faculties/law/research/law-and-tech-lab"
-          },
-          "logo": {
-              "@type": "ImageObject",
-              "contentUrl": "https://www.maastrichtuniversity.nl/sites/default/files/styles/page_photo/public/compacte20versie20law20and20tech20lab.jpg?itok=7lm6PEQF"
-          }
-      }
-  },
-  "isBasedOn": [
-      {
-          "@type": "SoftwareApplication",
-          "name": "docona",
-          "description": "DoConA (Document Content and Citation Analysis Pipeline) is an open source, configurable and extensible Python tool to analyse the level of agreement between the citation network of a set of textual documents and the textual similarity of these documents.",
-          "applicationCategory": "Python script",
-          "operatingSystem": "cross-platform",
-          "version": "1.0",
-          "url": {
-              "@type": "URL",
-              "@value": "https://github.com/MaastrichtU-IDS/docona"
-          }
-      },
-      {
-          "@type": "CreativeWork",
-          "name": "ECJ case law and citation network",
-          "description": "Citation network and full text documents of each judgement by the Court of Justice of the European Union that was published publicly on the EUR-LEX website (https://eur-lex.europa.eu/homepage.html) up until December 2018",
-          "version": "2.0",
-          "url": {
-              "@type": "URL",
-              "@value": "https://doi.org/10.5281/zenodo.3926736"
-          }
-      }
-  ],
-  "citation": {
-      "@type": "CreativeWork",
-      "name": "Similarity and Relevance of Court Decisions: A Computational Study on CJEU Cases",
-      "creator": [
-          {
-              "@type": "Person",
-              "name": "Kody Moodley"
-          },
-          {
-              "@type": "Person",
-              "name": "Michel Dumontier"
-          }
-      ],
-      "publisher": {
-          "@type": "Organization",
-          "name": "IOS press",
-          "url": {
-              "@type": "URL",
-              "@value": "https://www.iospress.nl"
-          }
-      },
-      "datePublished": {
-          "@type": "Date",
-          "@value": "2019-12-10"
-      },
-      "sameAs": {
-          "@type": "URL",
-          "@value": "https://doi.org/10.3233/FAIA190307"
-      }
+  "biolink:relation": {"@id" : "https://w3id.org/um/neurodkg/OffLabelIndication"},
+  "biolink:provided_by": {"@id" : "https://w3id.org/um/NeuroDKG"},
+  "biolink:publications": {"@id" : "https://pubmed.ncbi.nlm.nih.gov/29061799/"},
+  "biolink:has_population_context": {
+    "rdfs:label": "Adults",
+    "biolink:category": {"@id": "biolink:Cohort"},
+    "biolink:has_phenotype": {
+      "@id": "https://identifiers.org/MONDO:0004992",
+      "@type": "biolink:Phenotype"
+    }
   }
 }

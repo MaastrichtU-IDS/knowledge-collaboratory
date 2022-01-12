@@ -9,9 +9,9 @@ import InfoIcon from '@mui/icons-material/Info';
 import ApiIcon from '@mui/icons-material/Http';
 import GraphqlIcon from '@mui/icons-material/Code';
 import LoginIcon from '@mui/icons-material/Login';
-import CollectionsIcon from '@mui/icons-material/CollectionsBookmark';
+import SearchIcon from '@mui/icons-material/Search';
 import AssessmentsIcon from '@mui/icons-material/CollectionsBookmark';
-import EvaluationIcon from '@mui/icons-material/NetworkCheck';
+import PublishIcon from '@mui/icons-material/Outbox';
 import axios from 'axios';
 
 // @ts-ignore
@@ -117,6 +117,20 @@ export default function NavBar() {
         // window.location.reload();
         // TODO: refactor to use Context without reload
       })
+      .catch((error: any) => {
+        if (error.response) {
+          // Request made and server responded
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+          // The request was made but no response was received
+          console.log(error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log('Error', error.message);
+        }
+      })
 
     // localStorage.setItem("fairEnoughSettings", JSON.stringify(response));
     // window.location.reload();
@@ -158,6 +172,20 @@ export default function NavBar() {
           // localStorage.setItem("fairEnoughSettings", JSON.stringify(user));
           // window.location.reload();
         })
+        .catch((error: any) => {
+          if (error.response) {
+            // Request made and server responded
+            console.log(error.response.data);
+            console.log(error.response.status);
+            console.log(error.response.headers);
+          } else if (error.request) {
+            // The request was made but no response was received
+            console.log(error.request);
+          } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log('Error', error.message);
+          }
+        })
       // Also possible and lighter on the Auth API: just check the cookie
       // const username = configState['given_name'] + ' ' + configState['family_name']
       // updateState({ currentUsername: username, accessToken: configState['access_token'], loggedIn: true})
@@ -179,7 +207,6 @@ export default function NavBar() {
   //       access_token = configState.access_token;
   //     }
 
-
   return (
     <AppBar title="" position='static'>
       <Toolbar variant='dense'>
@@ -189,23 +216,16 @@ export default function NavBar() {
           </Tooltip>
         </Link>
         <Link to="/" className={classes.linkButton}>
-          <Tooltip title='Browse existing evaluations or submit a new one'>
+          <Tooltip title='Browse Nanopublications'>
             <Button style={{color: '#fff'}}>
-              <EvaluationIcon />&nbsp;Evaluations
+              <SearchIcon />&nbsp;Browse Nanopubs
             </Button>
           </Tooltip>
         </Link>
-        <Link to="/collections" className={classes.linkButton}>
-          <Tooltip title='Browse existing Collections of assessments'>
+        <Link to="/publish" className={classes.linkButton}>
+          <Tooltip title='Publish Nanopublications'>
             <Button style={{color: '#fff'}}>
-              <CollectionsIcon />&nbsp;Collections
-            </Button>
-          </Tooltip>
-        </Link>
-        <Link to="/assessments" className={classes.linkButton}>
-          <Tooltip title='Browse existing Assessments of assessments'>
-            <Button style={{color: '#fff'}}>
-              <AssessmentsIcon />&nbsp;Assessments
+              <PublishIcon />&nbsp;Publish Nanopubs
             </Button>
           </Tooltip>
         </Link>
@@ -244,8 +264,9 @@ export default function NavBar() {
         {/* <Button variant='contained' color='primary' size='small' component="span"> */}
         {/* {} */}
         { user.username && 
-            <Button variant='contained' onClick={showUserInfo} color='secondary' size='small'>
-              {user.username}
+            <Button variant='contained' onClick={showUserInfo} color='secondary' size='small' 
+                style={{textTransform: 'none'}}>
+              🐧 {user.username}
             </Button>
         }
         { !user.username && 
@@ -260,8 +281,8 @@ export default function NavBar() {
             style={{textTransform: 'none', textDecoration: 'none'}}
             onSuccess={onSuccess}
             onFailure={onFailure}>
-              <Button variant='contained' color='primary' size='small' component="span">
-                Login with ORCID
+              <Button variant='contained' color='primary' size='small' component="span" style={{textTransform: 'none'}}>
+                🔓️  LOGIN with ORCID
               </Button>
           </OAuth2Login>
           }

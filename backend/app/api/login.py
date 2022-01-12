@@ -43,7 +43,18 @@ def get_current_user(
                                     'Authorization': 'Bearer ' + token})
     else:
         return None
-    return orcid_user.json()
+    current_user = orcid_user.json()
+    if 'sub' in current_user.keys():
+        keyfile_pub = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}/idrsa.pub")
+        keyfile_priv = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}/idrsa")
+        if keyfile_pub.exists() and keyfile_priv.exists():
+            current_user['keyfiles_loaded'] = True
+        else:
+            current_user['keyfiles_loaded'] = False
+    else:
+        current_user['keyfiles_loaded'] = False
+
+    return current_user
 
 
 router = APIRouter()
@@ -68,28 +79,28 @@ oauth.register(
 )
 
 
-@router.post("/store-keyfile", 
-    description="""Store your Nanopub key on our server to easily publish by just login with ORCID""",
+@router.post("/upload-keys", 
+    description="""Login with ORCID, and upload and store your authentications keys used to publish Nanopublication on our server""",
     response_description="Operation result", 
     response_model={})
 async def store_keyfile(
-        keyfile: UploadFile = File(...),
-        pubfile: UploadFile = File(...),
+        publicKey: UploadFile = File(...),
+        privateKey: UploadFile = File(...),
         current_user: models.User = Depends(get_current_user)
     ):
 
     if not current_user or 'id' not in current_user.keys():
-        raise HTTPException(status_code=403, detail=f"You need to login to create a new collection")
+        raise HTTPException(status_code=403, detail=f"You need to login to upload the authentication keys bound to your ORCID")
 
     # Create user directory if does not exist
     Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}").mkdir(parents=True, exist_ok=True)
 
     with open(f"{settings.KEYSTORE_PATH}/{current_user['sub']}/idrsa.pub", 'w') as f:
-        data = await pubfile.read()
+        data = await publicKey.read()
         f.write(data.decode("utf-8"))
 
     with open(f"{settings.KEYSTORE_PATH}/{current_user['sub']}/idrsa", 'w') as f:
-        data = await keyfile.read()
+        data = await privateKey.read()
         f.write(data.decode("utf-8"))
 
     return JSONResponse({
@@ -97,8 +108,8 @@ async def store_keyfile(
     })
 
 
-@router.delete("/delete-keyfile", 
-    description="""Delete the Nanopub key stored on our server associated to your ORCID""",
+@router.delete("/delete-keys", 
+    description="""Delete the Nanopub keys stored on our server associated to your ORCID""",
     response_description="Operation result", 
     response_model={})
 async def delete_keyfile(
@@ -106,7 +117,7 @@ async def delete_keyfile(
     ):
 
     if not current_user or 'id' not in current_user.keys():
-        raise HTTPException(status_code=403, detail=f"You need to login to create a new collection")
+        raise HTTPException(status_code=403, detail=f"You need to login to delete the keys associated with your ORCID")
 
     keyfile_folder = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}")
 
@@ -114,7 +125,7 @@ async def delete_keyfile(
         shutil.rmtree(keyfile_folder)
 
     return JSONResponse({
-        'message': 'The Nanopub keyfile has been properly deleted from our servers for ' + current_user['id']
+        'message': 'The Nanopub keyfile has been properly deleted from our servers for the ORCID user ' + current_user['id']
     })
 
 
