@@ -18,16 +18,15 @@ const $rdf = require('rdflib')
 // import {$rdf} from 'rdflib'
 // const jsonld = require('jsonld')
 
-// import hljs from 'highlight.js/lib/core';
-// import 'highlight.js/styles/github-dark-dimmed.css';
-// import turtle from 'highlightjs-turtle';
-// var hljsDefineTurtle = require('highlightjs-turtle');
-// hljs.registerLanguage('turtle', turtle);
-
 import JsonldUploader from "../components/JsonldUploader";
 import RenderObjectForm from "../components/RenderObjectForm";
 import { settings } from '../settings';
 import UserContext from '../UserContext'
+
+import hljs from 'highlight.js/lib/core';
+import 'highlight.js/styles/github-dark-dimmed.css';
+import hljsDefineTurtle from '../components/highlightjs-turtle';
+hljs.registerLanguage("turtle", hljsDefineTurtle)
 
 export default function BrowseNanopub() {
   const theme = useTheme();
@@ -276,6 +275,9 @@ export default function BrowseNanopub() {
               .catch(error => {
                 console.log(error)
               })
+              .finally(() => {
+                hljs.highlightAll();
+              })
           })
         })
         .catch(error => {
@@ -444,8 +446,8 @@ export default function BrowseNanopub() {
 
           <Collapse in={state.nanopub_obj[np]['expanded']} timeout="auto" unmountOnExit>
             <CardContent style={{margin: theme.spacing(0,0), padding: theme.spacing(0,0)}}>
-              <pre style={{margin: theme.spacing(0,0)}}>
-                <code>
+              <pre style={{whiteSpace: 'pre-wrap', margin: theme.spacing(0,0)}}>
+                <code className="language-turtle">
                   {state.nanopub_obj[np]['rdf']}
                 </code>
               </pre>
@@ -458,4 +460,3 @@ export default function BrowseNanopub() {
     </Container>
   )
 }
-

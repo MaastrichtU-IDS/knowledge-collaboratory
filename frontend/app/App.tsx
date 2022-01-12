@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 // import { createTheme } from '@mui/material/styles';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import blue from '@mui/material/colors/blue';
+
 import './src/App.css';
 import NavBar from "./src/components/NavBar";
 import Footer from "./src/components/Footer";
@@ -67,7 +68,7 @@ const theme = createTheme({
 
 // Fix React router:
 // https://stackoverflow.com/questions/27928372/react-router-urls-dont-work-when-refreshing-or-writing-manually
-// We could use an express server
+// We use an express server
 // app.use('/mysub-application1', express.static(path.resolve(__dirname, `../public`)))
 // app.get('/mysub-application1/*', (req,res) => { //this is required to support any client side routing written in react.
 //  res.sendFile(path.join(__dirname, '../../public', 'index.html'))
@@ -86,22 +87,22 @@ const App = () => {
   const [user, setUser]: any = useReducer(reducer, []);
 
   return (<ThemeProvider theme={theme}>
-    <UserContext.Provider value={{ user, setUser }}>
-    {/* <AuthProvider {...oidcConfig}> */}
-      <Router basename="/">
-      {/* <HashRouter> */}
-        <View style={{height: '100%', backgroundColor: '#eceff1'}}>
-          <NavBar />
+      <UserContext.Provider value={{ user, setUser }}>
+      {/* <AuthProvider {...oidcConfig}> */}
+        <Router basename="/">
+        {/* <HashRouter> */}
+          <View style={{height: '100%', backgroundColor: '#eceff1'}}>
+            <NavBar />
 
-          <Route path="/about" component={About} />
-          <Route path="/publish" component={PublishNanopub} />
-          <Route exact path="/" component={BrowseNanopub} />
-          <Footer />
-        </View>
-      {/* </HashRouter> */}
-      </Router>
-    </UserContext.Provider>
-    {/* </AuthProvider> */}
-  </ThemeProvider>
-)};
+            <Route path="/about" component={About} />
+            <Route path="/publish" component={PublishNanopub} />
+            <Route exact path="/" component={BrowseNanopub} />
+            <Footer />
+          </View>
+        {/* </HashRouter> */}
+        </Router>
+      </UserContext.Provider>
+      {/* </AuthProvider> */}
+    </ThemeProvider>
+  )};
 export default App;

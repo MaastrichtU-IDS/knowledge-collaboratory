@@ -26,6 +26,11 @@ import RenderObjectForm from "../components/RenderObjectForm";
 import { settings, samples } from '../settings';
 import UserContext from '../UserContext'
 
+import hljs from 'highlight.js/lib/core';
+import 'highlight.js/styles/github-dark-dimmed.css';
+import hljsDefineTurtle from '../components/highlightjs-turtle';
+hljs.registerLanguage("turtle", hljsDefineTurtle)
+
 export default function PublishNanopub() {
   const theme = useTheme();
   const { user }: any = useContext(UserContext)
@@ -308,6 +313,9 @@ export default function PublishNanopub() {
         .catch(error => {
           console.log(error)
         })
+        .finally(() => {
+          hljs.highlightAll();
+        })
     } else {
       console.log('You need to be logged in with ORCID to publish a Nanopublication')
     }
@@ -449,9 +457,15 @@ export default function PublishNanopub() {
               variant="contained" 
               className={classes.saveButton} 
               startIcon={<DownloadJsonldIcon />}
+              disabled={!user.id}
               color="secondary" >
                 Publish as a Nanopublication
             </Button>
+            { !user.id &&
+              <Typography style={{marginTop: theme.spacing(2)}}>
+                🔒️ You need to login with ORCID to publish Nanopublications
+              </Typography>
+            }
           </div>
         </FormControl>
       </form>
