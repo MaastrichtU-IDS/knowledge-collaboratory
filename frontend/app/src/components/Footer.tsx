@@ -74,7 +74,7 @@ export default function Footer() {
           <Typography variant="body2" >
             This website is licensed under the&nbsp;
             <a target="_blank" style={{textDecoration: 'none', color: 'inherit'}}
-            href="https://github.com/MaastrichtU-IDS/fair-enough/blob/main/LICENSE">
+            href="https://github.com/MaastrichtU-IDS/knowledge-collaboratory/blob/main/LICENSE">
               MIT license
             </a>
             {/* <img src={require('../assets/images/mit_license.png')} /> */}

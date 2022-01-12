@@ -216,7 +216,7 @@ export default function NavBar() {
         </Link>
         <Tooltip title='Source code'>
           <Button style={{color: '#fff'}} target="_blank"
-          href="https://github.com/MaastrichtU-IDS/fair-enough">
+          href="https://github.com/MaastrichtU-IDS/knowledge-collaboratory">
             <GitHubIcon />
           </Button>
         </Tooltip>

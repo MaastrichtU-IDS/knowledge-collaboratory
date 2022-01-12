@@ -1,5 +1,5 @@
 {
-  "homepage": "https://fair-enough.semanticscience.org",
+  "homepage": "https://collaboratory.semanticscience.org",
   "private": true,
   "scripts": {
     "android": "expo start --android",
@@ -7,7 +7,7 @@
     "dev": "API_URL=http://localhost expo web",
     "eject": "expo eject",
     "build": "expo build:web",
-    "build-prod": "API_URL=https://api.fair-enough.semanticscience.org expo build:web",
+    "build-prod": "API_URL=https://api.collaboratory.semanticscience.org expo build:web",
     "serve": "serve -s web-build",
     "start": "npm run build && npm run serve",
     "predeploy": "npm run build",

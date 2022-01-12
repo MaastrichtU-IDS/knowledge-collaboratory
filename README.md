@@ -1,6 +1,6 @@
 # Knowledge Collaboratory
 
-[![Run backend tests](https://github.com/MaastrichtU-IDS/fair-enough/actions/workflows/test-backend.yml/badge.svg)](https://github.com/MaastrichtU-IDS/fair-enough/actions/workflows/test-backend.yml) [![CodeQL analysis](https://github.com/MaastrichtU-IDS/fair-enough/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/MaastrichtU-IDS/fair-enough/actions/workflows/codeql-analysis.yml)
+[![Run backend tests](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/test-backend.yml/badge.svg)](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/test-backend.yml) [![CodeQL analysis](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/codeql-analysis.yml)
 
 Services to query the Nanopublications network using Translator standards to retrieve the Knowledge Collaboratory graph, a collection of drug indications annotated using  preferred identifiers (usually from MONDO, CHEBI, DrugBank, etc).
 
@@ -55,7 +55,7 @@ To delete the volume and reset the database, run:
 
 ```bash
 docker-compose down
-docker volume rm fair-enough_mongodb-data
+docker volume rm knowledge-collaboratory_mongodb-data
 ```
 
 You can also run this script to reset the database, and restart the docker-compose:
@@ -194,7 +194,7 @@ Create a `.env` file with your production settings:
 ```
 ORCID_CLIENT_ID=APP-XXX
 ORCID_CLIENT_SECRET=XXXX
-FRONTEND_URL=https://fair-enough.semanticscience.org
+FRONTEND_URL=https://collaboratory.semanticscience.org
 ```
 
 Deploy the app with production config: 

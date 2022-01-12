@@ -34,12 +34,12 @@ yarn serve
 Build:
 
 ```bash
-docker build -t fair-enough-server .
+docker build -t knowledge-collaboratory-server .
 ```
 
 Run:
 
 ```bash
-docker run -it -p 4000:4000 fair-enough-server
+docker run -it -p 4000:4000 knowledge-collaboratory-server
 ```
 

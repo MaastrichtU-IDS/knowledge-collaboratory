@@ -19,7 +19,7 @@ jobs:
 
     - name: Install dependencies and build
       env:
-        API_URL: "https://api.fair-enough.semanticscience.org"
+        API_URL: "https://api.collaboratory.semanticscience.org"
         ORCID_CLIENT_ID: ""
         ORCID_CLIENT_SECRET: ""
         OAUTH_REDIRECT_FRONTEND: ""

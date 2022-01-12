@@ -2,7 +2,7 @@
     "expo": {
       "name": "Knowledge Collaboratory",
       "description": "Evaluate how FAIR is a resource URL with Knowledge Collaboratory (Findable, Accessible, Interoperable, Reusable)",
-      "slug": "fair-enough ",
+      "slug": "knowledge-collaboratory",
       "privacy": "public",
       "sdkVersion": "35.0.0",
       "platforms": ["web"],
