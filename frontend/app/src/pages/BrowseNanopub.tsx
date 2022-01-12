@@ -242,7 +242,9 @@ export default function BrowseNanopub() {
           const nanopub_obj: any = {}
           let np_count = 0
           for (const nanopub of nanopub_list) {
-            nanopub_obj[nanopub['np']['value']] = nanopub
+            // Fix purl URIs to use https (cant query http from https with js)
+            const np_uri = nanopub['np']['value'].replace('http://purl.org/np/', 'https://purl.org/np/')
+            nanopub_obj[np_uri] = nanopub
             np_count++
             if (np_count >= state.results_count) {
               break;
