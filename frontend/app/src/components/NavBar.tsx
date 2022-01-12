@@ -270,6 +270,8 @@ export default function NavBar() {
             </Button>
         }
         { !user.username && 
+          // <Button variant='contained' color='secondary' size='small' component="span" style={{textTransform: 'none'}}>
+          //   🔓️  LOGIN with ORCID
           <OAuth2Login
             className="MuiButton‑root MuiButton‑contained"
             authorizationUrl="https://orcid.org/oauth/authorize"
@@ -280,8 +282,9 @@ export default function NavBar() {
             // redirectUri=""
             style={{textTransform: 'none', textDecoration: 'none'}}
             onSuccess={onSuccess}
+            // hidden
             onFailure={onFailure}>
-              <Button variant='contained' color='primary' size='small' component="span" style={{textTransform: 'none'}}>
+              <Button variant='contained' color='secondary' size='small' component="span" style={{textTransform: 'none'}}>
                 🔓️  LOGIN with ORCID
               </Button>
           </OAuth2Login>

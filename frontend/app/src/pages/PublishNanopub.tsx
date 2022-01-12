@@ -34,6 +34,7 @@ hljs.registerLanguage("turtle", hljsDefineTurtle)
 export default function PublishNanopub() {
   const theme = useTheme();
   const { user }: any = useContext(UserContext)
+  // const { user, setUser }: any = useContext(UserContext)
 
   const useStyles = makeStyles(() => ({
     link: {
@@ -248,24 +249,11 @@ export default function PublishNanopub() {
 
   const handleUploadKeys  = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log('eeevent', event);
-    console.log(event.currentTarget);
-    // console.log(event.currentTarget.elements.publicKey.value);
-    // axios.post(event.target.files)
     const formData = new FormData();
     // @ts-ignore
-    formData.append("publicKey", event.currentTarget.elements.publicKey.value);
+    formData.append("publicKey", event.currentTarget.elements.publicKey.files[0]);
     // @ts-ignore
-    formData.append("privateKey", event.currentTarget.elements.privateKey.value);
-
-    // axios({
-    //   method: "POST",
-    //   url: serverUrl + "/multiplefiles",
-    //   data: formData,
-    //   headers: {
-    //     "Content-Type": "multipart/form-data"
-    //   }
-    // })
+    formData.append("privateKey", event.currentTarget.elements.privateKey.files[0]);
 
     const access_token = user['access_token']
     axios.post(
@@ -282,12 +270,14 @@ export default function PublishNanopub() {
       .then(res => {
         updateState({
           open: true,
-          published_nanopub: res.data
         })
         console.log(res)
       })
       .catch(error => {
         console.log(error)
+      })
+      .finally(() => {
+        window.location.reload(false);
       })
   }
 
@@ -375,22 +365,29 @@ export default function PublishNanopub() {
         { user.id && !user.keyfiles_loaded && 
           <>
             <Typography>
-              🔑 You need to upload the authentications keys binded to your ORCID for Nanopublications publishing (public and private encryption keys). 
-              You can do it via the API
+              🔑 You need to upload the authentications keys binded to your ORCID for Nanopublications publishing (public and private encryption keys).
             </Typography>
-            <form encType="multipart/form-data" action="" onSubmit={handleUploadKeys}>
-              <input type="file" id="publicKey" />
-              <input type="file" id="privateKey" />
-              {/* <input type="submit" value="upload" onClick={handleUploadKeys}></input> */}
-              <Button type="submit" 
-                variant="contained" 
-                className={classes.saveButton} 
-                startIcon={<UploadIcon />}
-                style={{textTransform: 'none'}}
-                color="secondary" >
-                  Upload your keys
-              </Button>
-            </form>
+            <Card className={classes.paperPadding}>
+              <form encType="multipart/form-data" action="" onSubmit={handleUploadKeys}>
+                <Typography>
+                  Select the <b>Public</b> key:&nbsp;&nbsp;
+                  <input type="file" id="publicKey" />
+                </Typography>
+                <Typography style={{marginTop: theme.spacing(1)}}>
+                  Select the <b>Private</b> key:&nbsp;&nbsp;
+                  <input type="file" id="privateKey" />
+                </Typography>
+
+                <Button type="submit" 
+                  variant="contained" 
+                  className={classes.saveButton} 
+                  startIcon={<UploadIcon />}
+                  style={{textTransform: 'none', marginTop: theme.spacing(1)}}
+                  color="secondary" >
+                    Upload your keys
+                </Button>
+              </form>
+            </Card>
           </>
         }
 
@@ -470,8 +467,8 @@ export default function PublishNanopub() {
         </FormControl>
       </form>
       {state.published_nanopub &&
-        <pre style={{whiteSpace: 'pre-wrap'}} className="language-turtle">
-          <code>
+        <pre style={{whiteSpace: 'pre-wrap'}}>
+          <code className="language-turtle">
             {state.published_nanopub}
           </code>
         </pre>
