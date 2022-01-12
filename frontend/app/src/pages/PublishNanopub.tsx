@@ -2,11 +2,12 @@ import React, { useContext } from 'react';
 import { useLocation } from "react-router-dom";
 import { useTheme } from '@mui/material/styles';
 import { makeStyles, withStyles } from '@mui/styles';
-import { Typography, Container, Button, Card, FormControl, Snackbar, TextField, Select, MenuItem, InputLabel } from "@mui/material";
+import { Typography, Container, Button, Card, FormControl, Snackbar, Grid, Select, MenuItem, InputLabel } from "@mui/material";
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import DownloadJsonldIcon from '@mui/icons-material/Description';
 import UploadTriplestoreIcon from '@mui/icons-material/Share';
 import UploadIcon from '@mui/icons-material/FileUpload';
+import PublishIcon from '@mui/icons-material/Outbox';
 import axios from 'axios';
 
 const $rdf = require('rdflib')
@@ -99,13 +100,17 @@ export default function PublishNanopub() {
   const [state, setState] = React.useState({
     open: false,
     dialogOpen: false,
-    wizard_jsonld: wizard_jsonld,
+    np_jsonld: samples['Drug indication with the BioLink model'],
     sample_selected: 'Drug indication with the BioLink model',
     published_nanopub: '',
     csvwColumnsArray: [],
     jsonld_uri_provided: null,
     // ontology_list: ['https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.ttl'],
     ontology_list: [],
+    ontologies: {
+      'https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.ttl': {},
+      'https://schema.org/version/latest/schemaorg-current-https.jsonld': {},
+    },
     ontology_jsonld: {},
     edit_enabled: true,
     ontoload_error_open: false,
@@ -145,24 +150,24 @@ export default function PublishNanopub() {
       axios.get(jsonld_uri_provided)
         .then(res => {
           updateState({
-            wizard_jsonld: res.data,
+            np_jsonld: res.data,
             jsonld_uri_provided: jsonld_uri_provided,
           })
           // downloadOntology(res.data['@context'])
         })
     } 
     // else {
-    //   downloadOntology(state.wizard_jsonld['@context'])
+    //   downloadOntology(state.np_jsonld['@context'])
     // }
     
-  }, [state.wizard_jsonld])
+  }, [state.np_jsonld])
 
   const downloadOntology  = (contextUrl: string) => {
     // Download the ontology JSON-LD 
     if (!contextUrl) {
       // Handle when no @context provided, use schema.org by default
       contextUrl = 'https://schema.org/'
-      // if (!state.wizard_jsonld['@context']) updateState({...state.wizard_jsonld, '@context': contextUrl})
+      // if (!state.np_jsonld['@context']) updateState({...state.np_jsonld, '@context': contextUrl})
       console.log('No @context provided, using schema.org by default');
     }
     if (contextUrl.startsWith('https://schema.org') || contextUrl.startsWith('https://schema.org')) {
@@ -277,7 +282,7 @@ export default function PublishNanopub() {
         console.log(error)
       })
       .finally(() => {
-        window.location.reload(false);
+        window.location.reload();
       })
   }
 
@@ -290,7 +295,7 @@ export default function PublishNanopub() {
       const access_token = user['access_token']
       axios.post(
           settings.apiUrl + '/assertion', 
-          state.wizard_jsonld, 
+          state.np_jsonld, 
           { headers: { Authorization: `Bearer ${access_token}` }} 
         )
         .then(res => {
@@ -309,7 +314,7 @@ export default function PublishNanopub() {
     } else {
       console.log('You need to be logged in with ORCID to publish a Nanopublication')
     }
-    // element.setAttribute('href', 'data:text/turtle;charset=utf-8,' + encodeURIComponent(JSON.stringify(state.wizard_jsonld, null, 4)));
+    // element.setAttribute('href', 'data:text/turtle;charset=utf-8,' + encodeURIComponent(JSON.stringify(state.np_jsonld, null, 4)));
     // element.setAttribute('download', 'metadata.json');
     // element.style.display = 'none';
     // document.body.appendChild(element);
@@ -332,12 +337,12 @@ export default function PublishNanopub() {
   }
   const handleSelectSample = (event: React.ChangeEvent<HTMLInputElement>) => {
     // TODO: not working properly
-    // updateState({wizard_jsonld: null})
-    const wizard_jsonld = samples[event.target.value]
-    updateState({wizard_jsonld})
+    // updateState({np_jsonld: null})
+    const np_jsonld = samples[event.target.value]
+    updateState({np_jsonld})
     updateState({sample_selected: event.target.value})
     // console.log(samples[event.target.value]);
-    // setState({...state, wizard_jsonld: samples[event.target.value]})
+    // setState({...state, np_jsonld: samples[event.target.value]})
   };
 
   return(
@@ -358,18 +363,19 @@ export default function PublishNanopub() {
         }
         { user.id && user.keyfiles_loaded && 
           <Typography>
-            ✅ Your authentications keys are successfully loaded, you can start publishing Nanopublications
+            ✅ Your authentication keys are successfully loaded, you can start publishing Nanopublications
           </Typography>
         }
 
         { user.id && !user.keyfiles_loaded && 
           <>
-            <Typography>
-              🔑 You need to upload the authentications keys binded to your ORCID for Nanopublications publishing (public and private encryption keys).
-            </Typography>
-            <Card className={classes.paperPadding}>
-              <form encType="multipart/form-data" action="" onSubmit={handleUploadKeys}>
-                <Typography>
+            <Card className={classes.paperPadding} >
+              <Typography>
+                🔑 You need to upload the authentication keys bound to your ORCID to publish Nanopublications (public and private encryption keys):
+              </Typography>
+              <form encType="multipart/form-data" action="" onSubmit={handleUploadKeys} 
+                  style={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>
+                <Typography style={{marginTop: theme.spacing(1)}}>
                   Select the <b>Public</b> key:&nbsp;&nbsp;
                   <input type="file" id="publicKey" />
                 </Typography>
@@ -413,8 +419,8 @@ export default function PublishNanopub() {
 
         {/* Display the JSON-LD file uploader (if no ?edit= URL param provided) */}
         {!state.jsonld_uri_provided &&
-          <JsonldUploader renderObject={state.wizard_jsonld} 
-            onChange={(wizard_jsonld: any) => {updateState({wizard_jsonld})}} />
+          <JsonldUploader renderObject={state.np_jsonld} 
+            onChange={(np_jsonld: any) => {updateState({np_jsonld})}} />
         }
       </Card>
 
@@ -425,12 +431,12 @@ export default function PublishNanopub() {
 
       <Snackbar open={state.ontoload_error_open} onClose={closeOntoloadError} autoHideDuration={10000}>
         <MuiAlert elevation={6} variant="filled" severity="error">
-          The ontology provided in @context could not be loaded from {state.wizard_jsonld['@context']}
+          The ontology provided in @context could not be loaded from {state.np_jsonld['@context']}
         </MuiAlert>
       </Snackbar>
       <Snackbar open={state.ontoload_success_open} onClose={closeOntoloadSuccess} autoHideDuration={10000}>
         <MuiAlert elevation={6} variant="filled" severity="success">
-          The ontology {state.wizard_jsonld['@context']} from @context has been loaded successfully, it will be used for classes and properties autocomplete
+          The ontology {state.np_jsonld['@context']} from @context has been loaded successfully, it will be used for classes and properties autocomplete
         </MuiAlert>
       </Snackbar>
 
@@ -439,10 +445,10 @@ export default function PublishNanopub() {
 
           {/* First call of RenderObjectForm (the rest is handled recursively in this component) */}
           <RenderObjectForm
-            renderObject={state.wizard_jsonld}
+            renderObject={state.np_jsonld}
             ontologyObject={state.ontology_jsonld}
-            onChange={(wizard_jsonld: any) => { updateState({wizard_jsonld})} }
-            fullJsonld={state.wizard_jsonld}
+            onChange={(np_jsonld: any) => { updateState({np_jsonld})} }
+            fullJsonld={state.np_jsonld}
             editEnabled={state.edit_enabled}
             parentProperty='root'
             parentType='root'
@@ -453,10 +459,10 @@ export default function PublishNanopub() {
             <Button type="submit" 
               variant="contained" 
               className={classes.saveButton} 
-              startIcon={<DownloadJsonldIcon />}
+              startIcon={<PublishIcon />}
               disabled={!user.id}
               color="secondary" >
-                Publish as a Nanopublication
+                Publish Nanopublication
             </Button>
             { !user.id &&
               <Typography style={{marginTop: theme.spacing(2)}}>
@@ -475,46 +481,4 @@ export default function PublishNanopub() {
       }
     </Container>
   )
-}
-
-// https://purl.org/np/RAuN1kyW1BD9754LCUVWozDOhkrUaLUyb5LTu0HcsulIE
-const wizard_jsonld = {
-  "@context": "https://raw.githubusercontent.com/biolink/biolink-model/master/context.jsonld",
-  "@wizardQuestions": {
-    'rdf:subject': 'Subject of the association:',
-    'rdf:predicate': 'Predicate of the association:',
-    'rdf:object': 'Object of the association:',
-    'biolink:provided_by': 'Association provided by dataset:',
-    'biolink:publications': 'Publication supporting the association:',
-    'biolink:association_type': 'Type of the association:',
-    'biolink:relation': 'Type of drug indication:',
-    'biolink:has_population_context': 'Population context of the drug indication:'
-  },
-  "@type": "rdf:Statement",
-  "rdfs:label": "An atypical drug is now increasingly used as an off-label indication for the management of cancer patients",
-  "rdf:subject": {
-    "@id": "https://go.drugbank.com/drugs/DB00334",
-    "@type": "biolink:Drug"
-  },
-  "rdf:predicate": {
-    "@id": "biolink:treats"
-  },
-  "rdf:object": {
-    "@id": "https://identifiers.org/HP:0002017",
-    "@type": "biolink:Disease"
-  },
-  "biolink:association_type": {
-    "@id": "biolink:ChemicalToDiseaseOrPhenotypicFeatureAssociation"
-  },
-  "biolink:relation": {"@id" : "https://w3id.org/um/neurodkg/OffLabelIndication"},
-  "biolink:provided_by": {"@id" : "https://w3id.org/um/NeuroDKG"},
-  "biolink:publications": {"@id" : "https://pubmed.ncbi.nlm.nih.gov/29061799/"},
-  "biolink:has_population_context": {
-    "rdfs:label": "Adults",
-    "biolink:category": {"@id": "biolink:Cohort"},
-    "biolink:has_phenotype": {
-      "@id": "https://identifiers.org/MONDO:0004992",
-      "@type": "biolink:Phenotype"
-    }
-  }
 }

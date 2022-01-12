@@ -9,6 +9,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import ApiIcon from '@mui/icons-material/Http';
 import GraphqlIcon from '@mui/icons-material/Code';
 import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
 import SearchIcon from '@mui/icons-material/Search';
 import AssessmentsIcon from '@mui/icons-material/CollectionsBookmark';
 import PublishIcon from '@mui/icons-material/Outbox';
@@ -95,27 +96,48 @@ export default function NavBar() {
 
 
   const onSuccess = (response: any) => {
-    // console.log(response)
-    // const tokenRes: any = JSON.stringify(response)
-    // console.log('tokenRes')
-    // console.log(response['access_token'])
-    // console.log(response)
+    getCurrentUser(response)
+  };
+  const onFailure = (response: any) => console.error(response);
 
+  const logout = () => {
+    localStorage.clear();
+    setUser({})
+    handleClickAway()
+    // updateState({open: false})
+    // window.location.reload();
+  }
+
+  const getCurrentUser = (configState: any) => {
     axios.get(settings.restUrl + '/current-user', {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + response['access_token']
+        'Authorization': 'Bearer ' + configState['access_token']
       },
     })
       .then((res: any) => {
-        console.log('got current user')
-        let user = res.data
-        user['access_token'] = response['access_token']
-        console.log(user)
-        setUser(user)
-        localStorage.setItem("fairEnoughSettings", JSON.stringify(user));
+        let current_user = res.data
+        console.log('current_user!!', current_user)
+        current_user['access_token'] = configState['access_token']
+        // setUser(current_user)
+        if (!current_user.error) {
+          current_user['access_token'] = configState['access_token']
+          if (current_user['given_name'] || current_user['family_name']) {
+            current_user['username'] = current_user['given_name'] + ' ' + current_user['family_name']
+          } else if (current_user['name']) {
+            current_user['username'] = current_user['name']
+          } else {
+            current_user['username'] = current_user['sub']
+          }
+          setUser(current_user)
+          localStorage.setItem("fairEnoughSettings", JSON.stringify(current_user));
+        }
+        // https://stackoverflow.com/questions/25686484/what-is-intent-of-id-token-expiry-time-in-openid-connect
+        // If the token is expired, it should make another auth request, except this time with prompt=none in the URL parameter
+        // Getting an error with prompt if not login
+        
+        // localStorage.setItem("fairEnoughSettings", JSON.stringify(user));
         // window.location.reload();
-        // TODO: refactor to use Context without reload
       })
       .catch((error: any) => {
         if (error.response) {
@@ -131,61 +153,6 @@ export default function NavBar() {
           console.log('Error', error.message);
         }
       })
-
-    // localStorage.setItem("fairEnoughSettings", JSON.stringify(response));
-    // window.location.reload();
-  };
-  const onFailure = (response: any) => console.error(response);
-
-  const logout = () => {
-    localStorage.clear();
-    setUser({})
-    // window.location.reload();
-  }
-
-  React.useEffect(() => {
-    const localStorageConfig: any = localStorage.getItem("fairEnoughSettings");
-    // console.log(localStorageConfig)
-    let configState: any = JSON.parse(localStorageConfig);
-    if (configState && configState['access_token']) {
-      axios.get(settings.restUrl + '/current-user', {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + configState['access_token']
-        },
-      })
-        .then((res: any) => {
-          let user = res.data
-          if (!user.error) {
-            user['access_token'] = configState['access_token']
-            if (user['given_name'] || user['family_name']) {
-              user['username'] = configState['given_name'] + ' ' + configState['family_name']
-            } else if (user['name']) {
-              user['username'] = user['name']
-            }
-            setUser(user)
-          }
-          // https://stackoverflow.com/questions/25686484/what-is-intent-of-id-token-expiry-time-in-openid-connect
-          // If the token is expired, it should make another auth request, except this time with prompt=none in the URL parameter
-          // Getting an error with prompt if not login
-          
-          // localStorage.setItem("fairEnoughSettings", JSON.stringify(user));
-          // window.location.reload();
-        })
-        .catch((error: any) => {
-          if (error.response) {
-            // Request made and server responded
-            console.log(error.response.data);
-            console.log(error.response.status);
-            console.log(error.response.headers);
-          } else if (error.request) {
-            // The request was made but no response was received
-            console.log(error.request);
-          } else {
-            // Something happened in setting up the request that triggered an Error
-            console.log('Error', error.message);
-          }
-        })
       // Also possible and lighter on the Auth API: just check the cookie
       // const username = configState['given_name'] + ' ' + configState['family_name']
       // updateState({ currentUsername: username, accessToken: configState['access_token'], loggedIn: true})
@@ -196,16 +163,18 @@ export default function NavBar() {
       //   access_token: configState['access_token'],
       //   id: configState['id'],
       // })
+  }
+
+  React.useEffect(() => {
+    const localStorageConfig: any = localStorage.getItem("fairEnoughSettings");
+    // console.log(localStorageConfig)
+    let configState: any = JSON.parse(localStorageConfig);
+    if (configState && configState['access_token']) {
+      getCurrentUser(configState)
     }
-    // const { setSalad } = useContext(SaladContext)
   // }, [user])
   }, [])
 
-  // const localStorageConfig = localStorage.getItem("fairEnoughSettings");
-  //     if (localStorageConfig) {
-  //       let configState: any = JSON.parse(localStorageConfig);
-  //       access_token = configState.access_token;
-  //     }
 
   return (
     <AppBar title="" position='static'>
@@ -217,33 +186,25 @@ export default function NavBar() {
         </Link>
         <Link to="/" className={classes.linkButton}>
           <Tooltip title='Browse Nanopublications'>
-            <Button style={{color: '#fff'}}>
+            <Button style={{color: '#fff', textTransform: 'none'}}>
               <SearchIcon />&nbsp;Browse Nanopubs
             </Button>
           </Tooltip>
         </Link>
         <Link to="/publish" className={classes.linkButton}>
           <Tooltip title='Publish Nanopublications'>
-            <Button style={{color: '#fff'}}>
+            <Button style={{color: '#fff', textTransform: 'none'}}>
               <PublishIcon />&nbsp;Publish Nanopubs
             </Button>
           </Tooltip>
         </Link>
         <div className="flexGrow"></div>
 
-        <Tooltip title='Access the OpenAPI documentation of the API used by this website'>
+        <Tooltip title='Access the OpenAPI documentation of the API used by this service'>
           <Button style={{color: '#fff'}} target="_blank" rel="noopener noreferrer"
           href={settings.docsUrl}>
             <ApiIcon style={{ marginRight: theme.spacing(1)}} />
             API
-          </Button>
-        </Tooltip>
-        <Tooltip title='Access the GraphQL API'>
-          <Button style={{color: '#fff'}} target="_blank" rel="noopener noreferrer"
-          href={settings.graphqlUrl}>
-            {/* + '?query=query%20%7B%0A%20%20evaluations%20%7B%0A%20%20%20%20title%0A%20%20%20%20resourceUri%0A%20%20%20%20collection%0A%20%20%20%20score%20%7B%0A%20%20%20%20%20%20totalScore%0A%20%20%20%20%20%20totalScoreMax%0A%20%20%20%20%20%20percent%0A%20%20%20%20%20%20totalBonus%0A%20%20%20%20%20%20totalBonusMax%0A%20%20%20%20%20%20bonusPercent%0A%20%20%20%20%7D%0A%20%20%20%20results%20%7B%0A%20%20%20%20%20%20title%0A%20%20%20%20%20%20fairType%0A%20%20%20%20%20%20metricId%0A%20%20%20%20%20%20score%0A%20%20%20%20%20%20maxScore%0A%20%20%20%20%20%20bonusScore%0A%20%20%20%20%20%20maxBonus%0A%20%20%20%20%20%20logs%0A%20%20%20%20%7D%0A%20%20%20%20data%0A%20%20%7D%0A%7D' */}
-            <GraphqlIcon style={{ marginRight: theme.spacing(1)}} />
-            GraphQL
           </Button>
         </Tooltip>
         <Link to="/about" className={classes.linkButton}>
@@ -260,52 +221,62 @@ export default function NavBar() {
           </Button>
         </Tooltip>
 
-        {/* <Tooltip title='Login with ORCID'> */}
-        {/* <Button variant='contained' color='primary' size='small' component="span"> */}
-        {/* {} */}
-        { user.username && 
-            <Button variant='contained' onClick={showUserInfo} color='secondary' size='small' 
-                style={{textTransform: 'none'}}>
-              🐧 {user.username}
-            </Button>
-        }
-        { !user.username && 
-          // <Button variant='contained' color='secondary' size='small' component="span" style={{textTransform: 'none'}}>
-          //   🔓️  LOGIN with ORCID
-          <OAuth2Login
-            className="MuiButton‑root MuiButton‑contained"
-            authorizationUrl="https://orcid.org/oauth/authorize"
-            responseType="token"
-            clientId={process.env.ORCID_CLIENT_ID}
-            clientSecret={process.env.ORCID_CLIENT_SECRET}
-            redirectUri={settings.OauthRedirectUri}
-            // redirectUri=""
-            style={{textTransform: 'none', textDecoration: 'none'}}
-            onSuccess={onSuccess}
-            // hidden
-            onFailure={onFailure}>
-              <Button variant='contained' color='secondary' size='small' component="span" style={{textTransform: 'none'}}>
-                🔓️  LOGIN with ORCID
+        {/* <UserContext.Consumer>
+          {({ user }) => (
+            { user.username && 
+              <Button variant='contained' onClick={showUserInfo} color='secondary' size='small' 
+                  style={{textTransform: 'none'}}>
+                🐧 {user.username}
               </Button>
-          </OAuth2Login>
+            }
+          )}
+          </UserContext.Consumer> */}
+          {console.log('USER!!', user)}
+          { user.username && 
+              <Button variant='contained' onClick={showUserInfo} color='secondary' size='small' 
+                  style={{textTransform: 'none'}}>
+                🐧 {user.username}
+              </Button>
           }
-        <Popper open={open} anchorEl={anchorEl}>
-            <ClickAwayListener onClickAway={handleClickAway}>
-              <Paper elevation={4} style={{padding: theme.spacing(2, 2), textAlign: 'left'}}>
-                <Typography style={{marginBottom: theme.spacing(1)}}>
-                  Logged in with ORCID: {getUrlHtml(user.id)}
-                </Typography>
-                <Typography style={{marginBottom: theme.spacing(1)}}>
-                  Username: {user.username}
-                </Typography>
-                <Button onClick={logout} variant='contained' size='small'>
-                  Logout
+
+          { !user.username && 
+            // <Button variant='contained' color='secondary' size='small' component="span" style={{textTransform: 'none'}}>
+            //   🔓️  LOGIN with ORCID
+            <OAuth2Login
+              className="MuiButton‑root MuiButton‑contained"
+              authorizationUrl="https://orcid.org/oauth/authorize"
+              responseType="token"
+              clientId={process.env.ORCID_CLIENT_ID}
+              clientSecret={process.env.ORCID_CLIENT_SECRET}
+              redirectUri={settings.OauthRedirectUri}
+              // redirectUri=""
+              style={{textTransform: 'none', textDecoration: 'none', display: 'none' }}
+              onSuccess={onSuccess}
+              // hidden={true}
+              onFailure={onFailure}>
+                <Button variant='contained' color='secondary' size='small' component="span" style={{textTransform: 'none'}}>
+                  🔓️  LOGIN with ORCID
                 </Button>
-              </Paper>
-            </ClickAwayListener>
-          </Popper>    
-        {/* </Button> */}
-        {/* </Tooltip> */}
+            </OAuth2Login>
+            // </Button>
+          }
+          <Popper open={open} anchorEl={anchorEl}>
+              <ClickAwayListener onClickAway={handleClickAway}>
+                <Paper elevation={4} style={{padding: theme.spacing(2, 2), textAlign: 'left'}}>
+                  <Typography style={{marginBottom: theme.spacing(1)}}>
+                    Logged in with ORCID: {getUrlHtml(user.id)}
+                  </Typography>
+                  <Typography style={{marginBottom: theme.spacing(1)}}>
+                    Username: {user.username}
+                  </Typography>
+                  <Button onClick={logout} variant='contained' size='small' startIcon={<LogoutIcon />}>
+                    Logout
+                  </Button>
+                </Paper>
+              </ClickAwayListener>
+            </Popper>    
+          {/* </Button> */}
+          {/* </Tooltip> */}
 
         {/* <Tooltip title='Login with ORCID'>
           <Button href="http://localhost/rest/login" style={{color: '#fff'}} >

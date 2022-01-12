@@ -44,6 +44,10 @@ a {
   text-decoration: none;
 }
 
+.MuiButton-root.MuiButton-contained {
+  text-transform: none;
+}
+
 /* Display Nanopubs */
 .nanopub { margin: 0 0 30px 0; padding: 0px 10px 10px 10px; border-radius: 10px; border: solid; border-width: 1px; }
 .nanopub-prefixes { margin-top: 10px; }

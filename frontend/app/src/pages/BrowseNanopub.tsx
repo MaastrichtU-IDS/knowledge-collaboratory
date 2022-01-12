@@ -34,11 +34,11 @@ export default function BrowseNanopub() {
 
   const useStyles = makeStyles(() => ({
     link: {
-      color: theme.palette.primary.main,
+      color: theme.palette.primary.dark,
       textDecoration: 'none',
       // color: 'inherit',
       '&:hover': {
-        color: theme.palette.primary.light,
+        color: theme.palette.primary.main,
         textDecoration: 'none',
       },
     },
@@ -297,10 +297,7 @@ export default function BrowseNanopub() {
     getNanopubs(state.search)
   }
 
-  // Close Snackbars
-  const closeOntoloadError = () => {
-    updateState({...state, ontoload_error_open: false})
-  };
+  // Close Snackbar
   const closeOntoloadSuccess = () => {
     updateState({...state, ontoload_success_open: false})
   };
@@ -317,6 +314,9 @@ export default function BrowseNanopub() {
     const expand_nanopub = state.nanopub_obj[e.currentTarget.name]
     expand_nanopub['expanded'] = !expand_nanopub['expanded']
     updateState({nanopub_obj: {...state.nanopub_obj, [e.currentTarget.name]: expand_nanopub} });
+    setTimeout(function() {
+      hljs.highlightAll();
+    }, 200);
   };
 
   const hideAllNanopubs = () => {
@@ -381,7 +381,7 @@ export default function BrowseNanopub() {
           {Object.keys(state.nanopub_obj).length} nanopublications found
           { state.results_count == Object.keys(state.nanopub_obj).length &&
             <>
-              &nbsp;(maximum 🔥)
+              &nbsp;(limit maximum 🔥)
             </>
           }
           <Button onClick={hideAllNanopubs}
@@ -390,7 +390,7 @@ export default function BrowseNanopub() {
             startIcon={<HideNanopubs />}
             style={{textTransform: 'none', margin: theme.spacing(1, 2)}}
             color="inherit" >
-              Hide all Nanopublications
+              Hide all Nanopublications content
           </Button>
         </Typography>
       }
@@ -405,13 +405,14 @@ export default function BrowseNanopub() {
         <Card elevation={4} className={classes.paperPadding} key={key}>
           <CardContent style={{paddingBottom: theme.spacing(1)}}>
             <Typography variant='h6'>
-              <a href={np} target="_blank" rel="noopener noreferrer">{np}</a>
+              <a href={np} className={classes.link} target="_blank" rel="noopener noreferrer">{np}</a>
             </Typography>
             <Typography variant='body2'>
               Published on the {state.nanopub_obj[np]['date']['value']}
               { state.users_pubkeys[state.nanopub_obj[np]['pubkey']['value']] &&
                 <>
-                  &nbsp;by <a href={state.users_pubkeys[state.nanopub_obj[np]['pubkey']['value']]['user']['value']} target="_blank" rel="noopener noreferrer">
+                  &nbsp;by <a href={state.users_pubkeys[state.nanopub_obj[np]['pubkey']['value']]['user']['value']} 
+                      className={classes.link} target="_blank" rel="noopener noreferrer">
                     {state.users_pubkeys[state.nanopub_obj[np]['pubkey']['value']]['name']['value']}
                   </a>
                 </>

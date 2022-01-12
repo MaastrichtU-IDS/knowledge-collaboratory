@@ -25,6 +25,7 @@ const getUrlHtml = (urlString: string) => {
   }
 }
 
+// https://purl.org/np/RAuN1kyW1BD9754LCUVWozDOhkrUaLUyb5LTu0HcsulIE
 const samples: any = {
   "Drug indication with the BioLink model": {
     "@context": "https://raw.githubusercontent.com/biolink/biolink-model/master/context.jsonld",

@@ -36,9 +36,10 @@ import { AuthProvider, useAuth } from 'oidc-react';
 // Change theme color and typography here
 const theme = createTheme({
   palette: {
-    primary: { light: '#63a4ff', main: blue[700], dark: '#004ba0' }, // blue
+    // primary: { light: '#63a4ff', main: blue[700], dark: '#004ba0' }, // blue
+    primary: { light: '#6ec6ff', main: '#2196f3', dark: '#0069c0' }, // lighter blue
     // secondary: { light: '#4caf50', main: '#087f23', dark: '#00600f' }, // green
-    secondary: { light: '#4caf50', main: '#087f23', dark: '#00600f' }, // green
+    secondary: { light: '#76d275', main: '#43a047', dark: '#00701a' }, // lighter green
     // primary: { light: blue[50], main: blue[600], dark: blue[900] },
     // secondary: { light: '#ffcc80', main: '#ffa726', dark: '#c88719' }, // Orange
     // secondary: { light: '#ff7043', main: '#ff5722', dark: '#087f23' }, // Orange
@@ -84,6 +85,7 @@ function reducer(state: any, item: any) {
 
 const App = () => {
 
+  // const [user, setUser]: any = useReducer(reducer, {});
   const [user, setUser]: any = useReducer(reducer, []);
 
   return (<ThemeProvider theme={theme}>

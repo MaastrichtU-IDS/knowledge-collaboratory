@@ -66,7 +66,7 @@ export default function About() {
             </Avatar>
           </ListItemAvatar>
           <ListItemText>
-            <b>Browse Nanopublications</b> through the web UI, or query them using the <b>Translator Reasoner API (TRAPI)</b> specifications
+            <b>Browse Nanopublications</b> through the web UI, or query them using the <b>Translator Reasoner API (TRAPI)</b> specifications.
           </ListItemText>
         </ListItem>
         <ListItem>
@@ -76,7 +76,7 @@ export default function About() {
             </Avatar>
           </ListItemAvatar>
           <ListItemText>
-            <b>Publish Nanopublications</b> after login with ORCID, and uploading your authentication keys to the server
+            <b>Publish Nanopublications</b> after login with ORCID, and uploading your authentication keys to the server.
           </ListItemText>
         </ListItem>
       </List>
@@ -103,7 +103,7 @@ export default function About() {
             </Avatar>
           </ListItemAvatar>
           <ListItemText>
-            <b>Backend API</b>: an OpenAPI built with Python and FastAPI
+            <b>Backend API</b>: an OpenAPI built with Python and FastAPI, to store the keys on the server, and run the process to publish a Nanopublication.
           </ListItemText>
         </ListItem>
         <ListItem>
@@ -113,7 +113,7 @@ export default function About() {
             </Avatar>
           </ListItemAvatar>
           <ListItemText>
-            <b>Webapp frontend</b>: a website built with TypeScript and React
+            <b>Webapp frontend</b>: a website built with TypeScript and React, to provide a user-friendly access to the Nanopublication network.
           </ListItemText>
         </ListItem>
       </List>
