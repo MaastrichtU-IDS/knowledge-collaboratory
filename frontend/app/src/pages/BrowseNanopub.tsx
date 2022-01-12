@@ -158,7 +158,7 @@ export default function BrowseNanopub() {
     })
 
     // First call to get users
-    axios.get('http://grlc.nanopubs.lod.labs.vu.nl/api/local/local/get_all_users', 
+    axios.get(settings.nanopubGrlcUrl + '/get_all_users', 
       { 
         headers: {
           "accept": "application/json",
@@ -211,18 +211,18 @@ export default function BrowseNanopub() {
   }, [])
 
   const getNanopubs = (search: string = '') => {
-    let get_nanopubs_url = 'http://grlc.nanopubs.lod.labs.vu.nl/api/local/local/find_valid_signed_nanopubs?'
+    let get_nanopubs_url = settings.nanopubGrlcUrl + '/find_valid_signed_nanopubs?'
     if (search) {
       if (search.startsWith('http://') || search.startsWith('https://')) {
-        get_nanopubs_url = 'http://grlc.nanopubs.lod.labs.vu.nl/api/local/local/find_valid_signed_nanopubs_with_uri?ref=' + search
+        get_nanopubs_url = settings.nanopubGrlcUrl + '/find_valid_signed_nanopubs_with_uri?ref=' + search
       } else {
-        get_nanopubs_url = 'http://grlc.nanopubs.lod.labs.vu.nl/api/local/local/find_valid_signed_nanopubs_with_text?text=' + search
+        get_nanopubs_url = settings.nanopubGrlcUrl + '/find_valid_signed_nanopubs_with_text?text=' + search
       }
     }
     // if (user.id) {
     //   // If user is logged in, by default 
     //   const user_pubkey = state.users_orcid[user.id]['pubkey']['value']
-    //   get_nanopubs_url = 'http://grlc.nanopubs.lod.labs.vu.nl/api/local/local/find_valid_signed_nanopubs?pubkey=' + user_pubkey
+    //   get_nanopubs_url = settings.nanopubGrlcUrl + '/find_valid_signed_nanopubs?pubkey=' + user_pubkey
     // }
     if (state.filter_user.pubkey) {
       get_nanopubs_url = get_nanopubs_url + '&pubkey=' + encodeURIComponent(state.filter_user.pubkey.value)

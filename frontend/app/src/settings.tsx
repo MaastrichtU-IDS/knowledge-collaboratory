@@ -6,7 +6,9 @@ const settings = {
   restUrl: ((process.env.API_URL) ? process.env.API_URL + '' : null) || 'http://localhost',
   docsUrl: ((process.env.API_URL) ? process.env.API_URL + '/docs' : null) || 'http://localhost/docs',
   graphqlUrl: ((process.env.API_URL) ? process.env.API_URL + '/graphql' : null) || 'http://localhost/graphql',
-  OauthRedirectUri: process.env.OAUTH_REDIRECT_FRONTEND || "http://localhost:19006/collection/create"
+  OauthRedirectUri: process.env.OAUTH_REDIRECT_FRONTEND || "http://localhost:19006",
+  nanopubGrlcUrl: process.env.GRLC_URL || "https://grlc.np.dumontierlab.com/api/local/local",
+  // http://grlc.nanopubs.lod.labs.vu.nl/api/local/local
 }
 
 const getUrlHtml = (urlString: string) => {
