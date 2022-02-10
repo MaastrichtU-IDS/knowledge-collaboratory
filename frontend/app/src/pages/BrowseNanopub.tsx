@@ -20,6 +20,7 @@ import {CytoscapeRdfGraph, rdfToCytoscape} from "../components/CytoscapeRdf";
 
 import { Graph } from "perfect-graph";
 // yarn add perfect-graph@0.0.158 colay@0.0.68 colay-ui@0.0.145 immer@9.0.12 react@^17.0.2 react-dom@^17.0.2
+// yarn add react@^17.0.2 react-dom@^17.0.2
 
 export default function BrowseNanopub() {
   const theme = useTheme();
@@ -303,14 +304,14 @@ export default function BrowseNanopub() {
       </Typography>
 
       {/* TODO: try default perfect-graph */}
-      <Graph
+      {/* <Graph
         style={{ width: 600, height: 400 }}
         nodes={[
           { id: '1', position: { x: 10, y: 10 } },
           { id: '2', position: { x: 300, y: 100 } },
         ]}
         edges={[{ id: '51', source: '1', target: '2' }]}
-      />
+      /> */}
 
       {/* Filtering options */}
       {/* <Box display="flex" style={{margin: theme.spacing(0, 0)}}> */}

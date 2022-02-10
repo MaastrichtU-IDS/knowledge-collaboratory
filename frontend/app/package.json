@@ -30,6 +30,8 @@
     "colay-ui": "0.0.145",
     "cytoscape": "^3.21.0",
     "cytoscape-cola": "^2.5.0",
+    "cytoscape-dagre": "^2.4.0",
+    "cytoscape-euler": "^1.2.2",
     "cytoscape-fcose": "^2.1.0",
     "cytoscape-spread": "^3.0.0",
     "expo": "~39.0.0",
