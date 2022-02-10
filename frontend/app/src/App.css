@@ -20,6 +20,7 @@ pre {
 
 code {
   font-family: monospace, monospace;
+  font-size: 11px;
   border-radius: 10px;
   padding: 3px;
   /* color: white; */
