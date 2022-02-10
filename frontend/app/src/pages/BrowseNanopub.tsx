@@ -412,13 +412,13 @@ export default function BrowseNanopub() {
               >
                 {!state.nanopub_obj[np]['expanded'] &&
                   <>
-                    Display the Nanopublication
+                    Display the Nanopublication RDF
                     <ExpandMoreIcon />
                   </>
                 }
                 {state.nanopub_obj[np]['expanded'] &&
                   <>
-                    Hide the Nanopublication
+                    Hide the Nanopublication RDF
                     <ExpandLessIcon />
                   </>
                 }
@@ -433,13 +433,13 @@ export default function BrowseNanopub() {
               >
                 {!state.nanopub_obj[np]['expanded_graph'] &&
                   <>
-                    Display the graph
+                    Display the Nanopublication graph
                     <ExpandMoreIcon />
                   </>
                 }
                 {state.nanopub_obj[np]['expanded_graph'] &&
                   <>
-                    Hide the graph
+                    Hide the Nanopublication graph
                     <ExpandLessIcon />
                   </>
                 }
