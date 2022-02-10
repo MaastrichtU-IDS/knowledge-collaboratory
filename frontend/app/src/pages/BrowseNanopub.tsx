@@ -318,7 +318,7 @@ export default function BrowseNanopub() {
       <Stack direction="row" spacing={2} justifyContent="center" style={{margin: theme.spacing(2, 0 )}}>
         {/* Search box */}
         <form onSubmit={handleSearch}>
-          <Paper component="form" className={classes.paperSearch}>
+          <Paper className={classes.paperSearch}>
             <InputBase
               className={classes.searchInput} inputProps={{ 'aria-label': 'search input' }}
               placeholder={"🔍️ Search text/URI in Nanopublications"}
