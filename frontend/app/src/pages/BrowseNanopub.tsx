@@ -19,7 +19,7 @@ hljs.registerLanguage("turtle", hljsDefineTurtle)
 import {CytoscapeRdfGraph, rdfToCytoscape} from "../components/CytoscapeRdf";
 
 import { Graph } from "perfect-graph";
-
+// yarn add perfect-graph@0.0.158 colay@0.0.68 colay-ui@0.0.145 immer@9.0.12
 
 export default function BrowseNanopub() {
   const theme = useTheme();

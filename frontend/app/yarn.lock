@@ -6545,7 +6545,7 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-colay-ui@^0.0.145:
+colay-ui@0.0.145:
   version "0.0.145"
   resolved "https://registry.yarnpkg.com/colay-ui/-/colay-ui-0.0.145.tgz#a43967db91abba1eac796d091076fd4c235b1866"
   integrity sha512-gnvbUI+sE5i2WPa/aXG1CJrNzFiKLAwqM4MA4iEfvVbiDNYWx33Ko0IybvOp4ym074gw0yvGSvVX0Fe1VXBr8A==
@@ -6553,10 +6553,10 @@ colay-ui@^0.0.145:
     is-react "1.5.4"
     react-error-boundary "3.1.4"
 
-colay@^0.0.72:
-  version "0.0.72"
-  resolved "https://registry.yarnpkg.com/colay/-/colay-0.0.72.tgz#a8aa355ea99cdeed742365545d9eaae0908da3a7"
-  integrity sha512-EOapApMKkbwVZqUYstq1AeZOj71GqlA4cXGLEZycH+IY10nVQc6FIulyFUtX+3KVr6c27uR5UihpxuxtPZIcyg==
+colay@0.0.68:
+  version "0.0.68"
+  resolved "https://registry.yarnpkg.com/colay/-/colay-0.0.68.tgz#4263a52ecd0122171e6e9ce75536745fe3a44399"
+  integrity sha512-jHxSVN0g7IL6EzQcon08fmdP7CcdGIHTlCWpmH2tb3IiUYD90AOvQmv0y0GWvfT0V2ixW55v9u0Zmm2SDmqJPQ==
   dependencies:
     "@types/async" "3.2.5"
     "@types/ramda" "0.27.34"
@@ -10020,7 +10020,7 @@ immer@1.10.0:
   resolved "https://registry.yarnpkg.com/immer/-/immer-1.10.0.tgz#bad67605ba9c810275d91e1c2a47d4582e98286d"
   integrity sha512-O3sR1/opvCDGLEVcvrGTMtLac8GJ5IwZC4puPrLuRj3l7ICKvkmA0vGuU9OW8mV9WIBRnaxp5GJh9IEAaNOoYg==
 
-immer@^9.0.12:
+immer@9.0.12:
   version "9.0.12"
   resolved "https://registry.yarnpkg.com/immer/-/immer-9.0.12.tgz#2d33ddf3ee1d247deab9d707ca472c8c942a0f20"
   integrity sha512-lk7UNmSbAukB5B6dh9fnh5D0bJTOFKxVg2cyJWTYrWRfhLrLMBquONcUs3aFq507hNoIZEDDh8lb8UtOizSMhA==
@@ -13501,7 +13501,7 @@ penner@^0.1.3:
   resolved "https://registry.yarnpkg.com/penner/-/penner-0.1.3.tgz#0b8b482d4e9b39af2f3d7c37592229b8acc29705"
   integrity sha1-C4tILU6bOa8vPXw3WSIpuKzClwU=
 
-perfect-graph@^0.0.158:
+perfect-graph@0.0.158:
   version "0.0.158"
   resolved "https://registry.yarnpkg.com/perfect-graph/-/perfect-graph-0.0.158.tgz#fb55aa3695c3efa06be24f09ac850f22fe91cfcb"
   integrity sha512-0nk8cGCr1XO3nCwVliIYiUWbkBF1wAG0razrKTuTDOiNS+U4AnVPG23FOGFfdS92u30hD6awUuJ+XVrrR2f8dQ==
