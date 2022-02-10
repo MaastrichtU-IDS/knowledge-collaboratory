@@ -136,18 +136,23 @@ export function CytoscapeRdfGraph(props: any) {
   const cytoscapeElems = (props.cytoscapeElems) ? props.cytoscapeElems : rdfToCytoscape(props.rdf);
   const layout = (props.layout) ? props.layout : defaultLayout['fcose'];
   // const layout = (props.layout) ? props.layout : defaultLayout['cose-bilkent'];
-  
+
   // TODO: for some reason the nodes/edges are not displayed when the cytoscapeElems are 
   // generated using rdfToCytoscape() directly at component initialization
   
   const cyConfig = (cy: any) => { 
     // cy = cy 
     cy.$('node').on('tap', function (e: any) {
-      cy.edges().style({ 'line-color': '#263238', 'color': '#263238', 'font-size': '30px' }); // Grey
+      cy.edges().style({ 
+        'line-color': '#263238', 'color': '#263238', 
+        'width': 2, 'target-arrow-color': '#263238',
+        'font-size': '30px'
+      }); // Grey
       var ele = e.target;
       ele.connectedEdges().style({ 
         'line-color': '#c62828', 'color': '#c62828', // red
-        'font-size': '40px'
+        'width': 4, 'target-arrow-color': '#c62828',
+        'font-size': '40px',
       });
     });
     // cy.$('node').on('selected', function (e: any) {
@@ -182,6 +187,9 @@ export function CytoscapeRdfGraph(props: any) {
                 'label': 'data(label)',
                 'color': '#263238', // Grey
                 'line-color': '#263238',
+                'width': 2,
+                'arrow-scale': 2,
+                'target-arrow-color': '#263238',
                 // 'target-arrow-color': '#ccc',
                 'text-wrap': 'wrap',
                 'font-size': '30px',
