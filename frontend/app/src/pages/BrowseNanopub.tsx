@@ -190,6 +190,9 @@ export default function BrowseNanopub() {
       } else {
         get_nanopubs_url = settings.nanopubGrlcUrl + '/find_valid_signed_nanopubs_with_text?text=' + search
       }
+    } else {
+      // https://virtuoso.np.dumontierlab.137.120.31.101.nip.io/sparql
+      get_nanopubs_url = 'https://virtuoso.nps.petapico.org/sparql?query=' + encodeURIComponent(getLatestNanopubs)
     }
     // if (user.id) {
     //   // If user is logged in, by default 
@@ -200,7 +203,7 @@ export default function BrowseNanopub() {
       get_nanopubs_url = get_nanopubs_url + '&pubkey=' + encodeURIComponent(state.filter_user.pubkey.value)
     }
 
-    console.log(get_nanopubs_url);
+    console.log('get_nanopubs_url', get_nanopubs_url);
 
     // Get the list of signed nanopubs
     axios.get(get_nanopubs_url,
@@ -296,6 +299,47 @@ export default function BrowseNanopub() {
       updateState({nanopub_obj: {...state.nanopub_obj, [np]: expand_nanopub} });
     })
   }
+
+  const getLatestNanopubs = `prefix np: <http://www.nanopub.org/nschema#>
+prefix npa: <http://purl.org/nanopub/admin/>
+prefix npx: <http://purl.org/nanopub/x/>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix dct: <http://purl.org/dc/terms/>
+
+select ?np ?date ?pubkey where {
+  graph npa:graph {
+    ?np npa:hasHeadGraph ?h .
+    ?np dct:created ?date .
+    ?np npa:hasValidSignatureForPublicKey ?pubkey.
+  }
+  filter not exists {
+    graph npa:graph {
+      ?newversion npa:hasHeadGraph ?nh .
+      ?newversion npa:hasValidSignatureForPublicKey ?pubkey .
+    }
+    graph ?nh {
+      ?newversion np:hasPublicationInfo ?ni .
+    }
+    graph ?ni {
+      ?newversion npx:supersedes ?np .
+    }
+  }
+  filter not exists {
+    graph npa:graph {
+      ?retraction npa:hasHeadGraph ?rh .
+      ?retraction npa:hasValidSignatureForPublicKey ?pubkey .
+    }
+    graph ?rh {
+      ?retraction np:hasAssertion ?ra .
+    }
+    graph ?ra {
+      ?somebody npx:retracts ?np .
+    }
+  }
+} ORDER BY desc(?date) LIMIT ` + state.results_count
+
+
+
 
   return(
     <Container className='mainContainer' >
@@ -473,4 +517,6 @@ export default function BrowseNanopub() {
 
     </Container>
   )
+
+  
 }
