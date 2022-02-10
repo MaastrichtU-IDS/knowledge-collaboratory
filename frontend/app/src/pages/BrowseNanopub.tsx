@@ -1,38 +1,30 @@
 import React, { useContext } from 'react';
 import { useLocation } from "react-router-dom";
 import { useTheme } from '@mui/material/styles';
-import { makeStyles, withStyles } from '@mui/styles';
+import { makeStyles } from '@mui/styles';
 import { Typography, Container, Button, Card, CircularProgress, Snackbar, TextField, Box, InputBase, Paper, IconButton, Stack, Autocomplete, CardContent, CardActions, Collapse } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
-import DownloadJsonldIcon from '@mui/icons-material/Description';
-import UploadTriplestoreIcon from '@mui/icons-material/Share';
-import UploadIcon from '@mui/icons-material/FileUpload';
 import HideNanopubs from '@mui/icons-material/UnfoldLess';
 import axios from 'axios';
 
-const $rdf = require('rdflib')
-import {Parser, Store} from 'n3';
-import CytoscapeComponent from 'react-cytoscapejs';
-import Cytoscape from 'cytoscape';
-// import Cola from 'cytoscape-cola';
-// Cytoscape.use(Cola);
-import fcose from 'cytoscape-fcose';
-Cytoscape.use( fcose );
+// const $rdf = require('rdflib')
+// import {Parser, Store} from 'n3';
+// import CytoscapeComponent from 'react-cytoscapejs';
+// import Cytoscape from 'cytoscape';
+// // import Cola from 'cytoscape-cola';
+// // Cytoscape.use(Cola);
+// import fcose from 'cytoscape-fcose';
+// Cytoscape.use( fcose );
 // import spread from 'cytoscape-spread';
 // spread(Cytoscape);
-
-// yarn add cytoscape cytoscape-cola react-cytoscapejs
 
 // import { LoggedIn, LoggedOut, Value } from '@solid/react';
 // import * as jsonld from 'jsonld'
 // import {$rdf} from 'rdflib'
 // const jsonld = require('jsonld')
 
-import JsonldUploader from "../components/JsonldUploader";
-import RenderObjectForm from "../components/RenderObjectForm";
 import { settings } from '../settings';
 import UserContext from '../UserContext'
 
@@ -40,6 +32,8 @@ import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/github-dark-dimmed.css';
 import hljsDefineTurtle from '../components/highlightjs-turtle';
 hljs.registerLanguage("turtle", hljsDefineTurtle)
+
+import {CytoscapeRdfGraph, rdfToCytoscape} from "../components/CytoscapeRdf";
 
 
 export default function BrowseNanopub() {
@@ -219,78 +213,6 @@ export default function BrowseNanopub() {
       }
     }
     return uri
-  }
-
-  const rdfToCytoscape = (text: string) => {
-    const parser = new Parser({ format: 'application/trig' })
-    const cytoscapeElems: any = []
-    const graphs: any = {}
-    // console.log(text)
-    parser.parse(
-      text,
-      (error, quad, prefixes) => {
-        if (error) {
-          console.log(error)
-          return null
-        }
-        if (quad) { 
-          console.log("quad", quad.object.termType)
-          cytoscapeElems.push({ data: { 
-            id: quad.subject.value, 
-            label: quad.subject.value,
-            shape: 'ellipse',
-            color: '#90caf9',
-            parent: 'graph-' + quad.graph.value,
-            // https://stackoverflow.com/questions/58557196/group-nodes-together-in-cytoscape-js
-          } })
-          cytoscapeElems.push({ data: { 
-            id: quad.object.value, 
-            label: quad.object.value,
-            shape: (quad.object.termType == 'NamedNode') ? 'ellipse' : 'round-rectangle',
-            color: (quad.object.termType == 'NamedNode') ? '#90caf9' : '#80cbc4',
-            parent: 'graph-' + quad.graph.value,
-          } })
-          cytoscapeElems.push({ data: { 
-            source: quad.subject.value, 
-            target: quad.object.value,
-            label: quad.predicate.value,
-          } })
-          graphs[quad.graph.value] = quad.graph.value
-        } else {
-
-          const graphColors = ['#f3e5f5', '#f9fbe7', '#fff3e0', '#ffebee']
-          let graphCount = 0
-          Object.keys(graphs).map((g: string) => {
-            let graphColor = '#eceff1'
-            if (g.endsWith('assertion')) {
-              graphColor = '#e3f2fd'
-            } else if (g.endsWith('provenance')) {
-              graphColor = '#ffebee'
-            } else if (g.endsWith('pubInfo')) {
-              graphColor = '#fffde7'
-            }
-            cytoscapeElems.push({ data: { 
-              id: 'graph-' + g, 
-              label: g,
-              shape: 'round-rectangle',
-              color: graphColor,
-            } })
-            graphCount++
-          })
-
-          // Resolve prefixes
-          cytoscapeElems.map((elem: any) => {
-            if (elem.data.label) {
-              elem.data.label = replacePrefix(elem.data.label, prefixes) 
-            }
-          })
-        }
-        
-      },
-    )
-    
-    console.log('cytopute elems', cytoscapeElems)
-    return cytoscapeElems
   }
 
   // Change Cytoscape layout: https://js.cytoscape.org/#layouts
@@ -688,6 +610,13 @@ export default function BrowseNanopub() {
           <Collapse in={state.nanopub_obj[np]['expanded_graph']} timeout="auto" unmountOnExit>
             <CardContent style={{margin: theme.spacing(0,0), padding: theme.spacing(0,0)}}>
               <Paper elevation={2} className={classes.paperPadding} style={{ height: '80vh', textAlign: 'left' }}>
+                <CytoscapeRdfGraph 
+                  rdf={state.nanopub_obj[np]['rdf']} 
+                  cytoscapeElems={state.nanopub_obj[np]['cytoscape']}
+                />
+              </Paper>
+
+              {/* <Paper elevation={2} className={classes.paperPadding} style={{ height: '80vh', textAlign: 'left' }}>
                 <CytoscapeComponent 
                   elements={state.nanopub_obj[np]['cytoscape']} 
                   layout={cytoscape_layout}
@@ -737,7 +666,7 @@ export default function BrowseNanopub() {
                     }
                   ]}
                 />
-              </Paper>
+              </Paper> */}
             </CardContent>
           </Collapse>
 
