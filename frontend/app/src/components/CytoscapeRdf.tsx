@@ -10,12 +10,14 @@ import fcose from 'cytoscape-fcose';
 import cola from 'cytoscape-cola';
 import dagre from 'cytoscape-dagre';
 import spread from 'cytoscape-spread';
+import COSEBilkent from 'cytoscape-cose-bilkent';
 // import euler from 'cytoscape-euler';
 
 Cytoscape.use(fcose)
 Cytoscape.use(dagre)
 Cytoscape.use(cola)
 spread(Cytoscape)
+Cytoscape.use(COSEBilkent);
 // Cytoscape.use(euler) // out of memory
 
 // Install dependencies:
@@ -132,25 +134,29 @@ export const rdfToCytoscape = (text: string) => {
 export function CytoscapeRdfGraph(props: any) {
   const rdf = props.rdf;
   const cytoscapeElems = (props.cytoscapeElems) ? props.cytoscapeElems : rdfToCytoscape(props.rdf);
-  // const layout = 
   const layout = (props.layout) ? props.layout : defaultLayout['fcose'];
+  // const layout = (props.layout) ? props.layout : defaultLayout['cose-bilkent'];
+  
   // TODO: for some reason the nodes/edges are not displayed when the cytoscapeElems are 
   // generated using rdfToCytoscape() directly at component initialization
   
-  // const [state, setState] = React.useState({
-  //   cytoscapeElems: [],
-  //   rdf: '',
-  // });
-  // const stateRef = React.useRef(state);
-  // // Avoid conflict when async calls
-  // const updateState = React.useCallback((update) => {
-  //   stateRef.current = {...stateRef.current, ...update};
-  //   setState(stateRef.current);
-  // }, [setState]);
-  
-  // React.useEffect(() => {
-  // }, [])
-
+  const cyConfig = (cy: any) => { 
+    // cy = cy 
+    cy.$('node').on('tap', function (e: any) {
+      cy.edges().style({ 'line-color': '#263238', 'color': '#263238', 'font-size': '30px' }); // Grey
+      var ele = e.target;
+      ele.connectedEdges().style({ 
+        'line-color': '#c62828', 'color': '#c62828', // red
+        'font-size': '40px'
+      });
+    });
+    // cy.$('node').on('selected', function (e: any) {
+    //   // cy.elements().unselect();
+    //   cy.edges().style({ 'line-color': '#263238' });
+    //   var ele = e.target;
+    //   ele.connectedEdges().style({ 'line-color': 'red' });
+    // });
+  }
 
   return(
     <>
@@ -158,9 +164,15 @@ export function CytoscapeRdfGraph(props: any) {
         <CytoscapeComponent 
           elements={cytoscapeElems} 
           layout={layout}
+          cy={cyConfig}
           style={{ width: '100%', height: '100%' }} 
           wheelSensitivity={0.1}
-          // boxSelectionEnabled: false,
+          // See options: https://github.com/plotly/react-cytoscapejs#viewport-mutability--gesture-toggling
+          showOverlay={true}
+          autoungrabify={false}
+          boxSelectionEnabled={true}
+          // minZoom={1}
+          // maxZoom={1}
           // autounselectify: true,
           // infinite={false}
           stylesheet={[
@@ -168,19 +180,25 @@ export function CytoscapeRdfGraph(props: any) {
               selector: 'edge',
               style: {
                 'label': 'data(label)',
-                'color': '#546e7a', // Grey
+                'color': '#263238', // Grey
+                'line-color': '#263238',
+                // 'target-arrow-color': '#ccc',
                 'text-wrap': 'wrap',
-                'font-size': '25px',
+                'font-size': '30px',
                 'text-opacity': 0.9,
                 'target-arrow-shape': 'triangle',
-                // 'line-color': '#ccc',
-                // 'target-arrow-color': '#ccc',
                 // Control multi edge on 2 nodes:
                 'curve-style': 'bezier',
                 'control-point-step-size': 300,
                 // width: 15
               }
             },
+            // {
+            //   selector: 'edge.highlighted',
+            //   style: {
+            //     'color': '#0d47a1', // blue
+            //   }
+            // },
             {
               selector: 'node',
               style: {
@@ -347,6 +365,60 @@ const defaultLayout = {
     maxExpandIterations: 4, // Maximum number of expanding iterations
     boundingBox: undefined, // Constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
     randomize: false // Uses random initial node positions on true
+  },
+  'cose-bilkent': {
+    name: 'cose-bilkent',
+    // Called on `layoutready`
+    ready: function () {
+    },
+    // Called on `layoutstop`
+    stop: function () {
+    },
+    // 'draft', 'default' or 'proof" 
+    // - 'draft' fast cooling rate 
+    // - 'default' moderate cooling rate 
+    // - "proof" slow cooling rate
+    quality: 'default',
+    // Whether to include labels in node dimensions. Useful for avoiding label overlap
+    nodeDimensionsIncludeLabels: false,
+    // number of ticks per frame; higher is faster but more jerky
+    refresh: 30,
+    // Whether to fit the network view after when done
+    fit: true,
+    // Padding on fit
+    padding: 10,
+    // Whether to enable incremental mode
+    randomize: true,
+    // Node repulsion (non overlapping) multiplier
+    nodeRepulsion: 4500,
+    // Ideal (intra-graph) edge length
+    idealEdgeLength: 200,
+    // Divisor to compute edge forces
+    edgeElasticity: 0.45,
+    // Nesting factor (multiplier) to compute ideal edge length for inter-graph edges
+    nestingFactor: 0.1,
+    // Gravity force (constant)
+    gravity: 0.25,
+    // Maximum number of iterations to perform
+    numIter: 2500,
+    // Whether to tile disconnected nodes
+    tile: true,
+    // Type of layout animation. The option set is {'during', 'end', false}
+    animate: false,
+    // Duration for animate:end
+    animationDuration: 500,
+    // Amount of vertical space to put between degree zero nodes during tiling (can also be a function)
+    tilingPaddingVertical: 10,
+    // Amount of horizontal space to put between degree zero nodes during tiling (can also be a function)
+    tilingPaddingHorizontal: 10,
+    // Gravity range (constant) for compounds
+    gravityRangeCompound: 1.5,
+    // Gravity force (constant) for compounds
+    gravityCompound: 1.0,
+    // Gravity range (constant)
+    gravityRange: 3.8,
+    // Initial cooling factor for incremental layout
+    initialEnergyOnIncremental: 0.5
   }
 }
 
