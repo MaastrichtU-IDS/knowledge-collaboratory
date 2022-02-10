@@ -18,6 +18,8 @@ hljs.registerLanguage("turtle", hljsDefineTurtle)
 
 import {CytoscapeRdfGraph, rdfToCytoscape} from "../components/CytoscapeRdf";
 
+import { Graph } from "perfect-graph";
+
 
 export default function BrowseNanopub() {
   const theme = useTheme();
@@ -299,6 +301,16 @@ export default function BrowseNanopub() {
       <Typography variant="h4" style={{textAlign: 'center', margin: theme.spacing(1, 0)}}>
         🔍️ Browse Nanopublications
       </Typography>
+
+      {/* TODO: try default perfect-graph */}
+      <Graph
+        style={{ width: 600, height: 400 }}
+        nodes={[
+          { id: '1', position: { x: 10, y: 10 } },
+          { id: '2', position: { x: 300, y: 100 } },
+        ]}
+        edges={[{ id: '51', source: '1', target: '2' }]}
+      />
 
       {/* Filtering options */}
       {/* <Box display="flex" style={{margin: theme.spacing(0, 0)}}> */}
