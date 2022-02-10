@@ -1,5 +1,4 @@
 import React, { useContext } from 'react';
-import { useLocation } from "react-router-dom";
 import { useTheme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 import { Typography, Container, Button, Card, CircularProgress, Snackbar, TextField, Box, InputBase, Paper, IconButton, Stack, Autocomplete, CardContent, CardActions, Collapse } from "@mui/material";
@@ -9,24 +8,8 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import HideNanopubs from '@mui/icons-material/UnfoldLess';
 import axios from 'axios';
 
-// const $rdf = require('rdflib')
-// import {Parser, Store} from 'n3';
-// import CytoscapeComponent from 'react-cytoscapejs';
-// import Cytoscape from 'cytoscape';
-// // import Cola from 'cytoscape-cola';
-// // Cytoscape.use(Cola);
-// import fcose from 'cytoscape-fcose';
-// Cytoscape.use( fcose );
-// import spread from 'cytoscape-spread';
-// spread(Cytoscape);
-
-// import { LoggedIn, LoggedOut, Value } from '@solid/react';
-// import * as jsonld from 'jsonld'
-// import {$rdf} from 'rdflib'
-// const jsonld = require('jsonld')
-
 import { settings } from '../settings';
-import UserContext from '../UserContext'
+// import UserContext from '../UserContext'
 
 import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/github-dark-dimmed.css';
@@ -38,7 +21,7 @@ import {CytoscapeRdfGraph, rdfToCytoscape} from "../components/CytoscapeRdf";
 
 export default function BrowseNanopub() {
   const theme = useTheme();
-  const { user }: any = useContext(UserContext)
+  // const { user }: any = useContext(UserContext)
 
   const useStyles = makeStyles(() => ({
     link: {
@@ -109,8 +92,6 @@ export default function BrowseNanopub() {
   }))
   const classes = useStyles();
 
-  // useLocation hook to get URL params
-  let location = useLocation();  
   const users_pubkeys: any = {}
   const nanopub_obj: any = {}
   const users_orcid: any = {}
@@ -137,15 +118,11 @@ export default function BrowseNanopub() {
     setState(stateRef.current);
   }, [setState]);
   
-  // Original form and output:
-  // Questions: https://github.com/kodymoodley/fair-metadata-generator/blob/main/questions.csv
-  // Full output: https://github.com/kodymoodley/fair-metadata-html-page-generator/blob/main/testdata/inputdata/test.jsonld
-
+  
   React.useEffect(() => {
     // Get the edit URL param if provided
     // const params = new URLSearchParams(location.search + location.hash);
-    // let jsonld_uri_provided = params.get('edit');
-
+    // let searchText = params.get('search');
     // http://grlc.nanopubs.lod.labs.vu.nl/api/local/local/get_all_users
     // Returns csv with columns: user 	name 	intronp 	date 	pubkey
 
@@ -196,148 +173,10 @@ export default function BrowseNanopub() {
     // TODO: search for text with users pubkey with results in JSON
     // http://grlc.nanopubs.lod.labs.vu.nl/api/local/local/find_valid_signed_nanopubs_with_text?pubkey=aaaa&text=covid
     // curl -X GET "http://grlc.nanopubs.lod.labs.vu.nl/api/local/local/find_valid_signed_nanopubs_with_text?text=covid" -H  "accept: application/json"
-
-  //   { "head": { "link": [], "vars": ["np", "graphpred", "subj", "pred", "v", "date", "pubkey", "superseded", "retracted"] },
-  // "results": { "distinct": false, "ordered": true, "bindings": [
-  //   { "np": { "type": "uri", "value": "http://purl.org/np/RAcp3CnDDmfxN9HAdeGMTTIZZtGknEhV2-BZrNX0i4cPA" }	, "graphpred": { "type": "uri", "value": "http://www.nanopub.org/nschema#hasAssertion" }	, "subj": { "type": "uri", "value": "http://purl.org/np/RAcp3CnDDmfxN9HAdeGMTTIZZtGknEhV2-BZrNX0i4cPA#EduSocDL" }	, "pred": { "type": "uri", "value": "http://www.w3.org/2000/01/rdf-schema#label" }	, "v": { "type": "typed-literal", "datatype": "http://www.w3.org/2001/XMLSchema#string", "value": "Data Linking across Social and Educational Sciences on COVID-19" }	, "date": { "type": "typed-literal", "datatype": "http://www.w3.org/2001/XMLSchema#dateTime", "value": "2020-10-05T14:20:03.409Z" }	, "pubkey": { "type": "typed-literal", "datatype": "http://www.w3.org/2001/XMLSchema#string", "value": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCK4NfUi+AdFS8l/WeyiKQmCyFyjrjfGnpHvUvdGUlkg2+FkOY3+31U4a4SdeLUdhf4hnxL8kQOjD8BuggdBkuwUoMA0RXPv+RblmlF5INhXDJvxTqeUMLj1EVuOtotpl//NVFZ3BE0zeuscT35szmX4L+2m14Z/PqreP2lMzbj3wIDAQAB" }},
-
-
+    //   { "head": { "link": [], "vars": ["np", "graphpred", "subj", "pred", "v", "date", "pubkey", "superseded", "retracted"] },
+    // "results": { "distinct": false, "ordered": true, "bindings": [
+    //   { "np": { "type": "uri", "value": "http://purl.org/np/RAcp3CnDDmfxN9HAdeGMTTIZZtGknEhV2-BZrNX0i4cPA" }	, "graphpred": { "type": "uri", "value": "http://www.nanopub.org/nschema#hasAssertion" }	, "subj": { "type": "uri", "value": "http://purl.org/np/RAcp3CnDDmfxN9HAdeGMTTIZZtGknEhV2-BZrNX0i4cPA#EduSocDL" }	, "pred": { "type": "uri", "value": "http://www.w3.org/2000/01/rdf-schema#label" }	, "v": { "type": "typed-literal", "datatype": "http://www.w3.org/2001/XMLSchema#string", "value": "Data Linking across Social and Educational Sciences on COVID-19" }	, "date": { "type": "typed-literal", "datatype": "http://www.w3.org/2001/XMLSchema#dateTime", "value": "2020-10-05T14:20:03.409Z" }	, "pubkey": { "type": "typed-literal", "datatype": "http://www.w3.org/2001/XMLSchema#string", "value": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCK4NfUi+AdFS8l/WeyiKQmCyFyjrjfGnpHvUvdGUlkg2+FkOY3+31U4a4SdeLUdhf4hnxL8kQOjD8BuggdBkuwUoMA0RXPv+RblmlF5INhXDJvxTqeUMLj1EVuOtotpl//NVFZ3BE0zeuscT35szmX4L+2m14Z/PqreP2lMzbj3wIDAQAB" }},
   }, [])
-
-  const replacePrefix = (uri: string, prefixes: any) => {
-    // const namespace = (uri.lastIndexOf('#') > 0) ? uri.lastIndexOf('#') : uri.lastIndexOf('/')
-    for (let i = 0; i < Object.keys(prefixes).length; i++) {
-      const prefix = Object.keys(prefixes)[i]
-      if (uri.startsWith(prefixes[prefix])) {
-        return uri.replace(prefixes[prefix], prefix + ':')
-      }
-    }
-    return uri
-  }
-
-  // Change Cytoscape layout: https://js.cytoscape.org/#layouts
-
-  const cytoscape_layout = {
-    name: 'fcose',
-    // 'draft', 'default' or 'proof' 
-    // - "draft" only applies spectral layout 
-    // - "default" improves the quality with incremental layout (fast cooling rate)
-    // - "proof" improves the quality with incremental layout (slow cooling rate) 
-    quality: "default",
-    // Use random node positions at beginning of layout
-    // if this is set to false, then quality option must be "proof"
-    randomize: true, 
-    infinite: false,
-    // Whether or not to animate the layout
-    animate: false, 
-    // Duration of animation in ms, if enabled
-    animationDuration: 1000, 
-    // Easing of animation, if enabled
-    animationEasing: undefined, 
-    // Fit the viewport to the repositioned nodes
-    fit: true, 
-    // Padding around layout
-    padding: 30,
-    // Whether to include labels in node dimensions. Valid in "proof" quality
-    nodeDimensionsIncludeLabels: true,
-    // Whether or not simple nodes (non-compound nodes) are of uniform dimensions
-    uniformNodeDimensions: false,
-    // Whether to pack disconnected components - cytoscape-layout-utilities extension should be registered and initialized
-    packComponents: false,
-    // Layout step - all, transformed, enforced, cose - for debug purpose only
-    step: "all",
-    // False for random, true for greedy sampling
-    samplingType: true,
-    // Sample size to construct distance matrix
-    sampleSize: 25,
-    // Separation amount between nodes
-    nodeSeparation: 100,
-    // Power iteration tolerance
-    piTol: 0.0000001,
-    /* incremental layout options */
-    // Node repulsion (non overlapping) multiplier
-    nodeRepulsion: node => 4500,
-    // Ideal edge (non nested) length
-    idealEdgeLength: edge => 100,
-    // Divisor to compute edge forces
-    edgeElasticity: edge => 0.45,
-    // Nesting factor (multiplier) to compute ideal edge length for nested edges
-    nestingFactor: 0.1,
-    // Maximum number of iterations to perform - this is a suggested value and might be adjusted by the algorithm as required
-    numIter: 2500,
-    // For enabling tiling
-    tile: true,  
-    // Represents the amount of the vertical space to put between the zero degree members during the tiling operation(can also be a function)
-    tilingPaddingVertical: 10,
-    // Represents the amount of the horizontal space to put between the zero degree members during the tiling operation(can also be a function)
-    tilingPaddingHorizontal: 10,
-    // Gravity force (constant)
-    gravity: 0.25,
-    // Gravity range (constant) for compounds
-    gravityRangeCompound: 1.5,
-    // Gravity force (constant) for compounds
-    gravityCompound: 1.0,
-    // Gravity range (constant)
-    gravityRange: 3.8, 
-    // Initial cooling factor for incremental layout  
-    initialEnergyOnIncremental: 0.3,
-    /* constraint options */
-    // Fix desired nodes to predefined positions
-    // [{nodeId: 'n1', position: {x: 100, y: 200}}, {...}]
-    fixedNodeConstraint: undefined,
-    // Align desired nodes in vertical/horizontal direction
-    // {vertical: [['n1', 'n2'], [...]], horizontal: [['n2', 'n4'], [...]]}
-    alignmentConstraint: undefined,
-    // Place two nodes relatively in vertical/horizontal direction
-    // [{top: 'n1', bottom: 'n2', gap: 100}, {left: 'n3', right: 'n4', gap: 75}, {...}]
-    relativePlacementConstraint: undefined,
-    /* layout event callbacks */
-    ready: () => {}, // on layoutready
-    stop: () => {} // on layoutstop
-  };
-
-  // const cytoscape_layout = {
-  //   name: 'cola',
-  //   nodeSpacing: 150,
-  //   // edgeLengthVal: 1000,
-  //   animate: false,
-  //   randomize: false,
-  //   maxSimulationTime: 1500
-  // }
-  // Spread: https://github.com/cytoscape/cytoscape.js-spread
-  // const cytoscape_layout = {
-  //   name: 'spread',
-  //   animate: true, // Whether to show the layout as it's running
-  //   ready: undefined, // Callback on layoutready
-  //   stop: undefined, // Callback on layoutstop
-  //   fit: true, // Reset viewport to fit default simulationBounds
-  //   minDist: 20, // Minimum distance between nodes
-  //   padding: 20, // Padding
-  //   expandingFactor: -1.0, // If the network does not satisfy the minDist
-  //   // criterium then it expands the network of this amount
-  //   // If it is set to -1.0 the amount of expansion is automatically
-  //   // calculated based on the minDist, the aspect ratio and the
-  //   // number of nodes
-  //   prelayout: { name: 'cose' }, // Layout options for the first phase
-  //   maxExpandIterations: 4, // Maximum number of expanding iterations
-  //   boundingBox: undefined, // Constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
-  //   randomize: false // Uses random initial node positions on true
-  // };
-
-  // const cytoscape_layout = { 
-  //   name: 'concentric',
-  //   minNodeSpacing: 20
-  // };
-  // const cytoscape_layout = { name: 'breadthfirst' };
-  // const cytoscape_layout = {
-  //   name: 'cose',
-  //   animate: 'end',
-  //   fit: true,
-  //   componentSpacing: 1000,
-  //   nodeOverlap: 10,
-  //   nodeRepulsion: function( node: any ){ return 4092; },
-  //   idealEdgeLength: function( edge: any ){ return 300; },
-  // };
 
 
   const getNanopubs = (search: string = '') => {
@@ -423,9 +262,7 @@ export default function BrowseNanopub() {
 
 
   const handleSearch  = (event: any) => {
-    // Trigger JSON-LD file download
     event.preventDefault();
-    // var element = document.createElement('a');
     updateState({
       nanopub_obj: {},
       loading_nanopubs: true
@@ -433,19 +270,9 @@ export default function BrowseNanopub() {
     getNanopubs(state.search)
   }
 
-  // Close Snackbar
-  const closeOntoloadSuccess = () => {
-    updateState({...state, ontoload_success_open: false})
-  };
-
-  // Handle TextField changes for SPARQL endpoint upload
-  const handleTextFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    updateState({[event.target.id]: event.target.value})
-  }
   const searchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     updateState({ search: event.target.value })
   }
-
   const handleExpandClick = (e: any) => {
     const expand_nanopub = state.nanopub_obj[e.currentTarget.name]
     expand_nanopub['expanded'] = !expand_nanopub['expanded']
@@ -459,7 +286,6 @@ export default function BrowseNanopub() {
     expand_nanopub['expanded_graph'] = !expand_nanopub['expanded_graph']
     updateState({nanopub_obj: {...state.nanopub_obj, [e.currentTarget.name]: expand_nanopub} });
   };
-
   const hideAllNanopubs = () => {
     Object.keys(state.nanopub_obj).map((np: any) => {
       const expand_nanopub = state.nanopub_obj[np]
@@ -542,6 +368,7 @@ export default function BrowseNanopub() {
         </Box>
       }
 
+      {/* Iterate over nanopubs and display them */}
       { Object.keys(state.nanopub_obj).map((np: any, key: number) => (
         <Card elevation={4} className={classes.paperPadding} key={key}>
           <CardContent style={{paddingBottom: theme.spacing(1)}}>
@@ -615,58 +442,6 @@ export default function BrowseNanopub() {
                   cytoscapeElems={state.nanopub_obj[np]['cytoscape']}
                 />
               </Paper>
-
-              {/* <Paper elevation={2} className={classes.paperPadding} style={{ height: '80vh', textAlign: 'left' }}>
-                <CytoscapeComponent 
-                  elements={state.nanopub_obj[np]['cytoscape']} 
-                  layout={cytoscape_layout}
-                  style={{ width: '100%', height: '100%' }} 
-                  wheelSensitivity={0.1}
-              //     boxSelectionEnabled: false,
-              // autounselectify: true,
-                  // infinite={false}
-                  stylesheet={[
-                    {
-                      selector: 'edge',
-                      style: {
-                        'label': 'data(label)',
-                        'color': '#546e7a', // Grey
-                        'text-wrap': 'wrap',
-                        'font-size': '25px',
-                        'text-opacity': 0.9,
-                        'target-arrow-shape': 'triangle',
-                        // 'line-color': '#ccc',
-                        // 'target-arrow-color': '#ccc',
-                        // Control multi edge on 2 nodes:
-                        'curve-style': 'bezier',
-                        'control-point-step-size': 300,
-                        // width: 15
-                      }
-                    },
-                    {
-                      selector: 'node',
-                      style: {
-                        'label': 'data(label)',
-                        'text-wrap': 'wrap',
-                        'font-size': '30px',
-                        "text-valign" : "center",
-                        "text-halign" : "center",
-                        "width": 'label',
-                        // width: 20,
-                        "height": 'label',
-                        "padding": '25px',
-                        // https://js.cytoscape.org/#style/node-body
-                        "shape": 'data(shape)',
-                        "backgroundColor": 'data(color)',
-                        "text-max-width": '800px',
-                        // "color": 'data(color)',
-                        // "shape": 'round-rectangle',
-                        // "border-radius": '10px',
-                      }
-                    }
-                  ]}
-                />
-              </Paper> */}
             </CardContent>
           </Collapse>
 

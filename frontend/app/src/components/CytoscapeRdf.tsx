@@ -124,7 +124,6 @@ export function CytoscapeRdfGraph(props: any) {
   // }, [])
 
 
-
   return(
     <>
       {cytoscapeElems.length > 0 &&
