@@ -408,14 +408,14 @@ select ?np ?date ?pubkey where {
               &nbsp;(limit maximum 🔥)
             </>
           }
-          <Button onClick={hideAllNanopubs}
+          {/* <Button onClick={hideAllNanopubs}
             variant="contained" 
             className={classes.saveButton} 
             startIcon={<HideNanopubs />}
             style={{textTransform: 'none', margin: theme.spacing(1, 2)}}
             color="inherit" >
               Hide all Nanopublications content
-          </Button>
+          </Button> */}
         </Typography>
       }
 
