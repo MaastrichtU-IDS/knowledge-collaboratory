@@ -194,8 +194,7 @@ export default function BrowseNanopub() {
         get_nanopubs_url = settings.nanopubGrlcUrl + '/find_valid_signed_nanopubs_with_text?text=' + search
       }
     } else {
-      const sparqlEndpoint = 'https://virtuoso.np.dumontierlab.137.120.31.101.nip.io/sparql'
-      // const sparqlEndpoint = 'https://virtuoso.nps.petapico.org/sparql'
+      const sparqlEndpoint = 'https://virtuoso.nps.petapico.org/sparql'
       get_nanopubs_url = `${sparqlEndpoint}?query=${encodeURIComponent(getLatestNanopubsQuery)}`
     }
     // if (user.id) {
