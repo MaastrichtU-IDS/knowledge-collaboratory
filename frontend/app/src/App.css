@@ -41,8 +41,18 @@ pre, code {
   /* background-color: #78909c; */
 }
 
+.paper {
+  padding: 16px;
+  /* margin: 16px 0px; */
+}
+
 a {
-  text-decoration: none;
+  color: #006bb4;
+  text-decoration: 'none';
+  /* &:hover {
+    color: #64b5f6;
+    text-decoration: 'none';
+  } */
 }
 
 .MuiButton-root.MuiButton-contained {

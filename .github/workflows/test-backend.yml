@@ -14,7 +14,6 @@ jobs:
     strategy:
       matrix:
         python-version: [3.8]
-        mongodb-version: ['5.0']
 
     steps:
     - name: Git checkout
@@ -35,31 +34,13 @@ jobs:
     #     restore-keys: |
     #       ${{ runner.os }}-pip-
 
-    - name: Start MongoDB
-      uses: supercharge/mongodb-github-action@1.6.0
-      with:
-        mongodb-version: ${{ matrix.mongodb-version }}
-
-    - name: Start RabbitMQ
-      uses: nijel/rabbitmq-action@v1.0.0
-      with:
-        rabbitmq version: '3'
-
     - name: Install dependencies
       run: |
         cd backend
         pip install poetry
         poetry install
 
-    - name: Start Celery worker
-      run: |
-        cd backend
-        poetry run celery worker -A app.worker -l info -Q main-queue --detach
-
     - name: Run tests
-      env:
-        MONGODB_URL: 'mongodb://localhost:27017/'
-        DOMAIN: localhost
       run: |
         cd backend
         ./tests-start.sh

@@ -117,7 +117,7 @@ export default function NavBar() {
     })
       .then((res: any) => {
         let current_user = res.data
-        console.log('current_user!!', current_user)
+        console.log('Current user:', current_user)
         current_user['access_token'] = configState['access_token']
         // setUser(current_user)
         if (!current_user.error) {
@@ -231,7 +231,7 @@ export default function NavBar() {
             }
           )}
           </UserContext.Consumer> */}
-          {console.log('USER!!', user)}
+
           { user.username && 
               <Button variant='contained' onClick={showUserInfo} color='secondary' size='small' 
                   style={{textTransform: 'none'}}>

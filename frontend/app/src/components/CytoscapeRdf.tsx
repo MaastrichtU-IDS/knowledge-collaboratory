@@ -2,9 +2,10 @@ import React, { useContext } from 'react';
 import { useTheme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 
+import ReactDOM from "react-dom"
 import { Parser } from 'n3';
 import CytoscapeComponent from 'react-cytoscapejs';
-import Cytoscape from 'cytoscape';
+import cytoscape from 'cytoscape';
 
 import fcose from 'cytoscape-fcose';
 import cola from 'cytoscape-cola';
@@ -13,17 +14,25 @@ import spread from 'cytoscape-spread';
 import COSEBilkent from 'cytoscape-cose-bilkent';
 // import euler from 'cytoscape-euler';
 
-Cytoscape.use(fcose)
-Cytoscape.use(dagre)
-Cytoscape.use(cola)
-spread(Cytoscape)
-Cytoscape.use(COSEBilkent);
+import { Card, CardContent, CardHeader, IconButton, Typography } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
+import { renderToStaticMarkup, renderToNodeStream, renderToString } from "react-dom/server"
+
+import popper from 'cytoscape-popper';
+cytoscape.use( popper );
+
+cytoscape.use(fcose)
+cytoscape.use(dagre)
+cytoscape.use(cola)
+spread(cytoscape)
+cytoscape.use(COSEBilkent);
 // Cytoscape.use(euler) // out of memory
 
 // Install dependencies:
 // yarn add cytoscape cytoscape-cola react-cytoscapejs
 
 // Add tooltip? https://www.npmjs.com/package/cytoscape-popper/v/1.0.3
+// Edit graph? https://github.com/iVis-at-Bilkent/cytoscape.js-expand-collapse
 
 const replacePrefix = (uri: string, prefixes: any) => {
   // const namespace = (uri.lastIndexOf('#') > 0) ? uri.lastIndexOf('#') : uri.lastIndexOf('/')
@@ -50,27 +59,31 @@ export const rdfToCytoscape = (text: string) => {
         return null
       }
       if (quad) { 
-        console.log("quad", quad.object.termType)
+        // console.log("quad", quad.object.termType)
         // Subject and Object nodes
         cytoscapeElems.push({ data: { 
           id: quad.subject.value, 
           label: quad.subject.value,
           shape: 'ellipse',
           backgroundColor: '#90caf9',
-          parent: 'graph-' + quad.graph.value,
+          // parent: 'graph-' + quad.graph.value,
+          parent: quad.graph.value,
           valign : "center",
           fontSize: "30px", 
           fontWeight: "300",
           textColor: '#212121',
           // https://stackoverflow.com/questions/58557196/group-nodes-together-in-cytoscape-js
         } })
+        // For literal that are too long without spaces, like public keys
+        const cutLongObject = (!quad.object.value.includes(' ') && quad.object.value.length > 100) ? quad.object.value.replace(/(.{60})/g,"$1\n") : quad.object.value
         cytoscapeElems.push({ data: { 
           id: quad.object.value, 
-          label: quad.object.value,
+          label: cutLongObject,
           shape: (quad.object.termType == 'NamedNode') ? 'ellipse' : 'round-rectangle',
           backgroundColor: (quad.object.termType == 'NamedNode') ? '#90caf9' : '#80cbc4', // blue or green
           textColor: '#000000', // black
-          parent: 'graph-' + quad.graph.value,
+          // parent: 'graph-' + quad.graph.value,
+          parent: quad.graph.value,
           valign : "center", 
           fontSize: "30px", 
           fontWeight: "300",
@@ -100,9 +113,10 @@ export const rdfToCytoscape = (text: string) => {
             graphColor = '#fffde7'
             graphTextColor = '#f57f17'
           }
-          // Add Graph node to cytoscape graph
-          cytoscapeElems.push({ data: { 
-            id: 'graph-' + g, 
+          // Add Graph node at start of cytoscape graph
+          cytoscapeElems.unshift({ data: { 
+            // id: 'graph-' + g, 
+            id: g, 
             label: g,
             shape: 'round-rectangle',
             backgroundColor: graphColor,
@@ -113,10 +127,11 @@ export const rdfToCytoscape = (text: string) => {
           } })
         })
 
+        const allPrefixes = {...prefixes, 'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'}
         // Resolve prefixes
         cytoscapeElems.map((elem: any) => {
           if (elem.data.label) {
-            elem.data.label = replacePrefix(elem.data.label, prefixes) 
+            elem.data.label = replacePrefix(elem.data.label, allPrefixes) 
           }
         })
       }
@@ -129,19 +144,38 @@ export const rdfToCytoscape = (text: string) => {
 }
 
 
+const displayLink = (urlString: string) => {
+  if(/^(?:node[0-9]+)|((https?|ftp):.*)$/.test(urlString)) {
+    return <a href={urlString} target="_blank" rel="noopener noreferrer" style={{textDecoration: 'none'}}>
+      {urlString}
+      </a>
+  } else {
+    return urlString
+  }
+}
+
+
 // Component to display RDF as a graph with Cytoscape
 // export default function CytoscapeRdfGraph(props: any) {
 export function CytoscapeRdfGraph(props: any) {
   const rdf = props.rdf;
   const cytoscapeElems = (props.cytoscapeElems) ? props.cytoscapeElems : rdfToCytoscape(props.rdf);
   const layout = (props.layout) ? props.layout : defaultLayout['fcose'];
+  console.log('cytoscapeElems', cytoscapeElems);
   // const layout = (props.layout) ? props.layout : defaultLayout['cose-bilkent'];
 
   // TODO: for some reason the nodes/edges are not displayed when the cytoscapeElems are 
   // generated using rdfToCytoscape() directly at component initialization
   
+  // const removePopper = () => {
+  //   // e.remove()
+  //   console.log('clickyclick remove')
+  //   const oldEle = document.getElementById("cytoPop");
+  //   if (oldEle) oldEle.remove();
+  // }
+
   const cyConfig = (cy: any) => { 
-    // cy = cy 
+    // Change edge color when node clicked on
     cy.$('node').on('tap', function (e: any) {
       cy.edges().style({ 
         'line-color': '#263238', 'color': '#263238', 
@@ -155,12 +189,49 @@ export function CytoscapeRdfGraph(props: any) {
         'font-size': '40px',
       });
     });
-    // cy.$('node').on('selected', function (e: any) {
-    //   // cy.elements().unselect();
-    //   cy.edges().style({ 'line-color': '#263238' });
-    //   var ele = e.target;
-    //   ele.connectedEdges().style({ 'line-color': 'red' });
-    // });
+    // Show a card with the value of the node (e.g. clickable link for URI)
+    cy.$('node').on('tap', function (e: any) {
+      const oldEle = document.getElementById("cytoPop");
+      if (oldEle) oldEle.remove();
+      var ele = e.target;
+      // const elementLabel = (ele.id().startsWith('graph-http')) ? ele.id().replace('graph-http', '') : ele.id()
+      ele.popper({
+        content: () => {
+          console.log(ele)
+          let div = document.createElement('div');
+          // Replace the start "graph-http" for graphs nodes URIs
+          const elementLabel = (ele.id().startsWith('graph-http')) ? ele.id().replace('graph-http', 'http') : ele.id()
+
+          // const staticElement = renderToStaticMarkup(
+          const staticElement = renderToStaticMarkup(
+            <Card className='paper'>
+              {/* <CardHeader
+                action={<IconButton aria-label="hide" onClick={removePopper}>
+                  <CloseIcon />
+                </IconButton>}
+                style={{paddingBottom: '0px'}}/> */}
+              {/* <CardContent> */}
+              <Typography variant='body2'>
+                {displayLink(elementLabel)}
+              </Typography>
+              {/* </CardContent> */}
+            </Card>)
+          div.innerHTML = `<div id="cytoPop">${staticElement}</div>`
+          document.body.appendChild( div );
+          // ReactDOM.render(staticElement, document.getElementById('root'));
+          return div;
+        }
+      });
+    });
+    // Remove Card when click on the canvas 
+    cy.on('tap', function(event: any){
+      if( event.target === cy ){
+        // tap on background
+        const oldEle = document.getElementById("cytoPop");
+        if (oldEle) oldEle.remove();
+      } 
+    });
+    // ele.unselectify() and ele.selectify()
   }
 
   return(
@@ -201,6 +272,17 @@ export function CytoscapeRdfGraph(props: any) {
                 // width: 15
               }
             },
+            {
+              selector: 'edge:parent',
+              style: {
+                'color': '#c62828', // red
+                'line-color': '#c62828',
+                'width': 2,
+                'arrow-scale': 2,
+                'target-arrow-color': '#c62828',
+                // 'target-arrow-color': '#ccc',
+              }
+            },
             // {
             //   selector: 'edge.highlighted',
             //   style: {
@@ -213,10 +295,11 @@ export function CytoscapeRdfGraph(props: any) {
                 'label': 'data(label)',
                 'text-wrap': 'wrap',
                 // 'word-break': 'break-all',
-                'overflow-wrap': 'break-all',
+                'overflow-wrap': 'break-word',
+                // 'white-space': 'pre-wrap',
                 "text-max-width": '800px',
                 'font-size': 'data(fontSize)',
-                'font-weight': 'data(fontWeight)',
+                // 'font-weight': 'data(fontWeight)',
                 "text-valign" : "data(valign)",
                 "text-halign" : "center",
                 "width": 'label',
@@ -275,18 +358,18 @@ const defaultLayout = {
     // Sample size to construct distance matrix
     sampleSize: 25,
     // Separation amount between nodes
-    nodeSeparation: 100,
+    nodeSeparation: 200,
     // Power iteration tolerance
     piTol: 0.0000001,
     /* incremental layout options */
     // Node repulsion (non overlapping) multiplier
-    nodeRepulsion: node => 4500,
+    nodeRepulsion: (node: any) => 4500,
     // Ideal edge (non nested) length
-    idealEdgeLength: edge => 150,
+    idealEdgeLength: (edge: any) => 300,
     // Divisor to compute edge forces
-    edgeElasticity: edge => 0.45,
+    edgeElasticity: (edge: any) => 0.45,
     // Nesting factor (multiplier) to compute ideal edge length for nested edges
-    nestingFactor: 0.1,
+    nestingFactor: 0.4,
     // Maximum number of iterations to perform - this is a suggested value and might be adjusted by the algorithm as required
     numIter: 2500,
     // For enabling tiling
@@ -298,9 +381,9 @@ const defaultLayout = {
     // Gravity force (constant)
     gravity: 0.25,
     // Gravity range (constant) for compounds
-    gravityRangeCompound: 1.5,
+    gravityRangeCompound: 2,
     // Gravity force (constant) for compounds
-    gravityCompound: 1.0,
+    gravityCompound: 0.5,
     // Gravity range (constant)
     gravityRange: 3.8, 
     // Initial cooling factor for incremental layout  
@@ -316,8 +399,8 @@ const defaultLayout = {
     // [{top: 'n1', bottom: 'n2', gap: 100}, {left: 'n3', right: 'n4', gap: 75}, {...}]
     relativePlacementConstraint: undefined,
     /* layout event callbacks */
-    ready: () => {}, // on layoutready
-    stop: () => {} // on layoutstop
+    // ready: () => {}, // on layoutready
+    // stop: () => {} // on layoutstop
   },
   'dagre': {
     name: 'dagre',
@@ -330,8 +413,8 @@ const defaultLayout = {
     acyclicer: undefined, // If set to 'greedy', uses a greedy heuristic for finding a feedback arc set for a graph.
                           // A feedback arc set is a set of edges that can be removed to make a graph acyclic.
     ranker: 'network-simplex', // Type of algorithm to assign a rank to each node in the input graph. Possible values: 'network-simplex', 'tight-tree' or 'longest-path'
-    minLen: function( edge ){ return 2; }, // number of ranks to keep between the source and target of the edge
-    edgeWeight: function( edge ){ return 1; }, // higher weight edges are generally made shorter and straighter than lower weight edges
+    minLen: function( edge: any ){ return 2; }, // number of ranks to keep between the source and target of the edge
+    edgeWeight: function( edge: any ){ return 1; }, // higher weight edges are generally made shorter and straighter than lower weight edges
 
     // general layout options
     fit: true, // whether to fit to viewport
@@ -339,11 +422,11 @@ const defaultLayout = {
     spacingFactor: 1, // Applies a multiplicative factor (>0) to expand or compress the overall area that the nodes take up
     nodeDimensionsIncludeLabels: true, // whether labels should be included in determining the space used by a node
     animate: false, // whether to transition the node positions
-    animateFilter: function( node, i ){ return true; }, // whether to animate specific nodes when animation is on; non-animated nodes immediately go to their final positions
+    animateFilter: function( node: any, i: any ){ return true; }, // whether to animate specific nodes when animation is on; non-animated nodes immediately go to their final positions
     animationDuration: 500, // duration of animation in ms if enabled
     animationEasing: undefined, // easing of animation if enabled
     boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
-    transform: function( node, pos ){ return pos; }, // a function that applies a transform to the final node position
+    transform: function( node: any, pos: any ){ return pos; }, // a function that applies a transform to the final node position
     ready: function(){}, // on layoutready
     stop: function(){} // on layoutstop
   },

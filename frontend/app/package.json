@@ -34,6 +34,7 @@
     "cytoscape-dagre": "^2.4.0",
     "cytoscape-euler": "^1.2.2",
     "cytoscape-fcose": "^2.1.0",
+    "cytoscape-popper": "^2.0.0",
     "cytoscape-spread": "^3.0.0",
     "expo": "~39.0.0",
     "highlight.js": "^11.2.0",
