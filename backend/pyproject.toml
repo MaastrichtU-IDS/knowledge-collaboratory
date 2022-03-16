@@ -29,6 +29,9 @@ strawberry-graphql = {extras = ["asgi"], version = "^0.83.4"}
 reasoner-pydantic = ">=1.2.0.4"
 reasoner-validator = "^2.1.0"
 SPARQLWrapper = "^1.8.5"
+transformers = "^4.17.0"
+spacy = {extras = ["cuda110"], version = "^3.2.3"}
+spacy-transformers = "^1.1.5"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.770"

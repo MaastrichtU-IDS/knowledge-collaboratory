@@ -10,3 +10,5 @@ services:
         INSTALL_DEV: ${INSTALL_DEV-false}
     env_file:
       - .env
+    volumes:
+      - /data/knowledge-collaboratory/ner-models:/data/ner-models

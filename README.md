@@ -26,6 +26,15 @@ ORCID_CLIENT_SECRET=XXXX
 FRONTEND_URL=http://localhost:19006
 ```
 
+Predownload the NER models:
+
+```bash
+mkdir -p /data/knowledge-collaboratory/ner-models
+cd /data/knowledge-collaboratory/ner-models
+wget https://umids-download.137.120.31.102.nip.io/ner-models/litcoin-ner-model.zip
+unzip *.zip 
+```
+
 Start the stack for development locally with Docker Compose from the root folder of this repository:
 
 ```bash
@@ -86,6 +95,15 @@ To add new dependencies, run:
 
 ```bash
 poetry add my-package
+```
+
+TODO: add packages for NER
+
+```bash
+torch==1.9.0
+transformers==4.15.0
+scikit_learn==1.0.2 # not really needed
+numpy==1.20.1 # done with spacy
 ```
 
 > If you don't have poetry installed locally or are facin issue with it, you can also add new packages with `docker-compose`, while the docker-compose is running run:

@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     # The settings used by Docker deployment are in the .env file
     PROJECT_NAME: str = 'Knowledge Collaboratory API'
     KEYSTORE_PATH: str = "/data/nanopub-keystore"
+    NER_MODELS_PATH: str = "/data/ner-models"
 
     # SERVER_NAME: str = 'localhost'
     # SERVER_HOST: AnyHttpUrl = 'http://localhost'

@@ -27,5 +27,8 @@ RUN bash -c "if [ $INSTALL_DEV == 'true' ] ; then poetry install --no-root ; els
 ARG INSTALL_JUPYTER=false
 RUN bash -c "if [ $INSTALL_JUPYTER == 'true' ] ; then pip install jupyterlab ; fi"
 
+# Download some spacy required data
+# RUN python -m spacy download en_core_web_trf
+
 COPY . /app
 ENV PYTHONPATH=/app
