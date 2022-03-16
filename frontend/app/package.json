@@ -50,7 +50,8 @@
     "react-native-web": "0.13.13",
     "react-router-dom": "^5.2.0",
     "react-router-native": "^5.1.2",
-    "react-simple-oauth2-login": "^0.5.1"
+    "react-simple-oauth2-login": "^0.5.1",
+    "react-taggy": "^0.1.12"
   },
   "devDependencies": {
     "@babel/core": "7.9.0",

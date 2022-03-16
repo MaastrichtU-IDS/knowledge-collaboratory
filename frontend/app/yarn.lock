@@ -5611,7 +5611,7 @@ babel-preset-fbjs@^3.2.0, babel-preset-fbjs@^3.3.0:
     "@babel/plugin-transform-template-literals" "^7.0.0"
     babel-plugin-syntax-trailing-function-commas "^7.0.0-beta.0"
 
-babel-runtime@6.26.0, babel-runtime@^6.26.0:
+babel-runtime@6.26.0, babel-runtime@^6.11.6, babel-runtime@^6.26.0:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-runtime/-/babel-runtime-6.26.0.tgz#965c7058668e82b55d7bfe04ff2337bc8b5647fe"
   integrity sha1-llxwWGaOgrVde/4E/yM3vItWR/4=
@@ -14821,6 +14821,13 @@ react-simple-oauth2-login@^0.5.1:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/react-simple-oauth2-login/-/react-simple-oauth2-login-0.5.1.tgz#e2ee3c54f5cd8c746ba3c049d110c741e5498c0a"
   integrity sha512-wvYYQ5FslVAILGEqKL2lorc2XcTKvN7HKTf3oqPNgkUNfRBe2b0SZJxkUKclgbH6Y65dOaVbRs/JuSQr8J47MQ==
+
+react-taggy@^0.1.12:
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/react-taggy/-/react-taggy-0.1.12.tgz#e70f308673c9c86898abe673790857b81edde8d1"
+  integrity sha1-5w8whnPJyGiYq+ZzeQhXuB7d6NE=
+  dependencies:
+    babel-runtime "^6.11.6"
 
 react-timer-mixin@^0.13.4:
   version "0.13.4"
