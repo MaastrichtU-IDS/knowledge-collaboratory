@@ -433,40 +433,42 @@ export default function AnnotateText() {
   }
   const handleAutocomplete = (event: any, newInputValue: any) => {
     const stmts: any = state.statements
-    if (event.target.id.startsWith('prop:')) {
-      // Edit properties of a statement
-      const index = event.target.id.split('-')[0].split(':')[1]
-      const property = event.target.id.split('-')[0].split(':')[2]
-      const pindex = event.target.id.split('-')[0].split(':')[3]
-      if (newInputValue) {
-        if (newInputValue.id) {
-          stmts[index]['props'][pindex][property] = newInputValue.id as string
-        } else {
-          stmts[index]['props'][pindex][property] = newInputValue as string
-        }
-        updateState({statements: stmts})
-      }
-    } else {
-      // Edit a statement
-      const property = event.target.id.split('-')[0].split(':')[0]
-      const index = event.target.id.split('-')[0].split(':')[1] 
-      if (newInputValue) {
-        if (newInputValue.id) {
-          stmts[index][property] = newInputValue.id as string
-        } else {
-          stmts[index][property] = newInputValue as string
-        }
-        updateState({statements: stmts})
-      }
-      // Add type based on labels extracted
-      const entitiesType: any = state.entitiesType
-      if (newInputValue && !(newInputValue.id in entitiesType)) {
-        state.entitiesList.map((entity: any) => {
-          if (entity.id == newInputValue.id) {
-            entitiesType[entity.id] = BIOLINK + entity.type
-            updateState({entitiesType: entitiesType})
+    if (event) {
+      if (event.target.id.startsWith('prop:')) {
+        // Edit properties of a statement
+        const index = event.target.id.split('-')[0].split(':')[1]
+        const property = event.target.id.split('-')[0].split(':')[2]
+        const pindex = event.target.id.split('-')[0].split(':')[3]
+        if (newInputValue) {
+          if (newInputValue.id) {
+            stmts[index]['props'][pindex][property] = newInputValue.id as string
+          } else {
+            stmts[index]['props'][pindex][property] = newInputValue as string
           }
-        })
+          updateState({statements: stmts})
+        }
+      } else {
+        // Edit a statement
+        const property = event.target.id.split('-')[0].split(':')[0]
+        const index = event.target.id.split('-')[0].split(':')[1] 
+        if (newInputValue) {
+          if (newInputValue.id) {
+            stmts[index][property] = newInputValue.id as string
+          } else {
+            stmts[index][property] = newInputValue as string
+          }
+          updateState({statements: stmts})
+        }
+        // Add type based on labels extracted
+        const entitiesType: any = state.entitiesType
+        if (newInputValue && !(newInputValue.id in entitiesType)) {
+          state.entitiesList.map((entity: any) => {
+            if (entity.id == newInputValue.id) {
+              entitiesType[entity.id] = BIOLINK + entity.type
+              updateState({entitiesType: entitiesType})
+            }
+          })
+        }
       }
     }
   }
@@ -601,6 +603,8 @@ export default function AnnotateText() {
                 key={'s:'+index}
                 id={'s:'+index}
                 freeSolo
+                // TODO: When deleting a stms/prop the value of the Autocompletes are not properly updated
+                // value={state.statements[index].s}
                 options={state.entitiesList}
                 onChange={handleAutocomplete}
                 onInputChange={handleAutocomplete}

@@ -44,10 +44,14 @@ async def get_entities_relations(
             'start': ent.start_char,
             'end': ent.end_char
         }
-
+        # Get preferred ID for the entities label for the NameResolution API
         name_res = requests.post(f"https://name-resolution-sri.renci.org/lookup?string={ent.text}&offset=0&limit=5").json()
         if len(name_res.keys()) > 0:
             entity['curies'] = name_res
+        # else:
+            # Get RXCUIS: https://rxnav.nlm.nih.gov/REST/rxcui.json?name=Xyrem
+            # Get other ID, such as UMLS or MESH for RXCUIS: https://rxnav.nlm.nih.gov/REST/rxcui/353098/proprietary.json
+
         # for pref_curie, labels in name_res.items():
         #     entity['curie'] = pref_curie
         entities_extracted.append(entity)
