@@ -479,53 +479,6 @@ export default function AnnotateText() {
         📥️ Finally you can either download the statements as RDF, or directly publish them in a Nanopublication. 
       </Typography> */}
 
-      {/* <Typography variant="body1" style={{textAlign: 'center', marginBottom: theme.spacing(1)}}>
-        Load and edit <a href="https://json-ld.org/" className={classes.link} target="_blank" rel="noopener noreferrer">JSON-LD</a> <a href="https://en.wikipedia.org/wiki/Resource_Description_Framework" className={classes.link} target="_blank" rel="noopener noreferrer">RDF</a> files in a user-friendly web interface, with autocomplete based on the classes and properties of the ontology loaded ✨️
-      </Typography> */}
-
-      <Card className={classes.paperPadding} style={{textAlign: 'center'}}>
-        { !user.id &&
-          <Typography>
-            🔒️ You need to login with ORCID to publish Nanopublications
-          </Typography>
-        }
-        { user.id && user.keyfiles_loaded && 
-          <Typography>
-            ✅ Your authentication keys are successfully loaded, you can start publishing Nanopublications
-          </Typography>
-        }
-
-        { user.id && !user.keyfiles_loaded && 
-          <>
-            <Card className={classes.paperPadding} >
-              <Typography>
-                🔑 You need to upload the authentication keys bound to your ORCID to publish Nanopublications (public and private encryption keys):
-              </Typography>
-              <form encType="multipart/form-data" action="" onSubmit={handleUploadKeys} 
-                  style={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>
-                <Typography style={{marginTop: theme.spacing(1)}}>
-                  Select the <b>Public</b> key:&nbsp;&nbsp;
-                  <input type="file" id="publicKey" />
-                </Typography>
-                <Typography style={{marginTop: theme.spacing(1)}}>
-                  Select the <b>Private</b> key:&nbsp;&nbsp;
-                  <input type="file" id="privateKey" />
-                </Typography>
-
-                <Button type="submit" 
-                  variant="contained" 
-                  className={classes.saveButton} 
-                  startIcon={<UploadIcon />}
-                  style={{textTransform: 'none', marginTop: theme.spacing(1)}}
-                  color="secondary" >
-                    Upload your keys
-                </Button>
-              </form>
-            </Card>
-          </>
-        }
-      </Card>
-
       <Typography variant='body1' style={{marginBottom: theme.spacing(2)}}>
         1. Extract biomedical entities from text:
       </Typography>
@@ -816,6 +769,52 @@ export default function AnnotateText() {
           </div>
         </FormControl>
       </form>
+
+      { user.id &&
+        <Card className={classes.paperPadding} style={{textAlign: 'center'}}>
+          {/* { !user.id &&
+            <Typography>
+              🔒️ You need to login with ORCID to publish Nanopublications
+            </Typography>
+          } */}
+          { user.id && user.keyfiles_loaded && 
+            <Typography>
+              ✅ Your authentication keys are successfully loaded, you can start publishing Nanopublications
+            </Typography>
+          }
+
+          { user.id && !user.keyfiles_loaded && 
+            <>
+              <Card className={classes.paperPadding} >
+                <Typography>
+                  🔑 You need to upload the authentication keys bound to your ORCID to publish Nanopublications (public and private encryption keys):
+                </Typography>
+                <form encType="multipart/form-data" action="" onSubmit={handleUploadKeys} 
+                    style={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>
+                  <Typography style={{marginTop: theme.spacing(1)}}>
+                    Select the <b>Public</b> key:&nbsp;&nbsp;
+                    <input type="file" id="publicKey" />
+                  </Typography>
+                  <Typography style={{marginTop: theme.spacing(1)}}>
+                    Select the <b>Private</b> key:&nbsp;&nbsp;
+                    <input type="file" id="privateKey" />
+                  </Typography>
+
+                  <Button type="submit" 
+                    variant="contained" 
+                    className={classes.saveButton} 
+                    startIcon={<UploadIcon />}
+                    style={{textTransform: 'none', marginTop: theme.spacing(1)}}
+                    color="secondary" >
+                      Upload your keys
+                  </Button>
+                </form>
+              </Card>
+            </>
+          }
+        </Card>
+      }
+
       {state.published_nanopub &&
         <pre style={{whiteSpace: 'pre-wrap'}}>
           <code className="language-turtle">
