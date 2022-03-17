@@ -495,11 +495,13 @@ export default function AnnotateText() {
         📝 Annotate biomedical text
       </Typography>
       <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
-        This service allows you to easily annotate biomedical text using popular identification systems (such as MONDO and PubChem), and download the annotations as RDF, or publish them in Nanopublications.
+        ℹ️ This service helps you to annotate biomedical text using the <a href='https://biolink.github.io/biolink-model/docs/' target="_blank" rel="noopener noreferrer">BioLink model</a> and popular identifiers systems (such as MONDO and PubChem). 
+        You can then download the annotations as RDF, or publish them in Nanopublications.
         {/* A machine learning model automatically extracts biomedical entities from the given text, classify them in different types from the <a href='https://biolink.github.io/biolink-model/docs/' target="_blank" rel="noopener noreferrer">BioLink model</a> (chemical, disease, etc), and retrieve potential standard identifiers for those entities using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator Name Resolution API</a>. */}
       </Typography>
       <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
-        🪄 A machine learning model automatically extracts biomedical entities from the given text, classify them in different types from the <a href='https://biolink.github.io/biolink-model/docs/' target="_blank" rel="noopener noreferrer">BioLink model</a> (chemical, disease, etc), and retrieve potential standard identifiers for those entities using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator Name Resolution API</a>.
+        🪄 A machine learning model automatically extracts biomedical entities from the given text, classify them in different types from the BioLink model (chemical, disease, etc), 
+        and retrieve potential identifiers for those entities using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator Name Resolution API</a>.
       </Typography>
       {/* <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
         🪄 You can then compose the statements representing the different assertions present in the text using standard identifiers and properties from the BioLink model.
@@ -741,7 +743,7 @@ export default function AnnotateText() {
               className={classes.saveButton} 
               startIcon={<AddIcon />}
               style={{marginLeft: theme.spacing(5), marginTop: theme.spacing(1), textTransform: 'none'}}
-              color="secondary" >
+              color="inherit" >
                 Add a property to this statement
             </Button>
           }
@@ -752,7 +754,7 @@ export default function AnnotateText() {
         className={classes.saveButton} 
         startIcon={<AddIcon />}
         style={{textTransform: 'none', marginTop: theme.spacing(1)}}
-        color="primary" >
+        color="info" >
           Add a statement
       </Button>
 
