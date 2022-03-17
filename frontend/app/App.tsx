@@ -10,7 +10,7 @@ import blue from '@mui/material/colors/blue';
 import './src/App.css';
 import NavBar from "./src/components/NavBar";
 import Footer from "./src/components/Footer";
-import PublishNanopub from "./src/pages/PublishNanopub";
+import AnnotateText from "./src/pages/AnnotateText";
 import About from "./src/pages/About";
 import BrowseNanopub from "./src/pages/BrowseNanopub";
 import UserContext from "./src/UserContext";
@@ -97,7 +97,7 @@ const App = () => {
             <NavBar />
 
             <Route path="/about" component={About} />
-            <Route path="/publish" component={PublishNanopub} />
+            <Route path="/annotate" component={AnnotateText} />
             <Route exact path="/" component={BrowseNanopub} />
             <Footer />
           </View>

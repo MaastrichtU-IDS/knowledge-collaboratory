@@ -13,6 +13,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import SearchIcon from '@mui/icons-material/Search';
 import AssessmentsIcon from '@mui/icons-material/CollectionsBookmark';
 import PublishIcon from '@mui/icons-material/Outbox';
+import AnnotateIcon from '@mui/icons-material/LocalOffer';
 import axios from 'axios';
 
 // @ts-ignore
@@ -191,10 +192,10 @@ export default function NavBar() {
             </Button>
           </Tooltip>
         </Link>
-        <Link to="/publish" className={classes.linkButton}>
-          <Tooltip title='Publish Nanopublications'>
+        <Link to="/annotate" className={classes.linkButton}>
+          <Tooltip title='Annotate biomedical text, and publish the assertion as Nanopublication'>
             <Button style={{color: '#fff', textTransform: 'none'}}>
-              <PublishIcon />&nbsp;Publish Nanopubs
+              <AnnotateIcon />&nbsp;Annotate biomedical text
             </Button>
           </Tooltip>
         </Link>

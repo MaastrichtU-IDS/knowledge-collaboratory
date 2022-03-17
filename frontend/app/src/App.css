@@ -18,6 +18,10 @@ pre {
   /* background: #22272e; */
 }
 
+a {
+  text-decoration: none;
+}
+
 code {
   font-family: monospace, monospace;
   font-size: 11px;

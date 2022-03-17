@@ -2,16 +2,13 @@ import React, { useContext } from 'react';
 import { useLocation } from "react-router-dom";
 import { useTheme } from '@mui/material/styles';
 import { makeStyles, withStyles } from '@mui/styles';
-import { Typography, Container, Box, CircularProgress, Autocomplete, Button, Card, FormControl, TextField, Snackbar, Grid, Select, MenuItem, InputLabel } from "@mui/material";
+import { Typography, Container, Button, Card, FormControl, Snackbar, Grid, Select, MenuItem, InputLabel } from "@mui/material";
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import DownloadJsonldIcon from '@mui/icons-material/Description';
-import AddIcon from '@mui/icons-material/AddBox';
+import UploadTriplestoreIcon from '@mui/icons-material/Share';
 import UploadIcon from '@mui/icons-material/FileUpload';
-import ExtractIcon from '@mui/icons-material/Download';
-import GenerateIcon from '@mui/icons-material/FactCheck';
-import PublishIcon from '@mui/icons-material/Backup';
+import PublishIcon from '@mui/icons-material/Outbox';
 import axios from 'axios';
-import Taggy from 'react-taggy'
 
 const $rdf = require('rdflib')
 // import { LoggedIn, LoggedOut, Value } from '@solid/react';
@@ -33,20 +30,7 @@ import UserContext from '../UserContext'
 import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/github-dark-dimmed.css';
 import hljsDefineTurtle from '../components/highlightjs-turtle';
-import { gridColumnsSelector } from '@mui/x-data-grid';
 hljs.registerLanguage("turtle", hljsDefineTurtle)
-
-const sentenceToAnnotate = [
-  {
-    text: "Amantadine hydrochloride capsules are indicated in the treatment of idiopathic Parkinson’s disease (Paralysis Agitans), postencephalitic parkinsonism and symptomatic parkinsonism which may follow injury to the nervous system by carbon monoxide intoxication.", 
-    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=491aea85-5a55-4a7c-b1cf-a123fea4377d"
-  },
-  {
-    text: "Xyrem is indicated for the treatment of cataplexy or excessive daytime sleepiness (EDS) in patients 7 years of age and older with narcolepsy.", 
-    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=926eb076-a4a8-45e4-91ef-411f0aa4f3ca"
-  },
-]
-
 
 export default function PublishNanopub() {
   const theme = useTheme();
@@ -74,11 +58,6 @@ export default function PublishNanopub() {
         marginTop: theme.spacing(0),
         marginBottom: theme.spacing(1),
       },
-    },
-    input: {
-      background: 'white',
-      fontSize: '11px',
-      fontFamily: 'monospace'
     },
     saveButton: {
       textTransform: 'none',
@@ -119,18 +98,6 @@ export default function PublishNanopub() {
   // useLocation hook to get URL params
   let location = useLocation();  
   const [state, setState] = React.useState({
-    // inputText: 'Amantadine hydrochloride capsules are indicated in the treatment of idiopathic Parkinson’s disease (Paralysis Agitans), postencephalitic parkinsonism and symptomatic parkinsonism which may follow injury to the nervous system by carbon monoxide intoxication.',
-    inputText: '',
-    inputSource: '',
-    templateSelected: 'BioLink reified associations',
-    entitiesAnnotations: [],
-    entitiesList: [],
-    statements: [{'s': 'subject', 'p': 'predicate', 'o': 'object', 'props': []}],
-    propertiesList: [
-      {id: 'https://w3id.org/biolink/vocab/treats', curie: 'biolink:treats', label: 'Treats', type: 'BioLink'},
-      {id: 'https://w3id.org/biolink/vocab/treatedBy', curie: 'biolink:treatedBy', label: 'Treated by', type: 'BioLink'},
-    ],
-    loading: false,
     open: false,
     dialogOpen: false,
     np_jsonld: samples['Drug indication with the BioLink model'],
@@ -168,40 +135,32 @@ export default function PublishNanopub() {
     // Ontology is stored in state.ontology_jsonld 
     // and passed to renderObjectForm to resolve classes and properties
     const params = new URLSearchParams(location.search + location.hash);
-    if (!state.inputText) {
-      const randomSentence = sentenceToAnnotate[Math.floor(Math.random() * sentenceToAnnotate.length)]
-      updateState({
-        inputText: randomSentence.text,
-        inputSource: randomSentence.url,
-      })
+    let jsonld_uri_provided = params.get('edit');
+    let editionEnabled = params.get('toysrus');
+    if (editionEnabled === 'closed') {
+      // Disable edit if toysrus=closed
+      updateState({ edit_enabled: false })
     }
-    // let jsonld_uri_provided = params.get('edit');
-    // for (const onto_url of state.ontology_list) {
-    //   console.log('ontology url', onto_url);
-    //   downloadOntology(onto_url)
-    // }
+    for (const onto_url of state.ontology_list) {
+      console.log('ontology url', onto_url);
+      downloadOntology(onto_url)
+    }
     
-    // if (jsonld_uri_provided) {
-    //   axios.get(jsonld_uri_provided)
-    //     .then(res => {
-    //       updateState({
-    //         np_jsonld: res.data,
-    //         jsonld_uri_provided: jsonld_uri_provided,
-    //       })
-    //       // downloadOntology(res.data['@context'])
-    //     })
-    // } 
+    if (jsonld_uri_provided) {
+      axios.get(jsonld_uri_provided)
+        .then(res => {
+          updateState({
+            np_jsonld: res.data,
+            jsonld_uri_provided: jsonld_uri_provided,
+          })
+          // downloadOntology(res.data['@context'])
+        })
+    } 
     // else {
     //   downloadOntology(state.np_jsonld['@context'])
     // }
     
   }, [state.np_jsonld])
-
-  const ents = [
-    {type: 'chemicalentity', color: {r: 166, g: 226, b: 45}},
-    {type: 'drug', color: {r: 67, g: 198, b: 252}},
-    {type: 'diseaseorphenotypicfeature', color: {r: 47, g: 187, b: 171}}
-]
 
   const downloadOntology  = (contextUrl: string) => {
     // Download the ontology JSON-LD 
@@ -327,97 +286,19 @@ export default function PublishNanopub() {
       })
   }
 
-  const handleExtract  = (event: React.FormEvent) => {
-    // Trigger JSON-LD file download
-    event.preventDefault();
-    updateState({loading: true})
-    // var element = document.createElement('a');
-    axios.post(
-        settings.apiUrl + '/get-entities-relations', 
-        {'text': state.inputText}, 
-        // { headers: { Authorization: `Bearer ${access_token}` }} 
-      )
-      .then(res => {
-        const entitiesList: any = []
-        console.log(res.data)
-        res.data.map((entityMatch: any) => {
-          if (entityMatch.curies) {
-            Object.keys(entityMatch.curies).map((curie: any) => {
-              entitiesList.push({
-                id: 'https://identifiers.org/' + curie,
-                label: entityMatch.curies[curie][0],
-                curie: curie,
-                type: entityMatch.type,
-                typeMatch: entityMatch.type + ' ' + entityMatch.text
-              })
-            })
-          }
-        })
-        updateState({
-          loading: false,
-          entitiesList: entitiesList,
-          entitiesAnnotations: res.data
-        })
-        // console.log(entitiesAnnotations)
-      })
-      .catch(error => {
-        console.log(error)
-      })
-      // .finally(() => {
-      //   hljs.highlightAll();
-      // })
-  }
-
   const handleSubmit  = (event: React.FormEvent) => {
     // Trigger JSON-LD file download
     event.preventDefault();
     // var element = document.createElement('a');
     console.log(user);
-    const stmtJsonld: any = []
-    const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
-    if (state.templateSelected === 'BioLink reified associations') {
-      state.statements.map((stmt: any, index: number) => {
-        stmtJsonld.push({
-          // '@id': 'https://w3id.org/collaboratory/association/' + index,
-          [`${rdf}type`]: {'@id': 'https://w3id.org/biolink/vocab/Association'},
-          [`${rdf}subject`]: {'@id': stmt.s},
-          [`${rdf}predicate`]: {'@id': stmt.p},
-          [`${rdf}object`]: {'@id': stmt.o},
-        })
-      })
-    } else if (state.templateSelected === 'RDF reified statements') {
-      state.statements.map((stmt: any, index: number) => {
-        stmtJsonld.push({
-          [`${rdf}type`]: {'@id': `${rdf}Statement`},
-          [`${rdf}subject`]: {'@id': stmt.s},
-          [`${rdf}predicate`]: {'@id': stmt.p},
-          [`${rdf}object`]: {'@id': stmt.o},
-        })
-      })
-    } else {
-      // Plain RDF
-      state.statements.map((stmt: any) => {
-        stmtJsonld.push({
-          '@id': stmt.s,
-          [stmt.p]: stmt.o
-        })
-      })
-    }
-    // console.log(stmtJsonld)
     if (!user.error) {
-      console.log('Publishing!', stmtJsonld)
-      let requestParams = ''
-      if (state.inputSource) {
-        requestParams = `?source=${state.inputSource}`
-      }
       const access_token = user['access_token']
       axios.post(
-          `${settings.apiUrl}/assertion${requestParams}`,
-          stmtJsonld, 
+          settings.apiUrl + '/assertion', 
+          state.np_jsonld, 
           { headers: { Authorization: `Bearer ${access_token}` }} 
         )
         .then(res => {
-          console.log(res)
           updateState({
             open: true,
             published_nanopub: res.data
@@ -450,67 +331,10 @@ export default function PublishNanopub() {
     updateState({...state, ontoload_success_open: false})
   };
 
-  const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    updateState({ [event.target.id]: event.target.value})
-  }
-
   // Handle TextField changes for SPARQL endpoint upload
-  // const handleStmtChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   // event.preventDefault
-  //   const property = event.target.id.split(':')[0]
-  //   const index = event.target.id.split(':')[1]
-  //   const stmts: any = state.statements
-  //   console.log('index', index)
-  //   console.log('stmts', stmts)
-  //   console.log('stmts index', stmts[index])
-  //   stmts[index][property] = event.target.value
-  //   updateState({statements: stmts})
-  //   console.log(state.statements)
-  // }
-
-  const addStatement  = (event: React.FormEvent) => {
-    event.preventDefault();
-    const stmts: any = state.statements
-    stmts.push({'s': '', 'p': '', 'o': '', 'props': []})
-    updateState({statements: stmts})
+  const handleTextFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    updateState({[event.target.id]: event.target.value})
   }
-  const addProperty = (event: React.FormEvent)=> {
-    // event.preventDefault();
-    const stmts: any = state.statements
-    const stmtIndex = event.target.id.split('-')[0].split(':')[1]
-    console.log(event.target.id)
-    console.log(stmtIndex)
-    stmts[stmtIndex]['props'].push({p: '', o: ''})
-    updateState({statements: stmts})
-  }
-  const handleAutocomplete = (event: any, newInputValue: any) => {
-    const stmts: any = state.statements
-    if (event.target.id.startsWith('prop:')) {
-      // Edit properties of a statement
-      const property = event.target.id.split('-')[0].split(':')[1]
-      const index = event.target.id.split('-')[0].split(':')[2]
-      if (newInputValue) {
-        stmts[index]['props'][property] = newInputValue.id as string
-        updateState({statements: stmts})
-      }
-    } else {
-      // Edit statement
-      const property = event.target.id.split('-')[0].split(':')[0]
-      const index = event.target.id.split('-')[0].split(':')[1]
-      if (newInputValue) {
-        stmts[index][property] = newInputValue.id as string
-        updateState({statements: stmts})
-      }
-    }
-  }
-
-  const triplesTemplates = ["BioLink reified associations", "RDF reified statements", "Plain RDF"]
-  const handleTemplateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    updateState({templateSelected: event.target.value})
-    // hljs.highlightAll();
-  }
-
-
   const handleSelectSample = (event: React.ChangeEvent<HTMLInputElement>) => {
     // TODO: not working properly
     // updateState({np_jsonld: null})
@@ -524,7 +348,7 @@ export default function PublishNanopub() {
   return(
     <Container className='mainContainer'>
       <Typography variant="h4" style={{textAlign: 'center', margin: theme.spacing(1, 0)}}>
-        📝 Annotate text
+        📬️ Publish Nanopublications
       </Typography>
 
       {/* <Typography variant="body1" style={{textAlign: 'center', marginBottom: theme.spacing(1)}}>
@@ -572,279 +396,77 @@ export default function PublishNanopub() {
             </Card>
           </>
         }
+
+        <InputLabel id="demo-simple-select-label" style={{ marginTop: theme.spacing(2) }}>
+          Load a template:
+        </InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={state.sample_selected}
+          label="Load a template"
+          // style={{ backgroundColor: '#ffffff'}}
+          onChange={handleSelectSample}
+        >
+          { Object.keys(samples).map((query_label: any, key: number) => (
+            <MenuItem key={key} value={query_label}>{query_label}</MenuItem>
+          ))}
+        </Select>
+
+        <Typography style={{marginTop: theme.spacing(1)}}>
+          Or
+        </Typography>
+
+        {/* Display the JSON-LD file uploader (if no ?edit= URL param provided) */}
+        {!state.jsonld_uri_provided &&
+          <JsonldUploader renderObject={state.np_jsonld} 
+            onChange={(np_jsonld: any) => {updateState({np_jsonld})}} />
+        }
       </Card>
 
-      <Typography variant='body1' style={{marginBottom: theme.spacing(2)}}>
-        1. Extract biomedical entities from text:
-      </Typography>
+      {/* <CsvUploader 
+        csvwColumnsArray={state.csvwColumnsArray}
+        onChange={(csvwColumnsArray: any) => {updateState({csvwColumnsArray})}} 
+      /> */}
 
-      <form onSubmit={handleExtract}>
-        <FormControl className={classes.settingsForm}>
-
-          <TextField
-            id='inputText'
-            label='Text to annotate'
-            placeholder='Text to annotate'
-            value={state.inputText}
-            required
-            multiline
-            // className={classes.fullWidth}
-            variant="outlined"
-            onChange={handleTextChange}
-            size='small'
-            InputProps={{
-              className: classes.input
-            }}
-            InputLabelProps={{ required: false }}
-          />
-
-          <TextField
-            id='inputSource'
-            label='Source URL (optional)'
-            placeholder='Source URL (optional)'
-            value={state.inputSource}
-            required
-            // className={classes.fullWidth}
-            variant="outlined"
-            onChange={handleTextChange}
-            size='small'
-            InputProps={{
-              className: classes.input
-            }}
-            InputLabelProps={{ required: false }}
-          />
-
-          <div style={{width: '100%', textAlign: 'center', marginBottom: theme.spacing(2)}}>
-            <Button type="submit" 
-              variant="contained" 
-              className={classes.saveButton} 
-              startIcon={<ExtractIcon />}
-              color="secondary" >
-                Extract entities
-            </Button>
-          </div>
-          {/* <Snackbar open={state.json_error_open} onClose={closeJsonError} autoHideDuration={10000}>
-            <MuiAlert elevation={6} variant="filled" severity="error">
-              The JSON-LD provided is not valid ❌️
-            </MuiAlert>
-          </Snackbar>
-          <Snackbar open={state.json_loaded_open} onClose={closeJsonLoaded} autoHideDuration={10000}>
-            <MuiAlert elevation={6} variant="filled" severity="info">
-              Your JSON-LD has been loaded. Trying to load the ontology from the URL provided in @context...
-            </MuiAlert>
-          </Snackbar> */}
-        </FormControl>
-      </form>
-
-      { state.loading &&
-        <Box sx={{textAlign: 'center', margin: theme.spacing(10, 0)}} >
-          <CircularProgress style={{textAlign: 'center'}} />
-        </Box>
-      }
-
-      { state.entitiesAnnotations.length > 0 &&
-        <Card className={classes.paperPadding} >
-          <Taggy text={state.inputText} spans={state.entitiesAnnotations} ents={ents} />
-        </Card>
-      }
-
-      <Typography variant='body1' style={{marginBottom: theme.spacing(2)}}>
-        2. Define the statements that represent the assertions made in the text:
-      </Typography>
-
-      {/* <Grid container spacing={2}> */}
-      { state.statements.map((stmtRow: any, index: number) => { 
-        // {console.log(stmtRow)}
-        // {console.log(stmtRow.s)}
-        // {console.log(index)}
-        // return <Box key={index} style={{marginBottom: theme.spacing(1)}}>
-        return <Grid container spacing={2} key={index} style={{marginBottom: theme.spacing(1)}}>
-            <Grid item xs={4}>
-              <Autocomplete
-                key={'s:'+index}
-                id={'s:'+index}
-                freeSolo
-                options={state.entitiesList}
-                onChange={handleAutocomplete}
-                getOptionLabel={(option: any) => option.label + ' (' + option.curie + ')'}
-                groupBy={(option) => option.typeMatch}
-                // required={true}
-                // defaultValue={[top100Films[13]]}
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    size='small'
-                    className={classes.input}
-                    label="Subject"
-                    placeholder="Subject"
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={4}>
-              <Autocomplete
-                key={'p:'+index}
-                id={'p:'+index}
-                freeSolo
-                options={state.propertiesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
-                // options={state.propertiesList}
-                onChange={handleAutocomplete}
-                getOptionLabel={(option: any) => option.label + ' (' + option.curie + ')'}
-                // required={true}
-                // defaultValue={[top100Films[13]]}
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    size='small'
-                    className={classes.input}
-                    label="Predicate"
-                    placeholder="Predicate"
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={4}>
-              <Autocomplete
-                key={'o:'+index}
-                id={'o:'+index}
-                freeSolo
-                options={state.entitiesList}
-                onChange={handleAutocomplete}
-                getOptionLabel={(option: any) => option.label + ' (' + option.curie + ')'}
-                groupBy={(option) => option.typeMatch}
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    size='small'
-                    className={classes.input}
-                    label="Object"
-                    placeholder="Object"
-                  />
-                )}
-              />
-            </Grid>
-
-            {/* TODO: Add props to each statement */}
-            {/* { state.statements[index].props.map((prop: any, pindex: number) => { 
-              <Grid container spacing={2} key={'prop' + prop + pindex} style={{marginLeft: theme.spacing(5), marginBottom: theme.spacing(1)}}>
-              {console.log(prop)}
-              <Grid item xs={4}>
-                <Autocomplete
-                  // key={'prop:p:'+pindex}
-                  id={'prop:p:'+pindex}
-                  value={prop.p}
-                  freeSolo
-                  options={state.propertiesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
-                  onChange={handleAutocomplete}
-                  getOptionLabel={(option: any) => option.label + ' (' + option.curie + ')'}
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      variant="outlined"
-                      size='small'
-                      className={classes.input}
-                      label="Property predicate"
-                      placeholder="Property predicate"
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid item xs={4}>
-                <Autocomplete
-                  key={'prop:o:'+pindex}
-                  id={'prop:o:'+pindex}
-                  value={prop.o}
-                  freeSolo
-                  options={state.entitiesList}
-                  onChange={handleAutocomplete}
-                  getOptionLabel={(option: any) => option.label + ' (' + option.curie + ')'}
-                  groupBy={(option) => option.typeMatch}
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      variant="outlined"
-                      size='small'
-                      className={classes.input}
-                      label="Property object"
-                      placeholder="Property object"
-                    />
-                  )}
-                />
-              </Grid>
-            </Grid>
-            })
-          } 
-          <Button 
-            // onClick={addProperty(index)}
-            onClick={addProperty}
-            id={"addProp:" + index}
-            variant="contained" 
-            className={classes.saveButton} 
-            startIcon={<AddIcon />}
-            style={{textTransform: 'none', marginTop: theme.spacing(1)}}
-            color="secondary" >
-              Add a property to this statement
-          </Button> */}
-        </Grid>
-        {/* </Box> */}
-      })}
-      {/* </Grid> */}
-      <Button onClick={addStatement}
-        variant="contained" 
-        className={classes.saveButton} 
-        startIcon={<AddIcon />}
-        style={{textTransform: 'none', marginTop: theme.spacing(1)}}
-        color="primary" >
-          Add a statement
-      </Button>
-
-      <Typography variant='body1' style={{marginTop: theme.spacing(3), marginBottom: theme.spacing(2)}}>
-        3. Choose the template used to generate the triples:
-      </Typography>
-      <TextField select
-          value={state.templateSelected} 
-          label={"Use the template"} 
-          id="collectionSelected" 
-          onChange={handleTemplateChange} 
-          SelectProps={{ MenuProps: { disableScrollLock: true } }}
-          style={{marginBottom: theme.spacing(3), backgroundColor: 'white'}}
-          variant="outlined"> 
-        { triplesTemplates.map((template: any, key: number) => (
-          <MenuItem key={template} value={template}>{template}</MenuItem>
-        ))}
-      </TextField>
+      <Snackbar open={state.ontoload_error_open} onClose={closeOntoloadError} autoHideDuration={10000}>
+        <MuiAlert elevation={6} variant="filled" severity="error">
+          The ontology provided in @context could not be loaded from {state.np_jsonld['@context']}
+        </MuiAlert>
+      </Snackbar>
+      <Snackbar open={state.ontoload_success_open} onClose={closeOntoloadSuccess} autoHideDuration={10000}>
+        <MuiAlert elevation={6} variant="filled" severity="success">
+          The ontology {state.np_jsonld['@context']} from @context has been loaded successfully, it will be used for classes and properties autocomplete
+        </MuiAlert>
+      </Snackbar>
 
       <form onSubmit={handleSubmit}>
         <FormControl className={classes.settingsForm}>
+
+          {/* First call of RenderObjectForm (the rest is handled recursively in this component) */}
+          <RenderObjectForm
+            renderObject={state.np_jsonld}
+            ontologyObject={state.ontology_jsonld}
+            onChange={(np_jsonld: any) => { updateState({np_jsonld})} }
+            fullJsonld={state.np_jsonld}
+            editEnabled={state.edit_enabled}
+            parentProperty='root'
+            parentType='root'
+          />
 
           {/* Button to download the JSON-LD */}
           <div style={{width: '100%', textAlign: 'center'}}>
             <Button type="submit" 
               variant="contained" 
               className={classes.saveButton} 
-              startIcon={<GenerateIcon />}
-              disabled={!user.id}
-              style={{marginRight: theme.spacing(2)}}
-              color="secondary" >
-                Generate Nanopublication
-            </Button>
-            <Button type="submit" 
-              variant="contained" 
-              className={classes.saveButton} 
               startIcon={<PublishIcon />}
               disabled={!user.id}
-              color="warning" >
+              color="secondary" >
                 Publish Nanopublication
             </Button>
             { !user.id &&
               <Typography style={{marginTop: theme.spacing(2)}}>
-                🔒️ You need to login with ORCID to generate Nanopublications
+                🔒️ You need to login with ORCID to publish Nanopublications
               </Typography>
             }
           </div>
