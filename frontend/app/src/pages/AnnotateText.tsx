@@ -438,17 +438,13 @@ export default function AnnotateText() {
       const index = event.target.id.split('-')[0].split(':')[1]
       const property = event.target.id.split('-')[0].split(':')[2]
       const pindex = event.target.id.split('-')[0].split(':')[3]
-      console.log(property)
-      console.log(newInputValue)
       if (newInputValue) {
         if (newInputValue.id) {
           stmts[index]['props'][pindex][property] = newInputValue.id as string
         } else {
           stmts[index]['props'][pindex][property] = newInputValue as string
         }
-        console.log(stmts)
         updateState({statements: stmts})
-        console.log('state', state.statements)
       }
     } else {
       // Edit a statement
