@@ -30,7 +30,7 @@ const $rdf = require('rdflib')
 
 import JsonldUploader from "../components/JsonldUploader";
 import RenderObjectForm from "../components/RenderObjectForm";
-import { settings, samples } from '../settings';
+import { settings, samples, propertiesList, predicatesList } from '../settings';
 import UserContext from '../UserContext'
 
 import hljs from 'highlight.js/lib/core';
@@ -133,10 +133,8 @@ export default function AnnotateText() {
     entitiesList: [],
     entitiesType: entitiesType,
     statements: [{'s': '', 'p': '', 'o': '', 'props': []}],
-    propertiesList: [
-      {id: 'https://w3id.org/biolink/vocab/treats', curie: 'biolink:treats', label: 'Treats', type: 'BioLink'},
-      {id: 'https://w3id.org/biolink/vocab/treatedBy', curie: 'biolink:treatedBy', label: 'Treated by', type: 'BioLink'},
-    ],
+    predicatesList: predicatesList,
+    propertiesList: propertiesList,
     loading: false,
     open: false,
     dialogOpen: false,
@@ -191,35 +189,34 @@ export default function AnnotateText() {
     {type: 'diseaseorphenotypicfeature', color: {r: 47, g: 187, b: 171}}
   ]
 
-
-  const toJSONLD = (data: any, uri: any) => {
-    // Convert RDF to JSON-LD using rdflib
-    let rdf_format = 'application/rdf+xml';
-    if (uri.endsWith('.ttl')) rdf_format = 'text/turtle'
-    if (uri.endsWith('.nq')) rdf_format = 'application/n-quads'
-    // Or text/x-nquads
-    if (uri.endsWith('.nt')) rdf_format = 'application/n-triples'
-    if (uri.endsWith('.n3')) rdf_format = 'text/n3'
-    if (uri.endsWith('.trig')) rdf_format = 'application/trig'
-    return new Promise((resolve, reject) => {
-        let store = $rdf.graph()
-        let doc = $rdf.sym(uri);
-        $rdf.parse(data, store, uri, rdf_format)
-        // console.log(store)
-        $rdf.serialize(doc, store, uri, 'application/ld+json', (err: any, jsonldData: any) => {
-          return resolve(JSON.parse(jsonldData)
-            .sort((a: any, b: any) => {
-              if (a['@type'] && b['@type'] && Array.isArray(a['@type']) && Array.isArray(b['@type'])){
-                // Handle when array of types provided (e.g. SIO via rdflib)
-                return a['@type'][0] < b['@type'][0] ? 1 : -1
-              } else {
-                return a['@type'] < b['@type'] ? 1 : -1
-              }
-            })
-        )
-      })
-    })
-  }
+  // const toJSONLD = (data: any, uri: any) => {
+  //   // Convert RDF to JSON-LD using rdflib
+  //   let rdf_format = 'application/rdf+xml';
+  //   if (uri.endsWith('.ttl')) rdf_format = 'text/turtle'
+  //   if (uri.endsWith('.nq')) rdf_format = 'application/n-quads'
+  //   // Or text/x-nquads
+  //   if (uri.endsWith('.nt')) rdf_format = 'application/n-triples'
+  //   if (uri.endsWith('.n3')) rdf_format = 'text/n3'
+  //   if (uri.endsWith('.trig')) rdf_format = 'application/trig'
+  //   return new Promise((resolve, reject) => {
+  //       let store = $rdf.graph()
+  //       let doc = $rdf.sym(uri);
+  //       $rdf.parse(data, store, uri, rdf_format)
+  //       // console.log(store)
+  //       $rdf.serialize(doc, store, uri, 'application/ld+json', (err: any, jsonldData: any) => {
+  //         return resolve(JSON.parse(jsonldData)
+  //           .sort((a: any, b: any) => {
+  //             if (a['@type'] && b['@type'] && Array.isArray(a['@type']) && Array.isArray(b['@type'])){
+  //               // Handle when array of types provided (e.g. SIO via rdflib)
+  //               return a['@type'][0] < b['@type'][0] ? 1 : -1
+  //             } else {
+  //               return a['@type'] < b['@type'] ? 1 : -1
+  //             }
+  //           })
+  //       )
+  //     })
+  //   })
+  // }
 
   const handleUploadKeys  = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -304,23 +301,36 @@ export default function AnnotateText() {
     const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
     if (state.templateSelected === 'BioLink reified associations') {
       state.statements.map((stmt: any, index: number) => {
-        stmtJsonld.push({
+        const reifiedStmt = {
           // '@id': 'https://w3id.org/collaboratory/association/' + index,
           [`${rdf}type`]: {'@id': 'https://w3id.org/biolink/vocab/Association'},
           [`${rdf}subject`]: {'@id': stmt.s},
           [`${rdf}predicate`]: {'@id': stmt.p},
           [`${rdf}object`]: {'@id': stmt.o},
+        }
+        // Add properties for reified statements
+        stmt.props.map((stmtProp: any, pindex: number) => {
+          reifiedStmt[stmtProp.p] = stmtProp.o
         })
+        stmtJsonld.push(reifiedStmt)
       })
+
     } else if (state.templateSelected === 'RDF reified statements') {
       state.statements.map((stmt: any, index: number) => {
-        stmtJsonld.push({
+        const reifiedStmt = {
+          // '@id': 'https://w3id.org/collaboratory/association/' + index,
           [`${rdf}type`]: {'@id': `${rdf}Statement`},
           [`${rdf}subject`]: {'@id': stmt.s},
           [`${rdf}predicate`]: {'@id': stmt.p},
           [`${rdf}object`]: {'@id': stmt.o},
+        }
+        // Add properties for reified statements
+        stmt.props.map((stmtProp: any, pindex: number) => {
+          reifiedStmt[stmtProp.p] = stmtProp.o
         })
+        stmtJsonld.push(reifiedStmt)
       })
+
     } else {
       // Plain RDF
       state.statements.map((stmt: any) => {
@@ -364,15 +374,21 @@ export default function AnnotateText() {
     // console.log(stmtJsonld)
     if (!user.error) {
       console.log('Publishing!', stmtJsonld)
-      let requestParams = ''
+      const requestParams: any = {}
       if (state.inputSource) {
-        requestParams = `?source=${state.inputSource}`
+        requestParams['source'] = state.inputSource
+      }
+      if (state.inputText) {
+        requestParams['quoted_from'] = state.inputText
       }
       const access_token = user['access_token']
       axios.post(
-          `${settings.apiUrl}/assertion${requestParams}`,
+          `${settings.apiUrl}/assertion`,
           stmtJsonld, 
-          { headers: { Authorization: `Bearer ${access_token}` }} 
+          { 
+            headers: { Authorization: `Bearer ${access_token}` },
+            params: requestParams
+          } 
         )
         .then(res => {
           console.log(res)
@@ -413,28 +429,42 @@ export default function AnnotateText() {
     console.log(stmtIndex);
     stmts[stmtIndex]['props'].push({p: '', o: ''})
     updateState({statements: stmts})
+    // setState({statements: stmts})
   }
   const handleAutocomplete = (event: any, newInputValue: any) => {
     const stmts: any = state.statements
     if (event.target.id.startsWith('prop:')) {
       // Edit properties of a statement
-      const property = event.target.id.split('-')[0].split(':')[1]
-      const index = event.target.id.split('-')[0].split(':')[2]
+      const index = event.target.id.split('-')[0].split(':')[1]
+      const property = event.target.id.split('-')[0].split(':')[2]
+      const pindex = event.target.id.split('-')[0].split(':')[3]
+      console.log(property)
+      console.log(newInputValue)
       if (newInputValue) {
-        stmts[index]['props'][property] = newInputValue.id as string
+        if (newInputValue.id) {
+          stmts[index]['props'][pindex][property] = newInputValue.id as string
+        } else {
+          stmts[index]['props'][pindex][property] = newInputValue as string
+        }
+        console.log(stmts)
         updateState({statements: stmts})
+        console.log('state', state.statements)
       }
     } else {
       // Edit a statement
       const property = event.target.id.split('-')[0].split(':')[0]
       const index = event.target.id.split('-')[0].split(':')[1] 
       if (newInputValue) {
-        stmts[index][property] = newInputValue.id as string
+        if (newInputValue.id) {
+          stmts[index][property] = newInputValue.id as string
+        } else {
+          stmts[index][property] = newInputValue as string
+        }
         updateState({statements: stmts})
       }
       // Add type based on labels extracted
       const entitiesType: any = state.entitiesType
-      if (!(newInputValue.id in entitiesType)) {
+      if (newInputValue && !(newInputValue.id in entitiesType)) {
         state.entitiesList.map((entity: any) => {
           if (entity.id == newInputValue.id) {
             entitiesType[entity.id] = BIOLINK + entity.type
@@ -454,6 +484,12 @@ export default function AnnotateText() {
     // TODO: entities that are not anymore relevant are removed when a statement is removed
     const stmts = state.statements
     stmts.splice(index, 1);
+    updateState({statements: stmts})
+  }
+  const handleRemoveProp = (stmtIndex: number, pindex: number) => {
+    // TODO: entities that are not anymore relevant are removed when a statement is removed
+    const stmts = state.statements
+    stmts[stmtIndex].props.splice(pindex, 1);
     updateState({statements: stmts})
   }
 
@@ -560,7 +596,8 @@ export default function AnnotateText() {
         // {console.log(stmtRow.s)}
         // {console.log(index)}
         // return <Box key={index} style={{marginBottom: theme.spacing(1)}}>
-        return <Grid container spacing={2} key={index} style={{marginBottom: theme.spacing(1)}}>
+        return <Box key={'stmt:' + index}>
+          <Grid container spacing={2} key={index} style={{marginBottom: theme.spacing(1), marginTop: theme.spacing(1)}}>
             <Grid item xs={4}>
               <Autocomplete
                 key={'s:'+index}
@@ -568,6 +605,7 @@ export default function AnnotateText() {
                 freeSolo
                 options={state.entitiesList}
                 onChange={handleAutocomplete}
+                onInputChange={handleAutocomplete}
                 getOptionLabel={(option: any) => option.label + ' (' + option.curie + ')'}
                 groupBy={(option) => option.typeMatch}
                 // required={true}
@@ -590,9 +628,10 @@ export default function AnnotateText() {
                 key={'p:'+index}
                 id={'p:'+index}
                 freeSolo
-                options={state.propertiesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
+                options={state.predicatesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
                 // options={state.propertiesList}
                 onChange={handleAutocomplete}
+                onInputChange={handleAutocomplete}
                 getOptionLabel={(option: any) => option.label + ' (' + option.curie + ')'}
                 // required={true}
                 // defaultValue={[top100Films[13]]}
@@ -616,6 +655,7 @@ export default function AnnotateText() {
                 freeSolo
                 options={state.entitiesList}
                 onChange={handleAutocomplete}
+                onInputChange={handleAutocomplete}
                 getOptionLabel={(option: any) => option.label + ' (' + option.curie + ')'}
                 groupBy={(option) => option.typeMatch}
                 renderInput={params => (
@@ -638,19 +678,18 @@ export default function AnnotateText() {
                 </IconButton>
               </Tooltip>
             </Grid>
-
-            {/* TODO: Add props to each statement */}
-            {/* { state.statements[index].props.map((prop: any, pindex: number) => { 
-              <Grid container spacing={2} key={'prop' + prop + pindex} style={{marginLeft: theme.spacing(5), marginBottom: theme.spacing(1)}}>
-              {console.log(prop)}
+          </Grid>
+          { state.templateSelected !== 'Plain RDF' && 
+            state.statements[index].props.map((prop: any, pindex: number) => { 
+              return <Grid container spacing={2} key={'prop' + index + prop + pindex} style={{marginLeft: theme.spacing(5), marginBottom: theme.spacing(1)}}>
+              {console.log('In JSX', prop)}
               <Grid item xs={4}>
                 <Autocomplete
-                  // key={'prop:p:'+pindex}
-                  id={'prop:p:'+pindex}
-                  value={prop.p}
+                  id={'prop:' + index + ':p:'+pindex}
                   freeSolo
                   options={state.propertiesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
                   onChange={handleAutocomplete}
+                  onInputChange={handleAutocomplete}
                   getOptionLabel={(option: any) => option.label + ' (' + option.curie + ')'}
                   renderInput={params => (
                     <TextField
@@ -658,8 +697,8 @@ export default function AnnotateText() {
                       variant="outlined"
                       size='small'
                       className={classes.input}
-                      label="Property predicate"
-                      placeholder="Property predicate"
+                      label="Property"
+                      placeholder="Property"
                     />
                   )}
                 />
@@ -667,12 +706,12 @@ export default function AnnotateText() {
 
               <Grid item xs={4}>
                 <Autocomplete
-                  key={'prop:o:'+pindex}
-                  id={'prop:o:'+pindex}
-                  value={prop.o}
+                  id={'prop:' + index + ':o:'+pindex}
                   freeSolo
                   options={state.entitiesList}
                   onChange={handleAutocomplete}
+                  onInputChange={handleAutocomplete}
+                  // onKeyPress={handleAutocomplete}
                   getOptionLabel={(option: any) => option.label + ' (' + option.curie + ')'}
                   groupBy={(option) => option.typeMatch}
                   renderInput={params => (
@@ -681,30 +720,37 @@ export default function AnnotateText() {
                       variant="outlined"
                       size='small'
                       className={classes.input}
-                      label="Property object"
-                      placeholder="Property object"
+                      label="Value"
+                      placeholder="Value"
                     />
                   )}
                 />
               </Grid>
+              <Grid item xs={1}>
+                <Tooltip title={<Typography style={{textAlign: 'center'}}>Delete the statement</Typography>}>
+                  <IconButton onClick={() => handleRemoveProp(index, pindex)} color="default">
+                      <RemoveIcon />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
             </Grid>
             })
-          } 
-          <Button 
-            // onClick={addProperty(index)}
-            onClick={addProperty}
-            id={"addProp:" + index}
-            variant="contained" 
-            className={classes.saveButton} 
-            startIcon={<AddIcon />}
-            style={{textTransform: 'none', marginTop: theme.spacing(1)}}
-            color="secondary" >
-              Add a property to this statement
-          </Button> */}
-        </Grid>
-        {/* </Box> */}
+          }
+          { state.templateSelected !== 'Plain RDF' && 
+            <Button 
+              // onClick={() => addProperty(event, index)}
+              onClick={addProperty}
+              id={"addProp:" + index}
+              variant="contained" 
+              className={classes.saveButton} 
+              startIcon={<AddIcon />}
+              style={{marginLeft: theme.spacing(5), marginTop: theme.spacing(1), textTransform: 'none'}}
+              color="secondary" >
+                Add a property to this statement
+            </Button>
+          }
+        </Box>
       })}
-      {/* </Grid> */}
       <Button onClick={addStatement}
         variant="contained" 
         className={classes.saveButton} 

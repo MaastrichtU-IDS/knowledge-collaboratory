@@ -120,7 +120,8 @@ async def publish_assertion(
         # nanopub_rdf: Union[Dict,List] = Body(...), # pydantic UNION dont work at all 
         nanopub_rdf: List = Body(..., example=ASSERTION_EXAMPLE),
         current_user: User = Depends(get_current_user),
-        source: Optional[str] = None
+        source: Optional[str] = None,
+        quoted_from: Optional[str] = None
     ):
     print(f"nanopub_rdf begin: {nanopub_rdf}")
     nanopub_rdf = jsonable_encoder(nanopub_rdf)
@@ -194,10 +195,12 @@ async def publish_assertion(
     # Provenance
     if source:
         g.add((BASE.assertion, PROV.hadPrimarySource, URIRef(source), prov_graph))
-    g.add((BASE.assertion, PROV.wasAttributedTo, URIRef(current_user['id']), prov_graph))
+    if quoted_from:
+        g.add((BASE.assertion, PROV.wasQuotedFrom, Literal(quoted_from), prov_graph))
+    
+    # g.add((BASE.assertion, PROV.wasAttributedTo, URIRef(current_user['id']), prov_graph))
     g.add((BASE.assertion, PROV.generatedAtTime, Literal(time_created, datatype=XSD.integer, normalize=False), prov_graph))
     
-    # g.add((BASE.assertion, PROV.hadPrimarySource, URIRef('http://dx.doi.org/10.3233/ISU-2010-0613'), prov_graph))
 
     # :Head {
     #     : np:hasAssertion :assertion ;
