@@ -8,7 +8,8 @@ import DownloadJsonldIcon from '@mui/icons-material/Description';
 import AddIcon from '@mui/icons-material/AddBox';
 import UploadIcon from '@mui/icons-material/FileUpload';
 import ExtractIcon from '@mui/icons-material/Download';
-import PublishIcon from '@mui/icons-material/Outbox';
+import GenerateIcon from '@mui/icons-material/FactCheck';
+import PublishIcon from '@mui/icons-material/Backup';
 import axios from 'axios';
 import Taggy from 'react-taggy'
 
@@ -121,9 +122,10 @@ export default function PublishNanopub() {
     // inputText: 'Amantadine hydrochloride capsules are indicated in the treatment of idiopathic Parkinson’s disease (Paralysis Agitans), postencephalitic parkinsonism and symptomatic parkinsonism which may follow injury to the nervous system by carbon monoxide intoxication.',
     inputText: '',
     inputSource: '',
+    templateSelected: 'BioLink reified associations',
     entitiesAnnotations: [],
     entitiesList: [],
-    statements: [{'s': 'subject', 'p': 'predicate', 'o': 'object'}],
+    statements: [{'s': 'subject', 'p': 'predicate', 'o': 'object', 'props': []}],
     propertiesList: [
       {id: 'https://w3id.org/biolink/vocab/treats', curie: 'biolink:treats', label: 'Treats', type: 'BioLink'},
       {id: 'https://w3id.org/biolink/vocab/treatedBy', curie: 'biolink:treatedBy', label: 'Treated by', type: 'BioLink'},
@@ -372,12 +374,35 @@ export default function PublishNanopub() {
     // var element = document.createElement('a');
     console.log(user);
     const stmtJsonld: any = []
-    state.statements.map((stmt: any) => {
-      stmtJsonld.push({
-        '@id': stmt.s,
-        [stmt.p]: stmt.o
+    const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+    if (state.templateSelected === 'BioLink reified associations') {
+      state.statements.map((stmt: any, index: number) => {
+        stmtJsonld.push({
+          // '@id': 'https://w3id.org/collaboratory/association/' + index,
+          [`${rdf}type`]: {'@id': 'https://w3id.org/biolink/vocab/Association'},
+          [`${rdf}subject`]: {'@id': stmt.s},
+          [`${rdf}predicate`]: {'@id': stmt.p},
+          [`${rdf}object`]: {'@id': stmt.o},
+        })
       })
-    })
+    } else if (state.templateSelected === 'RDF reified statements') {
+      state.statements.map((stmt: any, index: number) => {
+        stmtJsonld.push({
+          [`${rdf}type`]: {'@id': `${rdf}Statement`},
+          [`${rdf}subject`]: {'@id': stmt.s},
+          [`${rdf}predicate`]: {'@id': stmt.p},
+          [`${rdf}object`]: {'@id': stmt.o},
+        })
+      })
+    } else {
+      // Plain RDF
+      state.statements.map((stmt: any) => {
+        stmtJsonld.push({
+          '@id': stmt.s,
+          [stmt.p]: stmt.o
+        })
+      })
+    }
     // console.log(stmtJsonld)
     if (!user.error) {
       console.log('Publishing!', stmtJsonld)
@@ -446,17 +471,43 @@ export default function PublishNanopub() {
   const addStatement  = (event: React.FormEvent) => {
     event.preventDefault();
     const stmts: any = state.statements
-    stmts.push({'s': '', 'p': '', 'o': ''})
+    stmts.push({'s': '', 'p': '', 'o': '', 'props': []})
+    updateState({statements: stmts})
+  }
+  const addProperty = (event: React.FormEvent)=> {
+    // event.preventDefault();
+    const stmts: any = state.statements
+    const stmtIndex = event.target.id.split('-')[0].split(':')[1]
+    console.log(event.target.id)
+    console.log(stmtIndex)
+    stmts[stmtIndex]['props'].push({p: '', o: ''})
     updateState({statements: stmts})
   }
   const handleAutocomplete = (event: any, newInputValue: any) => {
-    const property = event.target.id.split('-')[0].split(':')[0]
-    const index = event.target.id.split('-')[0].split(':')[1]
     const stmts: any = state.statements
-    if (newInputValue) {
-      stmts[index][property] = newInputValue.id as string
-      updateState({statements: stmts})
+    if (event.target.id.startsWith('prop:')) {
+      // Edit properties of a statement
+      const property = event.target.id.split('-')[0].split(':')[1]
+      const index = event.target.id.split('-')[0].split(':')[2]
+      if (newInputValue) {
+        stmts[index]['props'][property] = newInputValue.id as string
+        updateState({statements: stmts})
+      }
+    } else {
+      // Edit statement
+      const property = event.target.id.split('-')[0].split(':')[0]
+      const index = event.target.id.split('-')[0].split(':')[1]
+      if (newInputValue) {
+        stmts[index][property] = newInputValue.id as string
+        updateState({statements: stmts})
+      }
     }
+  }
+
+  const triplesTemplates = ["BioLink reified associations", "RDF reified statements", "Plain RDF"]
+  const handleTemplateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    updateState({templateSelected: event.target.value})
+    // hljs.highlightAll();
   }
 
 
@@ -598,7 +649,7 @@ export default function PublishNanopub() {
       }
 
       <Typography variant='body1' style={{marginBottom: theme.spacing(2)}}>
-        2. Define the statements that represent the assertion made in the text:
+        2. Define the statements that represent the assertions made in the text:
       </Typography>
 
       {/* <Grid container spacing={2}> */}
@@ -608,77 +659,138 @@ export default function PublishNanopub() {
         // {console.log(index)}
         // return <Box key={index} style={{marginBottom: theme.spacing(1)}}>
         return <Grid container spacing={2} key={index} style={{marginBottom: theme.spacing(1)}}>
-          <Grid item xs={4}>
-            <Autocomplete
-              key={'s:'+index}
-              id={'s:'+index}
-              freeSolo
-              options={state.entitiesList}
-              onChange={handleAutocomplete}
-              getOptionLabel={(option: any) => option.label + ' (' + option.curie + ')'}
-              groupBy={(option) => option.typeMatch}
-              // required={true}
-              // defaultValue={[top100Films[13]]}
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  variant="outlined"
-                  size='small'
-                  className={classes.input}
-                  label="Subject"
-                  placeholder="Subject"
-                />
-              )}
-            />
-          </Grid>
+            <Grid item xs={4}>
+              <Autocomplete
+                key={'s:'+index}
+                id={'s:'+index}
+                freeSolo
+                options={state.entitiesList}
+                onChange={handleAutocomplete}
+                getOptionLabel={(option: any) => option.label + ' (' + option.curie + ')'}
+                groupBy={(option) => option.typeMatch}
+                // required={true}
+                // defaultValue={[top100Films[13]]}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    size='small'
+                    className={classes.input}
+                    label="Subject"
+                    placeholder="Subject"
+                  />
+                )}
+              />
+            </Grid>
 
-          <Grid item xs={4}>
-            <Autocomplete
-              key={'p:'+index}
-              id={'p:'+index}
-              freeSolo
-              options={state.propertiesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
-              // options={state.propertiesList}
-              onChange={handleAutocomplete}
-              getOptionLabel={(option: any) => option.label + ' (' + option.id + ')'}
-              // required={true}
-              // defaultValue={[top100Films[13]]}
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  variant="outlined"
-                  size='small'
-                  className={classes.input}
-                  label="Predicate"
-                  placeholder="Predicate"
-                />
-              )}
-            />
-          </Grid>
+            <Grid item xs={4}>
+              <Autocomplete
+                key={'p:'+index}
+                id={'p:'+index}
+                freeSolo
+                options={state.propertiesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
+                // options={state.propertiesList}
+                onChange={handleAutocomplete}
+                getOptionLabel={(option: any) => option.label + ' (' + option.curie + ')'}
+                // required={true}
+                // defaultValue={[top100Films[13]]}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    size='small'
+                    className={classes.input}
+                    label="Predicate"
+                    placeholder="Predicate"
+                  />
+                )}
+              />
+            </Grid>
 
-          <Grid item xs={4}>
-            <Autocomplete
-              key={'o:'+index}
-              id={'o:'+index}
-              freeSolo
-              options={state.entitiesList}
-              onChange={handleAutocomplete}
-              getOptionLabel={(option: any) => option.label + ' (' + option.id + ')'}
-              groupBy={(option) => option.typeMatch}
-              // required={true}
-              // defaultValue={[top100Films[13]]}
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  variant="outlined"
-                  size='small'
-                  className={classes.input}
-                  label="Object"
-                  placeholder="Object"
+            <Grid item xs={4}>
+              <Autocomplete
+                key={'o:'+index}
+                id={'o:'+index}
+                freeSolo
+                options={state.entitiesList}
+                onChange={handleAutocomplete}
+                getOptionLabel={(option: any) => option.label + ' (' + option.curie + ')'}
+                groupBy={(option) => option.typeMatch}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    size='small'
+                    className={classes.input}
+                    label="Object"
+                    placeholder="Object"
+                  />
+                )}
+              />
+            </Grid>
+
+            {/* TODO: Add props to each statement */}
+            {/* { state.statements[index].props.map((prop: any, pindex: number) => { 
+              <Grid container spacing={2} key={'prop' + prop + pindex} style={{marginLeft: theme.spacing(5), marginBottom: theme.spacing(1)}}>
+              {console.log(prop)}
+              <Grid item xs={4}>
+                <Autocomplete
+                  // key={'prop:p:'+pindex}
+                  id={'prop:p:'+pindex}
+                  value={prop.p}
+                  freeSolo
+                  options={state.propertiesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
+                  onChange={handleAutocomplete}
+                  getOptionLabel={(option: any) => option.label + ' (' + option.curie + ')'}
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      size='small'
+                      className={classes.input}
+                      label="Property predicate"
+                      placeholder="Property predicate"
+                    />
+                  )}
                 />
-              )}
-            />
-          </Grid>
+              </Grid>
+
+              <Grid item xs={4}>
+                <Autocomplete
+                  key={'prop:o:'+pindex}
+                  id={'prop:o:'+pindex}
+                  value={prop.o}
+                  freeSolo
+                  options={state.entitiesList}
+                  onChange={handleAutocomplete}
+                  getOptionLabel={(option: any) => option.label + ' (' + option.curie + ')'}
+                  groupBy={(option) => option.typeMatch}
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      size='small'
+                      className={classes.input}
+                      label="Property object"
+                      placeholder="Property object"
+                    />
+                  )}
+                />
+              </Grid>
+            </Grid>
+            })
+          } 
+          <Button 
+            // onClick={addProperty(index)}
+            onClick={addProperty}
+            id={"addProp:" + index}
+            variant="contained" 
+            className={classes.saveButton} 
+            startIcon={<AddIcon />}
+            style={{textTransform: 'none', marginTop: theme.spacing(1)}}
+            color="secondary" >
+              Add a property to this statement
+          </Button> */}
         </Grid>
         {/* </Box> */}
       })}
@@ -692,21 +804,21 @@ export default function PublishNanopub() {
           Add a statement
       </Button>
 
-      {/* <CsvUploader 
-        csvwColumnsArray={state.csvwColumnsArray}
-        onChange={(csvwColumnsArray: any) => {updateState({csvwColumnsArray})}} 
-      /> */}
-
-      <Snackbar open={state.ontoload_error_open} onClose={closeOntoloadError} autoHideDuration={10000}>
-        <MuiAlert elevation={6} variant="filled" severity="error">
-          The ontology provided in @context could not be loaded from {state.np_jsonld['@context']}
-        </MuiAlert>
-      </Snackbar>
-      <Snackbar open={state.ontoload_success_open} onClose={closeOntoloadSuccess} autoHideDuration={10000}>
-        <MuiAlert elevation={6} variant="filled" severity="success">
-          The ontology {state.np_jsonld['@context']} from @context has been loaded successfully, it will be used for classes and properties autocomplete
-        </MuiAlert>
-      </Snackbar>
+      <Typography variant='body1' style={{marginTop: theme.spacing(3), marginBottom: theme.spacing(2)}}>
+        3. Choose the template used to generate the triples:
+      </Typography>
+      <TextField select
+          value={state.templateSelected} 
+          label={"Use the template"} 
+          id="collectionSelected" 
+          onChange={handleTemplateChange} 
+          SelectProps={{ MenuProps: { disableScrollLock: true } }}
+          style={{marginBottom: theme.spacing(3), backgroundColor: 'white'}}
+          variant="outlined"> 
+        { triplesTemplates.map((template: any, key: number) => (
+          <MenuItem key={template} value={template}>{template}</MenuItem>
+        ))}
+      </TextField>
 
       <form onSubmit={handleSubmit}>
         <FormControl className={classes.settingsForm}>
@@ -716,14 +828,23 @@ export default function PublishNanopub() {
             <Button type="submit" 
               variant="contained" 
               className={classes.saveButton} 
+              startIcon={<GenerateIcon />}
+              disabled={!user.id}
+              style={{marginRight: theme.spacing(2)}}
+              color="secondary" >
+                Generate Nanopublication
+            </Button>
+            <Button type="submit" 
+              variant="contained" 
+              className={classes.saveButton} 
               startIcon={<PublishIcon />}
               disabled={!user.id}
-              color="secondary" >
+              color="warning" >
                 Publish Nanopublication
             </Button>
             { !user.id &&
               <Typography style={{marginTop: theme.spacing(2)}}>
-                🔒️ You need to login with ORCID to publish Nanopublications
+                🔒️ You need to login with ORCID to generate Nanopublications
               </Typography>
             }
           </div>

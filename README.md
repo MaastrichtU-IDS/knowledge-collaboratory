@@ -31,7 +31,7 @@ Predownload the NER models:
 ```bash
 mkdir -p /data/knowledge-collaboratory/ner-models
 cd /data/knowledge-collaboratory/ner-models
-wget https://umids-download.137.120.31.102.nip.io/ner-models/litcoin-ner-model.zip
+wget https://download.dumontierlab.com/ner-models/litcoin-ner-model.zip
 unzip *.zip 
 ```
 

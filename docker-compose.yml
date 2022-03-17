@@ -12,3 +12,4 @@ services:
       - .env
     volumes:
       - /data/knowledge-collaboratory/ner-models:/data/ner-models
+      - /data/knowledge-collaboratory/nanopub-keystore:/data/nanopub-keystore
