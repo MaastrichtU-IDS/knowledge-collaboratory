@@ -13,6 +13,7 @@ import GenerateIcon from '@mui/icons-material/FactCheck';
 import PublishIcon from '@mui/icons-material/Backup';
 import DownloadIcon from '@mui/icons-material/Download';
 import axios from 'axios';
+// @ts-ignore
 import Taggy from 'react-taggy'
 
 const $rdf = require('rdflib')
@@ -142,21 +143,6 @@ export default function AnnotateText() {
     np_jsonld: samples['Drug indication with the BioLink model'],
     sample_selected: 'Drug indication with the BioLink model',
     published_nanopub: '',
-    csvwColumnsArray: [],
-    jsonld_uri_provided: null,
-    // ontology_list: ['https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.ttl'],
-    ontology_list: [],
-    ontologies: {
-      'https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.ttl': {},
-      'https://schema.org/version/latest/schemaorg-current-https.jsonld': {},
-    },
-    ontology_jsonld: {},
-    edit_enabled: true,
-    ontoload_error_open: false,
-    ontoload_success_open: false,
-    sparql_endpoint: '',
-    sparql_username: '',
-    sparql_password: '',
   });
   const stateRef = React.useRef(state);
   // Avoid conflict when async calls
@@ -165,14 +151,8 @@ export default function AnnotateText() {
     setState(stateRef.current);
   }, [setState]);
   
-  // Original form and output:
-  // Questions: https://github.com/kodymoodley/fair-metadata-generator/blob/main/questions.csv
-  // Full output: https://github.com/kodymoodley/fair-metadata-html-page-generator/blob/main/testdata/inputdata/test.jsonld
 
   React.useEffect(() => {
-    // Get the edit URL param if provided, and download ontology if @context changed
-    // Ontology is stored in state.ontology_jsonld 
-    // and passed to renderObjectForm to resolve classes and properties
     const params = new URLSearchParams(location.search + location.hash);
     if (!state.inputText) {
       const randomSentence = sentenceToAnnotate[Math.floor(Math.random() * sentenceToAnnotate.length)]
@@ -204,72 +184,13 @@ export default function AnnotateText() {
     
   }, [state.np_jsonld])
 
+  // TODO: complete the list of ents?
   const ents = [
     {type: 'chemicalentity', color: {r: 166, g: 226, b: 45}},
     {type: 'drug', color: {r: 67, g: 198, b: 252}},
     {type: 'diseaseorphenotypicfeature', color: {r: 47, g: 187, b: 171}}
-]
+  ]
 
-  const downloadOntology  = (contextUrl: string) => {
-    // Download the ontology JSON-LD 
-    if (!contextUrl) {
-      // Handle when no @context provided, use schema.org by default
-      contextUrl = 'https://schema.org/'
-      // if (!state.np_jsonld['@context']) updateState({...state.np_jsonld, '@context': contextUrl})
-      console.log('No @context provided, using schema.org by default');
-    }
-    if (contextUrl.startsWith('https://schema.org') || contextUrl.startsWith('https://schema.org')) {
-      // Schema.org does not enable content-negociation 
-      contextUrl = 'https://schema.org/version/latest/schemaorg-current-https.jsonld'
-    }
-    if (contextUrl.startsWith('http://')) {
-      // Resolving http:// ontologies is prevented by mixed active content (query http from https)
-      // We would need to deploy on our own DNS to use http (https is forced on github.io URLs)
-      contextUrl = contextUrl.replace('http://', 'https://')
-    }
-    // Try to download the ontology provided in @context URL as JSON-LD
-    // curl -iL -H 'Accept: application/ld+json' http://www.w3.org/ns/csvw
-    axios.defaults.headers.common['Accept'] = 'application/ld+json'
-    axios.get(contextUrl)
-      .then(res => {
-        // console.log('ontology downloaded!')
-        // console.log(res.data)
-        // if not json
-        if (typeof res.data !== 'object') {
-          // If not object, we try to parse
-          // const jsonLDList = await jsonld.fromRDF(result.quadList)
-          // TODO: support other types than just RDF/XML
-          toJSONLD(res.data, contextUrl)
-            .then((jsonld_rdf) => {
-              console.log('Ontology downloaded, and converted to JSON-LD RDF:');
-              console.log(jsonld_rdf);
-              updateState({
-                ontology_jsonld: {
-                  '@context': contextUrl,
-                  '@graph': jsonld_rdf
-                }
-              })
-              updateState({ontoload_success_open: true})
-              // jsonld.flatten(doc, (err: any, flattened: any) => {
-              //     console.log('flattened')
-              //     console.log(flattened)
-              //     // jsonld.frame(flattened, frame, (err: any, framed: any) => {
-              //     //     resolve(framed)
-              //     // })
-              // })
-            })
-        } else {
-          updateState({
-            ontology_jsonld: res.data
-          })
-          updateState({ontoload_success_open: true})
-        }
-      })
-      .catch(error => {
-        updateState({ontoload_error_open: true})
-        console.log(error)
-      })
-  }
 
   const toJSONLD = (data: any, uri: any) => {
     // Convert RDF to JSON-LD using rdflib
@@ -335,7 +256,6 @@ export default function AnnotateText() {
   }
 
   const handleExtract  = (event: React.FormEvent) => {
-    // Trigger JSON-LD file download
     event.preventDefault();
     updateState({
       loading: true, 
@@ -344,11 +264,9 @@ export default function AnnotateText() {
       entitiesList: [],
       entitiesType: {}
     })
-    // var element = document.createElement('a');
     axios.post(
         settings.apiUrl + '/get-entities-relations', 
         {'text': state.editInputText}, 
-        // { headers: { Authorization: `Bearer ${access_token}` }} 
       )
       .then(res => {
         const entitiesList: any = []
@@ -473,40 +391,11 @@ export default function AnnotateText() {
     } else {
       console.log('You need to be logged in with ORCID to publish a Nanopublication')
     }
-    // element.setAttribute('href', 'data:text/turtle;charset=utf-8,' + encodeURIComponent(JSON.stringify(state.np_jsonld, null, 4)));
-    // element.setAttribute('download', 'metadata.json');
-    // element.style.display = 'none';
-    // document.body.appendChild(element);
-    // element.click();
-    // document.body.removeChild(element);
-    // setState({...state, open: true})
   }
-
-  // Close Snackbars
-  const closeOntoloadError = () => {
-    updateState({...state, ontoload_error_open: false})
-  };
-  const closeOntoloadSuccess = () => {
-    updateState({...state, ontoload_success_open: false})
-  };
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     updateState({ [event.target.id]: event.target.value})
   }
-
-  // Handle TextField changes for SPARQL endpoint upload
-  // const handleStmtChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   // event.preventDefault
-  //   const property = event.target.id.split(':')[0]
-  //   const index = event.target.id.split(':')[1]
-  //   const stmts: any = state.statements
-  //   console.log('index', index)
-  //   console.log('stmts', stmts)
-  //   console.log('stmts index', stmts[index])
-  //   stmts[index][property] = event.target.value
-  //   updateState({statements: stmts})
-  //   console.log(state.statements)
-  // }
 
   const addStatement  = (event: React.FormEvent) => {
     event.preventDefault();
@@ -519,8 +408,9 @@ export default function AnnotateText() {
     const stmts: any = state.statements
     // @ts-ignore
     const stmtIndex = event.target.id.split('-')[0].split(':')[1]
-    console.log(event.target.id)
-    console.log(stmtIndex)
+    // @ts-ignore
+    console.log(event.target.id);
+    console.log(stmtIndex);
     stmts[stmtIndex]['props'].push({p: '', o: ''})
     updateState({statements: stmts})
   }
@@ -558,26 +448,14 @@ export default function AnnotateText() {
   const triplesTemplates = ["BioLink reified associations", "RDF reified statements", "Plain RDF"]
   const handleTemplateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     updateState({templateSelected: event.target.value})
-    // hljs.highlightAll();
   }
 
   const handleRemoveStmt = (index: number) => {
+    // TODO: entities that are not anymore relevant are removed when a statement is removed
     const stmts = state.statements
     stmts.splice(index, 1);
     updateState({statements: stmts})
-    // hljs.highlightAll();
   }
-
-
-  const handleSelectSample = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // TODO: not working properly
-    // updateState({np_jsonld: null})
-    const np_jsonld = samples[event.target.value]
-    updateState({np_jsonld})
-    updateState({sample_selected: event.target.value})
-    // console.log(samples[event.target.value]);
-    // setState({...state, np_jsonld: samples[event.target.value]})
-  };
 
   return(
     <Container className='mainContainer'>
@@ -585,20 +463,21 @@ export default function AnnotateText() {
         📝 Annotate biomedical text
       </Typography>
       <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
-        This service allows you to easily annotate biomedical text using popular identification systems (such as MONDO, PubChem, or CHEBI), and the RDF Linked Data standards.
+        This service allows you to easily annotate biomedical text using popular identification systems (such as MONDO and PubChem), and download the annotations as RDF, or publish them in Nanopublications.
+        {/* A machine learning model automatically extracts biomedical entities from the given text, classify them in different types from the <a href='https://biolink.github.io/biolink-model/docs/' target="_blank" rel="noopener noreferrer">BioLink model</a> (chemical, disease, etc), and retrieve potential standard identifiers for those entities using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator Name Resolution API</a>. */}
       </Typography>
       <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
-        ⚙️ A machine learning model automatically extracts biomedical entities from the given text, classify them in different types from the <a href='https://biolink.github.io/biolink-model/docs/' target="_blank" rel="noopener noreferrer">BioLink model</a> (chemical, disease, etc), and retrieve potential standard identifiers for those entities using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator Name Resolution API</a>.
+        🪄 A machine learning model automatically extracts biomedical entities from the given text, classify them in different types from the <a href='https://biolink.github.io/biolink-model/docs/' target="_blank" rel="noopener noreferrer">BioLink model</a> (chemical, disease, etc), and retrieve potential standard identifiers for those entities using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator Name Resolution API</a>.
       </Typography>
-      <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
+      {/* <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
         🪄 You can then compose the statements representing the different assertions present in the text using standard identifiers and properties from the BioLink model.
-      </Typography>
+      </Typography> */}
       {/* <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
         🗜️ In the last step you will define the model used to generate the statements, reified associations enable you to attach additional properties to each statement.
       </Typography> */}
-      <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
+      {/* <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
         📥️ Finally you can either download the statements as RDF, or directly publish them in a Nanopublication. 
-      </Typography>
+      </Typography> */}
 
       {/* <Typography variant="body1" style={{textAlign: 'center', marginBottom: theme.spacing(1)}}>
         Load and edit <a href="https://json-ld.org/" className={classes.link} target="_blank" rel="noopener noreferrer">JSON-LD</a> <a href="https://en.wikipedia.org/wiki/Resource_Description_Framework" className={classes.link} target="_blank" rel="noopener noreferrer">RDF</a> files in a user-friendly web interface, with autocomplete based on the classes and properties of the ontology loaded ✨️
@@ -661,7 +540,6 @@ export default function AnnotateText() {
             value={state.editInputText}
             required
             multiline
-            // className={classes.fullWidth}
             variant="outlined"
             onChange={handleTextChange}
             size='small'
@@ -676,8 +554,6 @@ export default function AnnotateText() {
             label='Source URL (optional)'
             placeholder='Source URL (optional)'
             value={state.inputSource}
-            required
-            // className={classes.fullWidth}
             variant="outlined"
             onChange={handleTextChange}
             size='small'

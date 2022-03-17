@@ -20,7 +20,8 @@ import axios from 'axios';
 import iconImage from '../../assets/icon.png';
 
 import { getUrlHtml, settings } from '../settings';
-import { useAuth } from 'oidc-react';
+// import { useAuth } from 'oidc-react';
+// @ts-ignore
 import OAuth2Login from 'react-simple-oauth2-login';
 import UserContext from '../UserContext'
 
