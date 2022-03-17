@@ -2,11 +2,12 @@ import React, { useContext } from 'react';
 import { useLocation } from "react-router-dom";
 import { useTheme } from '@mui/material/styles';
 import { makeStyles, withStyles } from '@mui/styles';
-import { Typography, Container, Box, CircularProgress, Autocomplete, Button, Card, FormControl, TextField, Snackbar, Grid, Select, MenuItem, InputLabel } from "@mui/material";
+import { Typography, Container, Box, CircularProgress, Tooltip, IconButton, Autocomplete, Button, Card, FormControl, TextField, Snackbar, Grid, Select, MenuItem, InputLabel } from "@mui/material";
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import DownloadJsonldIcon from '@mui/icons-material/Description';
 import AddIcon from '@mui/icons-material/AddBox';
 import UploadIcon from '@mui/icons-material/FileUpload';
+import RemoveIcon from '@mui/icons-material/Delete';
 import ExtractIcon from '@mui/icons-material/AutoFixHigh';
 import GenerateIcon from '@mui/icons-material/FactCheck';
 import PublishIcon from '@mui/icons-material/Backup';
@@ -125,6 +126,7 @@ export default function AnnotateText() {
     // inputText: 'Amantadine hydrochloride capsules are indicated in the treatment of idiopathic Parkinson’s disease (Paralysis Agitans), postencephalitic parkinsonism and symptomatic parkinsonism which may follow injury to the nervous system by carbon monoxide intoxication.',
     inputText: '',
     inputSource: '',
+    editInputText: '',
     templateSelected: 'BioLink reified associations',
     entitiesAnnotations: [],
     entitiesList: [],
@@ -176,6 +178,7 @@ export default function AnnotateText() {
       const randomSentence = sentenceToAnnotate[Math.floor(Math.random() * sentenceToAnnotate.length)]
       updateState({
         inputText: randomSentence.text,
+        editInputText: randomSentence.text,
         inputSource: randomSentence.url,
       })
     }
@@ -334,11 +337,17 @@ export default function AnnotateText() {
   const handleExtract  = (event: React.FormEvent) => {
     // Trigger JSON-LD file download
     event.preventDefault();
-    updateState({loading: true})
+    updateState({
+      loading: true, 
+      inputText: state.editInputText,
+      entitiesAnnotations: [], 
+      entitiesList: [],
+      entitiesType: {}
+    })
     // var element = document.createElement('a');
     axios.post(
         settings.apiUrl + '/get-entities-relations', 
-        {'text': state.inputText}, 
+        {'text': state.editInputText}, 
         // { headers: { Authorization: `Bearer ${access_token}` }} 
       )
       .then(res => {
@@ -552,6 +561,13 @@ export default function AnnotateText() {
     // hljs.highlightAll();
   }
 
+  const handleRemoveStmt = (index: number) => {
+    const stmts = state.statements
+    stmts.splice(index, 1);
+    updateState({statements: stmts})
+    // hljs.highlightAll();
+  }
+
 
   const handleSelectSample = (event: React.ChangeEvent<HTMLInputElement>) => {
     // TODO: not working properly
@@ -639,10 +655,10 @@ export default function AnnotateText() {
         <FormControl className={classes.settingsForm}>
 
           <TextField
-            id='inputText'
+            id='editInputText'
             label='Text to annotate'
             placeholder='Text to annotate'
-            value={state.inputText}
+            value={state.editInputText}
             required
             multiline
             // className={classes.fullWidth}
@@ -740,7 +756,7 @@ export default function AnnotateText() {
               />
             </Grid>
 
-            <Grid item xs={4}>
+            <Grid item xs={3}>
               <Autocomplete
                 key={'p:'+index}
                 id={'p:'+index}
@@ -784,6 +800,14 @@ export default function AnnotateText() {
                   />
                 )}
               />
+            </Grid>
+
+            <Grid item xs={1}>
+              <Tooltip title={<Typography style={{textAlign: 'center'}}>Delete the statement</Typography>}>
+                <IconButton onClick={() => handleRemoveStmt(index)} color="default">
+                    <RemoveIcon />
+                </IconButton>
+              </Tooltip>
             </Grid>
 
             {/* TODO: Add props to each statement */}
