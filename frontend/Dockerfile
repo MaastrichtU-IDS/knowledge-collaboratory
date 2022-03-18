@@ -15,6 +15,14 @@ ARG ORCID_CLIENT_ID
 ARG ORCID_CLIENT_SECRET
 ARG OAUTH_REDIRECT_FRONTEND
 ENV API_URL=http://localhost
+
+# Install the react-taggy lib from git to get latest fix:
+WORKDIR /opt
+RUN git clone --branch master https://github.com/vemonet/react-taggy.git
+WORKDIR /opt/react-taggy
+RUN yarn
+# RUN yarn build
+
 WORKDIR /app
 RUN yarn install --frozen-lockfile
 RUN yarn build-prod
@@ -35,6 +43,7 @@ RUN chown -R nodejs:nodejs /app
 
 COPY --from=deps --chown=nodejs:nodejs /app/node_modules ./node_modules
 COPY --from=build-react --chown=nodejs:nodejs /app/web-build ./public
+COPY --from=build-react --chown=nodejs:nodejs /opt/react-taggy /opt/react-taggy
 
 
 USER nodejs
