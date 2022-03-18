@@ -5,6 +5,13 @@ ARG ORCID_CLIENT_ID
 ARG ORCID_CLIENT_SECRET
 ARG OAUTH_REDIRECT_FRONTEND
 
+# Install the react-taggy lib from git to get latest fix:
+WORKDIR /opt
+RUN git clone --branch master https://github.com/vemonet/react-taggy.git
+WORKDIR /opt/react-taggy
+RUN yarn
+# RUN yarn build
+
 # Only install NPM packages if package.json or yarn.lock change
 COPY package.json package.json
 COPY yarn.lock yarn.lock

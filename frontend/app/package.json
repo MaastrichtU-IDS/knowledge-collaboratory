@@ -51,7 +51,7 @@
     "react-router-dom": "^5.2.0",
     "react-router-native": "^5.1.2",
     "react-simple-oauth2-login": "^0.5.1",
-    "react-taggy": "^0.1.12"
+    "react-taggy": "file:/opt/react-taggy"
   },
   "devDependencies": {
     "@babel/core": "7.9.0",
@@ -67,6 +67,6 @@
     "expo-cli": "^3.27.13",
     "gh-pages": "^3.1.0",
     "serve": "^11.3.2",
-    "typescript": "^4.0.3"
+    "typescript": "^4.6.2"
   }
 }

@@ -14822,10 +14822,8 @@ react-simple-oauth2-login@^0.5.1:
   resolved "https://registry.yarnpkg.com/react-simple-oauth2-login/-/react-simple-oauth2-login-0.5.1.tgz#e2ee3c54f5cd8c746ba3c049d110c741e5498c0a"
   integrity sha512-wvYYQ5FslVAILGEqKL2lorc2XcTKvN7HKTf3oqPNgkUNfRBe2b0SZJxkUKclgbH6Y65dOaVbRs/JuSQr8J47MQ==
 
-react-taggy@^0.1.12:
+"react-taggy@file:/opt/react-taggy":
   version "0.1.12"
-  resolved "https://registry.yarnpkg.com/react-taggy/-/react-taggy-0.1.12.tgz#e70f308673c9c86898abe673790857b81edde8d1"
-  integrity sha1-5w8whnPJyGiYq+ZzeQhXuB7d6NE=
   dependencies:
     babel-runtime "^6.11.6"
 
@@ -16914,10 +16912,10 @@ typedoc-plugin-missing-exports@0.22.6:
   resolved "https://registry.yarnpkg.com/typedoc-plugin-missing-exports/-/typedoc-plugin-missing-exports-0.22.6.tgz#7467c60f1cd26507124103f0b9bca271d5aa8d71"
   integrity sha512-1uguGQqa+c5f33nWS3v1mm0uAx4Ii1lw4Kx2zQksmYFKNEWTmrmMXbMNBoBg4wu0p4dFCNC7JIWPoRzpNS6pFA==
 
-typescript@^4.0.3:
-  version "4.4.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.4.3.tgz#bdc5407caa2b109efd4f82fe130656f977a29324"
-  integrity sha512-4xfscpisVgqqDfPaJo5vkd+Qd/ItkoagnHpufr+i2QCHBsNYp+G7UAoyFl8aPtx879u38wPV65rZ8qbGZijalA==
+typescript@^4.6.2:
+  version "4.6.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.6.2.tgz#fe12d2727b708f4eef40f51598b3398baa9611d4"
+  integrity sha512-HM/hFigTBHZhLXshn9sN37H085+hQGeJHJ/X7LpBWLID/fbc2acUMfU+lGD98X81sKP+pFa9f0DZmCwB9GnbAg==
 
 ua-parser-js@^0.7.18:
   version "0.7.28"

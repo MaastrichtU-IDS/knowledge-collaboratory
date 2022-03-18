@@ -9,13 +9,18 @@ from app.config import settings
 
 import spacy
 import requests
+import numpy as np
+import torch
+from transformers import BertTokenizer, BertForSequenceClassification
+
 
 router = APIRouter()
 
 # BASE = Namespace("https://w3id.org/collaboratory/")
 
 class NerInput(BaseModel):
-    text: str = 'Delayed institution of hypertension during focal cerebral ischemia: effect on brain edema.'
+    text: str = 'Amantadine hydrochloride capsules are indicated in the treatment of idiopathic Parkinson’s disease (Paralysis Agitans), postencephalitic parkinsonism and symptomatic parkinsonism which may follow injury to the nervous system by carbon monoxide intoxication.'
+    # text: str = 'Amantadine hydrochloride capsules are indicated in the treatment of idiopathic Parkinson’s disease which may follow injury to the nervous system by carbon monoxide intoxication.'
 
 # oc rsync --progress xiao-gpu-jupyterlab-1-54vlm:/workspace/notebooks/Litcoin/part1/ner_demo/training/litcoin-ner-model.zip ./
 
@@ -25,6 +30,7 @@ class NerInput(BaseModel):
     response_model={})
 async def get_entities_relations(
         input: NerInput = Body(...),
+        extract_relations: bool = False
     ):
 
     # Save and load a model/pipeline: https://spacy.io/usage/saving-loading
@@ -36,6 +42,7 @@ async def get_entities_relations(
     ner_res = ner(input.text)
 
     entities_extracted= []
+    # Extract entities
     for ent in ner_res.ents:
         # print(ent.text, ent.start_char, ent.end_char, ent.label_)
         entity = {
@@ -56,51 +63,76 @@ async def get_entities_relations(
         #     entity['curie'] = pref_curie
         entities_extracted.append(entity)
 
-    return JSONResponse(entities_extracted)
+    if extract_relations:
+        # Generate entities pairing to check if relations between them
+        relations_list = []
+        for ent in entities_extracted:
+            for ent2 in entities_extracted:
+                if ent['text'] != ent2['text']:
+                    relations_list.append({
+                        'sentence': input.text,
+                        'entity1': ent['text'],
+                        'entity2': ent2['text']
+                    })
+
+        # Extract relations fromeach entity pairing
+        # Instantiate the Bert tokenizer
+        relation_model = Rf"{settings.NER_MODELS_PATH}/litcoin-relations-extraction-model"
+        tokenizer = BertTokenizer.from_pretrained(relation_model, do_lower_case=False)
+        model = BertForSequenceClassification.from_pretrained(relation_model,num_labels=len(label2id))
+        device = torch.device("cpu")
+        # Send model to device
+        model.to(device);
+        relations_extracted = []
+        for rel in relations_list:
+            extracted_rel = classify_relation(rel, device, tokenizer, model)
+            if extracted_rel:
+                relations_extracted.append(extracted_rel)
+
+        print(f"⛏️  Extracted {len(entities_extracted)} entities and {len(relations_extracted)} relations")
+
+        return JSONResponse({'entities': entities_extracted, 'relations': relations_extracted})
+
+    return JSONResponse({'entities': entities_extracted})
 
 
+# Functions used for relations extraction:
+label2id = {
+    'Association': 0,
+    'Positive_Correlation': 1,
+    'Negative_Correlation': 2,
+    'Bind': 3,
+    'Cotreatment': 4,
+    'Comparison':5,
+    'Drug_Interaction':6,
+    'Conversion':7,
+    'Negative':8
+}
 
-# import numpy as np
-# import torch
-# from transformers import BertTokenizer, BertForSequenceClassification
+id2label = {}
+for key,value in label2id.items():
+    id2label[value] = key
 
-# label2id = {
-#     'Association': 0,
-#     'Positive_Correlation': 1,
-#     'Negative_Correlation': 2,
-#     'Bind': 3,
-#     'Cotreatment': 4,
-#     'Comparison':5,
-#     'Drug_Interaction':6,
-#     'Conversion':7,
-#     'Negative':8
-#       }
+def classify_relation(rel, device, tokenizer, model):
+    sentence = rel['sentence']
+    entity1 = rel['entity1']
+    entity2 = rel['entity2']
+    text = sentence + str('[SEP]') + entity1 + str('[SEP]') + entity2
+    input_ids = torch.tensor(tokenizer.encode(text, 
+                                            add_special_tokens=True,
+                                            max_length=128)).unsqueeze(0)  # Batch size 1
+    labels = torch.tensor([1]).unsqueeze(0)  # Batch size 1
 
-# id2label = {}
-# for key,value in label2id.items():
-#     id2label[value] = key
-
-# def classify_relation(sentence, entity1, entity2):
-#     tokenizer = BertTokenizer.from_pretrained(model_fname, do_lower_case=False)
-#     model = BertForSequenceClassification.from_pretrained(model_fname,num_labels=len(label2id))
-#     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-#     # send model to device
-#     model.to(device);
-
-
-#     text = sentence + str('[SEP]') + entity1 + str('[SEP]') + entity2]
-#     input_ids = torch.tensor(tokenizer.encode(text, 
-#                                             add_special_tokens=True,
-#                                             max_length=128)).unsqueeze(0)  # Batch size 1
-#     labels = torch.tensor([1]).unsqueeze(0)  # Batch size 1
-
-#     input_ids= input_ids.to(device) 
-#     labels= labels.to(device)
-#     with torch.no_grad():
-#         outputs = model(input_ids, labels=labels)
-#     logits = outputs[1]
-#     result = np.argmax(logits.cpu().numpy(),axis=1)[0]
+    input_ids= input_ids.to(device) 
+    labels= labels.to(device)
+    with torch.no_grad():
+        outputs = model(input_ids, labels=labels)
+    logits = outputs[1]
+    result = np.argmax(logits.cpu().numpy(),axis=1)[0]
     
-#     label = id2label[result]
+    label = id2label[result]
 
-#     return label
+    if label == 'Negative':
+        return None
+    rel['type'] = label
+    return rel

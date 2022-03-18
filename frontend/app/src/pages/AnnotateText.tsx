@@ -14,7 +14,6 @@ import PublishIcon from '@mui/icons-material/Backup';
 import DownloadIcon from '@mui/icons-material/Download';
 import ShexIcon from '@mui/icons-material/TaskAlt';
 import axios from 'axios';
-// @ts-ignore
 import Taggy from 'react-taggy'
 
 const $rdf = require('rdflib')
@@ -135,6 +134,7 @@ export default function AnnotateText() {
     entitiesAnnotations: [],
     entitiesList: [],
     entitiesType: entitiesType,
+    relationsList: [],
     statements: [{'s': '', 'p': '', 'o': '', 'props': []}],
     predicatesList: predicatesList,
     propertiesList: propertiesList,
@@ -271,7 +271,7 @@ export default function AnnotateText() {
       .then(res => {
         const entitiesList: any = []
         console.log(res.data)
-        res.data.map((entityMatch: any) => {
+        res.data.entities.map((entityMatch: any) => {
           if (entityMatch.curies) {
             Object.keys(entityMatch.curies).map((curie: any) => {
               entitiesList.push({
@@ -287,7 +287,8 @@ export default function AnnotateText() {
         updateState({
           loading: false,
           entitiesList: entitiesList,
-          entitiesAnnotations: res.data
+          entitiesAnnotations: res.data.entities,
+          relationsList: res.data.relations
         })
         // console.log(entitiesAnnotations)
       })
@@ -535,6 +536,12 @@ export default function AnnotateText() {
     updateState({statements: stmts})
   }
 
+  const clickTag = (event: any, tag: any, elemIndex: any) => {
+    console.log('entitiesAnnotations', state.entitiesAnnotations)
+    console.log('Clicked that tag!', elemIndex, tag);
+    // updateState({tagSelected: })
+  }
+
   return(
     <Container className='mainContainer'>
       <Typography variant="h4" style={{textAlign: 'center', margin: theme.spacing(1, 0)}}>
@@ -626,7 +633,8 @@ export default function AnnotateText() {
 
       { state.entitiesAnnotations.length > 0 &&
         <Card className={classes.paperPadding} >
-          <Taggy text={state.inputText} spans={state.entitiesAnnotations} ents={ents} />
+          <Taggy text={state.inputText} spans={state.entitiesAnnotations} 
+            ents={ents} onClick={clickTag} />
         </Card>
       }
 
