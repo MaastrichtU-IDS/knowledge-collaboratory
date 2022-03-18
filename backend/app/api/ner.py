@@ -36,6 +36,7 @@ relation_model = Rf"{settings.NER_MODELS_PATH}/litcoin-relations-extraction-mode
 tokenizer = BertTokenizer.from_pretrained(relation_model, do_lower_case=False)
 model = BertForSequenceClassification.from_pretrained(relation_model,num_labels=len(label2id))
 device = torch.device("cpu")
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # Send model to device
 model.to(device);
 print('✅ Models for NER and relations extraction loaded')

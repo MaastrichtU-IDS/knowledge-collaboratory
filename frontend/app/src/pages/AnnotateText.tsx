@@ -211,7 +211,7 @@ export default function AnnotateText() {
     {type: 'sequencevariant', label: 'Sequence Variant', id: BIOLINK + 'SequenceVariant', 
       curie: 'biolink:SequenceVariant', color: {r: 47, g: 187, b: 171}}
   ]
-  
+
 
   const handleUploadKeys  = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -567,7 +567,7 @@ export default function AnnotateText() {
   return(
     <Container className='mainContainer'>
       <Typography variant="h4" style={{textAlign: 'center', margin: theme.spacing(1, 0)}}>
-        📝 Annotate biomedical text
+        🏷️ Annotate biomedical text
       </Typography>
       <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
         ℹ️ This service helps you to annotate biomedical text using the <a href='https://biolink.github.io/biolink-model/docs/' target="_blank" rel="noopener noreferrer">BioLink model</a> and popular identifiers systems (such as MONDO and PubChem). 
