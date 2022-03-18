@@ -17,6 +17,7 @@ ARG OAUTH_REDIRECT_FRONTEND
 ENV API_URL=http://localhost
 
 # Install the react-taggy lib from git to get latest fix:
+RUN apk add git
 WORKDIR /opt
 RUN git clone --branch master https://github.com/vemonet/react-taggy.git
 WORKDIR /opt/react-taggy
