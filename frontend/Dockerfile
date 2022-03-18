@@ -10,7 +10,6 @@ RUN yarn install --frozen-lockfile
 
 ## Build React website
 FROM node:16-alpine AS build-react
-COPY app /app
 ARG ORCID_CLIENT_ID
 ARG ORCID_CLIENT_SECRET
 ARG OAUTH_REDIRECT_FRONTEND
@@ -24,8 +23,10 @@ WORKDIR /opt/react-taggy
 RUN yarn
 # RUN yarn build
 
+COPY app /app
 WORKDIR /app
-RUN yarn install --frozen-lockfile
+# RUN yarn install --frozen-lockfile
+RUN yarn install
 RUN yarn build-prod
 
 
