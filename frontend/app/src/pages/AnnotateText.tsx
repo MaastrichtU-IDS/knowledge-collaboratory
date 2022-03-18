@@ -12,6 +12,7 @@ import ExtractIcon from '@mui/icons-material/AutoFixHigh';
 import GenerateIcon from '@mui/icons-material/FactCheck';
 import PublishIcon from '@mui/icons-material/Backup';
 import DownloadIcon from '@mui/icons-material/Download';
+import ShexIcon from '@mui/icons-material/TaskAlt';
 import axios from 'axios';
 // @ts-ignore
 import Taggy from 'react-taggy'
@@ -31,6 +32,8 @@ const $rdf = require('rdflib')
 import JsonldUploader from "../components/JsonldUploader";
 import RenderObjectForm from "../components/RenderObjectForm";
 import { settings, samples, propertiesList, predicatesList } from '../settings';
+import { biolinkShex } from '../biolink-shex';
+
 import UserContext from '../UserContext'
 
 import hljs from 'highlight.js/lib/core';
@@ -365,6 +368,37 @@ export default function AnnotateText() {
     document.body.removeChild(element);
   }
 
+
+  const shexValidation  = (event: React.FormEvent) => {
+    // Trigger JSON-LD file download
+    event.preventDefault();
+    const stmtJsonld = generateRDF()
+    state.statements.map((stmt: any, stmtIndex: number) => {
+      console.log(`Validate statement ${stmt.s} with shape ${stmt.shex}`)
+      const shapemap = `<${stmt.s}>@<${stmt.shex}>`
+      axios.post(
+        `${settings.apiUrl}/validation/shex`,
+        stmtJsonld, 
+        { 
+          params: { 
+            shape_start: 'https://w3id.org/biolink/vocab/Association',
+            focus_types: 'https://w3id.org/biolink/vocab/Association',
+            shape_url: 'https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.shex'
+          } 
+        } 
+      )
+      .then(res => {
+        console.log(res)
+        updateState({shexResults: res.data})
+      })
+      .catch(error => {
+        console.log(error)
+      })
+    })
+    // var element = document.createElement('a');
+    // console.log();
+  }
+
   const handleSubmit  = (event: React.FormEvent) => {
     // Trigger JSON-LD file download
     event.preventDefault();
@@ -391,12 +425,10 @@ export default function AnnotateText() {
           } 
         )
         .then(res => {
-          console.log(res)
           updateState({
             open: true,
             published_nanopub: res.data
           })
-          console.log(res)
         })
         .catch(error => {
           console.log(error)
@@ -416,7 +448,8 @@ export default function AnnotateText() {
   const addStatement  = (event: React.FormEvent) => {
     event.preventDefault();
     const stmts: any = state.statements
-    stmts.push({'s': '', 'p': '', 'o': '', 'props': []})
+    stmts.push({'s': '', 'p': '', 'o': '', 'props': [], 
+      'shex': {id: 'https://w3id.org/biolink/vocab/Association', label: 'Association', type: 'ShapeOr'}})
     updateState({statements: stmts})
   }
   const addProperty = (event: React.FormEvent)=> {
@@ -447,7 +480,18 @@ export default function AnnotateText() {
           }
           updateState({statements: stmts})
         }
-      } else {
+      } else if (event.target.id.startsWith('shex:')) {
+        // Edit properties of a statement
+        const index = event.target.id.split('-')[0].split(':')[1]
+        if (newInputValue) {
+          if (newInputValue.id) {
+            stmts[index]['shex'] = newInputValue.id as string
+          } else {
+            stmts[index]['shex'] = newInputValue as string
+          }
+          updateState({statements: stmts})
+        }
+      } else  {
         // Edit a statement
         const property = event.target.id.split('-')[0].split(':')[0]
         const index = event.target.id.split('-')[0].split(':')[1] 
@@ -739,6 +783,11 @@ export default function AnnotateText() {
             })
           }
           { state.templateSelected !== 'Plain RDF' && 
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+          }}>
             <Button 
               // onClick={() => addProperty(event, index)}
               onClick={addProperty}
@@ -746,10 +795,34 @@ export default function AnnotateText() {
               variant="contained" 
               className={classes.saveButton} 
               startIcon={<AddIcon />}
-              style={{marginLeft: theme.spacing(5), marginTop: theme.spacing(1), textTransform: 'none'}}
+              style={{marginLeft: theme.spacing(5), marginRight: theme.spacing(4), textTransform: 'none'}}
               color="inherit" >
                 Add a property to this statement
             </Button>
+            <Typography>
+              Validate statement against: 
+            </Typography>
+            <Autocomplete
+              id={'shex:' + index}
+              // freeSolo
+              options={biolinkShex.shapes}
+              onChange={handleAutocomplete}
+              onInputChange={handleAutocomplete}
+              getOptionLabel={(option: any) => `${option.label} (${option.id})`}
+              groupBy={(option) => option.type}
+              style={{width: '400px', marginLeft: theme.spacing(2)}}
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  size='small'
+                  className={classes.input}
+                  label="ShEx shape"
+                  placeholder="ShEx shape"
+                />
+              )}
+            />
+          </div>
           }
         </Box>
       })}
@@ -784,6 +857,15 @@ export default function AnnotateText() {
           {/* Button to download the JSON-LD */}
           <div style={{width: '100%', textAlign: 'center'}}>
             <Button 
+              onClick={shexValidation}
+              variant="contained" 
+              className={classes.saveButton} 
+              startIcon={<ShexIcon />}
+              style={{marginRight: theme.spacing(2)}}
+              color="warning" >
+                Validate with ShEx
+            </Button>
+            <Button 
               onClick={handleDownloadRDF}
               variant="contained" 
               className={classes.saveButton} 
@@ -806,7 +888,7 @@ export default function AnnotateText() {
               className={classes.saveButton} 
               startIcon={<PublishIcon />}
               disabled={!user.id}
-              color="warning" >
+              color="error" >
                 Publish Nanopublication
             </Button>
             { !user.id &&

@@ -58,7 +58,7 @@ export const rdfToCytoscape = (text: string) => {
         console.log(error)
         return null
       }
-      if (quad) { 
+      if (quad && quad.subject.value && quad.object.value) { 
         // console.log("quad", quad.object.termType)
         // Subject and Object nodes
         cytoscapeElems.push({ data: { 
@@ -94,6 +94,7 @@ export const rdfToCytoscape = (text: string) => {
           target: quad.object.value,
           label: quad.predicate.value,
         } })
+        // Add the graph to the list of graphs
         graphs[quad.graph.value] = quad.graph.value
 
       } else {
