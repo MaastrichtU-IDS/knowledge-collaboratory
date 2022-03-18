@@ -390,6 +390,8 @@ const propertiesList = [
   {id: 'https://w3id.org/biolink/vocab/subject', curie: 'biolink:subject', label: 'subject', type: 'BioLink'},
 ]
 
+
+
 // https://purl.org/np/RAuN1kyW1BD9754LCUVWozDOhkrUaLUyb5LTu0HcsulIE
 const samples: any = {
   "Drug indication with the BioLink model": {

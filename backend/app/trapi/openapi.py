@@ -5,10 +5,23 @@ from fastapi.middleware.cors import CORSMiddleware
 from reasoner_pydantic import Query, Message
 from typing import Optional, List, Dict, Any
 
+import spacy
+import numpy as np
+import torch
+from transformers import BertTokenizer, BertForSequenceClassification
 from app.config import settings
 
 class TRAPI(FastAPI):
     """Translator Reasoner API - wrapper for FastAPI."""
+
+    # Load models for machine learning
+    ner_model_name: str = None
+    ner_model = None
+    relation_model_name: str = None
+    relation_model = None
+    relations_loaded_model = None
+    relations_device = None
+    relations_tokenizer = None
 
     required_tags = [
         {"name": "trapi"},
@@ -21,6 +34,8 @@ class TRAPI(FastAPI):
     def __init__(
         self,
         *args,
+        ner_model_name: Optional[str] = 'litcoin-ner-model',
+        relation_model_name: Optional[str] = 'litcoin-relations-extraction-model',
         # contact: Optional[Dict[str, Any]] = None,
         **kwargs,
     ):
@@ -29,6 +44,17 @@ class TRAPI(FastAPI):
             root_path_in_servers=False,
             **kwargs,
         )
+
+        # Load NER model
+        # self.ner_model = spacy.load(Rf"{settings.NER_MODELS_PATH}/{ner_model_name}")
+        
+        # Load relations extraction model
+        # self.relations_model = Rf"{settings.NER_MODELS_PATH}/{relation_model_name}"
+        # self.relations_tokenizer = BertTokenizer.from_pretrained(self.relations_model, do_lower_case=False)
+        # self.relations_loaded_model = BertForSequenceClassification.from_pretrained(self.relations_model,num_labels=len(label2id))
+        # self.relations_device = torch.device("cpu")
+        # # Send model to device
+        # self.relations_loaded_model.to(self.relations_device);
 
         self.add_middleware(
             CORSMiddleware,

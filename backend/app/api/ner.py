@@ -16,12 +16,34 @@ from transformers import BertTokenizer, BertForSequenceClassification
 
 router = APIRouter()
 
-# BASE = Namespace("https://w3id.org/collaboratory/")
+label2id = {
+    'associated_with': 0, # Association
+    'positively_correlated_with': 1, # Positive_Correlation
+    'negatively_correlated_with': 2, # Negative_Correlation
+    'interacts_with': 3, # Bind
+    'treats': 4, # Cotreatment
+    'related_to':5, # Comparison
+    'chemically_interacts_with':6, # Drug_Interaction
+    'develops_into':7, # Conversion
+    'Negative':8 
+}
+
+# Loading models for NER
+ner = spacy.load(Rf"{settings.NER_MODELS_PATH}/litcoin-ner-model")
+# Loading models for relations extraction
+relation_model = Rf"{settings.NER_MODELS_PATH}/litcoin-relations-extraction-model"
+# Instantiate the Bert tokenizer
+tokenizer = BertTokenizer.from_pretrained(relation_model, do_lower_case=False)
+model = BertForSequenceClassification.from_pretrained(relation_model,num_labels=len(label2id))
+device = torch.device("cpu")
+# Send model to device
+model.to(device);
+print('✅ Models for NER and relations extraction loaded')
 
 class NerInput(BaseModel):
     text: str = 'Amantadine hydrochloride capsules are indicated in the treatment of idiopathic Parkinson’s disease (Paralysis Agitans), postencephalitic parkinsonism and symptomatic parkinsonism which may follow injury to the nervous system by carbon monoxide intoxication.'
-    # text: str = 'Amantadine hydrochloride capsules are indicated in the treatment of idiopathic Parkinson’s disease which may follow injury to the nervous system by carbon monoxide intoxication.'
 
+# Copy large models from the DSRI:
 # oc rsync --progress xiao-gpu-jupyterlab-1-54vlm:/workspace/notebooks/Litcoin/part1/ner_demo/training/litcoin-ner-model.zip ./
 
 @router.post("/get-entities-relations", name="Get entities and relations from text",
@@ -32,13 +54,6 @@ async def get_entities_relations(
         input: NerInput = Body(...),
         extract_relations: Optional[bool] = True
     ):
-
-    # Save and load a model/pipeline: https://spacy.io/usage/saving-loading
-
-    ner = spacy.load(Rf"{settings.NER_MODELS_PATH}/litcoin-ner-model")
-    # ner = spacy.load(Rf"{settings.NER_MODELS_PATH}/model-best", exclude=['vocab'])
-    # ner = spacy.load(Rf"/data/ner-models/litcoin-ner-model")
-
     ner_res = ner(input.text)
 
     entities_extracted= []
@@ -75,14 +90,7 @@ async def get_entities_relations(
                         'entity2': ent2['text']
                     })
 
-        # Extract relations fromeach entity pairing
-        # Instantiate the Bert tokenizer
-        relation_model = Rf"{settings.NER_MODELS_PATH}/litcoin-relations-extraction-model"
-        tokenizer = BertTokenizer.from_pretrained(relation_model, do_lower_case=False)
-        model = BertForSequenceClassification.from_pretrained(relation_model,num_labels=len(label2id))
-        device = torch.device("cpu")
-        # Send model to device
-        model.to(device);
+        # Extract relations from each entity pairing
         relations_extracted = []
         for rel in relations_list:
             extracted_rel = classify_relation(rel, device, tokenizer, model)
@@ -102,11 +110,6 @@ async def get_entities_relations(
                         ent1_id = list(ent['curies'].keys())[0]
                     if ent['text'] == rel['entity2']:
                         ent2_id = list(ent['curies'].keys())[0]
-            # stmt = {
-            #     's': ido + ent1_id,
-            #     'p': 'https://w3id.org/biolink/vocab/' + rel['type'],
-            #     'o': ido + ent2_id,
-            # }
             stmt = {
                 's': {'id': ido + ent1_id, 'curie': ent1_id, 'label': rel['entity1']},
                 'p': {'id': 'https://w3id.org/biolink/vocab/' + rel['type'], 'curie': 'biolink:' + rel['type'], 'label': rel['type'].replace('_', ' ')},
@@ -126,18 +129,6 @@ async def get_entities_relations(
 
 
 # Functions used for relations extraction:
-label2id = {
-    'associated_with': 0, # Association
-    'positively_correlated_with': 1, # Positive_Correlation
-    'negatively_correlated_with': 2, # Negative_Correlation
-    'interacts_with': 3, # Bind
-    'treats': 4, # Cotreatment
-    'related_to':5, # Comparison
-    'chemically_interacts_with':6, # Drug_Interaction
-    'develops_into':7, # Conversion
-    'Negative':8 
-}
-
 id2label = {}
 for key,value in label2id.items():
     id2label[value] = key

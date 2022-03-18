@@ -199,45 +199,19 @@ export default function AnnotateText() {
   }, [state.np_jsonld])
 
   // TODO: complete the list of ents?
-  // const ents = [
-  //   {type: 'chemicalentity', color: {r: 166, g: 226, b: 45}},
-  //   {type: 'drug', color: {r: 67, g: 198, b: 252}},
-  //   {type: 'diseaseorphenotypicfeature', color: {r: 47, g: 187, b: 171}}
-  // ]
   const ents = [
-    {type: 'chemicalentity', label: 'Chemical entity', id: BIOLINK + 'ChemicalEntity', curie: 'biolink:ChemicalEntity', color: {r: 166, g: 226, b: 45}},
-    {type: 'drug', label: 'Chemical entity', id: BIOLINK + 'Drug', curie: 'biolink:Drug', color: {r: 67, g: 198, b: 252}},
-    {type: 'diseaseorphenotypicfeature', label: 'Disease or Phenotypic Feature', id: BIOLINK + 'DiseaseOrPhenotypicFeature', curie: 'biolink:DiseaseOrPhenotypicFeature', color: {r: 47, g: 187, b: 171}}
+    {type: 'chemicalentity', label: 'Chemical entity', id: BIOLINK + 'ChemicalEntity', 
+      curie: 'biolink:ChemicalEntity', color: {r: 166, g: 226, b: 45}},
+    {type: 'drug', label: 'Chemical entity', id: BIOLINK + 'Drug', 
+      curie: 'biolink:Drug', color: {r: 67, g: 198, b: 252}},
+    {type: 'diseaseorphenotypicfeature', label: 'Disease or Phenotypic Feature', id: BIOLINK + 'DiseaseOrPhenotypicFeature', 
+      curie: 'biolink:DiseaseOrPhenotypicFeature', color: {r: 47, g: 187, b: 171}},
+    {type: 'geneorgeneproduct', label: 'Gene or Gene Product', id: BIOLINK + 'GeneOrGeneProduct', 
+      curie: 'biolink:GeneOrGeneProduct', color: {r: 47, g: 187, b: 171}},
+    {type: 'sequencevariant', label: 'Sequence Variant', id: BIOLINK + 'SequenceVariant', 
+      curie: 'biolink:SequenceVariant', color: {r: 47, g: 187, b: 171}}
   ]
-
-  // const toJSONLD = (data: any, uri: any) => {
-  //   // Convert RDF to JSON-LD using rdflib
-  //   let rdf_format = 'application/rdf+xml';
-  //   if (uri.endsWith('.ttl')) rdf_format = 'text/turtle'
-  //   if (uri.endsWith('.nq')) rdf_format = 'application/n-quads'
-  //   // Or text/x-nquads
-  //   if (uri.endsWith('.nt')) rdf_format = 'application/n-triples'
-  //   if (uri.endsWith('.n3')) rdf_format = 'text/n3'
-  //   if (uri.endsWith('.trig')) rdf_format = 'application/trig'
-  //   return new Promise((resolve, reject) => {
-  //       let store = $rdf.graph()
-  //       let doc = $rdf.sym(uri);
-  //       $rdf.parse(data, store, uri, rdf_format)
-  //       // console.log(store)
-  //       $rdf.serialize(doc, store, uri, 'application/ld+json', (err: any, jsonldData: any) => {
-  //         return resolve(JSON.parse(jsonldData)
-  //           .sort((a: any, b: any) => {
-  //             if (a['@type'] && b['@type'] && Array.isArray(a['@type']) && Array.isArray(b['@type'])){
-  //               // Handle when array of types provided (e.g. SIO via rdflib)
-  //               return a['@type'][0] < b['@type'][0] ? 1 : -1
-  //             } else {
-  //               return a['@type'] < b['@type'] ? 1 : -1
-  //             }
-  //           })
-  //       )
-  //     })
-  //   })
-  // }
+  
 
   const handleUploadKeys  = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -601,7 +575,7 @@ export default function AnnotateText() {
         {/* A machine learning model automatically extracts biomedical entities from the given text, classify them in different types from the <a href='https://biolink.github.io/biolink-model/docs/' target="_blank" rel="noopener noreferrer">BioLink model</a> (chemical, disease, etc), and retrieve potential standard identifiers for those entities using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator Name Resolution API</a>. */}
       </Typography>
       <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
-        🪄 A machine learning model automatically extracts biomedical entities from the given text, classify them in different types from the BioLink model (chemical, disease, etc), 
+        🪄 A machine learning model automatically extracts biomedical entities and relations from the given text, classify them in different types from the BioLink model (chemical, disease, etc), 
         and retrieve potential identifiers for those entities using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator Name Resolution API</a>.
       </Typography>
       {/* <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
