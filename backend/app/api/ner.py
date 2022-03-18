@@ -16,17 +16,20 @@ from transformers import BertTokenizer, BertForSequenceClassification
 
 router = APIRouter()
 
+# https://biolink.github.io/biolink-model/docs/predicates.html
 label2id = {
     'associated_with': 0, # Association
     'positively_correlated_with': 1, # Positive_Correlation
-    'negatively_correlated_with': 2, # Negative_Correlation
+    'treats': 2, # Negative_Correlation always triggered for "indicated for"
+    # 'negatively_correlated_with': 2, # Negative_Correlation
     'interacts_with': 3, # Bind
-    'treats': 4, # Cotreatment
+    'approved_to_treat': 4, # Cotreatment
     'related_to':5, # Comparison
     'chemically_interacts_with':6, # Drug_Interaction
     'develops_into':7, # Conversion
     'Negative':8 
 }
+
 
 # Loading models for NER
 ner = spacy.load(Rf"{settings.NER_MODELS_PATH}/litcoin-ner-model")
@@ -73,23 +76,28 @@ async def get_entities_relations(
             entity['curies'] = name_res
         # else:
             # Get RXCUIS: https://rxnav.nlm.nih.gov/REST/rxcui.json?name=Xyrem
-            # Get other ID, such as UMLS or MESH for RXCUIS: https://rxnav.nlm.nih.gov/REST/rxcui/353098/proprietary.json
+            # Get the right IDs, such as UMLS or MESH from RXCUIS: https://rxnav.nlm.nih.gov/REST/rxcui/353098/proprietary.json
 
-        # for pref_curie, labels in name_res.items():
-        #     entity['curie'] = pref_curie
         entities_extracted.append(entity)
 
     if extract_relations:
         # Generate entities pairing to check if relations between them
         relations_list = []
-        for ent in entities_extracted:
+        for ent1 in entities_extracted:
             for ent2 in entities_extracted:
-                if ent['text'] != ent2['text']:
-                    relations_list.append({
-                        'sentence': input.text,
-                        'entity1': ent['text'],
-                        'entity2': ent2['text']
-                    })
+                if ent1['text'] != ent2['text']:
+                    rel_exists = False
+                    for rel in relations_list:
+                        # Avoid having ent1-ent2 and ent2-ent1:
+                        if rel['entity1'] == ent2['text'] and rel['entity2'] == ent1['text']:
+                            rel_exists = True
+                            break
+                    if rel_exists == False:
+                        relations_list.append({
+                            'sentence': input.text,
+                            'entity1': ent1['text'],
+                            'entity2': ent2['text']
+                        })
 
         # Extract relations from each entity pairing
         relations_extracted = []

@@ -119,9 +119,12 @@ WHERE {
 SPARQL_ENDPOINT_URL = 'http://virtuoso.np.dumontierlab.137.120.31.101.nip.io/sparql'
 
 ## Load BioLink JSON-LD Context to resolve URIs to BioLink CURIEs
+# try:
 with urllib.request.urlopen("https://raw.githubusercontent.com/biolink/biolink-model/master/context.jsonld") as url:
     data = json.loads(url.read().decode())
-    
+# except:
+#   print('Error download BioLink model JSON-LD from GitHub')
+
 namespace_resolver = {}
 context = data['@context']
 for prefix in context.keys():

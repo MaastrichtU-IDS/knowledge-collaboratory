@@ -30,7 +30,7 @@ const $rdf = require('rdflib')
 
 import JsonldUploader from "../components/JsonldUploader";
 import RenderObjectForm from "../components/RenderObjectForm";
-import { settings, samples, propertiesList, predicatesList } from '../settings';
+import { settings, samples, propertiesList, predicatesList, sentenceToAnnotate } from '../settings';
 import { biolinkShex } from '../biolink-shex';
 
 import UserContext from '../UserContext'
@@ -40,17 +40,6 @@ import 'highlight.js/styles/github-dark-dimmed.css';
 import hljsDefineTurtle from '../components/highlightjs-turtle';
 import { gridColumnsSelector } from '@mui/x-data-grid';
 hljs.registerLanguage("turtle", hljsDefineTurtle)
-
-const sentenceToAnnotate = [
-  {
-    text: "Amantadine hydrochloride capsules are indicated in the treatment of idiopathic Parkinson’s disease (Paralysis Agitans), postencephalitic parkinsonism and symptomatic parkinsonism which may follow injury to the nervous system by carbon monoxide intoxication.", 
-    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=491aea85-5a55-4a7c-b1cf-a123fea4377d"
-  },
-  {
-    text: "Xyrem is indicated for the treatment of cataplexy or excessive daytime sleepiness (EDS) in patients 7 years of age and older with narcolepsy.", 
-    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=926eb076-a4a8-45e4-91ef-411f0aa4f3ca"
-  },
-]
 
 const BIOLINK = 'https://w3id.org/biolink/vocab/'
 

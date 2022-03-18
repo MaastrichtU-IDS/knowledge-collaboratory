@@ -392,6 +392,654 @@ const propertiesList = [
 
 
 
+const sentenceToAnnotate = [
+  {
+    text: "Iloperidone tablets are indicated for the treatment of schizophrenia in adults.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=eeb0fcfd-e4e8-4fb1-9635-901dc9446235"
+  },
+  {
+    text: "Clozapine is indicated for the treatment of severely ill patients with schizophrenia who fail to respond adequately to standard antipsychotic treatment", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=25c0c6d5-f7b0-48e4-e054-00144ff8d46c"
+  },
+  {
+    text: "Clonidine hydrochloride injection is indicated in combination with opiates for the treatment of severe pain in cancer patients that is not adequately relieved by opioid analgesics alone", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d2b11e61-b2ef-4d20-8973-a4afc6b951ae"
+  },
+  {
+    text: "For the management of acute pain in adults", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=27d813ea-7798-09cb-734b-b970d7248f1f"
+  },
+  {
+    text: "ARICEPT® is indicated for the treatment of dementia of the Alzheimer's type.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=2b1b7b5f-2f20-418c-b1ac-794c2ef1ce5e"
+  },
+  {
+    text: "Buspirone hydrochloride tablets are indicated for the management of anxiety disorders or the short-term relief of the symptoms of anxiety. Anxiety or tension associated with the stress of everyday life usually does not require treatment with an anxiolytic.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=33999f17-f689-40a1-955a-fb19c0590e0e"
+  },
+  {
+    text: "Lithium Carbonate Extended-Release Tablets USP are indicated in the treatment of manic episodes of Bipolar Disorder.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=ebda1da0-38a2-49a0-8478-5d1d991a63bd"
+  },
+  {
+    text: "Memantine hydrochloride oral solution is indicated for the treatment of moderate to severe dementia of the Alzheimer's type.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=4076d3ef-d0a9-96c5-1a15-812c1e42929c"
+  },
+  {
+    text: "Clonazepam is useful alone or as an adjunct in the treatment of the Lennox-Gastaut syndrome (petit mal variant), akinetic and myoclonic seizures.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=acbce0e8-5098-4785-943b-8bdb5ff17fab"
+  },
+  {
+    text: "Clonazepam is indicated for the treatment of panic disorder, with or without agoraphobia, as defined in DSM-IV", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=acbce0e8-5098-4785-943b-8bdb5ff17fab"
+  },
+  {
+    text: "Venlafaxine tablets, USP are indicated for the treatment of major depressive disorder.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b23637e5-d37f-41b5-ba76-fc053e903bc2"
+  },
+  {
+    text: "AIMOVIG is indicated for the preventive treatment of migraine in adults.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b998ed05-94b0-47fd-b28f-cddd1e128fd8"
+  },
+  {
+    text: "AMRIX® (cyclobenzaprine hydrochloride extended-release capsules) is indicated as an adjunct to rest and physical therapy for relief of muscle spasm associated with acute, painful musculoskeletal conditions.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=3902123b-1365-ac3c-0934-afff9eeeb1bd"
+  },
+  {
+    text: "Amphetamine sulfate tablets, USP 5 mg and 10 mg are indicated for: Narcolepsy", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=53d40847-e0d3-48ec-81a7-ec5478553565"
+  },
+  {
+    text: "Amphetamine sulfate tablets, USP 5 mg and 10 mg are indicated for: Attention Deficit Disorder with Hyperactivity as an integral part of a total treatment program which typically includes other remedial measures (psychological, educational, social) for a stabilizing effect in children with behavioral syndrome characterized by the following group of developmentally inappropriate symptoms: moderate to severe distractibility, short attention span, hyperactivity, emotional lability, and impulsivity. The diagnosis of the syndrome should not be made with finality when these symptoms are only of comparatively recent origin. Nonlocalizing (soft) neurological signs, learning disability, and abnormal EEG may or may not be present, and a diagnosis of central nervous system dysfunction may or not be warranted.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=53d40847-e0d3-48ec-81a7-ec5478553565"
+  },
+  {
+    text: "Clonazepam is useful alone or as an adjunct in the treatment of the Lennox-Gastaut syndrome (petit mal variant), akinetic and myoclonic seizures.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=acbce0e8-5098-4785-943b-8bdb5ff17fab"
+  },
+  {
+    text: "Methylphenidate Hydrochloride is indicated as an integral part of a total treatment program which typically includes other remedial measures (psychological, educational, social) for a stabilizing effect in children with a behavioral syndrome characterized by the following group of developmentally inappropriate symptoms: moderate-to-severe distractibility, short attention span, hyperactivity, emotional lability, and impulsivity", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=2cf1b26b-199d-4c7f-ab64-4805a9def2cc"
+  },
+  {
+    text: "Indications and Usage: Attention Deficit Disorders, Narcolepsy", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=2cf1b26b-199d-4c7f-ab64-4805a9def2cc"
+  },
+  {
+    text: "Lamotrigine tablets are indicated as adjunctive therapy for the following seizure types in patients aged 2 years and older", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=0b0f0209-edbd-46f3-9bed-762cbea0d737"
+  },
+  {
+    text: "Lamotrigine tablets are indicated for conversion to monotherapy in adults (aged 16 years and older) with partial-onset seizures who are receiving treatment with carbamazepine, phenytoin, phenobarbital, primidone, or valproate as the single antiepileptic drug (AED).", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=0b0f0209-edbd-46f3-9bed-762cbea0d737"
+  },
+  {
+    text: "Lamotrigine tablets are indicated for the maintenance treatment of bipolar I disorder to delay the time to occurrence of mood episodes (depression, mania, hypomania, mixed episodes) in patients treated for acute mood episodes with standard therapy", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=0b0f0209-edbd-46f3-9bed-762cbea0d737"
+  },
+  {
+    text: "Topiramate tablets and topiramate capsules are indicated as initial monotherapy for the treatment of partial-onset or primary generalized tonic-clonic seizures in patients 2 years of age and older", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=6f9d59e3-d10d-48f3-af01-83ba3e1e3a2b"
+  },
+  {
+    text: "Gabapentin capsules, USP are indicated as adjunctive therapy in the treatment of partial seizures with and without secondary generalization in patients over 12 years of age with epilepsy. Gabapentin capsules, USP are also indicated as adjunctive therapy in the treatment of partial seizures in pediatric patients age 3 to 12 years.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=0936a88f-b569-49c4-951b-14e8f6273b53"
+  },
+  {
+    text: "Topiramate tablets and topiramate capsules are indicated as adjunctive therapy for for the treatment of partial-onset seizures, primary generalized tonic-clonic seizures, and seizures associated with Lennox-Gastaut syndrome in patients 2 years of age and older", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=6f9d59e3-d10d-48f3-af01-83ba3e1e3a2b"
+  },
+  {
+    text: "Topiramate tablets and topiramate capsules are indicated for the preventive treatment of migraine in patients 12 years of age and older", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=6f9d59e3-d10d-48f3-af01-83ba3e1e3a2b"
+  },
+  {
+    text: "Quetiapine tablets are indicated for the treatment of schizophrenia", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=904f80af-44b6-d964-1680-ac9e6b61327b"
+  },
+  {
+    text: "Quetiapine tablets are indicated for the acute treatment of manic episodes associated with bipolar I disorder, both as monotherapy and as an adjunct to lithium or divalproex", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=904f80af-44b6-d964-1680-ac9e6b61327b"
+  },
+  {
+    text: "Quetiapine tablets are indicated as monotherapy for the acute treatment of depressive episodes associated with bipolar disorder.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=904f80af-44b6-d964-1680-ac9e6b61327b"
+  },
+  {
+    text: "Alprazolam extended-release tablets are indicated for the treatment of panic disorder, with or without agoraphobia.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=79619e0f-1600-40ea-e053-2a91aa0a2700"
+  },
+  {
+    text: "Tizanidine hydrochloride capsules are central alpha-2-adrenergic agonist indicated for the management of spasticity", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=e19636a4-3c5e-4b75-b394-003098f74d48"
+  },
+  {
+    text: "Uses: temporarily reduces pains and aches due to headache, toothache, backache, menstrual cramps, the common cold, muscular aches, minor pains of arthritis, temporarily reduces fever", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=5c65b691-b795-44a5-abb7-931cd772f1a1"
+  },
+  {
+    text: "Levetiracetam in Sodium Chloride Injection is indicated as adjunctive therapy in thetreatment of partial onset seizures in adults with epilepsy.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=0a9234b7-46b1-8e6c-a992-90f86cfb6e00"
+  },
+  {
+    text: "Tolcapone tablets, USP is indicated as an adjunct to levodopa and carbidopa for the treatment of the signs and symptoms of idiopathic Parkinson's disease", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d94891be-2fef-4e39-8e35-ab7afe93e78e"
+  },
+  {
+    text: "Levetiracetam in Sodium Chloride Injection is indicated as adjunctive therapy in the treatment of myoclonic seizures in adults with juvenile myoclonic epilepsy.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=0a9234b7-46b1-8e6c-a992-90f86cfb6e00"
+  },
+  {
+    text: "Levetiracetam in Sodium Chloride Injection is indicated as adjunctive therapy in the treatment of primary generalized tonic-clonic seizures in adults with idiopathic generalized epilepsy.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=0a9234b7-46b1-8e6c-a992-90f86cfb6e00"
+  },
+  {
+    text: "Divalproex sodium delayed-release capsules are indicated as monotherapy and adjunctive therapy in the treatment of adult patients and pediatric patients down to the age of 10 years with complex partial seizures that occur either in isolation or in association with other types of seizures.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=f911748c-fb3a-fe1a-ab2a-4b40455e05ef"
+  },
+  {
+    text: "Uses - temporarily relieves minor aches and pains due to: minor pain of arthritis, backache, headache, muscular aches, menstrual cramps, toothache, common cold, temporarily reduces fever", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=bc5ddcf2-640c-4683-a60f-ca1c8b418873"
+  },
+  {
+    text: "Baclofen is useful for the alleviation of signs and symptoms of spasticity resulting from multiple sclerosis, particularly for the relief of flexor spasms and concomitant pain, clonus, and muscular rigidity.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=346af8fe-3816-49de-bfd3-5a7425e728f9"
+  },
+  {
+    text: "Diclofenac potassium tablets are indicated:For relief of mild to moderate pain", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=77b60a0c-e49a-4ad4-abb1-b662c24ab782"
+  },
+  {
+    text: "Baclofen may also be of some value in patients with spinal cord injuries and other spinal cord diseases.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=346af8fe-3816-49de-bfd3-5a7425e728f9"
+  },
+  {
+    text: "Mirtazapine tablets, USP are indicated for the treatment of major depressive disorder.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=0039f505-7cd0-4d79-b5dd-bf2d172571a0"
+  },
+  {
+    text: "Hydrocodone Bitartrate Extended-Release Capsules are indicated for the management of pain severe enough to require daily, around-the-clock, long-term opioid treatment and for which alternative treatment options are inadequate.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=a7b8ea07-e926-f0a5-c20d-92f23ed350d0"
+  },
+  {
+    text: "Almotriptan tablets (almotriptan malate) are indicated for the acute treatment of migraine attacks in patients with a history of migraine with or without aura", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=35617039-9f33-401b-bac3-8f85c65fa2c7"
+  },
+  {
+    text: "Carisoprodol Tablets are indicated for the relief of discomfort associated with acute, painful musculoskeletal conditions in adults.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=ab22f1be-16c8-45b6-adaf-09e08bf7a545"
+  },
+  {
+    text: "Ropinirole tablets are indicated for the treatment of Parkinson’s disease", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=f5ce07b9-ad0d-4b72-9daf-8662775af093"
+  },
+  {
+    text: "Ropinirole tablets are indicated for the treatment of moderate-to-severe primary Restless Legs Syndrome (RLS).", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=f5ce07b9-ad0d-4b72-9daf-8662775af093"
+  },
+  {
+    text: "Methocarbamol tablets, USP are indicated as an adjunct to rest, physical therapy, and other measures for the relief of discomfort associated with acute, painful musculoskeletal conditions.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=42c0a177-7d62-4bcf-9fce-7dd484cda4d5"
+  },
+  {
+    text: "Oxcarbazepine oral suspension is indicated for use as monotherapy or adjunctive therapy in the treatment of partial-onset seizures in adults and as monotherapy in the treatment of partial-onset seizures in pediatric patients aged 4 years and above, and as adjunctive therapy in pediatric patients aged 2 years and above with partial-onset seizures.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=2515391e-3a88-4226-92e5-f641c8409fe5"
+  },
+  {
+    text: "Pramipexole dihydrochloride tablets are indicated for the treatment of Parkinson’s disease.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=4fe7106d-4bf6-4794-87cb-8df616994c41"
+  },
+  {
+    text: "Pramipexole dihydrochloride tablets are indicated for the treatment of moderate-to-severe primary Restless Legs Syndrome (RLS).", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=4fe7106d-4bf6-4794-87cb-8df616994c41"
+  },
+  {
+    text: "Atomoxetine capsules are indicated for the treatment of Attention-Deficit/Hyperactivity Disorder (ADHD).", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=6f6bea0c-297b-43ff-8960-ecc11243e06e"
+  },
+  {
+    text: "Topiramate tablets and topiramate capsules are indicated as adjunctive therapy for for the treatment of partial-onset seizures, primary generalized tonic-clonic seizures, and seizures associated with Lennox-Gastaut syndrome in patients 2 years of age and older", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=6f9d59e3-d10d-48f3-af01-83ba3e1e3a2b"
+  },
+  {
+    text: "PRIALT (ziconotide) solution, intrathecal infusion is indicated for the management of severe chronic pain in adult patients for whom intrathecal therapy is warranted, and who are intolerant of or refractory to other treatment, such as systemic analgesics, adjunctive therapies, or intrathecal morphine", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b025d8ed-937d-4597-9ad1-0b2f6e0ee5b1"
+  },
+  {
+    text: "Vyvanse® is indicated for the treatment of Attention Deficit Hyperactivity Disorder (ADHD).", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=a310fc51-2743-4755-8398-fed5402283f6"
+  },
+  {
+    text: "As an antiaggregant in antiplatelet therapy or for temporary relief of minor aches and pains.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=80ce8064-0e27-4587-b70b-2ea3c9aa2786"
+  },
+  {
+    text: "Trihexyphenidyl is indicated as an adjunct in the treatment of all forms of parkinsonism (postencephalitic, arteriosclerotic, and idiopathic). It is often useful as adjuvant therapy when treating these forms of parkinsonism with levodopa.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d6f08000-e973-4bab-810c-b69f6c8ee4f3"
+  },
+  {
+    text: "Additionally, it is indicated for the control of extrapyramidal disorders caused by central nervous system drugs such as the dibenzoxazepines, phenothiazines, thioxanthenes, and butyrophenones.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d6f08000-e973-4bab-810c-b69f6c8ee4f3"
+  },
+  {
+    text: "Dextroamphetamine sulfate tablets are indicated in: Narcolepsy and Attention Deficit Disorder with Hyperactivity: As an integral part of a total treatment program that typically includes other remedial measures (psychological, educational, social) for a stabilizing effect in pediatric patients (ages 3 years to 16 years)", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=bed3c03f4-2829-423f-a595-dc09c9cc0e40"
+  },
+  {
+    text: "Dextroamphetamine sulfate tablets are indicated in: Narcolepsy and Attention Deficit Disorder with Hyperactivity: As an integral part of a total treatment program that typically includes other remedial measures (psychological, educational, social) for a stabilizing effect in pediatric patients (ages 3 years to 16 years)", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=bed3c03f4-2829-423f-a595-dc09c9cc0e40"
+  },
+  {
+    text: "Morphine sulfate is indicated for the relief of severe pain", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=e360d6b6-d9ef-487d-bf14-fcbbee8beb29"
+  },
+  {
+    text: "Pyridostigmine Bromide Oral Solution, USP is useful in the treatment of myasthenia gravis.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=ef78ff05-8e0f-463a-88cd-ca9a01aed76a"
+  },
+  {
+    text: "Buprenorphine Sublingual Tablets are indicated for the treatment of opioid dependence and are preferred for induction", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=1bf8b35a-b769-465c-a2f8-099868dfcd2f"
+  },
+  {
+    text: "Naltrexone hydrochloride tablets USP 50 mg is indicated in the treatment of alcohol dependence", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=49aa3d6d-2270-4615-aafa-b440859ab870"
+  },
+  {
+    text: "Bromocriptine mesylate tablets are indicated in the treatment of the signs and symptoms of idiopathic or postencephalitic Parkinson's disease. As adjunctive treatment to levodopa (alone or with a peripheral decarboxylase inhibitor), bromocriptine mesylate therapy may provide additional therapeutic benefits in those patients who are currently maintained on optimal dosages of levodopa, those who are beginning to deteriorate (develop tolerance) to levodopa therapy, and those who are experiencing end of dose failure on levodopa therapy. ", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=93a0696b-b261-4262-9e06-f3180b419f8f"
+  },
+  {
+    text: "RADICAVA is indicated for the treatment of amyotrophic lateral sclerosis (ALS).", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=0ce2c1c4-2a40-485c-b7cb-96a9b85d9d11"
+  },
+  {
+    text: "Tetrabenazine tablets are indicated for the treatment of chorea associated with Huntington's disease.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=471ac1d8-e3ad-7729-87c5-c26ae92c32eb"
+  },
+  {
+    text: "Riluzole is indicated for the treatment of amyotrophic lateral sclerosis(ALS).", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=dd432c13-389e-46b3-8891-0cf1a58800ff"
+  },
+  {
+    text: "RUZURGI is indicated for the treatment of Lambert-Eaton myasthenic syndrome (LEMS) in patients 6 to less than 17 years of age.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=2731310a-c060-4d3e-ba41-763d791f63a9"
+  },
+  {
+    text: "USES: For the temporary relief of discomfort and pain associated with - minor burns and skin irritations, minor cuts and scrapes, itching", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=60cafbaf-8ec6-46a5-e053-2a91aa0af11f"
+  },
+  {
+    text: "Cevimeline hydrochloride capsules are indicated for the treatment of symptoms of dry mouth in patients with Sjögren’s Syndrome.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=773a19e8-4c3e-4414-99a6-aea98c9790ee"
+  },
+  {
+    text: "temporarily relieves minor aches and pains due to:•the common cold•headache•backache•minor pain of arthritis•toothache•muscular aches•premenstrual and menstrual cramps•temporarily reduces fever", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=9f7cca9d-4230-49d7-b805-a1fbc73e31c9"
+  },
+  {
+    text: "temporarily relieves minor aches and pains due to:•the common cold•headache•backache•minor pain of arthritis•toothache•muscular aches•premenstrual and menstrual cramps•temporarily reduces fever", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=9f7cca9d-4230-49d7-b805-a1fbc73e31c9"
+  },
+  {
+    text: "Clonazepam is useful alone or as an adjunct in the treatment of the Lennox-Gastaut syndrome (petit mal variant), akinetic and myoclonic seizures.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=acbce0e8-5098-4785-943b-8bdb5ff17fab"
+  },
+  {
+    text: "Clonazepam is useful alone or as an adjunct in the treatment of the Lennox-Gastaut syndrome (petit mal variant), akinetic and myoclonic seizures.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=acbce0e8-5098-4785-943b-8bdb5ff17fab"
+  },
+  {
+    text: "Temazepam is indicated for the short-term treatment of insomnia (generally 7 to 10 days).", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=a4370eb4-b00d-4247-af8d-980e59fbbec6"
+  },
+  {
+    text: "Diazepam is a useful adjunct for the relief of skeletal muscle spasm due to reflex spasm to local pathology (such as inflammation of the muscles or joints, or secondary to trauma), spasticity caused by upper motor neuron disorders (such as cerebral palsy and paraplegia); athetosis; stiff man syndrome; and tetanus.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=fa352464-14c8-49e9-b8b7-5a968b1cfa93"
+  },
+  {
+    text: "Diazepam is a useful adjunct for the relief of skeletal muscle spasm due to reflex spasm to local pathology (such as inflammation of the muscles or joints, or secondary to trauma), spasticity caused by upper motor neuron disorders (such as cerebral palsy and paraplegia); athetosis; stiff man syndrome; and tetanus.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=fa352464-14c8-49e9-b8b7-5a968b1cfa93"
+  },
+  {
+    text: "Diazepam is a useful adjunct for the relief of skeletal muscle spasm due to reflex spasm to local pathology (such as inflammation of the muscles or joints, or secondary to trauma), spasticity caused by upper motor neuron disorders (such as cerebral palsy and paraplegia); athetosis; stiff man syndrome; and tetanus.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=fa352464-14c8-49e9-b8b7-5a968b1cfa93"
+  },
+  {
+    text: "Diazepam is a useful adjunct for the relief of skeletal muscle spasm due to reflex spasm to local pathology (such as inflammation of the muscles or joints, or secondary to trauma), spasticity caused by upper motor neuron disorders (such as cerebral palsy and paraplegia); athetosis; stiff man syndrome; and tetanus.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=fa352464-14c8-49e9-b8b7-5a968b1cfa93"
+  },
+  {
+    text: "Diazepam is a useful adjunct for the relief of skeletal muscle spasm due to reflex spasm to local pathology (such as inflammation of the muscles or joints, or secondary to trauma), spasticity caused by upper motor neuron disorders (such as cerebral palsy and paraplegia); athetosis; stiff man syndrome; and tetanus.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=fa352464-14c8-49e9-b8b7-5a968b1cfa93"
+  },
+  {
+    text: "Diazepam is a useful adjunct for the relief of skeletal muscle spasm due to reflex spasm to local pathology (such as inflammation of the muscles or joints, or secondary to trauma), spasticity caused by upper motor neuron disorders (such as cerebral palsy and paraplegia); athetosis; stiff man syndrome; and tetanus.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=fa352464-14c8-49e9-b8b7-5a968b1cfa93"
+  },
+  {
+    text: "Lorazepam injection is indicated for the treatment of status epilepticus.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=ae274b1f-27c3-483b-99f1-9a9249dc2459"
+  },
+  {
+    text: "Lorazepam injection is indicated in adult patients for preanesthetic medication, producing sedation (sleepiness or drowsiness), relief of anxiety, and a decreased ability to recall events related to the day of surgery. It is most useful in those patients who are anxious about their surgical procedure and who would prefer to have diminished recall of the events of the day of surgery", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=ae274b1f-27c3-483b-99f1-9a9249dc2459"
+  },
+  {
+    text: "Amantadine hydrochloride capsules are also indicated in the treatment of parkinsonism and drug-induced extrapyramidal reactions.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=491aea85-5a55-4a7c-b1cf-a123fea4377d"
+  },
+  {
+    text: "ABSTRAL® is indicated for the management of breakthrough pain in cancer patients 18 years of age and older who are already receiving, and who are tolerant to, around-the-clock opioid therapy for their underlying persistent cancer pain.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=e60f00e9-2cf4-4c20-b570-1c2ea426c8c7"
+  },
+  {
+    text: "Diazepam is indicated for the management of anxiety disorders for the short-term relief of the symptoms of anxiety. Anxiety or tension associated with the stress of everyday life usually does not require treatment with an anxiolytic.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=fa352464-14c8-49e9-b8b7-5a968b1cfa93"
+  },
+  {
+    text: "Diazepam injection is a useful adjunct in status epilepticus and severe recurrent convulsive seizures.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=fa352464-14c8-49e9-b8b7-5a968b1cfa93"
+  },
+  {
+    text: "Iloperidone tablets are indicated for the treatment of schizophrenia in adults.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=eeb0fcfd-e4e8-4fb1-9635-901dc9446235"
+  },
+  {
+    text: "Aripiprazole oral solution is indicated for the treatment of: Schizophrenia", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=7f272100-e02f-4a16-bb39-a2bf844db4f9"
+  },
+  {
+    text: "Aripiprazole oral solution is indicated for the treatment of: acute Treatment of Manic and Mixed Episodes associated with Bipolar I Disorder ", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=7f272100-e02f-4a16-bb39-a2bf844db4f9"
+  },
+  {
+    text: "Aripiprazole oral solution is indicated for the treatment of: Adjunctive Treatment of Major Depressive Disorder", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=7f272100-e02f-4a16-bb39-a2bf844db4f9"
+  },
+  {
+    text: "Aripiprazole oral solution is indicated for the treatment of: Irritability Associated with Autistic Disorder", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=7f272100-e02f-4a16-bb39-a2bf844db4f9"
+  },
+  {
+    text: "Felbamate oral suspension is recommended for use only in those patients who respond inadequately to alternative treatments and whose epilepsy is so severe that a substantial risk of aplastic anemia and/or liver failure is deemed acceptable in light of the benefits conferred by its use", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=2e325d79-d0a4-4af7-b09b-96ee5a5b2a37"
+  },
+  {
+    text: "Vigabatrin for oral solution is indicated as adjunctive therapy for adults and pediatric patients 2 years of age and older with refractory complex partial seizures who have inadequately responded to several alternative treatments and for whom the potential benefits outweigh the risk of vision loss", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=5b8fb137-848b-45fd-9107-a6db5a675360"
+  },
+  {
+    text: "Selegiline capsules, USP are indicated as an adjunct in the management of Parkinsonian patients being treated with levodopa/carbidopa who exhibit deterioration in the quality of their response to this therapy.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=1924db3d-6a16-4496-cfd0-6903be146925"
+  },
+  {
+    text: "Vigabatrin for oral solution is indicated as monotherapy for pediatric patients with infantile spasms 1 month to 2 years of age for whom the potential benefits outweigh the potential risk of vision loss", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=5b8fb137-848b-45fd-9107-a6db5a675360"
+  },
+  {
+    text: "Extended phenytoin sodium capsules are indicated for the treatment of tonic-clonic (grand mal) and psychomotor (temporal lobe) seizures and prevention and treatment of seizures occurring during or following neurosurgery", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=7e467c02-49a0-4b62-b537-430fdfa4f10e"
+  },
+  {
+    text: "Fosphenytoin sodium injection is indicated for the treatment of generalized tonic-clonic status epilepticus and prevention and treatment of seizures occurring during neurosurgery.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b60c9c82-e5c7-4e05-98c7-5bbba4af04b2"
+  },
+  {
+    text: "Risperidone tablets are indicated for the acute and maintenance treatment of schizophrenia", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=c0c3eeb6-8a75-0b20-2008-396e63cddcdb"
+  },
+  {
+    text: "Due to Janssen Pharmaceuticals Corporation’s marketing exclusivity rights, this drug product is not labeled for use in pediatric patients with bipolar mania. Pediatric use information for the treatment of pediatric patients with bipolar mania, 10 to 17 years of age, is approved for Janssen Pharmaceuticals Corporation’s risperidone drug products.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=c0c3eeb6-8a75-0b20-2008-396e63cddcdb"
+  },
+  {
+    text: "Risperidone tablets are indicated for the short-term treatment of acute manic or mixed episodes associated with Bipolar I Disorder in Adults", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=c0c3eeb6-8a75-0b20-2008-396e63cddcdb"
+  },
+  {
+    text: "Combination Therapy - Adults: The combination of risperidone with lithium or valproate is indicated for the short-term treatment of acute manic or mixed episodes associated with Bipolar I Disorder", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=c0c3eeb6-8a75-0b20-2008-396e63cddcdb"
+  },
+  {
+    text: "Risperidone tablets are indicated for the treatment of irritability associated with autistic disorder in children and adolescents aged 5-16 years, including symptoms of aggression towards others, deliberate self-injuriousness, temper tantrums, and quickly changing moods", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=c0c3eeb6-8a75-0b20-2008-396e63cddcdb"
+  },
+  {
+    text: "ONGENTYS is indicated as adjunctive treatment to levodopa/carbidopa in patients with Parkinson’s disease (PD) experiencing “off” episodes", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=278a60c4-2353-4657-b486-f392b93181b7"
+  },
+  {
+    text: "Entacapone tablets are indicated as an adjunct to levodopa and carbidopa to treat end-of-dose “wearing-off” in patients with Parkinson’s disease", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=e9e94e9f-cd7a-45f5-9aeb-9c28ed804d8c"
+  },
+  {
+    text: "For the relief of symptoms of depression. Endogenous depression is more likely to be alleviated than other depressive states", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=92ca69d4-cdba-4789-91a9-922664d52498"
+  },
+  {
+    text: "Sertraline Tablets, USP are indicated for the treatment of major depressive disorder in adults.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=f9641190-9151-4f7e-89ff-1e7a818c30ee"
+  },
+  {
+    text: "Sertraline tablets are indicated for the treatment of obsessions and compulsions in patients with obsessive-compulsive disorder (OCD), as defined in the DSM-III-R; i.e., the obsessions or compulsions cause marked distress, are time-consuming, or significantly interfere with social or occupational functioning.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=f9641190-9151-4f7e-89ff-1e7a818c30ee"
+  },
+  {
+    text: "Sertraline tablets are indicated for the treatment of panic disorder in adults, with or without agoraphobia, as defined in DSM-IV.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=f9641190-9151-4f7e-89ff-1e7a818c30ee"
+  },
+  {
+    text: "Sertraline is indicated for the treatment of posttraumatic stress disorder in adults.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=f9641190-9151-4f7e-89ff-1e7a818c30ee"
+  },
+  {
+    text: "Sertraline tablets are indicated for the treatment of social anxiety disorder, also known as social phobia in adults.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=f9641190-9151-4f7e-89ff-1e7a818c30ee"
+  },
+  {
+    text: "Fluoxetine is indicated for the acute and maintenance treatment of Major Depressive Disorder in adult patients and in pediatric patients aged 8 to18 years", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=59de2889-c3d3-4ebf-8826-13f30a3fa439"
+  },
+  {
+    text: "Fluoxetine is indicated for the acute and maintenance treatment of obsessions and compulsions in adult patients and in pediatric patients aged 7 to 17 years with Obsessive Compulsive Disorder (OCD)", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=59de2889-c3d3-4ebf-8826-13f30a3fa439"
+  },
+  {
+    text: "Fluoxetine is indicated for the acute and maintenance treatment of binge-eating and vomiting behaviors in adult patients with moderate to severe Bulimia Nervosa", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=59de2889-c3d3-4ebf-8826-13f30a3fa439"
+  },
+  {
+    text: "Fluoxetine is indicated for the acute and maintenance treatment of binge-eating and vomiting behaviors in adult patients with moderate to severe Bulimia Nervosa ", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=59de2889-c3d3-4ebf-8826-13f30a3fa439"
+  },
+  {
+    text: "Fluoxetine is indicated for the acute treatment of Panic Disorder, with or without agoraphobia, in adult patients", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=59de2889-c3d3-4ebf-8826-13f30a3fa439"
+  },
+  {
+    text: "Xyrem is indicated for the treatment of cataplexy or excessive daytime sleepiness (EDS) in patients 7 years of age and older with narcolepsy.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=926eb076-a4a8-45e4-91ef-411f0aa4f3ca"
+  },
+  {
+    text: "Fluoxetine and olanzapine in combination is indicated for the acute treatment of depressive episodes associated with Bipolar I Disorder in adult patients.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=59de2889-c3d3-4ebf-8826-13f30a3fa439"
+  },
+  {
+    text: "Orphenadrine citrate is indicated as an adjunct to rest, physical therapy, and other measures for the relief of discomfort associated with acute, painful musculo-skeletal conditions.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=aec8ad3a-f717-4e74-b7b9-19debdaad79a"
+  },
+  {
+    text: "Ramelteon tablets are indicated for the treatment of insomnia characterized by difficulty with sleep onset.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=a89dae05-6c39-4072-b8ee-c4c35b46f7d4"
+  },
+  {
+    text: "Frovatriptan succinate tablets are indicated for the acute treatment of migraine with or without aura in adults.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=94b996dc-ddc4-41ce-9a9f-3d91cb187473"
+  },
+  {
+    text: "Sumatriptan tablets are indicated for the acute treatment of migraine with or without aura in adults.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b2503fff-c978-4efa-b1b4-d7740b6b26f2"
+  },
+  {
+    text: "Marplan is indicated for the treatment of depression. Because of its potentially serious side effects, Marplan is not an antidepressant of first choice in the treatment of newly diagnosed depressed patient", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=ac387aa0-3f04-4865-a913-db6ed6f4fdc5"
+  },
+  {
+    text: "Pimozide Tablets, USP is indicated for the suppression of motor and phonic tics in patients with Tourette’s Disorder who have failed to respond satisfactorily to standard treatment.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=70b079e2-a1f7-4a93-8685-d60a4d7c1280"
+  },
+  {
+    text: "Thiothixene capsules are effective in the management of schizophrenia.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=13d90931-e9d8-25f3-a045-608d0404cd7a"
+  },
+  {
+    text: "Treatment of adult and adolescent patients (13 to 17 years) with schizophrenia", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=afad3051-9df2-4c54-9684-e8262a133af8"
+  },
+  {
+    text: "Monotherapy treatment of adult and pediatric patients (10 to 17 years) with major depressive episode associated with bipolar I disorder (bipolar depression)", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=afad3051-9df2-4c54-9684-e8262a133af8"
+  },
+  {
+    text: "Clozapine is indicated for reducing the risk of recurrent suicidal behavior in patients with schizophrenia or schizoaffective disorder who are judged to be at chronic risk for re-experiencing suicidal behavior, based on history and recent clinical state", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=25c0c6d5-f7b0-48e4-e054-00144ff8d46c"
+  },
+  {
+    text: "Adjunctive treatment with lithium or valproate in adult patients with major depressive episode associated with bipolar I disorder (bipolar depression)", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=afad3051-9df2-4c54-9684-e8262a133af8"
+  },
+  {
+    text: "Duloxetine delayed-release capsules are indicated for the treatment of: Major Depressive Disorder, Generalized Anxiety Disorder, Diabetic Peripheral Neuropathy, Fibromyalgia, Chronic Muscoskeletal Pain", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=ea2dc1a6-22d5-4295-9d39-9bf015dc5a89"
+  },
+  {
+    text: "Duloxetine delayed-release capsules are indicated for the treatment of: Major Depressive Disorder, Generalized Anxiety Disorder, Diabetic Peripheral Neuropathy, Fibromyalgia, Chronic Muscoskeletal Pain", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=ea2dc1a6-22d5-4295-9d39-9bf015dc5a89"
+  },
+  {
+    text: "Duloxetine delayed-release capsules are indicated for the treatment of: Major Depressive Disorder, Generalized Anxiety Disorder, Diabetic Peripheral Neuropathy, Fibromyalgia, Chronic Muscoskeletal Pain", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=ea2dc1a6-22d5-4295-9d39-9bf015dc5a89"
+  },
+  {
+    text: "Duloxetine delayed-release capsules are indicated for the treatment of: Major Depressive Disorder, Generalized Anxiety Disorder, Diabetic Peripheral Neuropathy, Fibromyalgia, Chronic Muscoskeletal Pain", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=ea2dc1a6-22d5-4295-9d39-9bf015dc5a89"
+  },
+  {
+    text: "Protriptyline hydrochloride is indicated for the treatment of symptoms of mental depression in patients who are under close medical supervision.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=700abc58-9362-4ef5-9d7a-dd3c4d364d0a"
+  },
+  {
+    text: "Bupropion hydrochloride extended-release tablets (XL) are indicated for the treatment of major depressive disorder (MDD), as defined by the Diagnostic and Statistical Manual (DSM).", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=f32a4532-7dfd-4aa5-bb48-afbbd2eefb7c"
+  },
+  {
+    text: "Bupropion hydrochloride extended-release tablets (XL) are indicated for the prevention of seasonal major depressive episodes in patients with a diagnosis of seasonal affective disorder (SAD).", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=f32a4532-7dfd-4aa5-bb48-afbbd2eefb7c"
+  },
+  {
+    text: "Endogenous depression is more likely to be alleviated than are other depressive states.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=94e984da-3b08-406f-8c10-e78844fca1ff"
+  },
+  {
+    text: "For the relief of symptoms of depression.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=94e984da-3b08-406f-8c10-e78844fca1ff"
+  },
+  {
+    text: "Endogenous depression is more likely to be alleviated than other depressive states.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=4f31df66-7dc2-1f04-e054-00144ff88e88"
+  },
+  {
+    text: "Trimipramine maleate capsules are indicated for the relief of symptoms of depression.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=4f31df66-7dc2-1f04-e054-00144ff88e88"
+  },
+  {
+    text: "OXYCODONE HCl EXTENDED-RELEASE TABLETS are indicated for the management of pain severe enough to require daily, around-the-clock, long-term opioid treatment and for which alternative treatment options are inadequate in: adults and Opioid-tolerant pediatric patients 11 years of age and older who are already receiving and tolerate a minimum daily opioid dose of at least 20 mg oxycodone orally or its equivalent", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=c5b52ff1-21a6-4d28-9982-55b4ac195fac"
+  },
+  {
+    text: "Clobazam tablet is indicated for the adjunctive treatment of seizures associated with Lennox-Gastaut syndrome (LGS) in patients 2 years of age or older.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=721dde68-db83-4dad-8649-8046cb455372"
+  },
+  {
+    text: "Perphenazine is indicated for use in the treatment of schizophrenia and for the control of severe nausea and vomiting in adults.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=bb1a3d20-1f93-48a1-9e27-4712a8561757"
+  },
+  {
+    text: "In acute alcohol withdrawal, diazepam may be useful in the symptomatic relief of acute agitation, tremor, impending or acute delirium tremens and hallucinosis.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=fa352464-14c8-49e9-b8b7-5a968b1cfa93"
+  },
+  {
+    text: "Fluphenazine Decanoate Injection, USP is a long-acting parenteral antipsychotic drug intended for use in the management of patients requiring prolonged parenteral neuroleptic therapy (e.g., chronic schizophrenics).", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=1967dc24-f2a5-4095-baa9-a9d1c5410311"
+  },
+  {
+    text: "Phenelzine Sulfate Tablets, USP has been found to be effective in depressed patients clinically characterized as atypical, nonendogenous, or neurotic.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=40483372-448f-4284-976c-8462ef256661"
+  },
+  {
+    text: "Milnacipran HCl tablets are indicated for the management of fibromyalgia.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=eaa14195-1b9c-423c-9412-d2fe0857e39d"
+  },
+  {
+    text: "Meprobamate tablets are indicated for the management of anxiety disorders or for the short-term relief of the symptoms of anxiety. Anxiety or tension associated with the stress of everyday life usually do not require treatment with an anxiolytic.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=3b255bcd-0218-44f8-830b-971f5ec45276"
+  },
+  {
+    text: "If these criteria are met and the patient has been fully advised of the risk, and has provided written acknowledgment, felbamate oral suspension can be considered for either monotherapy or adjunctive therapy in the treatment of partial seizures, with and without generalization, in adults with epilepsy and as adjunctive therapy in the treatment of partial and generalized seizures associated with Lennox-Gastaut syndrome in children", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=2e325d79-d0a4-4af7-b09b-96ee5a5b2a37"
+  },
+  {
+    text: "For temporary relief of symptoms related to sleep disorders, Seasonal Affective Disorder, jet lag, and depression.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=fdaf86c2-137d-4926-a63b-9faf7ec7e04c"
+  },
+  {
+    text: "For temporary relief of symptoms related to sleep disorders, Seasonal Affective Disorder, jet lag, and depression.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=fdaf86c2-137d-4926-a63b-9faf7ec7e04c"
+  },
+  {
+    text: "EMGALITY is indicated for the treatment of episodic cluster headache in adults.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=33a147be-233a-40e8-a55e-e40936e28db0"
+  },
+  {
+    text: "For temporary relief of symptoms related to sleep disorders, Seasonal Affective Disorder, jet lag, and depression.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=fdaf86c2-137d-4926-a63b-9faf7ec7e04c"
+  },
+  {
+    text: "Eszopiclone Tablets are indicated for the treatment of insomnia.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=49f71eb4-15ca-42e2-b62b-7963cc8ef115"
+  },
+  {
+    text: "Zolpidem Tartrate Tablets is indicated for the short-term treatment of insomnia characterized by difficulties with sleep initiation", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=021153ce-fe27-4ed1-8d88-b4157b0ed734"
+  },
+  {
+    text: "Quazepam is indicated for the treatment of insomnia characterized by difficulty in falling asleep, frequent nocturnal awakenings, and/or early morning awakenings.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=f7d63f3f-5303-48ab-bce2-35fd62c45799"
+  },
+  {
+    text: "Hydrocodone bitartrate and acetaminophen tablets are indicated for the management of moderate to moderately severe pain severe enough to require an opioid analgesic and for which alternative treatments are inadequate.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=4f505b2a-45a2-4d34-96f6-dedb574cb508"
+  },
+  {
+    text: "Tramadol hydrochloride tablets are indicated for the management of moderate to moderately severe pain in adults", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=ae7c54b1-b440-4cca-97e8-e5b825413d32"
+  },
+  {
+    text: "Trazodone hydrochloride tablets are indicated for the treatment of major depressive disorder (MDD) in adults", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=ed3039d8-3d27-4b71-a4b0-812943c9457f"
+  },
+  {
+    text: "Citalopram tablets are indicated for the treatment of depression", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=2632b547-2e13-447f-ac85-c774e437d6a8"
+  },
+  {
+    text: "Paroxetine tablets are indicated for the treatment of major depressive disorder.", 
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=89dd7e24-85fc-4152-89ea-47ec2b48a1ed"
+  }
+]
+
+
 // https://purl.org/np/RAuN1kyW1BD9754LCUVWozDOhkrUaLUyb5LTu0HcsulIE
 const samples: any = {
   "Drug indication with the BioLink model": {
@@ -573,4 +1221,5 @@ export {
   samples,
   propertiesList,
   predicatesList,
+  sentenceToAnnotate
 }
