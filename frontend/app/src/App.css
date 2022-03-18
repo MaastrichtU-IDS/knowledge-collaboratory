@@ -12,6 +12,10 @@
   text-align: left;
 }
 
+mark {
+  cursor: pointer;
+}
+
 pre {
   border: 2px solid grey;
   padding: 1em;

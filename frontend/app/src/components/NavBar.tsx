@@ -276,7 +276,7 @@ export default function NavBar() {
                   </Button>
                 </Paper>
               </ClickAwayListener>
-            </Popper>    
+            </Popper>
           {/* </Button> */}
           {/* </Tooltip> */}
 

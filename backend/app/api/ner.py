@@ -30,7 +30,7 @@ class NerInput(BaseModel):
     response_model={})
 async def get_entities_relations(
         input: NerInput = Body(...),
-        extract_relations: Optional[bool] = False
+        extract_relations: Optional[bool] = True
     ):
 
     # Save and load a model/pipeline: https://spacy.io/usage/saving-loading
@@ -89,24 +89,53 @@ async def get_entities_relations(
             if extracted_rel:
                 relations_extracted.append(extracted_rel)
 
-        print(f"⛏️  Extracted {len(entities_extracted)} entities and {len(relations_extracted)} relations")
+        stmts = []
+        ido = 'https://identifiers.org/'
+        for rel in relations_extracted:
+            # Get the first ID match for each entity
+            ent1_id = rel['entity1']
+            ent2_id = rel['entity2']
+            for ent in entities_extracted:
+                if 'curies' in ent.keys():
+                    # Take the first ID returned by the NCATS API
+                    if ent['text'] == rel['entity1']:
+                        ent1_id = list(ent['curies'].keys())[0]
+                    if ent['text'] == rel['entity2']:
+                        ent2_id = list(ent['curies'].keys())[0]
+            # stmt = {
+            #     's': ido + ent1_id,
+            #     'p': 'https://w3id.org/biolink/vocab/' + rel['type'],
+            #     'o': ido + ent2_id,
+            # }
+            stmt = {
+                's': {'id': ido + ent1_id, 'curie': ent1_id, 'label': rel['entity1']},
+                'p': {'id': 'https://w3id.org/biolink/vocab/' + rel['type'], 'curie': 'biolink:' + rel['type'], 'label': rel['type'].replace('_', ' ')},
+                'o': {'id': ido + ent2_id, 'curie': ent2_id, 'label': rel['entity2']},
+            }
+            stmts.append(stmt)
 
-        return JSONResponse({'entities': entities_extracted, 'relations': relations_extracted})
+        print(f"⛏️  Extracted {len(entities_extracted)} entities and {len(relations_extracted)} relations classified in {len(stmts)} statements")
+
+        return JSONResponse({
+            'entities': entities_extracted, 
+            'relations': relations_extracted,
+            'statements': stmts,
+        })
 
     return JSONResponse({'entities': entities_extracted})
 
 
 # Functions used for relations extraction:
 label2id = {
-    'Association': 0,
-    'Positive_Correlation': 1,
-    'Negative_Correlation': 2,
-    'Bind': 3,
-    'Cotreatment': 4,
-    'Comparison':5,
-    'Drug_Interaction':6,
-    'Conversion':7,
-    'Negative':8
+    'associated_with': 0, # Association
+    'positively_correlated_with': 1, # Positive_Correlation
+    'negatively_correlated_with': 2, # Negative_Correlation
+    'interacts_with': 3, # Bind
+    'treats': 4, # Cotreatment
+    'related_to':5, # Comparison
+    'chemically_interacts_with':6, # Drug_Interaction
+    'develops_into':7, # Conversion
+    'Negative':8 
 }
 
 id2label = {}

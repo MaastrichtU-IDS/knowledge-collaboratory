@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { useLocation } from "react-router-dom";
 import { useTheme } from '@mui/material/styles';
 import { makeStyles, withStyles } from '@mui/styles';
-import { Typography, Container, Box, CircularProgress, Tooltip, IconButton, Autocomplete, Button, Card, FormControl, TextField, Snackbar, Grid, Select, MenuItem, InputLabel } from "@mui/material";
+import { Typography, Popper, ClickAwayListener, Paper, Container, Box, CircularProgress, Tooltip, IconButton, Autocomplete, Button, Card, FormControl, TextField, Snackbar, Grid, Select, MenuItem, InputLabel } from "@mui/material";
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import DownloadJsonldIcon from '@mui/icons-material/Description';
 import AddIcon from '@mui/icons-material/AddBox';
@@ -125,6 +125,7 @@ export default function AnnotateText() {
   // useLocation hook to get URL params
   let location = useLocation();
   const entitiesType: any = {}
+  const tagSelected: any = null
   const [state, setState] = React.useState({
     // inputText: 'Amantadine hydrochloride capsules are indicated in the treatment of idiopathic Parkinson’s disease (Paralysis Agitans), postencephalitic parkinsonism and symptomatic parkinsonism which may follow injury to the nervous system by carbon monoxide intoxication.',
     inputText: '',
@@ -135,6 +136,7 @@ export default function AnnotateText() {
     entitiesList: [],
     entitiesType: entitiesType,
     relationsList: [],
+    tagSelected: tagSelected,
     statements: [{'s': '', 'p': '', 'o': '', 'props': []}],
     predicatesList: predicatesList,
     propertiesList: propertiesList,
@@ -151,6 +153,17 @@ export default function AnnotateText() {
     stateRef.current = {...stateRef.current, ...update};
     setState(stateRef.current);
   }, [setState]);
+
+
+  // Settings for Popper
+  const [open, setOpen] = React.useState(false);
+  const [anchorEl, setAnchorEl]: any = React.useState(null);
+  const handleClickAway = () => {
+    setOpen(false);
+    setAnchorEl(anchorEl ? null : anchorEl);
+  };
+  const id = open ? 'simple-popper' : undefined;
+
   
 
   React.useEffect(() => {
@@ -186,10 +199,15 @@ export default function AnnotateText() {
   }, [state.np_jsonld])
 
   // TODO: complete the list of ents?
+  // const ents = [
+  //   {type: 'chemicalentity', color: {r: 166, g: 226, b: 45}},
+  //   {type: 'drug', color: {r: 67, g: 198, b: 252}},
+  //   {type: 'diseaseorphenotypicfeature', color: {r: 47, g: 187, b: 171}}
+  // ]
   const ents = [
-    {type: 'chemicalentity', color: {r: 166, g: 226, b: 45}},
-    {type: 'drug', color: {r: 67, g: 198, b: 252}},
-    {type: 'diseaseorphenotypicfeature', color: {r: 47, g: 187, b: 171}}
+    {type: 'chemicalentity', label: 'Chemical entity', id: BIOLINK + 'ChemicalEntity', curie: 'biolink:ChemicalEntity', color: {r: 166, g: 226, b: 45}},
+    {type: 'drug', label: 'Chemical entity', id: BIOLINK + 'Drug', curie: 'biolink:Drug', color: {r: 67, g: 198, b: 252}},
+    {type: 'diseaseorphenotypicfeature', label: 'Disease or Phenotypic Feature', id: BIOLINK + 'DiseaseOrPhenotypicFeature', curie: 'biolink:DiseaseOrPhenotypicFeature', color: {r: 47, g: 187, b: 171}}
   ]
 
   // const toJSONLD = (data: any, uri: any) => {
@@ -267,6 +285,7 @@ export default function AnnotateText() {
     axios.post(
         settings.apiUrl + '/get-entities-relations', 
         {'text': state.editInputText}, 
+        {'params': {'extract_relations': true}}
       )
       .then(res => {
         const entitiesList: any = []
@@ -288,7 +307,8 @@ export default function AnnotateText() {
           loading: false,
           entitiesList: entitiesList,
           entitiesAnnotations: res.data.entities,
-          relationsList: res.data.relations
+          relationsList: res.data.relations,
+          statements: res.data.statements
         })
         // console.log(entitiesAnnotations)
       })
@@ -313,9 +333,11 @@ export default function AnnotateText() {
           [`${rdf}object`]: {'@id': stmt.o},
         }
         // Add properties for reified statements
-        stmt.props.map((stmtProp: any, pindex: number) => {
-          reifiedStmt[stmtProp.p] = stmtProp.o
-        })
+        if (stmt.props) {
+          stmt.props.map((stmtProp: any, pindex: number) => {
+            reifiedStmt[stmtProp.p] = stmtProp.o
+          })
+        }
         stmtJsonld.push(reifiedStmt)
       })
 
@@ -329,9 +351,11 @@ export default function AnnotateText() {
           [`${rdf}object`]: {'@id': stmt.o},
         }
         // Add properties for reified statements
-        stmt.props.map((stmtProp: any, pindex: number) => {
-          reifiedStmt[stmtProp.p] = stmtProp.o
-        })
+        if (stmt.props) {
+          stmt.props.map((stmtProp: any, pindex: number) => {
+            reifiedStmt[stmtProp.p] = stmtProp.o
+          })
+        }
         stmtJsonld.push(reifiedStmt)
       })
 
@@ -461,6 +485,9 @@ export default function AnnotateText() {
     // @ts-ignore
     console.log(event.target.id);
     console.log(stmtIndex);
+    if (!stmts[stmtIndex]['props']) {
+      stmts[stmtIndex]['props'] = []
+    }
     stmts[stmtIndex]['props'].push({p: '', o: ''})
     updateState({statements: stmts})
     // setState({statements: stmts})
@@ -468,7 +495,13 @@ export default function AnnotateText() {
   const handleAutocomplete = (event: any, newInputValue: any) => {
     const stmts: any = state.statements
     if (event) {
-      if (event.target.id.startsWith('prop:')) {
+      if (event.target.id.startsWith('tag')) {
+        const tagSelected: any = state.tagSelected
+        if (newInputValue) {
+          updateState({tagSelected: newInputValue})
+          // TODO: also update entities list
+        }
+      } else if (event.target.id.startsWith('prop:')) {
         // Edit properties of a statement
         const index = event.target.id.split('-')[0].split(':')[1]
         const property = event.target.id.split('-')[0].split(':')[2]
@@ -517,6 +550,18 @@ export default function AnnotateText() {
       }
     }
   }
+  const getAutocompleteLabel = (option: any) => {
+    if (option.label && option.curie) {
+      return option.label + ' (' + option.curie + ')'
+    }
+    if (option.label) {
+      return option.label
+    }
+    if (option.id) {
+      return option.id
+    }
+    return option
+  }
 
   const triplesTemplates = ["BioLink reified associations", "RDF reified statements", "Plain RDF"]
   const handleTemplateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -537,9 +582,12 @@ export default function AnnotateText() {
   }
 
   const clickTag = (event: any, tag: any, elemIndex: any) => {
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+    setOpen((prev) => !prev);
+    tag['id'] = tag['type']
+    updateState({tagSelected: tag})
     console.log('entitiesAnnotations', state.entitiesAnnotations)
     console.log('Clicked that tag!', elemIndex, tag);
-    // updateState({tagSelected: })
   }
 
   return(
@@ -631,6 +679,41 @@ export default function AnnotateText() {
         </Box>
       }
 
+      <Popper open={open} anchorEl={anchorEl}>
+        <ClickAwayListener onClickAway={handleClickAway}>
+          <Paper elevation={4} style={{minWidth: theme.spacing(30), padding: theme.spacing(2, 2), textAlign: 'left'}}>
+            { state.tagSelected && 
+              <>
+                <Typography style={{textAlign: 'center', marginBottom: theme.spacing(3)}}>
+                  {state.tagSelected.token}
+                </Typography>
+                <Autocomplete
+                    id={'tag'}
+                    freeSolo
+                    // TODO: When deleting a stms/prop the value of the Autocompletes are not properly updated
+                    value={state.tagSelected}
+                    options={ents}
+                    onChange={handleAutocomplete}
+                    onInputChange={handleAutocomplete}
+                    getOptionLabel={(option: any) => getAutocompleteLabel(option)}
+                    groupBy={(option) => option.typeMatch ? option.typeMatch : null }
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        variant="outlined"
+                        size='small'
+                        className={classes.input}
+                        label="Entity type"
+                        placeholder="Entity type"
+                      />
+                    )}
+                  />
+              </>
+            }
+          </Paper>
+        </ClickAwayListener>
+      </Popper>
+
       { state.entitiesAnnotations.length > 0 &&
         <Card className={classes.paperPadding} >
           <Taggy text={state.inputText} spans={state.entitiesAnnotations} 
@@ -656,14 +739,12 @@ export default function AnnotateText() {
                 id={'s:'+index}
                 freeSolo
                 // TODO: When deleting a stms/prop the value of the Autocompletes are not properly updated
-                // value={state.statements[index].s}
+                value={state.statements[index].s}
                 options={state.entitiesList}
                 onChange={handleAutocomplete}
                 onInputChange={handleAutocomplete}
-                getOptionLabel={(option: any) => option.label + ' (' + option.curie + ')'}
-                groupBy={(option) => option.typeMatch}
-                // required={true}
-                // defaultValue={[top100Films[13]]}
+                getOptionLabel={(option: any) => getAutocompleteLabel(option)}
+                groupBy={(option) => option.typeMatch ? option.typeMatch : null }
                 renderInput={params => (
                   <TextField
                     {...params}
@@ -682,13 +763,12 @@ export default function AnnotateText() {
                 key={'p:'+index}
                 id={'p:'+index}
                 freeSolo
+                value={state.statements[index].p}
                 options={state.predicatesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
                 // options={state.propertiesList}
                 onChange={handleAutocomplete}
                 onInputChange={handleAutocomplete}
-                getOptionLabel={(option: any) => option.label + ' (' + option.curie + ')'}
-                // required={true}
-                // defaultValue={[top100Films[13]]}
+                getOptionLabel={(option: any) => getAutocompleteLabel(option)}
                 renderInput={params => (
                   <TextField
                     {...params}
@@ -707,11 +787,12 @@ export default function AnnotateText() {
                 key={'o:'+index}
                 id={'o:'+index}
                 freeSolo
+                value={state.statements[index].o}
                 options={state.entitiesList}
                 onChange={handleAutocomplete}
                 onInputChange={handleAutocomplete}
-                getOptionLabel={(option: any) => option.label + ' (' + option.curie + ')'}
-                groupBy={(option) => option.typeMatch}
+                getOptionLabel={(option: any) => getAutocompleteLabel(option)}
+                groupBy={(option) => option.typeMatch ? option.typeMatch : null }
                 renderInput={params => (
                   <TextField
                     {...params}
@@ -733,7 +814,7 @@ export default function AnnotateText() {
               </Tooltip>
             </Grid>
           </Grid>
-          { state.templateSelected !== 'Plain RDF' && 
+          { state.templateSelected !== 'Plain RDF' && state.statements[index].props &&
             state.statements[index].props.map((prop: any, pindex: number) => { 
               return <Grid container spacing={2} key={'prop' + index + prop + pindex} style={{marginLeft: theme.spacing(5), marginBottom: theme.spacing(1)}}>
               {console.log('In JSX', prop)}
@@ -741,10 +822,11 @@ export default function AnnotateText() {
                 <Autocomplete
                   id={'prop:' + index + ':p:'+pindex}
                   freeSolo
+                  value={state.statements[index].props[pindex].p}
                   options={state.propertiesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
                   onChange={handleAutocomplete}
                   onInputChange={handleAutocomplete}
-                  getOptionLabel={(option: any) => option.label + ' (' + option.curie + ')'}
+                  getOptionLabel={(option: any) => getAutocompleteLabel(option)}
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -762,11 +844,12 @@ export default function AnnotateText() {
                 <Autocomplete
                   id={'prop:' + index + ':o:'+pindex}
                   freeSolo
+                  value={state.statements[index].props[pindex].o}
                   options={state.entitiesList}
                   onChange={handleAutocomplete}
                   onInputChange={handleAutocomplete}
                   // onKeyPress={handleAutocomplete}
-                  getOptionLabel={(option: any) => option.label + ' (' + option.curie + ')'}
+                  getOptionLabel={(option: any) => getAutocompleteLabel(option)}
                   groupBy={(option) => option.typeMatch}
                   renderInput={params => (
                     <TextField
