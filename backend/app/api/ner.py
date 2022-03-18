@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 # from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 # from typing import Collection, List, Optional
-# from typing import List, Optional
+from typing import List, Optional
 
 from app.config import settings
 
@@ -30,7 +30,7 @@ class NerInput(BaseModel):
     response_model={})
 async def get_entities_relations(
         input: NerInput = Body(...),
-        extract_relations: bool = False
+        extract_relations: Optional[bool] = False
     ):
 
     # Save and load a model/pipeline: https://spacy.io/usage/saving-loading
