@@ -578,7 +578,7 @@ export const sentenceToAnnotate = [
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=5c65b691-b795-44a5-abb7-931cd772f1a1"
   },
   {
-    text: "Levetiracetam in Sodium Chloride Injection is indicated as adjunctive therapy in thetreatment of partial onset seizures in adults with epilepsy.", 
+    text: "Levetiracetam in Sodium Chloride Injection is indicated as adjunctive therapy in the treatment of partial onset seizures in adults with epilepsy.", 
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=0a9234b7-46b1-8e6c-a992-90f86cfb6e00"
   },
   {

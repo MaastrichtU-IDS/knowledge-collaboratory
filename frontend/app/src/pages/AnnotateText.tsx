@@ -180,14 +180,13 @@ export default function AnnotateText() {
         updateState({
           open: true,
         })
-        console.log(res)
       })
       .catch(error => {
         updateState({
           open: false,
-          errorMessage: 'Error while extracting entities from the text, please retry. And feel free to create an issue on our GitHub repository if the issue persists.'
+          errorMessage: 'Error while uploading keys, please retry. And feel free to create an issue on our GitHub repository if the issue persists.'
         })
-        console.log(error)
+        console.log('Error while uploading keys', error)
       })
       .finally(() => {
         window.location.reload();
@@ -238,7 +237,11 @@ export default function AnnotateText() {
         })
       })
       .catch(error => {
-        console.log(error)
+        updateState({
+          loading: false,
+          errorMessage: 'Error while extracting entities from the text, please retry. And feel free to create an issue on our GitHub repository if the issue persists.'
+        })
+        console.log('Error while extracting entities', error)
       })
       // .finally(() => {
       //   hljs.highlightAll();
@@ -313,10 +316,8 @@ export default function AnnotateText() {
         }
         if (entity.props) {
           entity.props.map((prop: any, pindex: number) => {
-            console.log('prop', prop)
             let addProp = prop.p
             let addValue = prop.o
-            console.log('addProp', addProp)
             if (prop.p.id) {
               addProp = prop.p.id
             } else if (prop.p.id_uri) {
@@ -345,7 +346,6 @@ export default function AnnotateText() {
     // Trigger JSON-LD file download
     event.preventDefault();
     // var element = document.createElement('a');
-    console.log(user);
     const stmtJsonld: any = generateRDF()
     var element = document.createElement('a');
     element.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(stmtJsonld, null, 4)));
@@ -420,6 +420,7 @@ export default function AnnotateText() {
           })
         })
         .catch(error => {
+          updateState({errorMessage: 'Error publishing the Nanopublication.'})
           console.log(error)
         })
         .finally(() => {
@@ -447,9 +448,6 @@ export default function AnnotateText() {
     const stmts: any = state.statements
     // @ts-ignore
     const stmtIndex = event.target.id.split('-')[0].split(':')[1]
-    // @ts-ignore
-    console.log(event.target.id);
-    console.log(stmtIndex);
     if (!stmts[stmtIndex]['props']) {
       stmts[stmtIndex]['props'] = []
     }
@@ -462,9 +460,8 @@ export default function AnnotateText() {
     if (event && newInputValue && edit) {
       if (edit.type == 'entityProp') {
         const editEnt = edit.editObj
-        // editEnt.props[edit.index][edit.prop] 
-        console.log('newInputValue', newInputValue)
-        console.log('editEnt', editEnt)
+        // console.log('newInputValue', newInputValue)
+        // console.log('editEnt', editEnt)
         editEnt.props[edit.index][edit.prop] = newInputValue
         const entitiesList: any = state.entitiesList
         const entityIndex = entitiesList.findIndex((ent: any) => ent.index === editEnt.index)
@@ -477,16 +474,13 @@ export default function AnnotateText() {
       const tagSelected: any = state.tagSelected
       const entityIndex = entitiesList.findIndex((ent: any) => ent.index === tagSelected.index)
       if (event.target.id.startsWith('tag:type')) {
-        console.log('TAG TYPE', entitiesList, state.tagSelected.index)
         entitiesList[entityIndex].type = newInputValue.type
-        // console.log('tag id newInputValue', newInputValue)
         tagSelected.type = newInputValue.type
         updateState({tagSelected: tagSelected, entitiesList: entitiesList})
       } else if (event.target.id.startsWith('tag:id')) {
         entitiesList[entityIndex].id_curie = newInputValue.curie
         entitiesList[entityIndex].id_label = newInputValue.label
         entitiesList[entityIndex].id_uri = IDO + newInputValue.curie
-        console.log('tag id newInputValue', newInputValue)
         tagSelected.id_curie = newInputValue.curie
         tagSelected.id_label = newInputValue.label
         tagSelected.id_uri = IDO + newInputValue.curie
@@ -584,7 +578,6 @@ export default function AnnotateText() {
   const handleRemoveEntity = (index: any) => {
     // TODO: entities that are not anymore relevant are removed when a statement is removed
     const entitiesList = state.entitiesList
-    console.log(entitiesList, index)
     // Delete the entity with the same index
     entitiesList.splice(entitiesList.findIndex((ent: any) => ent.index === index), 1);
     updateState({entitiesList: entitiesList, tagSelected: {}})
@@ -611,34 +604,57 @@ export default function AnnotateText() {
     setOpen((prev) => !prev);
     tag['id'] = tag['type']
     updateState({tagSelected: tag})
-    // console.log('entitiesList', state.entitiesList)
-    // console.log('Clicked that tag!', elemIndex, tag);
   }
 
-  const highlightCallback = (event: any, text: string, spanIndex: number, start: number, end: number) => {
+  const getEntityCuries = async (text: string): any => {
+    const data = await axios.post(
+      'https://name-resolution-sri.renci.org/lookup', 
+      {},
+      {
+        'params': {
+          'string': text,
+          'offset': 0,
+          'limit': 10,
+        }
+      }
+    )
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      console.log(error)
+      return null
+    })
+    return data
+  }
+
+  const highlightCallback = async (event: any, text: string, spanIndex: number, start: number, end: number) => {
     const entitiesList: any = state.entitiesList
     setAnchorEl(anchorEl ? null : event.currentTarget);
     setOpen((prev) => !prev);
     if (text.length > 1) {
-      console.log('TEXT', text)
+      const curies: any = []
       const newEntity = {
         index: `${text}:${spanIndex}:${start}:${end}`,
         text: text, 
         token: text, 
         type: "ChemicalEntity", 
         start: state.inputText.indexOf(text), 
-        end: state.inputText.indexOf(text) + text.length + 1, 
-        curies: [], id_curie: "", id_label: "", id_uri: "",
+        end: state.inputText.indexOf(text) + text.length,
+        curies: curies, id_curie: "", id_label: "", id_uri: "",
         props: []
       }
-      console.log('hightlight newEntity', newEntity)
+      const entityCuries = await getEntityCuries(text)
+      if (entityCuries && Object.keys(entityCuries).length > 0) {
+        Object.keys(entityCuries).map((curie: any) => {
+          newEntity['curies'].push({'curie': curie, 'label': entityCuries[curie][0]})
+        })
+        newEntity['id_curie'] = Object.keys(entityCuries)[0]
+        newEntity['id_label'] = entityCuries[newEntity['id_curie']][0]
+        newEntity['id_uri'] = IDO + newEntity['id_curie']
+      }
       entitiesList.push(newEntity)
-      // tag['id'] = tag['type']
       updateState({tagSelected: newEntity, entitiesList: entitiesList})
-      // console.log('entitiesList', state.entitiesList)
-      // // console.log('Clicked that tag!', elemIndex, tag);
-      // console.log('highlightCallback!', event)
-      // console.log("Start-end highlight", start, end)
     }
   }
 
@@ -667,8 +683,8 @@ export default function AnnotateText() {
         📥️ Finally you can either download the statements as RDF, or directly publish them in a Nanopublication. 
       </Typography> */}
 
-      <Typography variant='body1' style={{marginBottom: theme.spacing(2)}}>
-        1. Extract biomedical entities from small text snippets (around 3 sentences max, otherwise the model take too much time for predictions):
+      <Typography variant='body1' style={{marginTop: theme.spacing(2), marginBottom: theme.spacing(2)}}>
+        1. Extract biomedical entities from small text snippets (around 3 sentences will be fast, max 1000 characters, otherwise the model takes too much time to run):
       </Typography>
 
       <form onSubmit={handleExtract}>
@@ -876,7 +892,7 @@ export default function AnnotateText() {
       { state.entitiesList.length > 0 &&
         <> 
           <Typography variant='body1' style={{textAlign: 'center', marginBottom: theme.spacing(2)}}>
-            ℹ️ You can edit entities by clicking on their tag, or add new entities by highlighting the text corresponding to the entity.
+            ℹ️ You can edit entities by clicking on their tag, or add new entities by highlighting the text corresponding to the entity. Potential identifiers are automatically retrieved for the highlighted text.
           </Typography>
           <Card className={classes.paperPadding} >
             <Taggy text={state.inputText} spans={state.entitiesList} 
@@ -974,9 +990,8 @@ export default function AnnotateText() {
             </Grid>
           </Grid>
           { state.templateSelected !== 'Plain RDF' && state.statements[index].props &&
-            state.statements[index].props.map((prop: any, pindex: number) => { 
+            state.statements[index].props.map((prop: any, pindex: number): any => { 
               return <Grid container spacing={2} key={'prop' + index + prop + pindex} style={{marginLeft: theme.spacing(5), marginBottom: theme.spacing(1)}}>
-              {console.log('In JSX', prop)}
               <Grid item xs={4}>
                 <Autocomplete
                   id={'prop:' + index + ':p:'+pindex}
