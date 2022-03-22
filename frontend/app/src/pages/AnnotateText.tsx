@@ -282,7 +282,7 @@ export default function AnnotateText() {
 
     } else if (state.templateSelected === 'RDF reified statements') {
       state.statements.map((stmt: any, index: number) => {
-        const reifiedStmt = {
+        const reifiedStmt: any = {
           // '@id': 'https://w3id.org/collaboratory/association/' + index,
           [`${rdf}type`]: {'@id': `${rdf}Statement`},
           [`${rdf}subject`]: {'@id': getPropValue(stmt.s)},
@@ -292,6 +292,10 @@ export default function AnnotateText() {
         // Add properties for reified statements
         if (stmt.props) {
           stmt.props.map((stmtProp: any, pindex: number) => {
+            if (!reifiedStmt[stmtProp.p]) {
+              reifiedStmt[stmtProp.p] = []
+            } 
+            reifiedStmt[stmtProp.p].push(stmtProp.o)
             reifiedStmt[stmtProp.p] = stmtProp.o
           })
         }
@@ -332,7 +336,10 @@ export default function AnnotateText() {
               addValue = prop.o.text
             }
             if (addProp && addValue) {
-              entityJsonld[addProp] = addValue
+              if (!entityJsonld[addProp]) {
+                entityJsonld[addProp] = []
+              } 
+              entityJsonld[addProp].push(addValue)
             }
           })
         }
@@ -588,7 +595,7 @@ export default function AnnotateText() {
     const entitiesList = state.entitiesList
     // Delete the entity with the same index
     entitiesList.splice(entitiesList.findIndex((ent: any) => ent.index === index), 1);
-    updateState({entitiesList: entitiesList, tagSelected: {}})
+    updateState({entitiesList: entitiesList, tagSelected: null})
     handleClickAway()
   }
   const handleRemoveProp = (stmtIndex: number, pindex: number) => {
@@ -622,7 +629,7 @@ export default function AnnotateText() {
         'params': {
           'string': text,
           'offset': 0,
-          'limit': 10,
+          'limit': 20,
         }
       }
     )
@@ -641,7 +648,6 @@ export default function AnnotateText() {
     setAnchorEl(anchorEl ? null : event.currentTarget);
     setOpen((prev) => !prev);
     if (text.length > 1 && state.entitiesList.findIndex((ent: any) => ent.index === entIndex) === -1) {
-      console.log('text length', text.length)
       const curies: any = []
       const newEntity = {
         index: entIndex,
@@ -826,7 +832,7 @@ export default function AnnotateText() {
                 { state.templateSelected !== 'Plain RDF' && state.tagSelected.props &&
                   state.tagSelected.props.map((prop: any, pindex: number) => { 
                     return <Grid container spacing={2} key={'prop:' + prop + pindex} style={{marginLeft: theme.spacing(5), marginBottom: theme.spacing(1)}}>
-                    <Grid item xs={4}>
+                    <Grid item xs={5}>
                       <Autocomplete
                         // id={'prop:' + index + ':p:'+pindex}
                         freeSolo
@@ -850,7 +856,7 @@ export default function AnnotateText() {
                       />
                     </Grid>
 
-                    <Grid item xs={4}>
+                    <Grid item xs={5}>
                       <Autocomplete
                         // id={'prop:' + index + ':o:'+pindex}
                         freeSolo
@@ -1168,7 +1174,7 @@ export default function AnnotateText() {
             </Button>
             { !user.id &&
               <Typography style={{marginTop: theme.spacing(2)}}>
-                🔒️ You need to login with ORCID to generate Nanopublications
+                🔒️ You need to login with your ORCID to generate Nanopublications
               </Typography>
             }
           </div>
