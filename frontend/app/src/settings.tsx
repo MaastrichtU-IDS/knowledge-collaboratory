@@ -1,7 +1,7 @@
 import React from "react";
 import { useTheme } from '@mui/material/styles';
 
-const settings = {
+export const settings = {
   apiUrl: process.env.API_URL || 'http://localhost',
   restUrl: ((process.env.API_URL) ? process.env.API_URL + '' : null) || 'http://localhost',
   docsUrl: ((process.env.API_URL) ? process.env.API_URL + '/docs' : null) || 'http://localhost/docs',
@@ -11,7 +11,7 @@ const settings = {
   // http://grlc.nanopubs.lod.labs.vu.nl/api/local/local
 }
 
-const getUrlHtml = (urlString: string) => {
+export const getUrlHtml = (urlString: string) => {
   const theme = useTheme();
   if(/^(?:node[0-9]+)|((https?|ftp):.*)$/.test(urlString)) {
     // Process URIs
@@ -60,9 +60,32 @@ export const biolinkShex = {
   ]
 }
 
+const BIOLINK = 'https://w3id.org/biolink/vocab/'
+// const IDO = 'https://identifiers.org/'
+// const RDFS = 'http://www.w3.org/2000/01/rdf-schema#'
+
+// TODO: complete the list of ents?
+// RGB colors: https://www.rapidtables.com/web/color/RGB_Color.html
+export const ents = [
+  {type: 'Association', label: 'Association', id: BIOLINK + 'Association', curie: 'biolink:Association', 
+  color: {r: 67, g: 198, b: 252}}, // Light blue
+  {type: 'ChemicalEntity', label: 'Chemical Entity', id: BIOLINK + 'ChemicalEntity', curie: 'biolink:ChemicalEntity', 
+    color: {r: 255, g: 178, b: 102}}, // Orange
+  {type: 'Drug', label: 'Drug', id: BIOLINK + 'Drug',  curie: 'biolink:Drug', 
+    color: {r: 255, g: 102, b: 102}}, // Red
+  {type: 'DiseaseOrPhenotypicFeature', label: 'Disease or Phenotypic Feature', id: BIOLINK + 'DiseaseOrPhenotypicFeature', curie: 'biolink:DiseaseOrPhenotypicFeature', 
+  color: {r: 47, g: 187, b: 171}}, // Blue green  
+  {type: 'GeneOrGeneProduct', label: 'Gene or Gene Product', id: BIOLINK + 'GeneOrGeneProduct', curie: 'biolink:GeneOrGeneProduct', 
+    color: {r: 218, g: 112, b: 214}}, // Purple
+  {type: 'SequenceVariant', label: 'Sequence Variant', id: BIOLINK + 'SequenceVariant', curie: 'biolink:SequenceVariant', 
+    color: {r: 166, g: 226, b: 45}}, // Light green
+  {type: 'OrganismTaxon', label: 'Organism Taxon', id: BIOLINK + 'OrganismTaxon', curie: 'biolink:OrganismTaxon', 
+    color: {r: 204, g: 204, b: 0}}, // Yellow
+]
+
 
 // https://biolink.github.io/biolink-model/docs/predicates.html
-const predicatesList = [
+export const predicatesList = [
   {id: 'https://w3id.org/biolink/vocab/treats', curie: 'biolink:treats', label: 'Treats', type: 'BioLink'},
   {id: 'https://w3id.org/biolink/vocab/treated_by', curie: 'biolink:treated_by', label: 'Treated by', type: 'BioLink'},
   {id: 'https://w3id.org/biolink/vocab/interacts_with', curie: 'biolink:interacts_with', label: 'Interacts with', type: 'BioLink'},
@@ -368,7 +391,10 @@ const predicatesList = [
 ]
 
 // https://biolink.github.io/biolink-model/docs/edge_properties.html
-const propertiesList = [
+export const propertiesList = [
+  {id: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#subject', curie: 'rdf:subject', label: 'Subject', type: 'RDF'},
+  {id: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate', curie: 'rdf:predicate', label: 'Predicate', type: 'RDF'},
+  {id: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#subject', curie: 'rdf:object', label: 'Object', type: 'RDF'},
   {id: 'https://w3id.org/biolink/vocab/has_population_context', curie: 'biolink:has_population_context', label: 'has population context', type: 'BioLink'},
   {id: 'https://w3id.org/biolink/vocab/has_temporal_context', curie: 'biolink:has_temporal_context', label: 'has temporal context', type: 'BioLink'},
   {id: 'https://w3id.org/biolink/vocab/publications', curie: 'biolink:publications', label: 'publications', type: 'BioLink'},
@@ -426,7 +452,7 @@ const propertiesList = [
 
 
 
-const sentenceToAnnotate = [
+export const sentenceToAnnotate = [
   {
     text: "Iloperidone tablets are indicated for the treatment of schizophrenia in adults.", 
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=eeb0fcfd-e4e8-4fb1-9635-901dc9446235"
@@ -1075,7 +1101,7 @@ const sentenceToAnnotate = [
 
 
 // https://purl.org/np/RAuN1kyW1BD9754LCUVWozDOhkrUaLUyb5LTu0HcsulIE
-const samples: any = {
+export const samples: any = {
   "Drug indication with the BioLink model": {
     "@context": "https://raw.githubusercontent.com/biolink/biolink-model/master/context.jsonld",
     "@wizardQuestions": {
@@ -1249,11 +1275,11 @@ const samples: any = {
 
 
 // export default settings;
-export {
-  settings,
-  getUrlHtml,
-  samples,
-  propertiesList,
-  predicatesList,
-  sentenceToAnnotate
-}
+// export {
+//   settings,
+//   getUrlHtml,
+//   samples,
+//   propertiesList,
+//   predicatesList,
+//   sentenceToAnnotate
+// }

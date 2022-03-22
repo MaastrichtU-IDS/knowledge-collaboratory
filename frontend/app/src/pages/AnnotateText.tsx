@@ -28,7 +28,7 @@ const $rdf = require('rdflib')
 // var hljsDefineTurtle = require('highlightjs-turtle');
 // hljs.registerLanguage('turtle', turtle);
 
-import { settings, samples, propertiesList, predicatesList, sentenceToAnnotate, biolinkShex } from '../settings';
+import { settings, samples, propertiesList, predicatesList, sentenceToAnnotate, biolinkShex, ents } from '../settings';
 
 import UserContext from '../UserContext'
 
@@ -101,7 +101,6 @@ export default function AnnotateText() {
 
   // useLocation hook to get URL params
   let location = useLocation();
-  const entitiesType: any = {}
   const tagSelected: any = null
   const [state, setState] = React.useState({
     // inputText: 'Amantadine hydrochloride capsules are indicated in the treatment of idiopathic Parkinson’s disease (Paralysis Agitans), postencephalitic parkinsonism and symptomatic parkinsonism which may follow injury to the nervous system by carbon monoxide intoxication.',
@@ -111,7 +110,6 @@ export default function AnnotateText() {
     templateSelected: 'BioLink reified associations',
     entitiesList: [],
     relationsList: [],
-    entitiesType: entitiesType,
     tagSelected: tagSelected,
     statements: [{'s': '', 'p': '', 'o': '', 'props': []}],
     predicatesList: predicatesList,
@@ -122,6 +120,7 @@ export default function AnnotateText() {
     np_jsonld: samples['Drug indication with the BioLink model'],
     sample_selected: 'Drug indication with the BioLink model',
     published_nanopub: '',
+    errorMessage: '',
   });
   const stateRef = React.useRef(state);
   // Avoid conflict when async calls
@@ -156,25 +155,6 @@ export default function AnnotateText() {
     
   }, [state.np_jsonld])
 
-  // TODO: complete the list of ents?
-  // RGB colors: https://www.rapidtables.com/web/color/RGB_Color.html
-  const ents = [
-    {type: 'ChemicalEntity', label: 'Chemical Entity', id: BIOLINK + 'ChemicalEntity', curie: 'biolink:ChemicalEntity', 
-      color: {r: 255, g: 178, b: 102}}, // Orange
-    {type: 'Drug', label: 'Drug', id: BIOLINK + 'Drug',  curie: 'biolink:Drug', 
-      color: {r: 255, g: 102, b: 102}}, // Red
-    {type: 'DiseaseOrPhenotypicFeature', label: 'Disease or Phenotypic Feature', id: BIOLINK + 'DiseaseOrPhenotypicFeature', curie: 'biolink:DiseaseOrPhenotypicFeature', 
-    color: {r: 47, g: 187, b: 171}}, // Blue green  
-    {type: 'GeneOrGeneProduct', label: 'Gene or Gene Product', id: BIOLINK + 'GeneOrGeneProduct', curie: 'biolink:GeneOrGeneProduct', 
-      color: {r: 218, g: 112, b: 214}}, // Purple
-    {type: 'SequenceVariant', label: 'Sequence Variant', id: BIOLINK + 'SequenceVariant', curie: 'biolink:SequenceVariant', 
-      color: {r: 166, g: 226, b: 45}}, // Light green
-    {type: 'OrganismTaxon', label: 'Organism Taxon', id: BIOLINK + 'OrganismTaxon', curie: 'biolink:OrganismTaxon', 
-      color: {r: 204, g: 204, b: 0}}, // Yellow
-    {type: 'Association', label: 'Association', id: BIOLINK + 'Association', curie: 'biolink:Association', 
-    color: {r: 67, g: 198, b: 252}}, // Light blue
-  ]
-
 
   const handleUploadKeys  = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -203,6 +183,10 @@ export default function AnnotateText() {
         console.log(res)
       })
       .catch(error => {
+        updateState({
+          open: false,
+          errorMessage: 'Error while extracting entities from the text, please retry. And feel free to create an issue on our GitHub repository if the issue persists.'
+        })
         console.log(error)
       })
       .finally(() => {
@@ -215,10 +199,16 @@ export default function AnnotateText() {
     event.preventDefault();
     updateState({
       loading: true, 
+      errorMessage: '',
       inputText: state.editInputText,
       entitiesList: [],
-      entitiesType: {}
     })
+    if (state.editInputText.length > 1000) {
+      updateState({
+        loading: false, 
+        errorMessage: "Input text is too large for the machine learning model, try submitting less than 1000 characters"
+      })
+    }
     axios.post(
         settings.apiUrl + '/get-entities-relations', 
         {'text': state.editInputText}, 
@@ -315,12 +305,37 @@ export default function AnnotateText() {
     }
     // Add triples for entities
     state.entitiesList.map((entity: any) => {
-      if (entity.id_uri && entity.type)
-      stmtJsonld.push({
-        '@id': entity.id_uri,
-        '@type': BIOLINK + entity.type,
-        [RDFS + 'label']: entity.id_label,
-      })
+      if (entity.id_uri && entity.type) {
+        const entityJsonld = {
+          '@id': entity.id_uri,
+          '@type': BIOLINK + entity.type,
+          [RDFS + 'label']: entity.id_label,
+        }
+        if (entity.props) {
+          entity.props.map((prop: any, pindex: number) => {
+            console.log('prop', prop)
+            let addProp = prop.p
+            let addValue = prop.o
+            console.log('addProp', addProp)
+            if (prop.p.id) {
+              addProp = prop.p.id
+            } else if (prop.p.id_uri) {
+              addProp = prop.p.id_uri
+            } else if (prop.p.text) {
+              addProp = prop.p.text
+            }
+            if (prop.o.id_uri) {
+              addValue = prop.o.id_uri
+            } else if (prop.o.text) {
+              addValue = prop.o.text
+            }
+            if (addProp && addValue) {
+              entityJsonld[addProp] = addValue
+            }
+          })
+        }
+        stmtJsonld.push(entityJsonld)
+      }
     })
     return stmtJsonld
   }
@@ -442,23 +457,35 @@ export default function AnnotateText() {
     updateState({statements: stmts})
     // setState({statements: stmts})
   }
-  const handleAutocomplete = (event: any, newInputValue: any) => {
+  const handleAutocomplete = (event: any, newInputValue: any, edit: any = null) => {
     const stmts: any = state.statements
-    if (event && newInputValue) {
-      if (event.target.id.startsWith('tag:type')) {
+    if (event && newInputValue && edit) {
+      if (edit.type == 'entityProp') {
+        const editEnt = edit.editObj
+        // editEnt.props[edit.index][edit.prop] 
+        console.log('newInputValue', newInputValue)
+        console.log('editEnt', editEnt)
+        editEnt.props[edit.index][edit.prop] = newInputValue
         const entitiesList: any = state.entitiesList
-        const tagSelected: any = state.tagSelected
+        const entityIndex = entitiesList.findIndex((ent: any) => ent.index === editEnt.index)
+        entitiesList[entityIndex] = editEnt
+        updateState({entitiesList: entitiesList, tagSelected: editEnt})
+      }
+      
+    } else if (event && newInputValue) {
+      const entitiesList: any = state.entitiesList
+      const tagSelected: any = state.tagSelected
+      const entityIndex = entitiesList.findIndex((ent: any) => ent.index === tagSelected.index)
+      if (event.target.id.startsWith('tag:type')) {
         console.log('TAG TYPE', entitiesList, state.tagSelected.index)
-        entitiesList[state.tagSelected.index].type = newInputValue.type
+        entitiesList[entityIndex].type = newInputValue.type
         // console.log('tag id newInputValue', newInputValue)
         tagSelected.type = newInputValue.type
         updateState({tagSelected: tagSelected, entitiesList: entitiesList})
       } else if (event.target.id.startsWith('tag:id')) {
-        const entitiesList: any = state.entitiesList
-        const tagSelected: any = state.tagSelected
-        entitiesList[state.tagSelected.index].id_curie = newInputValue.curie
-        entitiesList[state.tagSelected.index].id_label = newInputValue.label
-        entitiesList[state.tagSelected.index].id_uri = IDO + newInputValue.curie
+        entitiesList[entityIndex].id_curie = newInputValue.curie
+        entitiesList[entityIndex].id_label = newInputValue.label
+        entitiesList[entityIndex].id_uri = IDO + newInputValue.curie
         console.log('tag id newInputValue', newInputValue)
         tagSelected.id_curie = newInputValue.curie
         tagSelected.id_label = newInputValue.label
@@ -502,16 +529,6 @@ export default function AnnotateText() {
           }
           updateState({statements: stmts})
         }
-        // Add type based on labels extracted
-        const entitiesType: any = state.entitiesType
-        if (newInputValue && !(newInputValue.id in entitiesType)) {
-          state.entitiesList.map((entity: any) => {
-            if (entity.id == newInputValue.id) {
-              entitiesType[entity.id] = BIOLINK + entity.type
-              updateState({entitiesType: entitiesType})
-            }
-          })
-        }
       }
     }
   }
@@ -552,13 +569,25 @@ export default function AnnotateText() {
     stmts.splice(index, 1);
     updateState({statements: stmts})
   }
-  const handleRemoveEntity = (text: any) => {
+
+  const addEntityProperty = (event: React.FormEvent, editEnt: any)=> {
+    // event.preventDefault();
+    const entitiesList: any = state.entitiesList
+    if (!editEnt['props']) {
+      editEnt['props'] = []
+    }
+    editEnt['props'].push({p: '', o: ''})
+    const entityIndex = entitiesList.findIndex((ent: any) => ent.index === editEnt.index)
+    entitiesList[entityIndex] = editEnt
+    updateState({entitiesList: entitiesList, tagSelected: editEnt})
+  }
+  const handleRemoveEntity = (index: any) => {
     // TODO: entities that are not anymore relevant are removed when a statement is removed
     const entitiesList = state.entitiesList
-    console.log(entitiesList, text)
-    // Delete the first entity with the same text (not ideal but best quick option)
-    entitiesList.splice(entitiesList.findIndex((ent: any) => ent.text === text), 1);
-    updateState({entitiesList: entitiesList})
+    console.log(entitiesList, index)
+    // Delete the entity with the same index
+    entitiesList.splice(entitiesList.findIndex((ent: any) => ent.index === index), 1);
+    updateState({entitiesList: entitiesList, tagSelected: {}})
     handleClickAway()
   }
   const handleRemoveProp = (stmtIndex: number, pindex: number) => {
@@ -566,6 +595,15 @@ export default function AnnotateText() {
     const stmts = state.statements
     stmts[stmtIndex].props.splice(pindex, 1);
     updateState({statements: stmts})
+  }
+  const handleRemoveEntityProp = (editEnt: any, pindex: number) => {
+    // TODO: entities that are not anymore relevant are removed when a statement is removed
+    const entitiesList: any = state.entitiesList
+    editEnt.props.splice(pindex, 1);
+    // editEnt.props.splice(entitiesList.findIndex((ent: any) => ent.index === editEnt.index), 1);
+    const entityIndex = entitiesList.findIndex((ent: any) => ent.index === editEnt.index)
+    entitiesList[entityIndex] = editEnt
+    updateState({entitiesList: entitiesList, tagSelected: editEnt})
   }
 
   const clickTag = (event: any, tag: any, elemIndex: any) => {
@@ -584,13 +622,14 @@ export default function AnnotateText() {
     if (text.length > 1) {
       console.log('TEXT', text)
       const newEntity = {
-        index: state.entitiesList.length, 
+        index: `${text}:${spanIndex}:${start}:${end}`,
         text: text, 
         token: text, 
         type: "ChemicalEntity", 
         start: state.inputText.indexOf(text), 
         end: state.inputText.indexOf(text) + text.length + 1, 
-        curies: [], id_curie: "", id_label: "", id_uri: ""
+        curies: [], id_curie: "", id_label: "", id_uri: "",
+        props: []
       }
       console.log('hightlight newEntity', newEntity)
       entitiesList.push(newEntity)
@@ -629,7 +668,7 @@ export default function AnnotateText() {
       </Typography> */}
 
       <Typography variant='body1' style={{marginBottom: theme.spacing(2)}}>
-        1. Extract biomedical entities from text:
+        1. Extract biomedical entities from small text snippets (around 3 sentences max, otherwise the model take too much time for predictions):
       </Typography>
 
       <form onSubmit={handleExtract}>
@@ -692,16 +731,21 @@ export default function AnnotateText() {
           <CircularProgress style={{textAlign: 'center'}} />
         </Box>
       }
+      { state.errorMessage &&
+        <Paper elevation={4} style={{backgroundColor: "#e57373", padding: theme.spacing(2), marginBottom:theme.spacing(3)}} sx={{ display: state.errorMessage.length > 0 }}>
+          ⚠️&nbsp;&nbsp;{state.errorMessage}
+        </Paper>
+      }
 
       <Popper open={open} anchorEl={anchorEl}>
         <ClickAwayListener onClickAway={handleClickAway}>
-          <Paper elevation={4} style={{minWidth: theme.spacing(60), padding: theme.spacing(2, 2), textAlign: 'left'}}>
+          <Paper elevation={4} style={{minWidth: theme.spacing(100), padding: theme.spacing(2, 2), textAlign: 'left'}}>
             { state.tagSelected && 
               <>
                 <Typography variant='h5' style={{textAlign: 'center', marginBottom: theme.spacing(3)}}>
                   {state.tagSelected.token}
                   <Tooltip title={<Typography style={{textAlign: 'center'}}>Delete the entity</Typography>}>
-                    <IconButton onClick={() => handleRemoveEntity(state.tagSelected.token)} 
+                    <IconButton onClick={() => handleRemoveEntity(state.tagSelected.index)} 
                       style={{marginLeft: theme.spacing(1), alignContent: 'right'}} color="default">
                         <RemoveIcon />
                     </IconButton>
@@ -713,7 +757,7 @@ export default function AnnotateText() {
                     value={state.tagSelected.type}
                     options={ents}
                     onChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue)}
-                    onInputChange={handleAutocomplete}
+                    onInputChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue)}
                     // onChange={handleAutocomplete}
                     // onInputChange={handleAutocomplete}
                     getOptionLabel={(option: any) => getAutocompleteLabel(option)}
@@ -751,6 +795,78 @@ export default function AnnotateText() {
                       />
                     )}
                   />
+                { state.templateSelected !== 'Plain RDF' && state.tagSelected.props &&
+                  state.tagSelected.props.map((prop: any, pindex: number) => { 
+                    return <Grid container spacing={2} key={'prop:' + prop + pindex} style={{marginLeft: theme.spacing(5), marginBottom: theme.spacing(1)}}>
+                    <Grid item xs={4}>
+                      <Autocomplete
+                        // id={'prop:' + index + ':p:'+pindex}
+                        freeSolo
+                        value={state.tagSelected.props[pindex].p}
+                        options={state.propertiesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
+                        onChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue, {'type': 'entityProp', 'editObj': state.tagSelected, index: pindex, prop: 'p'})}
+                        onInputChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue, {'type': 'entityProp', 'editObj': state.tagSelected, index: pindex, prop: 'p'})}
+                        // onChange={handleAutocomplete}
+                        // onInputChange={handleAutocomplete}
+                        getOptionLabel={(option: any) => getAutocompleteLabel(option)}
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            variant="outlined"
+                            size='small'
+                            className={classes.input}
+                            label="Property"
+                            placeholder="Property"
+                          />
+                        )}
+                      />
+                    </Grid>
+
+                    <Grid item xs={4}>
+                      <Autocomplete
+                        // id={'prop:' + index + ':o:'+pindex}
+                        freeSolo
+                        value={state.tagSelected.props[pindex].o}
+                        options={state.entitiesList}
+                        onChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue, {'type': 'entityProp', 'editObj': state.tagSelected, index: pindex, prop: 'o'})}
+                        onInputChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue, {'type': 'entityProp', 'editObj': state.tagSelected, index: pindex, prop: 'o'})}
+                        getOptionLabel={(option: any) => getAutocompleteLabel(option)}
+                        groupBy={(option) => option.type ? option.type : null }
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            variant="outlined"
+                            size='small'
+                            className={classes.input}
+                            label="Value"
+                            placeholder="Value"
+                          />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={1}>
+                      <Tooltip title={<Typography style={{textAlign: 'center'}}>Delete the statement</Typography>}>
+                        <IconButton onClick={() => handleRemoveEntityProp(state.tagSelected, pindex)} color="default">
+                            <RemoveIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </Grid>
+                  </Grid>
+                  })
+                }
+
+                <div style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap'}}>
+                  <Button 
+                    onClick={(event: any) => addEntityProperty(event, state.tagSelected)}
+                    id={"addProp:"}
+                    variant="contained" 
+                    className={classes.saveButton} 
+                    startIcon={<AddIcon />}
+                    style={{marginLeft: theme.spacing(5), marginRight: theme.spacing(4), textTransform: 'none'}}
+                    color="inherit" >
+                      Add a property to this entity
+                  </Button>
+                </div>
               </>
             }
           </Paper>
@@ -758,22 +874,22 @@ export default function AnnotateText() {
       </Popper>
 
       { state.entitiesList.length > 0 &&
-        <Card className={classes.paperPadding} >
-          <Taggy text={state.inputText} spans={state.entitiesList} 
-            ents={ents} onClick={clickTag} onHighlight={highlightCallback}  />
-        </Card>
+        <> 
+          <Typography variant='body1' style={{textAlign: 'center', marginBottom: theme.spacing(2)}}>
+            ℹ️ You can edit entities by clicking on their tag, or add new entities by highlighting the text corresponding to the entity.
+          </Typography>
+          <Card className={classes.paperPadding} >
+            <Taggy text={state.inputText} spans={state.entitiesList} 
+              ents={ents} onClick={clickTag} onHighlight={highlightCallback}  />
+          </Card>
+        </>
       }
 
       <Typography variant='body1' style={{marginBottom: theme.spacing(2)}}>
         2. Define the statements that represent the assertions made in the text:
       </Typography>
 
-      {/* <Grid container spacing={2}> */}
       { state.statements.map((stmtRow: any, index: number) => { 
-        // {console.log(stmtRow)}
-        // {console.log(stmtRow.s)}
-        // {console.log(index)}
-        // return <Box key={index} style={{marginBottom: theme.spacing(1)}}>
         return <Box key={'stmt:' + index}>
           <Grid container spacing={2} key={index} style={{marginBottom: theme.spacing(1), marginTop: theme.spacing(1)}}>
             <Grid item xs={4}>
@@ -781,7 +897,6 @@ export default function AnnotateText() {
                 key={'s:'+index}
                 id={'s:'+index}
                 freeSolo
-                
                 value={state.statements[index].s}
                 options={state.entitiesList}
                 onChange={handleAutocomplete}
@@ -966,7 +1081,7 @@ export default function AnnotateText() {
           Add a statement
       </Button>
 
-      <Typography variant='body1' style={{marginTop: theme.spacing(3), marginBottom: theme.spacing(2)}}>
+      {/* <Typography variant='body1' style={{marginTop: theme.spacing(3), marginBottom: theme.spacing(2)}}>
         3. Choose the template used to generate the triples:
       </Typography>
       <TextField select
@@ -980,7 +1095,7 @@ export default function AnnotateText() {
         { triplesTemplates.map((template: any, key: number) => (
           <MenuItem key={template} value={template}>{template}</MenuItem>
         ))}
-      </TextField>
+      </TextField> */}
 
       <form onSubmit={handleSubmit}>
         <FormControl className={classes.settingsForm}>
@@ -993,6 +1108,7 @@ export default function AnnotateText() {
               className={classes.saveButton} 
               startIcon={<ShexIcon />}
               style={{marginRight: theme.spacing(2)}}
+              disabled={state.entitiesList.length < 1}
               color="warning" >
                 Validate with ShEx
             </Button>
@@ -1002,6 +1118,7 @@ export default function AnnotateText() {
               className={classes.saveButton} 
               startIcon={<DownloadIcon />}
               style={{marginRight: theme.spacing(2)}}
+              disabled={state.entitiesList.length < 1}
               color="secondary" >
                 Download RDF
             </Button>

@@ -1,7 +1,7 @@
 {
     "expo": {
       "name": "Knowledge Collaboratory",
-      "description": "Evaluate how FAIR is a resource URL with Knowledge Collaboratory (Findable, Accessible, Interoperable, Reusable)",
+      "description": "Browse and publish RDF Nanopublications with the Knowledge Collaboratory.",
       "slug": "knowledge-collaboratory",
       "privacy": "public",
       "sdkVersion": "35.0.0",

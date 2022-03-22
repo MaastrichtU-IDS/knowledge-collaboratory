@@ -65,11 +65,12 @@ async def get_entities_relations(
     for ent in ner_res.ents:
         # print(ent.text, ent.start_char, ent.end_char, ent.label_)
         entity = {
-            'index': i,
+            'index': f"{ent.text}:{i}:{ent.start_char}:{ent.end_char}",
             'text': ent.text,
             'type': ent.label_, 
             'start': ent.start_char,
-            'end': ent.end_char
+            'end': ent.end_char,
+            'props': [],
         }
         i = i + 1
         # Get preferred CURIEs for the entities label for the NameResolution API
