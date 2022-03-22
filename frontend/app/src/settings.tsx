@@ -27,6 +27,12 @@ export const getUrlHtml = (urlString: string) => {
   }
 }
 
+export const genericContext = {
+  'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+  'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
+  'biolink': 'https://w3id.org/biolink/vocab/',
+}
+
 // https://github.com/biolink/biolink-model/blob/master/biolink-model.shexj
 export const biolinkShex = {
   "type": "Schema",
@@ -68,7 +74,7 @@ const BIOLINK = 'https://w3id.org/biolink/vocab/'
 // RGB colors: https://www.rapidtables.com/web/color/RGB_Color.html
 export const ents = [
   {type: 'Association', label: 'Association', id: BIOLINK + 'Association', curie: 'biolink:Association', 
-  color: {r: 67, g: 198, b: 252}}, // Light blue
+    color: {r: 67, g: 198, b: 252}}, // Light blue
   {type: 'ChemicalEntity', label: 'Chemical Entity', id: BIOLINK + 'ChemicalEntity', curie: 'biolink:ChemicalEntity', 
     color: {r: 255, g: 178, b: 102}}, // Orange
   {type: 'Drug', label: 'Drug', id: BIOLINK + 'Drug',  curie: 'biolink:Drug', 

@@ -28,7 +28,7 @@ const $rdf = require('rdflib')
 // var hljsDefineTurtle = require('highlightjs-turtle');
 // hljs.registerLanguage('turtle', turtle);
 
-import { settings, samples, propertiesList, predicatesList, sentenceToAnnotate, biolinkShex, ents } from '../settings';
+import { settings, samples, propertiesList, predicatesList, sentenceToAnnotate, biolinkShex, ents, genericContext } from '../settings';
 
 import UserContext from '../UserContext'
 
@@ -115,6 +115,7 @@ export default function AnnotateText() {
     predicatesList: predicatesList,
     propertiesList: propertiesList,
     loading: false,
+    // loadingEntity: false,
     open: false,
     dialogOpen: false,
     np_jsonld: samples['Drug indication with the BioLink model'],
@@ -338,7 +339,10 @@ export default function AnnotateText() {
         stmtJsonld.push(entityJsonld)
       }
     })
-    return stmtJsonld
+    return {
+      '@graph': stmtJsonld,
+      '@context': genericContext
+    }
   }
 
 
@@ -549,7 +553,11 @@ export default function AnnotateText() {
     if (option.id) {
       return option.id
     }
-    return option
+    if (typeof option === 'string')  {
+      return option
+    } else {
+      return ''
+    }
   }
 
   const triplesTemplates = ["BioLink reified associations", "RDF reified statements", "Plain RDF"]
@@ -606,7 +614,7 @@ export default function AnnotateText() {
     updateState({tagSelected: tag})
   }
 
-  const getEntityCuries = async (text: string): any => {
+  const getEntityCuries = async (text: string) => {
     const data = await axios.post(
       'https://name-resolution-sri.renci.org/lookup', 
       {},
@@ -629,16 +637,17 @@ export default function AnnotateText() {
   }
 
   const highlightCallback = async (event: any, text: string, spanIndex: number, start: number, end: number) => {
-    const entitiesList: any = state.entitiesList
+    const entIndex = `${text}:${spanIndex}:${start}:${end}`
     setAnchorEl(anchorEl ? null : event.currentTarget);
     setOpen((prev) => !prev);
-    if (text.length > 1) {
+    if (text.length > 1 && state.entitiesList.findIndex((ent: any) => ent.index === entIndex) === -1) {
+      console.log('text length', text.length)
       const curies: any = []
       const newEntity = {
-        index: `${text}:${spanIndex}:${start}:${end}`,
+        index: entIndex,
         text: text, 
         token: text, 
-        type: "ChemicalEntity", 
+        type: "Association", 
         start: state.inputText.indexOf(text), 
         end: state.inputText.indexOf(text) + text.length,
         curies: curies, id_curie: "", id_label: "", id_uri: "",
@@ -653,8 +662,11 @@ export default function AnnotateText() {
         newEntity['id_label'] = entityCuries[newEntity['id_curie']][0]
         newEntity['id_uri'] = IDO + newEntity['id_curie']
       }
-      entitiesList.push(newEntity)
-      updateState({tagSelected: newEntity, entitiesList: entitiesList})
+      if (state.entitiesList.findIndex((ent: any) => ent.index === entIndex) == -1) {
+        const entitiesList: any = state.entitiesList
+        entitiesList.push(newEntity)
+        updateState({tagSelected: newEntity, entitiesList: entitiesList})
+      }
     }
   }
 
