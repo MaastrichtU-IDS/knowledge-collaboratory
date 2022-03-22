@@ -28,25 +28,24 @@ const $rdf = require('rdflib')
 // var hljsDefineTurtle = require('highlightjs-turtle');
 // hljs.registerLanguage('turtle', turtle);
 
-import JsonldUploader from "../components/JsonldUploader";
-import RenderObjectForm from "../components/RenderObjectForm";
-import { settings, samples, propertiesList, predicatesList, sentenceToAnnotate } from '../settings';
-import { biolinkShex } from '../biolink-shex';
+import { settings, samples, propertiesList, predicatesList, sentenceToAnnotate, biolinkShex } from '../settings';
 
 import UserContext from '../UserContext'
 
 import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/github-dark-dimmed.css';
 import hljsDefineTurtle from '../components/highlightjs-turtle';
-import { gridColumnsSelector } from '@mui/x-data-grid';
+// import { gridColumnsSelector } from '@mui/x-data-grid';
 hljs.registerLanguage("turtle", hljsDefineTurtle)
 
+// Define namespaces for building RDF URIs
 const BIOLINK = 'https://w3id.org/biolink/vocab/'
+const IDO = 'https://identifiers.org/'
+
 
 export default function AnnotateText() {
   const theme = useTheme();
   const { user }: any = useContext(UserContext)
-  // const { user, setUser }: any = useContext(UserContext)
 
   const useStyles = makeStyles(() => ({
     link: {
@@ -84,21 +83,9 @@ export default function AnnotateText() {
       marginLeft: theme.spacing(2),
       // marginTop: theme.spacing(2),
     },
-    fullWidth: {
-      width: '100%',
-    },
-    autocomplete: {
-      marginRight: theme.spacing(2)
-    },
     formInput: {
       background: 'white',
       width: '100%'
-    },
-    smallerFont: {
-      fontSize: '12px',
-    },
-    alignLeft: {
-      textAlign: 'left'
     },
     paperPadding: {
       padding: theme.spacing(2, 2),
@@ -121,10 +108,9 @@ export default function AnnotateText() {
     inputSource: '',
     editInputText: '',
     templateSelected: 'BioLink reified associations',
-    entitiesAnnotations: [],
     entitiesList: [],
-    entitiesType: entitiesType,
     relationsList: [],
+    entitiesType: entitiesType,
     tagSelected: tagSelected,
     statements: [{'s': '', 'p': '', 'o': '', 'props': []}],
     predicatesList: predicatesList,
@@ -151,12 +137,13 @@ export default function AnnotateText() {
     setOpen(false);
     setAnchorEl(anchorEl ? null : anchorEl);
   };
-  const id = open ? 'simple-popper' : undefined;
-
+  // const id = open ? 'simple-popper' : undefined;
   
 
   React.useEffect(() => {
-    const params = new URLSearchParams(location.search + location.hash);
+    // const params = new URLSearchParams(location.search + location.hash);
+    // let sentences_url = params.get('sentences');
+    // Get a random sentence to annotate
     if (!state.inputText) {
       const randomSentence = sentenceToAnnotate[Math.floor(Math.random() * sentenceToAnnotate.length)]
       updateState({
@@ -165,40 +152,25 @@ export default function AnnotateText() {
         inputSource: randomSentence.url,
       })
     }
-    // let jsonld_uri_provided = params.get('edit');
-    // for (const onto_url of state.ontology_list) {
-    //   console.log('ontology url', onto_url);
-    //   downloadOntology(onto_url)
-    // }
-    
-    // if (jsonld_uri_provided) {
-    //   axios.get(jsonld_uri_provided)
-    //     .then(res => {
-    //       updateState({
-    //         np_jsonld: res.data,
-    //         jsonld_uri_provided: jsonld_uri_provided,
-    //       })
-    //       // downloadOntology(res.data['@context'])
-    //     })
-    // } 
-    // else {
-    //   downloadOntology(state.np_jsonld['@context'])
-    // }
     
   }, [state.np_jsonld])
 
   // TODO: complete the list of ents?
   const ents = [
-    {type: 'chemicalentity', label: 'Chemical entity', id: BIOLINK + 'ChemicalEntity', 
+    {type: 'ChemicalEntity', label: 'Chemical Entity', id: BIOLINK + 'ChemicalEntity', 
       curie: 'biolink:ChemicalEntity', color: {r: 166, g: 226, b: 45}},
-    {type: 'drug', label: 'Chemical entity', id: BIOLINK + 'Drug', 
+    {type: 'Drug', label: 'Drug', id: BIOLINK + 'Drug', 
       curie: 'biolink:Drug', color: {r: 67, g: 198, b: 252}},
-    {type: 'diseaseorphenotypicfeature', label: 'Disease or Phenotypic Feature', id: BIOLINK + 'DiseaseOrPhenotypicFeature', 
+    {type: 'DiseaseOrPhenotypicFeature', label: 'Disease or Phenotypic Feature', id: BIOLINK + 'DiseaseOrPhenotypicFeature', 
       curie: 'biolink:DiseaseOrPhenotypicFeature', color: {r: 47, g: 187, b: 171}},
-    {type: 'geneorgeneproduct', label: 'Gene or Gene Product', id: BIOLINK + 'GeneOrGeneProduct', 
-      curie: 'biolink:GeneOrGeneProduct', color: {r: 47, g: 187, b: 171}},
-    {type: 'sequencevariant', label: 'Sequence Variant', id: BIOLINK + 'SequenceVariant', 
-      curie: 'biolink:SequenceVariant', color: {r: 47, g: 187, b: 171}}
+    {type: 'GeneOrGeneProduct', label: 'Gene or Gene Product', id: BIOLINK + 'GeneOrGeneProduct', 
+      curie: 'biolink:GeneOrGeneProduct', color: {r: 218, g: 112, b: 214}},
+    {type: 'SequenceVariant', label: 'Sequence Variant', id: BIOLINK + 'SequenceVariant', 
+      curie: 'biolink:SequenceVariant', color: {r: 0, g: 206, b: 209}},
+    {type: 'OrganismTaxon', label: 'Organism Taxon', id: BIOLINK + 'OrganismTaxon', 
+      curie: 'biolink:OrganismTaxon', color: {r: 0, g: 206, b: 209}},
+    {type: 'Association', label: 'Association', id: BIOLINK + 'Association', 
+      curie: 'biolink:Association', color: {r: 0, g: 206, b: 209}}
   ]
 
 
@@ -236,12 +208,12 @@ export default function AnnotateText() {
       })
   }
 
+
   const handleExtract  = (event: React.FormEvent) => {
     event.preventDefault();
     updateState({
       loading: true, 
       inputText: state.editInputText,
-      entitiesAnnotations: [], 
       entitiesList: [],
       entitiesType: {}
     })
@@ -251,29 +223,27 @@ export default function AnnotateText() {
         {'params': {'extract_relations': true}}
       )
       .then(res => {
-        const entitiesList: any = []
-        console.log(res.data)
-        res.data.entities.map((entityMatch: any) => {
-          if (entityMatch.curies) {
-            Object.keys(entityMatch.curies).map((curie: any) => {
-              entitiesList.push({
-                id: 'https://identifiers.org/' + curie,
-                label: entityMatch.curies[curie][0],
-                curie: curie,
-                type: entityMatch.type,
-                typeMatch: entityMatch.type + ' ' + entityMatch.text
-              })
-            })
-          }
-        })
+        // const entitiesList: any = []
+        // console.log(res.data)
+        // res.data.entities.map((entityMatch: any) => {
+        //   if (entityMatch.curies) {
+        //     Object.keys(entityMatch.curies).map((curie: any) => {
+        //       entitiesList.push({
+        //         id: 'https://identifiers.org/' + curie,
+        //         label: entityMatch.curies[curie][0],
+        //         curie: curie,
+        //         type: entityMatch.type,
+        //         typeMatch: entityMatch.type + ' ' + entityMatch.text
+        //       })
+        //     })
+        //   }
+        // })
         updateState({
           loading: false,
-          entitiesList: entitiesList,
-          entitiesAnnotations: res.data.entities,
+          entitiesList: res.data.entities,
           relationsList: res.data.relations,
           statements: res.data.statements
         })
-        // console.log(entitiesAnnotations)
       })
       .catch(error => {
         console.log(error)
@@ -283,17 +253,28 @@ export default function AnnotateText() {
       // })
   }
 
+  const getPropValue  = (prop: any) => {
+    if (prop['id_uri']) {
+      return prop.id_uri
+    }
+    if (prop['id']) {
+      return prop.id
+    }
+    return prop.text
+  }
+
   const generateRDF  = () => {
     const stmtJsonld: any = []
     const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
     if (state.templateSelected === 'BioLink reified associations') {
       state.statements.map((stmt: any, index: number) => {
+        console.log('PPP', stmt.p)
         const reifiedStmt = {
           // '@id': 'https://w3id.org/collaboratory/association/' + index,
-          [`${rdf}type`]: {'@id': 'https://w3id.org/biolink/vocab/Association'},
-          [`${rdf}subject`]: {'@id': stmt.s},
-          [`${rdf}predicate`]: {'@id': stmt.p},
-          [`${rdf}object`]: {'@id': stmt.o},
+          [`${rdf}type`]: {'@id': `${BIOLINK}Association`},
+          [`${rdf}subject`]: {'@id': getPropValue(stmt.s)},
+          [`${rdf}predicate`]: {'@id': getPropValue(stmt.p)},
+          [`${rdf}object`]: {'@id': getPropValue(stmt.o)},
         }
         // Add properties for reified statements
         if (stmt.props) {
@@ -309,9 +290,9 @@ export default function AnnotateText() {
         const reifiedStmt = {
           // '@id': 'https://w3id.org/collaboratory/association/' + index,
           [`${rdf}type`]: {'@id': `${rdf}Statement`},
-          [`${rdf}subject`]: {'@id': stmt.s},
-          [`${rdf}predicate`]: {'@id': stmt.p},
-          [`${rdf}object`]: {'@id': stmt.o},
+          [`${rdf}subject`]: {'@id': getPropValue(stmt.s)},
+          [`${rdf}predicate`]: {'@id': getPropValue(stmt.p)},
+          [`${rdf}object`]: {'@id': getPropValue(stmt.o)},
         }
         // Add properties for reified statements
         if (stmt.props) {
@@ -326,20 +307,22 @@ export default function AnnotateText() {
       // Plain RDF
       state.statements.map((stmt: any) => {
         stmtJsonld.push({
-          '@id': stmt.s,
-          [stmt.p]: stmt.o
+          '@id': getPropValue(stmt.s),
+          [getPropValue(stmt.p)]: getPropValue(stmt.o)
         })
       })
     }
     // Add triples for types
-    Object.keys(state.entitiesType).map((entity: any) => {
+    state.entitiesList.map((entity: any) => {
+      if (entity.id_uri && entity.type)
       stmtJsonld.push({
-        '@id': entity,
-        '@type': state.entitiesType[entity]
+        '@id': entity.id_uri,
+        '@type': BIOLINK + entity.type
       })
     })
     return stmtJsonld
   }
+
 
   const handleDownloadRDF  = (event: React.FormEvent) => {
     // Trigger JSON-LD file download
@@ -369,8 +352,8 @@ export default function AnnotateText() {
         stmtJsonld, 
         { 
           params: { 
-            shape_start: 'https://w3id.org/biolink/vocab/Association',
-            focus_types: 'https://w3id.org/biolink/vocab/Association',
+            shape_start: `${BIOLINK}Association`,
+            focus_types: `${BIOLINK}Association`,
             shape_url: 'https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.shex'
           } 
         } 
@@ -386,6 +369,7 @@ export default function AnnotateText() {
     // var element = document.createElement('a');
     // console.log();
   }
+
 
   const handleSubmit  = (event: React.FormEvent) => {
     // Trigger JSON-LD file download
@@ -433,11 +417,12 @@ export default function AnnotateText() {
     updateState({ [event.target.id]: event.target.value})
   }
 
+
   const addStatement  = (event: React.FormEvent) => {
     event.preventDefault();
     const stmts: any = state.statements
     stmts.push({'s': '', 'p': '', 'o': '', 'props': [], 
-      'shex': {id: 'https://w3id.org/biolink/vocab/Association', label: 'Association', type: 'ShapeOr'}})
+      'shex': {id: `${BIOLINK}Association`, label: 'Association', type: 'ShapeOr'}})
     updateState({statements: stmts})
   }
   const addProperty = (event: React.FormEvent)=> {
@@ -457,12 +442,27 @@ export default function AnnotateText() {
   }
   const handleAutocomplete = (event: any, newInputValue: any) => {
     const stmts: any = state.statements
-    if (event) {
-      if (event.target.id.startsWith('tag')) {
+    if (event && newInputValue) {
+      if (event.target.id.startsWith('tag:type')) {
+        const entitiesList: any = state.entitiesList
         const tagSelected: any = state.tagSelected
+        console.log('TAG TYPE', entitiesList, state.tagSelected.index)
+        entitiesList[state.tagSelected.index].type = newInputValue.type
+        // console.log('tag id newInputValue', newInputValue)
+        tagSelected.type = newInputValue.type
+        updateState({tagSelected: tagSelected, entitiesList: entitiesList})
+      } else if (event.target.id.startsWith('tag:id')) {
+        const entitiesList: any = state.entitiesList
+        const tagSelected: any = state.tagSelected
+        entitiesList[state.tagSelected.index].id_curie = newInputValue.curie
+        entitiesList[state.tagSelected.index].id_label = newInputValue.label
+        entitiesList[state.tagSelected.index].id_uri = IDO + newInputValue.curie
+        console.log('tag id newInputValue', newInputValue)
+        tagSelected.id_curie = newInputValue.curie
+        tagSelected.id_label = newInputValue.label
+        tagSelected.id_uri = IDO + newInputValue.curie
         if (newInputValue) {
-          updateState({tagSelected: newInputValue})
-          // TODO: also update entities list
+          updateState({tagSelected: tagSelected, entitiesList: entitiesList})
         }
       } else if (event.target.id.startsWith('prop:')) {
         // Edit properties of a statement
@@ -513,9 +513,22 @@ export default function AnnotateText() {
       }
     }
   }
-  const getAutocompleteLabel = (option: any) => {
+  const getAutocompleteLabel = (option: any, displayProp: string = '') => {
+    // console.log('getAutocompleteLabel', option)
+    if (displayProp) {
+      return option[displayProp]
+    }
+    if (option.id_label && option.id_curie) {
+      return option.id_label + ' (' + option.id_curie + ')'
+    }
+    if (option.text && option.id_curie) {
+      return option.text + ' (' + option.id_curie + ')'
+    }
     if (option.label && option.curie) {
       return option.label + ' (' + option.curie + ')'
+    }
+    if (option.text) {
+      return option.text
     }
     if (option.label) {
       return option.label
@@ -537,6 +550,15 @@ export default function AnnotateText() {
     stmts.splice(index, 1);
     updateState({statements: stmts})
   }
+  const handleRemoveEntity = (text: any) => {
+    // TODO: entities that are not anymore relevant are removed when a statement is removed
+    const entitiesList = state.entitiesList
+    console.log(entitiesList, text)
+    // Delete the first entity with the same text (not ideal but best quick option)
+    entitiesList.splice(entitiesList.findIndex((ent: any) => ent.text === text), 1);
+    updateState({entitiesList: entitiesList})
+    handleClickAway()
+  }
   const handleRemoveProp = (stmtIndex: number, pindex: number) => {
     // TODO: entities that are not anymore relevant are removed when a statement is removed
     const stmts = state.statements
@@ -549,9 +571,36 @@ export default function AnnotateText() {
     setOpen((prev) => !prev);
     tag['id'] = tag['type']
     updateState({tagSelected: tag})
-    console.log('entitiesAnnotations', state.entitiesAnnotations)
-    console.log('Clicked that tag!', elemIndex, tag);
+    // console.log('entitiesList', state.entitiesList)
+    // console.log('Clicked that tag!', elemIndex, tag);
   }
+
+  const highlightCallback = (event: any, text: string, spanIndex: number, start: number, end: number) => {
+    const entitiesList: any = state.entitiesList
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+    setOpen((prev) => !prev);
+    if (text.length > 1) {
+      console.log('TEXT', text)
+      const newEntity = {
+        index: state.entitiesList.length, 
+        text: text, 
+        token: text, 
+        type: "ChemicalEntity", 
+        start: state.inputText.indexOf(text), 
+        end: state.inputText.indexOf(text) + text.length + 1, 
+        curies: [], id_curie: "", id_label: "", id_uri: ""
+      }
+      console.log('hightlight newEntity', newEntity)
+      entitiesList.push(newEntity)
+      // tag['id'] = tag['type']
+      updateState({tagSelected: newEntity, entitiesList: entitiesList})
+      // console.log('entitiesList', state.entitiesList)
+      // // console.log('Clicked that tag!', elemIndex, tag);
+      // console.log('highlightCallback!', event)
+      // console.log("Start-end highlight", start, end)
+    }
+  }
+
 
   return(
     <Container className='mainContainer'>
@@ -644,22 +693,30 @@ export default function AnnotateText() {
 
       <Popper open={open} anchorEl={anchorEl}>
         <ClickAwayListener onClickAway={handleClickAway}>
-          <Paper elevation={4} style={{minWidth: theme.spacing(30), padding: theme.spacing(2, 2), textAlign: 'left'}}>
+          <Paper elevation={4} style={{minWidth: theme.spacing(60), padding: theme.spacing(2, 2), textAlign: 'left'}}>
             { state.tagSelected && 
               <>
-                <Typography style={{textAlign: 'center', marginBottom: theme.spacing(3)}}>
+                <Typography variant='h5' style={{textAlign: 'center', marginBottom: theme.spacing(3)}}>
                   {state.tagSelected.token}
+                  <Tooltip title={<Typography style={{textAlign: 'center'}}>Delete the entity</Typography>}>
+                    <IconButton onClick={() => handleRemoveEntity(state.tagSelected.token)} 
+                      style={{marginLeft: theme.spacing(1), alignContent: 'right'}} color="default">
+                        <RemoveIcon />
+                    </IconButton>
+                  </Tooltip>
                 </Typography>
                 <Autocomplete
-                    id={'tag'}
+                    id={'tag:type'}
                     freeSolo
-                    // TODO: When deleting a stms/prop the value of the Autocompletes are not properly updated
-                    value={state.tagSelected}
+                    value={state.tagSelected.type}
                     options={ents}
-                    onChange={handleAutocomplete}
+                    onChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue)}
                     onInputChange={handleAutocomplete}
+                    // onChange={handleAutocomplete}
+                    // onInputChange={handleAutocomplete}
                     getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                    groupBy={(option) => option.typeMatch ? option.typeMatch : null }
+                    groupBy={(option) => option.type ? option.type : null }
+                    style={{marginBottom: theme.spacing(3)}}
                     renderInput={params => (
                       <TextField
                         {...params}
@@ -671,16 +728,37 @@ export default function AnnotateText() {
                       />
                     )}
                   />
+                <Autocomplete
+                    id={'tag:id'}
+                    freeSolo
+                    value={state.tagSelected}
+                    options={state.tagSelected.curies}
+                    onChange={handleAutocomplete}
+                    onInputChange={handleAutocomplete}
+                    getOptionLabel={(option: any) => getAutocompleteLabel(option)}
+                    groupBy={(option) => option.type ? option.type : null }
+                    style={{marginBottom: theme.spacing(1)}}
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        variant="outlined"
+                        size='small'
+                        className={classes.input}
+                        label="Entity ID"
+                        placeholder="Entity ID"
+                      />
+                    )}
+                  />
               </>
             }
           </Paper>
         </ClickAwayListener>
       </Popper>
 
-      { state.entitiesAnnotations.length > 0 &&
+      { state.entitiesList.length > 0 &&
         <Card className={classes.paperPadding} >
-          <Taggy text={state.inputText} spans={state.entitiesAnnotations} 
-            ents={ents} onClick={clickTag} />
+          <Taggy text={state.inputText} spans={state.entitiesList} 
+            ents={ents} onClick={clickTag} onHighlight={highlightCallback}  />
         </Card>
       }
 
@@ -701,13 +779,13 @@ export default function AnnotateText() {
                 key={'s:'+index}
                 id={'s:'+index}
                 freeSolo
-                // TODO: When deleting a stms/prop the value of the Autocompletes are not properly updated
+                
                 value={state.statements[index].s}
                 options={state.entitiesList}
                 onChange={handleAutocomplete}
                 onInputChange={handleAutocomplete}
                 getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                groupBy={(option) => option.typeMatch ? option.typeMatch : null }
+                groupBy={(option) => option.type ? option.type : null }
                 renderInput={params => (
                   <TextField
                     {...params}
@@ -732,6 +810,7 @@ export default function AnnotateText() {
                 onChange={handleAutocomplete}
                 onInputChange={handleAutocomplete}
                 getOptionLabel={(option: any) => getAutocompleteLabel(option)}
+                // groupBy={(option) => option.type ? option.type : null }
                 renderInput={params => (
                   <TextField
                     {...params}
@@ -755,7 +834,7 @@ export default function AnnotateText() {
                 onChange={handleAutocomplete}
                 onInputChange={handleAutocomplete}
                 getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                groupBy={(option) => option.typeMatch ? option.typeMatch : null }
+                groupBy={(option) => option.type ? option.type : null }
                 renderInput={params => (
                   <TextField
                     {...params}
@@ -813,7 +892,7 @@ export default function AnnotateText() {
                   onInputChange={handleAutocomplete}
                   // onKeyPress={handleAutocomplete}
                   getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                  groupBy={(option) => option.typeMatch}
+                  groupBy={(option) => option.type ? option.type : null }
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -837,11 +916,7 @@ export default function AnnotateText() {
             })
           }
           { state.templateSelected !== 'Plain RDF' && 
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-          }}>
+          <div style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap'}}>
             <Button 
               // onClick={() => addProperty(event, index)}
               onClick={addProperty}
@@ -969,31 +1044,29 @@ export default function AnnotateText() {
 
           { user.id && !user.keyfiles_loaded && 
             <>
-              <Card className={classes.paperPadding} >
-                <Typography>
-                  🔑 You need to upload the authentication keys bound to your ORCID to publish Nanopublications (public and private encryption keys):
+              <Typography>
+                🔑 You need to upload the authentication keys bound to your ORCID to publish Nanopublications (public and private encryption keys):
+              </Typography>
+              <form encType="multipart/form-data" action="" onSubmit={handleUploadKeys} 
+                  style={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>
+                <Typography style={{marginTop: theme.spacing(1)}}>
+                  Select the <b>Public</b> key:&nbsp;&nbsp;
+                  <input type="file" id="publicKey" />
                 </Typography>
-                <form encType="multipart/form-data" action="" onSubmit={handleUploadKeys} 
-                    style={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>
-                  <Typography style={{marginTop: theme.spacing(1)}}>
-                    Select the <b>Public</b> key:&nbsp;&nbsp;
-                    <input type="file" id="publicKey" />
-                  </Typography>
-                  <Typography style={{marginTop: theme.spacing(1)}}>
-                    Select the <b>Private</b> key:&nbsp;&nbsp;
-                    <input type="file" id="privateKey" />
-                  </Typography>
+                <Typography style={{marginTop: theme.spacing(1)}}>
+                  Select the <b>Private</b> key:&nbsp;&nbsp;
+                  <input type="file" id="privateKey" />
+                </Typography>
 
-                  <Button type="submit" 
-                    variant="contained" 
-                    className={classes.saveButton} 
-                    startIcon={<UploadIcon />}
-                    style={{textTransform: 'none', marginTop: theme.spacing(1)}}
-                    color="secondary" >
-                      Upload your keys
-                  </Button>
-                </form>
-              </Card>
+                <Button type="submit" 
+                  variant="contained" 
+                  className={classes.saveButton} 
+                  startIcon={<UploadIcon />}
+                  style={{textTransform: 'none', marginTop: theme.spacing(1)}}
+                  color="secondary" >
+                    Upload your keys
+                </Button>
+              </form>
             </>
           }
         </Card>

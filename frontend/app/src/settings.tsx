@@ -27,6 +27,40 @@ const getUrlHtml = (urlString: string) => {
   }
 }
 
+// https://github.com/biolink/biolink-model/blob/master/biolink-model.shexj
+export const biolinkShex = {
+  "type": "Schema",
+  "@context": [
+    "http://www.w3.org/ns/shex.jsonld",
+    {
+      "@base": "https://w3id.org/biolink/vocab/"
+    }
+  ],
+  "shapes": [
+    {
+      "type": "ShapeOr",
+      "id": "https://w3id.org/biolink/vocab/Association",
+      "label": "Association",
+    },
+    {
+      "type": "Shape",
+      "id": "https://w3id.org/biolink/vocab/ChemicalToDiseaseOrPhenotypicFeatureAssociation",
+      "label": "Chemical To Disease Or Phenotypic Feature Association",
+    },
+    {
+      "type": "Shape",
+      "id": "https://w3id.org/biolink/vocab/DiseaseToPhenotypicFeatureAssociation",
+      "label": "Disease To Phenotypic Feature Association",
+    },
+    {
+      "type": "Shape",
+      "id": "https://w3id.org/biolink/vocab/ChemicalToChemicalAssociation",
+      "label": "Chemical To Chemical Association",
+    },
+  ]
+}
+
+
 // https://biolink.github.io/biolink-model/docs/predicates.html
 const predicatesList = [
   {id: 'https://w3id.org/biolink/vocab/treats', curie: 'biolink:treats', label: 'Treats', type: 'BioLink'},
@@ -410,7 +444,7 @@ const sentenceToAnnotate = [
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=27d813ea-7798-09cb-734b-b970d7248f1f"
   },
   {
-    text: "ARICEPT® is indicated for the treatment of dementia of the Alzheimer's type.", 
+    text: "ARICEPT is indicated for the treatment of dementia of the Alzheimer's type.", 
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=2b1b7b5f-2f20-418c-b1ac-794c2ef1ce5e"
   },
   {
@@ -442,7 +476,7 @@ const sentenceToAnnotate = [
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b998ed05-94b0-47fd-b28f-cddd1e128fd8"
   },
   {
-    text: "AMRIX® (cyclobenzaprine hydrochloride extended-release capsules) is indicated as an adjunct to rest and physical therapy for relief of muscle spasm associated with acute, painful musculoskeletal conditions.", 
+    text: "AMRIX (cyclobenzaprine hydrochloride extended-release capsules) is indicated as an adjunct to rest and physical therapy for relief of muscle spasm associated with acute, painful musculoskeletal conditions.", 
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=3902123b-1365-ac3c-0934-afff9eeeb1bd"
   },
   {
@@ -606,7 +640,7 @@ const sentenceToAnnotate = [
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b025d8ed-937d-4597-9ad1-0b2f6e0ee5b1"
   },
   {
-    text: "Vyvanse® is indicated for the treatment of Attention Deficit Hyperactivity Disorder (ADHD).", 
+    text: "Vyvanse is indicated for the treatment of Attention Deficit Hyperactivity Disorder (ADHD).", 
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=a310fc51-2743-4755-8398-fed5402283f6"
   },
   {
@@ -674,11 +708,11 @@ const sentenceToAnnotate = [
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=773a19e8-4c3e-4414-99a6-aea98c9790ee"
   },
   {
-    text: "temporarily relieves minor aches and pains due to:•the common cold•headache•backache•minor pain of arthritis•toothache•muscular aches•premenstrual and menstrual cramps•temporarily reduces fever", 
+    text: "temporarily relieves minor aches and pains due to: the common cold headache backache minor pain of arthritis toothache muscular aches premenstrual and menstrual cramps temporarily reduces fever", 
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=9f7cca9d-4230-49d7-b805-a1fbc73e31c9"
   },
   {
-    text: "temporarily relieves minor aches and pains due to:•the common cold•headache•backache•minor pain of arthritis•toothache•muscular aches•premenstrual and menstrual cramps•temporarily reduces fever", 
+    text: "temporarily relieves minor aches and pains due to: the common cold headache backache minor pain of arthritis toothache muscular aches premenstrual and menstrual cramps temporarily reduces fever", 
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=9f7cca9d-4230-49d7-b805-a1fbc73e31c9"
   },
   {
@@ -730,7 +764,7 @@ const sentenceToAnnotate = [
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=491aea85-5a55-4a7c-b1cf-a123fea4377d"
   },
   {
-    text: "ABSTRAL® is indicated for the management of breakthrough pain in cancer patients 18 years of age and older who are already receiving, and who are tolerant to, around-the-clock opioid therapy for their underlying persistent cancer pain.", 
+    text: "ABSTRAL is indicated for the management of breakthrough pain in cancer patients 18 years of age and older who are already receiving, and who are tolerant to, around-the-clock opioid therapy for their underlying persistent cancer pain.", 
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=e60f00e9-2cf4-4c20-b570-1c2ea426c8c7"
   },
   {
