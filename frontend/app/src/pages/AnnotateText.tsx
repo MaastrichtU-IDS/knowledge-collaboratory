@@ -41,6 +41,7 @@ hljs.registerLanguage("turtle", hljsDefineTurtle)
 // Define namespaces for building RDF URIs
 const BIOLINK = 'https://w3id.org/biolink/vocab/'
 const IDO = 'https://identifiers.org/'
+const RDFS = 'http://www.w3.org/2000/01/rdf-schema#'
 
 
 export default function AnnotateText() {
@@ -156,21 +157,22 @@ export default function AnnotateText() {
   }, [state.np_jsonld])
 
   // TODO: complete the list of ents?
+  // RGB colors: https://www.rapidtables.com/web/color/RGB_Color.html
   const ents = [
-    {type: 'ChemicalEntity', label: 'Chemical Entity', id: BIOLINK + 'ChemicalEntity', 
-      curie: 'biolink:ChemicalEntity', color: {r: 166, g: 226, b: 45}},
-    {type: 'Drug', label: 'Drug', id: BIOLINK + 'Drug', 
-      curie: 'biolink:Drug', color: {r: 67, g: 198, b: 252}},
-    {type: 'DiseaseOrPhenotypicFeature', label: 'Disease or Phenotypic Feature', id: BIOLINK + 'DiseaseOrPhenotypicFeature', 
-      curie: 'biolink:DiseaseOrPhenotypicFeature', color: {r: 47, g: 187, b: 171}},
-    {type: 'GeneOrGeneProduct', label: 'Gene or Gene Product', id: BIOLINK + 'GeneOrGeneProduct', 
-      curie: 'biolink:GeneOrGeneProduct', color: {r: 218, g: 112, b: 214}},
-    {type: 'SequenceVariant', label: 'Sequence Variant', id: BIOLINK + 'SequenceVariant', 
-      curie: 'biolink:SequenceVariant', color: {r: 0, g: 206, b: 209}},
-    {type: 'OrganismTaxon', label: 'Organism Taxon', id: BIOLINK + 'OrganismTaxon', 
-      curie: 'biolink:OrganismTaxon', color: {r: 0, g: 206, b: 209}},
-    {type: 'Association', label: 'Association', id: BIOLINK + 'Association', 
-      curie: 'biolink:Association', color: {r: 0, g: 206, b: 209}}
+    {type: 'ChemicalEntity', label: 'Chemical Entity', id: BIOLINK + 'ChemicalEntity', curie: 'biolink:ChemicalEntity', 
+      color: {r: 255, g: 178, b: 102}}, // Orange
+    {type: 'Drug', label: 'Drug', id: BIOLINK + 'Drug',  curie: 'biolink:Drug', 
+      color: {r: 255, g: 102, b: 102}}, // Red
+    {type: 'DiseaseOrPhenotypicFeature', label: 'Disease or Phenotypic Feature', id: BIOLINK + 'DiseaseOrPhenotypicFeature', curie: 'biolink:DiseaseOrPhenotypicFeature', 
+    color: {r: 47, g: 187, b: 171}}, // Blue green  
+    {type: 'GeneOrGeneProduct', label: 'Gene or Gene Product', id: BIOLINK + 'GeneOrGeneProduct', curie: 'biolink:GeneOrGeneProduct', 
+      color: {r: 218, g: 112, b: 214}}, // Purple
+    {type: 'SequenceVariant', label: 'Sequence Variant', id: BIOLINK + 'SequenceVariant', curie: 'biolink:SequenceVariant', 
+      color: {r: 166, g: 226, b: 45}}, // Light green
+    {type: 'OrganismTaxon', label: 'Organism Taxon', id: BIOLINK + 'OrganismTaxon', curie: 'biolink:OrganismTaxon', 
+      color: {r: 204, g: 204, b: 0}}, // Yellow
+    {type: 'Association', label: 'Association', id: BIOLINK + 'Association', curie: 'biolink:Association', 
+    color: {r: 67, g: 198, b: 252}}, // Light blue
   ]
 
 
@@ -268,7 +270,6 @@ export default function AnnotateText() {
     const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
     if (state.templateSelected === 'BioLink reified associations') {
       state.statements.map((stmt: any, index: number) => {
-        console.log('PPP', stmt.p)
         const reifiedStmt = {
           // '@id': 'https://w3id.org/collaboratory/association/' + index,
           [`${rdf}type`]: {'@id': `${BIOLINK}Association`},
@@ -312,12 +313,13 @@ export default function AnnotateText() {
         })
       })
     }
-    // Add triples for types
+    // Add triples for entities
     state.entitiesList.map((entity: any) => {
       if (entity.id_uri && entity.type)
       stmtJsonld.push({
         '@id': entity.id_uri,
-        '@type': BIOLINK + entity.type
+        '@type': BIOLINK + entity.type,
+        [RDFS + 'label']: entity.id_label,
       })
     })
     return stmtJsonld
