@@ -10,7 +10,7 @@ import UploadIcon from '@mui/icons-material/FileUpload';
 import PublishIcon from '@mui/icons-material/Outbox';
 import axios from 'axios';
 
-const $rdf = require('rdflib')
+// const $rdf = require('rdflib')
 // import { LoggedIn, LoggedOut, Value } from '@solid/react';
 // import * as jsonld from 'jsonld'
 // import {$rdf} from 'rdflib'
@@ -25,6 +25,7 @@ const $rdf = require('rdflib')
 import JsonldUploader from "../components/JsonldUploader";
 import RenderObjectForm from "../components/RenderObjectForm";
 import { settings, samples } from '../settings';
+import { toJSONLD } from '../utils';
 import UserContext from '../UserContext'
 
 import hljs from 'highlight.js/lib/core';
@@ -223,34 +224,34 @@ export default function PublishNanopub() {
       })
   }
 
-  const toJSONLD = (data: any, uri: any) => {
-    // Convert RDF to JSON-LD using rdflib
-    let rdf_format = 'application/rdf+xml';
-    if (uri.endsWith('.ttl')) rdf_format = 'text/turtle'
-    if (uri.endsWith('.nq')) rdf_format = 'application/n-quads'
-    // Or text/x-nquads
-    if (uri.endsWith('.nt')) rdf_format = 'application/n-triples'
-    if (uri.endsWith('.n3')) rdf_format = 'text/n3'
-    if (uri.endsWith('.trig')) rdf_format = 'application/trig'
-    return new Promise((resolve, reject) => {
-        let store = $rdf.graph()
-        let doc = $rdf.sym(uri);
-        $rdf.parse(data, store, uri, rdf_format)
-        // console.log(store)
-        $rdf.serialize(doc, store, uri, 'application/ld+json', (err: any, jsonldData: any) => {
-          return resolve(JSON.parse(jsonldData)
-            .sort((a: any, b: any) => {
-              if (a['@type'] && b['@type'] && Array.isArray(a['@type']) && Array.isArray(b['@type'])){
-                // Handle when array of types provided (e.g. SIO via rdflib)
-                return a['@type'][0] < b['@type'][0] ? 1 : -1
-              } else {
-                return a['@type'] < b['@type'] ? 1 : -1
-              }
-            })
-        )
-      })
-    })
-  }
+  // const toJSONLD = (data: any, uri: any) => {
+  //   // Convert RDF to JSON-LD using rdflib
+  //   let rdf_format = 'application/rdf+xml';
+  //   if (uri.endsWith('.ttl')) rdf_format = 'text/turtle'
+  //   if (uri.endsWith('.nq')) rdf_format = 'application/n-quads'
+  //   // Or text/x-nquads
+  //   if (uri.endsWith('.nt')) rdf_format = 'application/n-triples'
+  //   if (uri.endsWith('.n3')) rdf_format = 'text/n3'
+  //   if (uri.endsWith('.trig')) rdf_format = 'application/trig'
+  //   return new Promise((resolve, reject) => {
+  //       let store = $rdf.graph()
+  //       let doc = $rdf.sym(uri);
+  //       $rdf.parse(data, store, uri, rdf_format)
+  //       // console.log(store)
+  //       $rdf.serialize(doc, store, uri, 'application/ld+json', (err: any, jsonldData: any) => {
+  //         return resolve(JSON.parse(jsonldData)
+  //           .sort((a: any, b: any) => {
+  //             if (a['@type'] && b['@type'] && Array.isArray(a['@type']) && Array.isArray(b['@type'])){
+  //               // Handle when array of types provided (e.g. SIO via rdflib)
+  //               return a['@type'][0] < b['@type'][0] ? 1 : -1
+  //             } else {
+  //               return a['@type'] < b['@type'] ? 1 : -1
+  //             }
+  //           })
+  //       )
+  //     })
+  //   })
+  // }
 
   const handleUploadKeys  = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

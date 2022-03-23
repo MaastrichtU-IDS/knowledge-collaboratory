@@ -16,7 +16,7 @@ import ShexIcon from '@mui/icons-material/TaskAlt';
 import axios from 'axios';
 import Taggy from 'react-taggy'
 
-const $rdf = require('rdflib')
+// const $rdf = require('rdflib')
 // import { LoggedIn, LoggedOut, Value } from '@solid/react';
 // import * as jsonld from 'jsonld'
 // import {$rdf} from 'rdflib'
@@ -29,6 +29,7 @@ const $rdf = require('rdflib')
 // hljs.registerLanguage('turtle', turtle);
 
 import { settings, samples, propertiesList, predicatesList, sentenceToAnnotate, biolinkShex, ents, genericContext } from '../settings';
+import { rdfToRdf } from '../utils';
 
 import UserContext from '../UserContext'
 
@@ -258,6 +259,9 @@ export default function AnnotateText() {
     }
     return prop.text
   }
+  const checkIfUri = (text: string) => {
+    return /^https?:\/\/[-_\/#:\?=\+%\.0-9a-zA-Z]+$/i.test(text)
+  }
 
   const generateRDF  = () => {
     const stmtJsonld: any = []
@@ -295,8 +299,12 @@ export default function AnnotateText() {
             if (!reifiedStmt[stmtProp.p]) {
               reifiedStmt[stmtProp.p] = []
             } 
-            reifiedStmt[stmtProp.p].push(stmtProp.o)
-            reifiedStmt[stmtProp.p] = stmtProp.o
+            if (checkIfUri(stmtProp.o)) {
+              reifiedStmt[stmtProp.p].push({'@id': stmtProp.o})
+            } else {
+              reifiedStmt[stmtProp.p].push(stmtProp.o)
+            }
+            // reifiedStmt[stmtProp.p] = stmtProp.o
           })
         }
         stmtJsonld.push(reifiedStmt)
@@ -339,7 +347,12 @@ export default function AnnotateText() {
               if (!entityJsonld[addProp]) {
                 entityJsonld[addProp] = []
               } 
-              entityJsonld[addProp].push(addValue)
+              if (checkIfUri(addValue)) {
+                // Quick check if URI
+                entityJsonld[addProp].push({'@id': addValue})
+              } else {
+                entityJsonld[addProp].push(addValue)
+              }
             }
           })
         }
@@ -358,6 +371,12 @@ export default function AnnotateText() {
     event.preventDefault();
     // var element = document.createElement('a');
     const stmtJsonld: any = generateRDF()
+    console.log(rdfToRdf(stmtJsonld))
+    rdfToRdf(stmtJsonld)
+      .then((formattedRdf) => {
+        console.log(formattedRdf);
+      })
+
     var element = document.createElement('a');
     element.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(stmtJsonld, null, 4)));
     element.setAttribute('download', 'annotation.json');
@@ -629,7 +648,7 @@ export default function AnnotateText() {
         'params': {
           'string': text,
           'offset': 0,
-          'limit': 20,
+          'limit': 30,
         }
       }
     )
@@ -910,7 +929,7 @@ export default function AnnotateText() {
       { state.entitiesList.length > 0 &&
         <> 
           <Typography variant='body1' style={{textAlign: 'center', marginBottom: theme.spacing(2)}}>
-            ℹ️ You can edit entities by clicking on their tag, or add new entities by highlighting the text corresponding to the entity. Potential identifiers are automatically retrieved for the highlighted text.
+            💡 You can edit entities by clicking on their tag, or add new entities by highlighting the text corresponding to the entity. Potential identifiers are automatically retrieved for the highlighted text.
           </Typography>
           <Card className={classes.paperPadding} >
             <Taggy text={state.inputText} spans={state.entitiesList} 
@@ -919,128 +938,24 @@ export default function AnnotateText() {
         </>
       }
 
-      <Typography variant='body1' style={{marginBottom: theme.spacing(2)}}>
-        2. Define the statements that represent the assertions made in the text:
-      </Typography>
+      { state.entitiesList.length > 0 &&
+      <>
+        <Typography variant='body1' style={{marginBottom: theme.spacing(2)}}>
+          2. Define the statements that represent the assertions made in the text:
+        </Typography>
 
-      { state.statements.map((stmtRow: any, index: number) => { 
-        return <Box key={'stmt:' + index}>
-          <Grid container spacing={2} key={index} style={{marginBottom: theme.spacing(1), marginTop: theme.spacing(1)}}>
-            <Grid item xs={4}>
-              <Autocomplete
-                key={'s:'+index}
-                id={'s:'+index}
-                freeSolo
-                value={state.statements[index].s}
-                options={state.entitiesList}
-                onChange={handleAutocomplete}
-                onInputChange={handleAutocomplete}
-                getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                groupBy={(option) => option.type ? option.type : null }
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    size='small'
-                    className={classes.input}
-                    label="Subject"
-                    placeholder="Subject"
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={3}>
-              <Autocomplete
-                key={'p:'+index}
-                id={'p:'+index}
-                freeSolo
-                value={state.statements[index].p}
-                options={state.predicatesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
-                // options={state.propertiesList}
-                onChange={handleAutocomplete}
-                onInputChange={handleAutocomplete}
-                getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                // groupBy={(option) => option.type ? option.type : null }
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    size='small'
-                    className={classes.input}
-                    label="Predicate"
-                    placeholder="Predicate"
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={4}>
-              <Autocomplete
-                key={'o:'+index}
-                id={'o:'+index}
-                freeSolo
-                value={state.statements[index].o}
-                options={state.entitiesList}
-                onChange={handleAutocomplete}
-                onInputChange={handleAutocomplete}
-                getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                groupBy={(option) => option.type ? option.type : null }
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    size='small'
-                    className={classes.input}
-                    label="Object"
-                    placeholder="Object"
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={1}>
-              <Tooltip title={<Typography style={{textAlign: 'center'}}>Delete the statement</Typography>}>
-                <IconButton onClick={() => handleRemoveStmt(index)} color="default">
-                    <RemoveIcon />
-                </IconButton>
-              </Tooltip>
-            </Grid>
-          </Grid>
-          { state.templateSelected !== 'Plain RDF' && state.statements[index].props &&
-            state.statements[index].props.map((prop: any, pindex: number): any => { 
-              return <Grid container spacing={2} key={'prop' + index + prop + pindex} style={{marginLeft: theme.spacing(5), marginBottom: theme.spacing(1)}}>
+        { state.statements.map((stmtRow: any, index: number) => { 
+          return <Box key={'stmt:' + index}>
+            <Grid container spacing={2} key={index} style={{marginBottom: theme.spacing(1), marginTop: theme.spacing(1)}}>
               <Grid item xs={4}>
                 <Autocomplete
-                  id={'prop:' + index + ':p:'+pindex}
+                  key={'s:'+index}
+                  id={'s:'+index}
                   freeSolo
-                  value={state.statements[index].props[pindex].p}
-                  options={state.propertiesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
-                  onChange={handleAutocomplete}
-                  onInputChange={handleAutocomplete}
-                  getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      variant="outlined"
-                      size='small'
-                      className={classes.input}
-                      label="Property"
-                      placeholder="Property"
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid item xs={4}>
-                <Autocomplete
-                  id={'prop:' + index + ':o:'+pindex}
-                  freeSolo
-                  value={state.statements[index].props[pindex].o}
+                  value={state.statements[index].s}
                   options={state.entitiesList}
                   onChange={handleAutocomplete}
                   onInputChange={handleAutocomplete}
-                  // onKeyPress={handleAutocomplete}
                   getOptionLabel={(option: any) => getAutocompleteLabel(option)}
                   groupBy={(option) => option.type ? option.type : null }
                   renderInput={params => (
@@ -1049,70 +964,177 @@ export default function AnnotateText() {
                       variant="outlined"
                       size='small'
                       className={classes.input}
-                      label="Value"
-                      placeholder="Value"
+                      label="Subject"
+                      placeholder="Subject"
                     />
                   )}
                 />
               </Grid>
+
+              <Grid item xs={3}>
+                <Autocomplete
+                  key={'p:'+index}
+                  id={'p:'+index}
+                  freeSolo
+                  value={state.statements[index].p}
+                  options={state.predicatesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
+                  // options={state.propertiesList}
+                  onChange={handleAutocomplete}
+                  onInputChange={handleAutocomplete}
+                  getOptionLabel={(option: any) => getAutocompleteLabel(option)}
+                  // groupBy={(option) => option.type ? option.type : null }
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      size='small'
+                      className={classes.input}
+                      label="Predicate"
+                      placeholder="Predicate"
+                    />
+                  )}
+                />
+              </Grid>
+
+              <Grid item xs={4}>
+                <Autocomplete
+                  key={'o:'+index}
+                  id={'o:'+index}
+                  freeSolo
+                  value={state.statements[index].o}
+                  options={state.entitiesList}
+                  onChange={handleAutocomplete}
+                  onInputChange={handleAutocomplete}
+                  getOptionLabel={(option: any) => getAutocompleteLabel(option)}
+                  groupBy={(option) => option.type ? option.type : null }
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      size='small'
+                      className={classes.input}
+                      label="Object"
+                      placeholder="Object"
+                    />
+                  )}
+                />
+              </Grid>
+
               <Grid item xs={1}>
                 <Tooltip title={<Typography style={{textAlign: 'center'}}>Delete the statement</Typography>}>
-                  <IconButton onClick={() => handleRemoveProp(index, pindex)} color="default">
+                  <IconButton onClick={() => handleRemoveStmt(index)} color="default">
                       <RemoveIcon />
                   </IconButton>
                 </Tooltip>
               </Grid>
             </Grid>
-            })
-          }
-          { state.templateSelected !== 'Plain RDF' && 
-          <div style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap'}}>
-            <Button 
-              // onClick={() => addProperty(event, index)}
-              onClick={addProperty}
-              id={"addProp:" + index}
-              variant="contained" 
-              className={classes.saveButton} 
-              startIcon={<AddIcon />}
-              style={{marginLeft: theme.spacing(5), marginRight: theme.spacing(4), textTransform: 'none'}}
-              color="inherit" >
-                Add a property to this statement
-            </Button>
-            <Typography>
-              Validate statement against: 
-            </Typography>
-            <Autocomplete
-              id={'shex:' + index}
-              // freeSolo
-              options={biolinkShex.shapes}
-              onChange={handleAutocomplete}
-              onInputChange={handleAutocomplete}
-              getOptionLabel={(option: any) => `${option.label} (${option.id})`}
-              groupBy={(option) => option.type}
-              style={{width: '400px', marginLeft: theme.spacing(2)}}
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  variant="outlined"
-                  size='small'
-                  className={classes.input}
-                  label="ShEx shape"
-                  placeholder="ShEx shape"
-                />
-              )}
-            />
-          </div>
-          }
-        </Box>
-      })}
-      <Button onClick={addStatement}
-        variant="contained" 
-        className={classes.saveButton} 
-        startIcon={<AddIcon />}
-        style={{textTransform: 'none', marginTop: theme.spacing(1)}}
-        color="info" >
-          Add a statement
-      </Button>
+            { state.templateSelected !== 'Plain RDF' && state.statements[index].props &&
+              state.statements[index].props.map((prop: any, pindex: number): any => { 
+                return <Grid container spacing={2} key={'prop' + index + prop + pindex} style={{marginLeft: theme.spacing(5), marginBottom: theme.spacing(1)}}>
+                <Grid item xs={4}>
+                  <Autocomplete
+                    id={'prop:' + index + ':p:'+pindex}
+                    freeSolo
+                    value={state.statements[index].props[pindex].p}
+                    options={state.propertiesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
+                    onChange={handleAutocomplete}
+                    onInputChange={handleAutocomplete}
+                    getOptionLabel={(option: any) => getAutocompleteLabel(option)}
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        variant="outlined"
+                        size='small'
+                        className={classes.input}
+                        label="Property"
+                        placeholder="Property"
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={4}>
+                  <Autocomplete
+                    id={'prop:' + index + ':o:'+pindex}
+                    freeSolo
+                    value={state.statements[index].props[pindex].o}
+                    options={state.entitiesList}
+                    onChange={handleAutocomplete}
+                    onInputChange={handleAutocomplete}
+                    // onKeyPress={handleAutocomplete}
+                    getOptionLabel={(option: any) => getAutocompleteLabel(option)}
+                    groupBy={(option) => option.type ? option.type : null }
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        variant="outlined"
+                        size='small'
+                        className={classes.input}
+                        label="Value"
+                        placeholder="Value"
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={1}>
+                  <Tooltip title={<Typography style={{textAlign: 'center'}}>Delete the statement</Typography>}>
+                    <IconButton onClick={() => handleRemoveProp(index, pindex)} color="default">
+                        <RemoveIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+              </Grid>
+              })
+            }
+            { state.templateSelected !== 'Plain RDF' && 
+            <div style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap'}}>
+              <Button 
+                // onClick={() => addProperty(event, index)}
+                onClick={addProperty}
+                id={"addProp:" + index}
+                variant="contained" 
+                className={classes.saveButton} 
+                startIcon={<AddIcon />}
+                style={{marginLeft: theme.spacing(5), marginRight: theme.spacing(4), textTransform: 'none'}}
+                color="inherit" >
+                  Add a property to this statement
+              </Button>
+              <Typography>
+                Validate statement against: 
+              </Typography>
+              <Autocomplete
+                id={'shex:' + index}
+                // freeSolo
+                options={biolinkShex.shapes}
+                onChange={handleAutocomplete}
+                onInputChange={handleAutocomplete}
+                getOptionLabel={(option: any) => `${option.label} (${option.id})`}
+                groupBy={(option) => option.type}
+                style={{width: '400px', marginLeft: theme.spacing(2)}}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    size='small'
+                    className={classes.input}
+                    label="ShEx shape"
+                    placeholder="ShEx shape"
+                  />
+                )}
+              />
+            </div>
+            }
+          </Box>
+        })}
+        <Button onClick={addStatement}
+          variant="contained" 
+          className={classes.saveButton} 
+          startIcon={<AddIcon />}
+          style={{textTransform: 'none', marginTop: theme.spacing(1)}}
+          color="info" >
+            Add a statement
+        </Button>
+      </>}
 
       {/* <Typography variant='body1' style={{marginTop: theme.spacing(3), marginBottom: theme.spacing(2)}}>
         3. Choose the template used to generate the triples:
