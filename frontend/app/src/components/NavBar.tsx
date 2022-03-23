@@ -2,13 +2,12 @@ import React, { useContext } from "react";
 import { useTheme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 import { Link } from "react-router-dom";
-import { AppBar, Toolbar, Button, Tooltip, IconButton, Box, ButtonBase } from '@mui/material';
+import { AppBar, Toolbar, Button, Tooltip, Icon, IconButton, Box, ButtonBase } from '@mui/material';
 import { Popper, ClickAwayListener, Typography, Paper, Checkbox, FormControlLabel, FormHelperText } from "@mui/material";
 import GitHubIcon from '@mui/icons-material/GitHub';
 import InfoIcon from '@mui/icons-material/Info';
-import ApiIcon from '@mui/icons-material/Http';
-import GraphqlIcon from '@mui/icons-material/Code';
-import LoginIcon from '@mui/icons-material/Login';
+// import GraphqlIcon from '@mui/icons-material/Code';
+// import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SearchIcon from '@mui/icons-material/Search';
 import AssessmentsIcon from '@mui/icons-material/CollectionsBookmark';
@@ -18,6 +17,10 @@ import axios from 'axios';
 
 // @ts-ignore
 import iconImage from '../../assets/icon.png';
+// @ts-ignore
+import OrcidIcon from '../../assets/orcid_logo.svg';
+// @ts-ignore
+import ApiIcon from '../../assets/openapi_logo.svg';
 
 import { getUrlHtml, settings } from '../settings';
 // import { useAuth } from 'oidc-react';
@@ -64,6 +67,11 @@ export default function NavBar() {
       // height: '48px',
       alignItems: 'center',
       display: 'flex',
+    },
+    loginButton: {
+      padding: '0px',
+      border: '0',
+      backgroundColor: 'inherit',
     },
   }))
   const classes = useStyles();
@@ -203,10 +211,11 @@ export default function NavBar() {
         <div className="flexGrow"></div>
 
         <Tooltip title='Access the OpenAPI documentation of the API used by this service'>
-          <Button style={{color: '#fff'}} target="_blank" rel="noopener noreferrer"
+          <Button style={{color: '#fff', textTransform: 'none'}} target="_blank" rel="noopener noreferrer"
           href={settings.docsUrl}>
-            <ApiIcon style={{ marginRight: theme.spacing(1)}} />
-            API
+            <Icon style={{display: 'flex', marginRight: theme.spacing(1)}}>
+              <img src={ApiIcon}/>
+            </Icon> API
           </Button>
         </Tooltip>
         <Link to="/about" className={classes.linkButton}>
@@ -245,7 +254,7 @@ export default function NavBar() {
             // <Button variant='contained' color='secondary' size='small' component="span" style={{textTransform: 'none'}}>
             //   🔓️  LOGIN with ORCID
             <OAuth2Login
-              className="MuiButton‑root MuiButton‑contained"
+              className={classes.loginButton}
               authorizationUrl="https://orcid.org/oauth/authorize"
               responseType="token"
               clientId={process.env.ORCID_CLIENT_ID}
@@ -257,7 +266,10 @@ export default function NavBar() {
               // hidden={true}
               onFailure={onFailure}>
                 <Button variant='contained' color='secondary' size='small' component="span" style={{textTransform: 'none'}}>
-                  🔓️  LOGIN with ORCID
+                  Login with ORCID
+                  <Icon style={{display: 'flex', marginLeft: theme.spacing(1)}}>
+                    <img src={OrcidIcon} />
+                  </Icon>
                 </Button>
             </OAuth2Login>
             // </Button>
