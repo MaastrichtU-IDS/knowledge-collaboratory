@@ -4,7 +4,7 @@
 
 Services to query the Nanopublications network using Translator standards to retrieve the Knowledge Collaboratory graph, a collection of drug indications annotated using  preferred identifiers (usually from MONDO, CHEBI, DrugBank, etc).
 
-Backend built with [FastAPI](https://fastapi.tiangolo.com/), [Pydantic](https://pydantic-docs.helpmanual.io/)
+Backend built with [FastAPI](https://fastapi.tiangolo.com/), and [RDFLib](https://github.com/RDFLib/rdflib).
 
 Frontend built with [React](https://reactjs.org) and [Material UI](https://mui.com/)
 
