@@ -116,9 +116,8 @@ ASSERTION_EXAMPLE = [{
 async def publish_assertion(
         # evaluation: CreateEvaluationModel = Body(...),
         # keyfile: UploadFile = File(...),
-        # nanopub_rdf: Union[Dict,List] = Body(..., example=ASSERTION_EXAMPLE),
-        # nanopub_rdf: Union[Dict,List] = Body(...), # pydantic UNION dont work at all 
-        nanopub_rdf: List = Body(..., example=ASSERTION_EXAMPLE),
+        nanopub_rdf: Union[Dict,List] = Body(..., example=ASSERTION_EXAMPLE),
+        # nanopub_rdf: Any = Body(..., example=ASSERTION_EXAMPLE),
         current_user: User = Depends(get_current_user),
         source: Optional[str] = None,
         quoted_from: Optional[str] = None
