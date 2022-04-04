@@ -28,7 +28,7 @@ import Taggy from 'react-taggy'
 // var hljsDefineTurtle = require('highlightjs-turtle');
 // hljs.registerLanguage('turtle', turtle);
 
-import { settings, samples, propertiesList, predicatesList, sentenceToAnnotate, biolinkShex, ents, genericContext } from '../settings';
+import { settings, context, samples, propertiesList, predicatesList, sentenceToAnnotate, biolinkShex, ents, genericContext } from '../settings';
 import { rdfToRdf } from '../utils';
 
 import UserContext from '../UserContext'
@@ -44,6 +44,14 @@ const BIOLINK = 'https://w3id.org/biolink/vocab/'
 const IDO = 'https://identifiers.org/'
 const RDFS = 'http://www.w3.org/2000/01/rdf-schema#'
 
+
+const curieToUri = (curie: string) => {
+  const namespace = curie.substring(0, curie.indexOf(":"))
+  if (context[namespace]) {
+    return context[namespace] + curie.substring(curie.indexOf(":"))
+  }
+  return IDO + curie
+}
 
 export default function AnnotateText() {
   const theme = useTheme();
@@ -108,7 +116,7 @@ export default function AnnotateText() {
     inputText: '',
     inputSource: '',
     editInputText: '',
-    templateSelected: 'BioLink reified associations',
+    templateSelected: 'RDF reified statements',
     entitiesList: [],
     relationsList: [],
     tagSelected: tagSelected,
@@ -266,25 +274,7 @@ export default function AnnotateText() {
   const generateRDF  = () => {
     const stmtJsonld: any = []
     const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
-    if (state.templateSelected === 'BioLink reified associations') {
-      state.statements.map((stmt: any, index: number) => {
-        const reifiedStmt = {
-          // '@id': 'https://w3id.org/collaboratory/association/' + index,
-          [`${rdf}type`]: {'@id': `${BIOLINK}Association`},
-          [`${rdf}subject`]: {'@id': getPropValue(stmt.s)},
-          [`${rdf}predicate`]: {'@id': getPropValue(stmt.p)},
-          [`${rdf}object`]: {'@id': getPropValue(stmt.o)},
-        }
-        // Add properties for reified statements
-        if (stmt.props) {
-          stmt.props.map((stmtProp: any, pindex: number) => {
-            reifiedStmt[stmtProp.p] = stmtProp.o
-          })
-        }
-        stmtJsonld.push(reifiedStmt)
-      })
-
-    } else if (state.templateSelected === 'RDF reified statements') {
+    if (state.templateSelected === 'RDF reified statements') {
       state.statements.map((stmt: any, index: number) => {
         const reifiedStmt: any = {
           // '@id': 'https://w3id.org/collaboratory/association/' + index,
@@ -305,6 +295,24 @@ export default function AnnotateText() {
               reifiedStmt[stmtProp.p].push(stmtProp.o)
             }
             // reifiedStmt[stmtProp.p] = stmtProp.o
+          })
+        }
+        stmtJsonld.push(reifiedStmt)
+      })
+
+    } else if (state.templateSelected === 'BioLink reified associations') {
+      state.statements.map((stmt: any, index: number) => {
+        const reifiedStmt = {
+          // '@id': 'https://w3id.org/collaboratory/association/' + index,
+          [`${rdf}type`]: {'@id': `${BIOLINK}Association`},
+          [`${rdf}subject`]: {'@id': getPropValue(stmt.s)},
+          [`${rdf}predicate`]: {'@id': getPropValue(stmt.p)},
+          [`${rdf}object`]: {'@id': getPropValue(stmt.o)},
+        }
+        // Add properties for reified statements
+        if (stmt.props) {
+          stmt.props.map((stmtProp: any, pindex: number) => {
+            reifiedStmt[stmtProp.p] = stmtProp.o
           })
         }
         stmtJsonld.push(reifiedStmt)
@@ -510,10 +518,10 @@ export default function AnnotateText() {
       } else if (event.target.id.startsWith('tag:id')) {
         entitiesList[entityIndex].id_curie = newInputValue.curie
         entitiesList[entityIndex].id_label = newInputValue.label
-        entitiesList[entityIndex].id_uri = IDO + newInputValue.curie
+        entitiesList[entityIndex].id_uri = curieToUri(newInputValue.curie)
         tagSelected.id_curie = newInputValue.curie
         tagSelected.id_label = newInputValue.label
-        tagSelected.id_uri = IDO + newInputValue.curie
+        tagSelected.id_uri = curieToUri(newInputValue.curie)
         if (newInputValue) {
           updateState({tagSelected: tagSelected, entitiesList: entitiesList})
         }
@@ -685,7 +693,7 @@ export default function AnnotateText() {
         })
         newEntity['id_curie'] = Object.keys(entityCuries)[0]
         newEntity['id_label'] = entityCuries[newEntity['id_curie']][0]
-        newEntity['id_uri'] = IDO + newEntity['id_curie']
+        newEntity['id_uri'] = curieToUri(newEntity['id_curie'])
       }
       if (state.entitiesList.findIndex((ent: any) => ent.index === entIndex) == -1) {
         const entitiesList: any = state.entitiesList
