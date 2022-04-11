@@ -212,16 +212,19 @@ export default function AnnotateText() {
       inputText: state.editInputText,
       entitiesList: [],
     })
+    let extract_relations = true
     if (state.editInputText.length > 1000) {
-      updateState({
-        loading: false, 
-        errorMessage: "Input text is too large for the machine learning model, try submitting less than 1000 characters"
-      })
+      // We don't extract relations if text too long
+      extract_relations = false
+      // updateState({
+      //   loading: false, 
+      //   errorMessage: "Input text is too large for the machine learning model, try submitting less than 1000 characters"
+      // })
     }
     axios.post(
         settings.apiUrl + '/get-entities-relations', 
         {'text': state.editInputText}, 
-        {'params': {'extract_relations': true}}
+        {'params': {'extract_relations': extract_relations}}
       )
       .then(res => {
         // const entitiesList: any = []
