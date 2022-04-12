@@ -245,9 +245,13 @@ export default function AnnotateText() {
         updateState({
           loading: false,
           entitiesList: res.data.entities,
-          relationsList: res.data.relations,
-          statements: res.data.statements
         })
+        if (res.data.statements) {
+          updateState({
+            relationsList: res.data.relations,
+            statements: res.data.statements
+          })
+        }
       })
       .catch(error => {
         updateState({
@@ -498,36 +502,47 @@ export default function AnnotateText() {
   }
   const handleAutocomplete = (event: any, newInputValue: any, edit: any = null) => {
     const stmts: any = state.statements
+    const entitiesList: any = state.entitiesList
+    const tagSelected: any = state.tagSelected
     if (event && newInputValue && edit) {
       if (edit.type == 'entityProp') {
         const editEnt = edit.editObj
         // console.log('newInputValue', newInputValue)
         // console.log('editEnt', editEnt)
         editEnt.props[edit.index][edit.prop] = newInputValue
-        const entitiesList: any = state.entitiesList
         const entityIndex = entitiesList.findIndex((ent: any) => ent.index === editEnt.index)
         entitiesList[entityIndex] = editEnt
         updateState({entitiesList: entitiesList, tagSelected: editEnt})
       }
+      if (edit.type == 'tagId') {
+        const entityIndex = entitiesList.findIndex((ent: any) => ent.index === tagSelected.index)
+        if (newInputValue.curie) {
+          entitiesList[entityIndex].id_curie = newInputValue.curie
+          entitiesList[entityIndex].id_label = newInputValue.label
+          entitiesList[entityIndex].id_uri = curieToUri(newInputValue.curie)
+          tagSelected.id_curie = newInputValue.curie
+          tagSelected.id_label = newInputValue.label
+          tagSelected.id_uri = curieToUri(newInputValue.curie)
+        } else {
+          delete entitiesList[entityIndex].id_curie
+          delete entitiesList[entityIndex].id_label
+          entitiesList[entityIndex].id_uri = newInputValue
+          delete tagSelected.id_curie
+          delete tagSelected.id_label
+          tagSelected.id_uri = newInputValue
+        }
+        if (newInputValue) {
+          updateState({tagSelected: tagSelected, entitiesList: entitiesList})
+        }
+      }
       
     } else if (event && newInputValue) {
-      const entitiesList: any = state.entitiesList
-      const tagSelected: any = state.tagSelected
+      console.log(event.target.id)
       const entityIndex = entitiesList.findIndex((ent: any) => ent.index === tagSelected.index)
       if (event.target.id.startsWith('tag:type')) {
         entitiesList[entityIndex].type = newInputValue.type
         tagSelected.type = newInputValue.type
         updateState({tagSelected: tagSelected, entitiesList: entitiesList})
-      } else if (event.target.id.startsWith('tag:id')) {
-        entitiesList[entityIndex].id_curie = newInputValue.curie
-        entitiesList[entityIndex].id_label = newInputValue.label
-        entitiesList[entityIndex].id_uri = curieToUri(newInputValue.curie)
-        tagSelected.id_curie = newInputValue.curie
-        tagSelected.id_label = newInputValue.label
-        tagSelected.id_uri = curieToUri(newInputValue.curie)
-        if (newInputValue) {
-          updateState({tagSelected: tagSelected, entitiesList: entitiesList})
-        }
       } else if (event.target.id.startsWith('prop:')) {
         // Edit properties of a statement
         const index = event.target.id.split('-')[0].split(':')[1]
@@ -580,6 +595,9 @@ export default function AnnotateText() {
     }
     if (option.label && option.curie) {
       return option.label + ' (' + option.curie + ')'
+    }
+    if (option.id_uri) {
+      return option.id_uri
     }
     if (option.text) {
       return option.text
@@ -732,7 +750,7 @@ export default function AnnotateText() {
       </Typography> */}
 
       <Typography variant='body1' style={{marginTop: theme.spacing(2), marginBottom: theme.spacing(2)}}>
-        1. Extract biomedical entities from small text snippets (around 3 sentences will be fast, max 1000 characters, otherwise the model takes too much time to run):
+        1. Extract biomedical entities from text (e.g. a drug indication), note the model can take some time to run if the text is long:
       </Typography>
 
       <form onSubmit={handleExtract}>
@@ -843,8 +861,8 @@ export default function AnnotateText() {
                     freeSolo
                     value={state.tagSelected}
                     options={state.tagSelected.curies}
-                    onChange={handleAutocomplete}
-                    onInputChange={handleAutocomplete}
+                    onChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue, {'type': 'tagId'})}
+                    onInputChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue, {'type': 'tagId'})}
                     getOptionLabel={(option: any) => getAutocompleteLabel(option)}
                     groupBy={(option) => option.type ? option.type : null }
                     style={{marginBottom: theme.spacing(1)}}

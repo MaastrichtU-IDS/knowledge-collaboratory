@@ -18,61 +18,57 @@ Frontend built with [React](https://reactjs.org) and [Material UI](https://mui.c
 
 ## 🐳 Backend local development
 
-Create a `.env` file with your development settings in the root folder of this repository (you can copy `.env.sample`):
+### Prepare the data
 
-```
+1. Create a `.env` file with your development settings in the root folder of this repository (you can copy `.env.sample`):
+
+```bash
 ORCID_CLIENT_ID=APP-XXX
 ORCID_CLIENT_SECRET=XXXX
 FRONTEND_URL=http://localhost:19006
 ```
 
-Download and unzip the NER models in the `/data/knowledge-collaboratory/ner-models` folder:
+2. Download and unzip the NER models in the `/data/knowledge-collaboratory/ner-models` folder:
 
 ```bash
 mkdir -p /data/knowledge-collaboratory/ner-models
 cd /data/knowledge-collaboratory/ner-models
 wget https://download.dumontierlab.com/ner-models/litcoin-ner-model.zip
 wget https://download.dumontierlab.com/ner-models/litcoin-relations-extraction-model.zip
-unzip *.zip 
+unzip "*.zip"
+rm *.zip
 ```
 
-Start the stack for development locally with Docker Compose from the root folder of this repository:
+3. Clone and install the custom `react-taggy` library in `/opt` 
+
+```bash
+cd /opt
+git clone --branch add-onclick-callback https://github.com/vemonet/react-taggy.git
+yarn
+```
+
+### Start the stack
+
+Start the backend with Docker Compose from the root folder of this repository:
 
 ```bash
 docker-compose up -d
 ```
 
+Then start the react frontend:
+
+```bash
+cd frontend/app
+yarn
+yarn dev
+```
+
 Now you can open your browser and interact with these URLs:
 
 * Automatic OpenAPI documentation with Swagger UI: http://localhost/docs
-
 * Alternative OpenAPI documentation with ReDoc: http://localhost/redoc
 * GraphQL endpoint with Strawberry: http://localhost/graphql
-
-* Backend, JSON based web API based on OpenAPI: http://localhost/api/
-
-* Traefik UI, to see how the routes are being handled by the proxy: http://localhost:8090
-
-* Frontend, built with Docker, with routes handled based on the path: http://localhost
-
-To check the logs of a specific service, run:
-
-```bash
-docker-compose logs backend
-```
-
-To delete the volume and reset the database, run:
-
-```bash
-docker-compose down
-docker volume rm knowledge-collaboratory_mongodb-data
-```
-
-You can also run this script to reset the database, and restart the docker-compose:
-
-```bash
-./reset_local_db.sh
-```
+* Frontend: http://localhost:19006
 
 If you need to completely reset the Python cache:
 
@@ -98,16 +94,7 @@ To add new dependencies, run:
 poetry add my-package
 ```
 
-TODO: add packages for NER
-
-```bash
-torch==1.9.0
-transformers==4.15.0
-scikit_learn==1.0.2 # not really needed
-numpy==1.20.1 # done with spacy
-```
-
-> If you don't have poetry installed locally or are facin issue with it, you can also add new packages with `docker-compose`, while the docker-compose is running run:
+> If you don't have poetry installed locally or are facing issue with it, you can also add new packages with `docker-compose`, while the docker-compose is running run:
 >
 > ```bash
 > docker-compose exec backend poetry add my-package
@@ -129,86 +116,9 @@ Next, open your editor at `./backend/` (instead of the project root: `./`), so t
 
 During development, you can change Docker Compose settings that will only affect the local development environment, in the file `docker-compose.override.yml`
 
-### Backend tests
-
-#### Test running stack
-
-If your stack is already up and you just want to run the tests, you can use:
-
-```bash
-docker-compose exec backend /app/tests-start.sh
-```
-
-That `/app/tests-start.sh` script just calls `pytest` after making sure that the rest of the stack is running. If you need to pass extra arguments to `pytest`, you can pass them to that command and they will be forwarded.
-
-For example, to stop on first error:
-
-```bash
-docker-compose exec backend bash /app/tests-start.sh -x
-```
-
-#### Test new stack
-
-To test the backend run:
-
-```console
-DOMAIN=backend sh ./scripts/test.sh
-```
-
-The file `./scripts/test.sh` has the commands to generate a testing `docker-stack.yml` file, start the stack and test it.
-
-#### Local tests
-
-Start the stack with this command:
-
-```Bash
-DOMAIN=backend sh ./scripts/test-local.sh
-```
-The `./backend` directory is mounted as a "host volume" inside the docker container (set in the file `docker-compose.dev.volumes.yml`).
-You can rerun the test on live code:
-
-```Bash
-docker-compose exec backend /app/tests-start.sh
-```
-
-#### Test Coverage
-
-Because the test scripts forward arguments to `pytest`, you can enable test coverage HTML report generation by passing `--cov-report=html`.
-
-To run the local tests with coverage HTML reports:
-
-```Bash
-DOMAIN=backend sh ./scripts/test-local.sh --cov-report=html
-```
-
-To run the tests in a running stack with coverage HTML reports:
-
-```bash
-docker-compose exec backend bash /app/tests-start.sh --cov-report=html
-```
-
-## 🖥️ Frontend development
-
-You will need to define the ORCID OAuth app ID and secret to enable login, you can add it to your `.bashrc` or `.zshrc` to make it automatic everytime you boot:
-
-```bash
-export ORCID_CLIENT_ID=APP-XXXX
-export ORCID_CLIENT_SECRET=XXXX
-```
-
-After starting the backend with `docker-compose`, enter the `frontend/app` directory, install the NPM packages and start the live server using the scripts in `package.json`:
-
-```bash
-cd frontend/app
-yarn
-yarn dev
-```
-
-Then open your browser at http://localhost:19006
-
 ## 🚀 Production deployment 
 
-Create a `.env` file with your production settings:
+1. Create a `.env` file with your production settings:
 
 ```
 ORCID_CLIENT_ID=APP-XXX
@@ -216,7 +126,9 @@ ORCID_CLIENT_SECRET=XXXX
 FRONTEND_URL=https://collaboratory.semanticscience.org
 ```
 
-Deploy the app with production config: 
+2. Download the models
+
+3. Deploy the app with production config: 
 
 ```bash
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
