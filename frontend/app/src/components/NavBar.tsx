@@ -197,7 +197,7 @@ export default function NavBar() {
         <Link to="/" className={classes.linkButton}>
           <Tooltip title='Browse Nanopublications'>
             <Button style={{color: '#fff', textTransform: 'none'}}>
-              <SearchIcon />&nbsp;Browse Nanopubs
+              <SearchIcon />&nbsp;Browse Nanopublications
             </Button>
           </Tooltip>
         </Link>
