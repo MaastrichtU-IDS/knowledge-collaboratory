@@ -26,7 +26,7 @@ def test_post_trapi():
         print(trapi_query)
         trapi_results = requests.post(PROD_API_URL + '/query',
                             data=trapi_query, headers=headers).json()
-        print("trapi_resultsss")
+        print("TRAPI results")
         print(trapi_results)
         edges = trapi_results['message']['knowledge_graph']['edges'].items()
 
