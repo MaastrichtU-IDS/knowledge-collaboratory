@@ -7,7 +7,7 @@ ARG OAUTH_REDIRECT_FRONTEND
 
 # Install the react-taggy lib from git to get latest fix:
 WORKDIR /opt
-RUN git clone --branch master https://github.com/vemonet/react-taggy.git
+RUN git clone --branch add-onclick-callback https://github.com/vemonet/react-taggy.git
 WORKDIR /opt/react-taggy
 RUN yarn
 # RUN yarn build

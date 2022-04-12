@@ -25,6 +25,8 @@ class TRAPI(FastAPI):
 
     required_tags = [
         {"name": "trapi"},
+        {"name": "entity recognition"},
+        {"name": "validation"},
         {"name": "nanopublication"},
         {"name": "login"},
         {"name": "translator"},
