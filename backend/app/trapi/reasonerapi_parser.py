@@ -99,11 +99,7 @@ WHERE {
         rdf:predicate ?predicate_category ;
         rdf:object ?node .
     }
-    {
-      ?node a ?node_category .
-    } UNION {
-      ?node biolink:category ?node_category .
-    }
+    ?node biolink:category ?node_category .
     BIND(UCASE(STRBEFORE(REPLACE(STRAFTER(str(?node), ":"), "//identifiers.org/", ""), ":")) AS ?node_prefix)
     FILTER(strlen(?node_prefix)>0)
   }
