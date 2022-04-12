@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 # from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from typing import List, Optional
-from app.config import settings
+from app.config import settings, biolink_context
 
 import spacy
 import requests
@@ -49,6 +49,13 @@ class NerInput(BaseModel):
 # Copy large models from the DSRI:
 # oc rsync --progress xiao-gpu-jupyterlab-1-54vlm:/workspace/notebooks/Litcoin/part1/ner_demo/training/litcoin-ner-model.zip ./
 
+def curie_to_uri(curie: str):
+  namespace = curie.split(':')[0]
+  if (biolink_context[namespace]):
+    return biolink_context[namespace] + curie.split(':', 1)[1]
+  return IDO + curie
+
+
 @router.post("/get-entities-relations", name="Get entities and relations from text",
     description="""Get biomedical entities and relations from text""",
     response_description="Entities and relations extracted from the given text", 
@@ -83,7 +90,8 @@ async def get_entities_relations(
                 entity['curies'].append({'curie': curie, 'label': labels[0]})
             entity['id_curie'] = list(name_res.keys())[0]
             entity['id_label'] = name_res[list(name_res.keys())[0]][0]
-            entity['id_uri'] = IDO + list(name_res.keys())[0]
+            entity['id_uri'] = curie_to_uri(list(name_res.keys())[0])
+            
         
         # else:
             # If not ID found with NCATS API, check RXCUIS: https://rxnav.nlm.nih.gov/REST/rxcui.json?name=Xyrem

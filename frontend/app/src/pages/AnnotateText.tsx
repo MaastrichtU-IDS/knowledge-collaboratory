@@ -48,7 +48,7 @@ const RDFS = 'http://www.w3.org/2000/01/rdf-schema#'
 const curieToUri = (curie: string) => {
   const namespace = curie.substring(0, curie.indexOf(":"))
   if (context[namespace]) {
-    return context[namespace] + curie.substring(curie.indexOf(":"))
+    return context[namespace] + curie.substring(curie.indexOf(":") + 1)
   }
   return IDO + curie
 }
