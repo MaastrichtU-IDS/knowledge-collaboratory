@@ -110,7 +110,7 @@ This service is supported by the [NIH NCATS Biomedical Data Translator project](
 
         openapi_schema["info"]["x-translator"] = {
             "component": 'KP',
-            "team": "Clinical Data Provider",
+            "team": ["Clinical Data Provider"],
             "biolink-version": "1.8.2",
             "infores": 'infores:knowledge-collaboratory',
             "externalDocs": {
