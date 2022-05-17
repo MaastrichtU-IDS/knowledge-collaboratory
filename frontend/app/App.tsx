@@ -7,14 +7,21 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import blue from '@mui/material/colors/blue';
 
-import './src/App.css';
 import NavBar from "./src/components/NavBar";
 import Footer from "./src/components/Footer";
 import AnnotateText from "./src/pages/AnnotateText";
 import About from "./src/pages/About";
 import BrowseNanopub from "./src/pages/BrowseNanopub";
+import ShapePublisher from "./src/pages/ShapePublisher";
 import UserContext from "./src/UserContext";
-import { AuthProvider, useAuth } from 'oidc-react';
+// import { AuthProvider, useAuth } from 'oidc-react';
+
+import './src/App.css';
+// CSS for rjsf fluent UI grid:
+// import './assets/fabric.min.css';
+
+// import 'antd/dist/antd.css';
+// Required for rjsf antd form
 
 // const UserContext = createContext(null);
 
@@ -98,6 +105,7 @@ const App = () => {
 
             <Route path="/about" component={About} />
             <Route path="/annotate" component={AnnotateText} />
+            <Route path="/shape-publisher" component={ShapePublisher} />
             <Route exact path="/" component={BrowseNanopub} />
             <Footer />
           </View>

@@ -10,8 +10,8 @@ import InfoIcon from '@mui/icons-material/Info';
 // import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SearchIcon from '@mui/icons-material/Search';
-import AssessmentsIcon from '@mui/icons-material/CollectionsBookmark';
-import PublishIcon from '@mui/icons-material/Outbox';
+// import AssessmentsIcon from '@mui/icons-material/CollectionsBookmark';
+import ShapePublisherIcon from '@mui/icons-material/DynamicForm';
 import AnnotateIcon from '@mui/icons-material/LocalOffer';
 import axios from 'axios';
 
@@ -205,6 +205,13 @@ export default function NavBar() {
           <Tooltip title='Annotate biomedical text, and publish the assertion as Nanopublication'>
             <Button style={{color: '#fff', textTransform: 'none'}}>
               <AnnotateIcon />&nbsp;Annotate biomedical text
+            </Button>
+          </Tooltip>
+        </Link>
+        <Link to="/shape-publisher" className={classes.linkButton}>
+          <Tooltip title='Define and publish RDF nanopublications from SHACL shapes'>
+            <Button style={{color: '#fff', textTransform: 'none'}}>
+              <ShapePublisherIcon />&nbsp;Shape publisher
             </Button>
           </Tooltip>
         </Link>

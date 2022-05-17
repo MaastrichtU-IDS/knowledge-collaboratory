@@ -1,5 +1,19 @@
 @import url("https://fonts.googleapis.com/css?family=Open+Sans");
 
+/* @import url("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"); */
+/* Bootstrap imported for rjsf default (mui bug) */
+/* CSS for React JSON schema form (rjsf), it bugs and use the root id for some styling */
+fieldset#root {
+  display: inline-block;
+}
+.ms-Grid-col.ms-sm12.field.field-object {
+  /* margin-left: 16px; */
+  margin-bottom: 32px !important;
+  border-bottom: 1px solid grey;
+}
+/* class="ms-Grid-col ms-sm12  field field-object" */
+
+
 /* https://mui.com/guides/migration-v4/ */
 
 .flexGrow {
