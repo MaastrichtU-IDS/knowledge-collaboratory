@@ -95,10 +95,12 @@ export default function BrowseNanopub() {
   }))
   const classes = useStyles();
 
+  const resourceTypesList: any = [{uri: 'http://www.w3.org/ns/dcat#Dataset', label: 'dcat:Dataset'}]
   const users_pubkeys: any = {}
   const nanopub_obj: any = {}
   const users_orcid: any = {}
   const filter_user: any = {}
+  const filterPerResource: any = {}
   const [state, setState] = React.useState({
     open: false,
     dialogOpen: false,
@@ -113,6 +115,7 @@ export default function BrowseNanopub() {
     users_list: [],
     users_pubkeys: users_pubkeys,
     users_orcid: users_orcid,
+    filterPerResource: filterPerResource
   });
   const stateRef = React.useRef(state);
   // Avoid conflict when async calls
@@ -187,7 +190,60 @@ export default function BrowseNanopub() {
 
   const getNanopubs = (search: string = '') => {
     let get_nanopubs_url = settings.nanopubGrlcUrl + '/find_valid_signed_nanopubs?'
-    if (search) {
+
+    if (Object.keys(state.filterPerResource).length > 0) {
+      
+      const getLatestNanopubsQuery = `prefix np: <http://www.nanopub.org/nschema#>
+        prefix npa: <http://purl.org/nanopub/admin/>
+        prefix npx: <http://purl.org/nanopub/x/>
+        prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+        prefix dct: <http://purl.org/dc/terms/>
+
+        select ?np ?date ?pubkey where {
+          graph npa:graph {
+            ?np npa:hasHeadGraph ?h .
+            ?np dct:created ?date .
+            ?np npa:hasValidSignatureForPublicKey ?pubkey.
+          }
+          graph ?h {
+            ?np np:hasAssertion ?assertionGraph .
+          }
+          graph ?assertionGraph {
+            ?s a <${state.filterPerResource.uri}> .
+          }
+          filter not exists {
+            graph npa:graph {
+              ?newversion npa:hasHeadGraph ?nh .
+              ?newversion npa:hasValidSignatureForPublicKey ?pubkey .
+            }
+            graph ?nh {
+              ?newversion np:hasPublicationInfo ?ni .
+            }
+            graph ?ni {
+              ?newversion npx:supersedes ?np .
+            }
+          }
+          filter not exists {
+            graph npa:graph {
+              ?retraction npa:hasHeadGraph ?rh .
+              ?retraction npa:hasValidSignatureForPublicKey ?pubkey .
+            }
+            graph ?rh {
+              ?retraction np:hasAssertion ?ra .
+            }
+            graph ?ra {
+              ?somebody npx:retracts ?np .
+            }
+          }
+        } ORDER BY desc(?date) LIMIT ` + state.results_count
+    
+      const sparqlEndpoint = 'https://virtuoso.nps.petapico.org/sparql'
+      get_nanopubs_url = `${sparqlEndpoint}?query=${encodeURIComponent(getLatestNanopubsQuery)}`
+      console.log('filterPerResource')
+      console.log(state.filterPerResource)
+      console.log(getLatestNanopubsQuery)
+
+    } else if (search) {
       if (search.startsWith('http://') || search.startsWith('https://')) {
         get_nanopubs_url = settings.nanopubGrlcUrl + '/find_valid_signed_nanopubs_with_uri?ref=' + search
       } else {
@@ -391,6 +447,21 @@ select ?np ?date ?pubkey where {
           onChange={(event, newInputValue: any) => {
             updateState({
               filter_user: newInputValue
+            })
+          }}
+          style={{ backgroundColor: '#ffffff' }}
+        />
+
+        <Autocomplete
+          id="filter-resource"
+          options={resourceTypesList}
+          // options={state.users_list.sort((a: any, b: any) => -b.firstLetter.localeCompare(a.firstLetter))}
+          getOptionLabel={(option: any) => option.label}
+          sx={{ width: 250 }}
+          renderInput={(params) => <TextField {...params} label={"📂 Filter per resource type"} />}
+          onChange={(event, newInputValue: any) => {
+            updateState({
+              filterPerResource: newInputValue
             })
           }}
           style={{ backgroundColor: '#ffffff' }}
