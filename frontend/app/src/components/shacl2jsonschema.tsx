@@ -10,7 +10,7 @@ const sh = (prop: string) => {
 export const shacl2jsonschema = (
     store: Store, 
     target: string, 
-    prefixes: any, 
+    context: any, 
     title: any = null,
   ) => {
   
@@ -109,6 +109,11 @@ export const shacl2jsonschema = (
       if (subProp.object.value == `${shaclNs}IRI`) {
         propSchema["format"] = "uri"
         propSchema["pattern"] = "^https?://"
+        // if (context) {
+        //   context[propPath] = {'@type': '@id'}
+        // } else {
+        //   context = {[propPath]: {'@type': '@id'}}
+        // }
       } else {
         propSchema['description'] = subProp.object.value
       }
@@ -163,7 +168,7 @@ export const shacl2jsonschema = (
       for (const subPropShape of store.getQuads(subProp.object, namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), sh('NodeShape'), null)) {
         console.log(`Found a sh:node pointing to another NodeShape: ${subPropShape.subject.value.toString()}, generating nested object in the JSON Schema`)
         
-        const subSchema = shacl2jsonschema(store, subPropShape.subject.value.toString(), prefixes, propSchema['title'])
+        const subSchema = shacl2jsonschema(store, subPropShape.subject.value.toString(), context, propSchema['title'])
         // console.log('subSchema!', subSchema['jsonschema'])
         propSchema = subSchema['jsonschema']
         jsonld[propPath] = subSchema['jsonld']
@@ -179,6 +184,6 @@ export const shacl2jsonschema = (
   }
   jsonschema["required"] = requiredProps
   console.log('One of the JSON Schema generated for the SHACL shape:', jsonschema)
-  return {jsonschema, jsonld}
+  return {jsonschema, jsonld, context}
 }
 

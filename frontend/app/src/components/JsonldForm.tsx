@@ -92,11 +92,11 @@ export const JsonldForm = ({ shape, target }: Props) => {
         } else {
           console.log("Prefixes:", prefixes);
 
-          const {jsonschema, jsonld} = shacl2jsonschema(store, target, prefixes)
+          const {jsonschema, jsonld, context} = shacl2jsonschema(store, target, prefixes)
 
           console.log('🏁 Final JSON Schema generated for the SHACL shape:', jsonschema)
           updateState({
-            prefixes: prefixes,
+            prefixes: context,
             jsonschema: jsonschema,
             jsonld: jsonld,
           })

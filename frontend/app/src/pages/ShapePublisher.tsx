@@ -86,11 +86,10 @@ export default function ShapePublisher() {
   // let location = useLocation();  
   const [state, setState] = React.useState({
     // shapeFile: shapeFile,
-    shapeFile: fullShaclShape,
-    shapeTarget: "http://purl.org/hcls-metadata-spec/HCLSDistributionShape" ,
+    shapeFile: shapeFile,
+    shapeTarget: "https://w3id.org/kg-metadata/KgMetadataShape" ,
     open: false,
     dialogOpen: false,
-    wizard_jsonld: wizard_jsonld,
     csvwColumnsArray: [],
     jsonld_uri_provided: null,
     ontology_jsonld: {},
@@ -177,7 +176,7 @@ export default function ShapePublisher() {
 // SHACL shapes examples:
 // Articles: https://raw.githubusercontent.com/NCATS-Gamma/omnicorp/master/shacl/omnicorp-shapes.ttl
 
-const shapeFile = `@prefix : <http://purl.org/hcls-metadata-spec/> .
+const shapeFile = `@prefix : <https://w3id.org/kg-metadata/> .
 @prefix dctypes: <http://purl.org/dc/dcmitype/> .
 @prefix schemaorg: <http://schema.org/> .
 @prefix void:  <http://rdfs.org/ns/void#> .
@@ -198,614 +197,148 @@ const shapeFile = `@prefix : <http://purl.org/hcls-metadata-spec/> .
 @prefix prov:  <http://www.w3.org/ns/prov#> .
 @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
 
-## See the HCLS dataset metadata specs at https://www.w3.org/TR/hcls-dataset
-# This SHACL shape validates most MUST and SHOULD properties for HCLS dataset summary, version and distribution (regular and RDF)
-# Missing MUST properties generate a Violation
-# Missing SHOULD properties generate a Warning
-# Other issues are reported as Info
-# This shape has predefined targets to validate (classes, subject and/or object).
+## Shape to describe how to describe a Knowledge graph metadata
+# Used to generate JSON Schema based form at the DKG COST action
 
-
-:HCLSDistributionShape
+# Target: https://w3id.org/kg-metadata/KgMetadataShape
+:KgMetadataShape
     a sh:NodeShape ;
     sh:nodeKind sh:IRI ;
-    sh:targetClass dcat:Distribution ;
-    sh:targetObjectsOf dcat:distribution ;
-    sh:severity sh:Info ;
+    sh:targetClass dcat:Dataset ;
 
     sh:property [
         sh:path dct:title ;
         sh:name "Title" ;
-        sh:description "Title of the distribution" ;
+        sh:description "To provide a name or formal title for the KG" ;
         sh:severity sh:Violation ;
         sh:minCount 1;
-        sh:or ( [ sh:datatype xsd:string ] [ sh:datatype rdf:langString ] ) ;
-        sh:nodeKind sh:Literal
-    ] ;
-    sh:property [
-        sh:path dct:language ;
-        sh:severity sh:Warning ;
-        sh:name "Language" ;
-        sh:description "Language of the distribution" ;
-        sh:message "Distribution SHOULD use dct:language with a lexvo URI: http://lexvo.org/id/iso639-3/{tag}" ;
-        sh:nodeKind sh:IRI
-    ] ;
-    sh:property [
-        sh:path dct:creator ;
-        sh:severity sh:Violation ;
-        sh:name "Creator" ;
-        sh:description "Creator of the distribution" ;
-        sh:minCount 1;
-        sh:node :HCLSAgentShape
-    ] ;
-
-    .
-
-
-
-:HCLSAgentShape
-    a sh:NodeShape ;
-    sh:targetClass foaf:Person, dct:Agent ;
-    sh:nodeKind sh:IRI ;
-    
-    sh:property [
-        sh:path dct:title ;
-        sh:name "Title" ;
-        sh:description "Title of the agent" ;
-        sh:severity sh:Violation ;
-        sh:minCount 1 ;
         sh:or ( [ sh:datatype xsd:string ] [ sh:datatype rdf:langString ] ) ;
         sh:nodeKind sh:Literal ;
-    ] 
-    .
-
-`
-
-
-const fullShaclShape = `@prefix : <http://purl.org/hcls-metadata-spec/> .
-@prefix dctypes: <http://purl.org/dc/dcmitype/> .
-@prefix schemaorg: <http://schema.org/> .
-@prefix void:  <http://rdfs.org/ns/void#> .
-@prefix pav:   <http://purl.org/pav/> .
-@prefix freq:  <http://purl.org/cld/freq/> .
-@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
-@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix void-ext: <http://ldf.fi/void-ext#> .
-@prefix cito:  <http://purl.org/spar/cito/> .
-@prefix idot:  <http://identifiers.org/idot/> .
-@prefix sd:    <http://www.w3.org/ns/sparql-service-description#> .
-@prefix dct:   <http://purl.org/dc/terms/> .
-@prefix sh:    <http://www.w3.org/ns/shacl#> .
-@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix sio:   <http://semanticscience.org/resource/> .
-@prefix lexvo: <http://lexvo.org/id/iso639-3/> .
-@prefix dcat:  <http://www.w3.org/ns/dcat#> .
-@prefix prov:  <http://www.w3.org/ns/prov#> .
-@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
-
-## See the HCLS dataset metadata specs at https://www.w3.org/TR/hcls-dataset
-# This SHACL shape validates most MUST and SHOULD properties for HCLS dataset summary, version and distribution (regular and RDF)
-# Missing MUST properties generate a Violation
-# Missing SHOULD properties generate a Warning
-# Other issues are reported as Info
-# This shape has predefined targets to validate (classes, subject and/or object).
-
-
-:HCLSDistributionShape
-    a sh:NodeShape ;
-    sh:nodeKind sh:IRI ;
-    sh:targetClass dcat:Distribution ;
-    sh:targetObjectsOf dcat:distribution ;
-    sh:severity sh:Info ;
-
-    sh:property [
-        sh:path dct:title ;
-        sh:name "Title" ;
-        sh:description "Title of the distribution" ;
-        sh:severity sh:Violation ;
-        sh:minCount 1;
-        sh:or ( [ sh:datatype xsd:string ] [ sh:datatype rdf:langString ] ) ;
-        sh:nodeKind sh:Literal
     ] ;
     sh:property [
         sh:path dct:description ;
+        sh:name "Description" ;
+        sh:description "To provide a human readable description of the KG" ;
         sh:severity sh:Violation ;
         sh:minCount 1;
+        sh:maxCount 1;
         sh:or ( [ sh:datatype xsd:string ] [ sh:datatype rdf:langString ] ) ;
-    ] ;
-    sh:property [
-        sh:path dct:format ;
-        sh:severity sh:Violation ;
-        sh:minCount 1;
-        sh:or ( [ sh:datatype xsd:string ] [ sh:node [ sh:nodeKind sh:IRI ] ] ) ;
-    ] ;
-
-    sh:property [
-        sh:path dcat:accessURL ;
-        sh:minCount 0;
-        sh:node [ sh:nodeKind sh:IRI ]
-    ] ;
-    sh:property [
-        sh:path dct:created ;
-        sh:severity sh:Warning ;
-        sh:minCount 1;
-        sh:or ( [ sh:datatype xsd:dateTime ] [ sh:datatype xsd:date ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:gYear ] ) ;
-    ] ;
-    sh:property [
-        sh:path dct:creator ;
-        sh:severity sh:Violation ;
-        sh:name "Creator" ;
-        sh:description "Creator of the distribution" ;
-        sh:minCount 1;
-        sh:node :HCLSAgentShape
-    ] ;
-    sh:property [
-        sh:path dct:publisher ;
-        sh:severity sh:Violation ;
-        sh:minCount 1;
-        sh:node :HCLSAgentShape
-    ] ;
-    sh:property [
-        sh:path dct:issued ;
-        sh:severity sh:Warning ;
-        sh:minCount 1;
-        sh:or ( [ sh:datatype xsd:dateTime ] [ sh:datatype xsd:date ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:gYear ] ) ;
-    ] ;
-    sh:property [
-        sh:path dct:license ;
-        sh:severity sh:Violation ;
-        sh:minCount 1;
-        sh:node [ sh:nodeKind sh:IRI ]
-    ] ;
-    sh:property [
-        sh:path dct:language ;
-        sh:severity sh:Warning ;
-        sh:name "Language" ;
-        sh:description "Language of the distribution" ;
-        sh:message "Distribution SHOULD use dct:language with a lexvo URI: http://lexvo.org/id/iso639-3/{tag}" ;
-        sh:nodeKind sh:IRI
-    ] ;
-    sh:property [
-        sh:path pav:createdWith ;
-        sh:severity sh:Warning ;
-        sh:minCount 1;
-        sh:node [ sh:nodeKind sh:IRI ]
-    ] ;
-    sh:property [
-        sh:message "Distribution SHOULD provide the data source provenance with dct:source, pav:retrievedFrom or prov:wasDerivedFrom" ;
-        sh:or ( 
-            [ sh:path dct:source ; sh:minCount 1 ] 
-            [ sh:path pav:retrievedFrom ; sh:minCount 1 ] 
-            [ sh:path prov:wasDerivedFrom ; sh:minCount 1 ] 
-        ) ;
-        sh:severity sh:Warning ;
-        sh:node [ sh:nodeKind sh:IRI ]
-    ] ;
-
-    .
-
-
-
-:HCLSRDFDistributionShape
-    a sh:NodeShape ;
-    sh:nodeKind sh:IRI ;
-    sh:targetClass void:Dataset ;
-    ## SHACL web services don't support SHACL "advanced features": https://www.w3.org/TR/shacl-af/#SPARQLTarget
-    # sh:target [
-	# 	a void:Dataset 
-    #   sh:not [ a void:Linkset ]
-	# ] ;
-    # sh:target [
-    #     a sh:SPARQLTarget ;
-    #     sh:prefixes void: ;
-    #     sh:select """
-    #     SELECT ?this 
-    #     WHERE {
-    #         ?this a void:Dataset .
-    #         FILTER NOT EXISTS { ?this a void:Linkset }
-    #     }
-    #     """ ;
-    # ] ;
-
-    sh:severity sh:Info ;
-
-    sh:property [
-        sh:path void:subset ;
-        sh:severity sh:Warning ;
-        sh:minCount 1;
-        sh:node [ sh:nodeKind sh:IRI ]
-    ] ;
-    # Check for HCLS descriptive statistics
-    sh:property [
-        sh:path void:triples ;
-        sh:severity sh:Warning ;
-        sh:minCount 1;
-        sh:datatype xsd:integer
-    ] ;
-    sh:property [
-        sh:path void:entities ;
-        sh:severity sh:Warning ;
-        sh:minCount 1;
-        sh:datatype xsd:integer
-    ] ;
-    sh:property [
-        sh:path void:distinctSubjects ;
-        sh:severity sh:Warning ;
-        sh:minCount 1;
-        sh:datatype xsd:integer
-    ] ;
-    sh:property [
-        sh:path void:properties ;
-        sh:severity sh:Warning ;
-        sh:minCount 1;
-        sh:datatype xsd:integer
-    ] ;
-    sh:property [
-        sh:path void:distinctObjects ;
-        sh:severity sh:Warning ;
-        sh:minCount 1;
-        sh:datatype xsd:integer
-    ] ;
-    sh:property [
-        sh:path void:classPartition ;
-        sh:severity sh:Warning ;
-        sh:minCount 1;
-        sh:node [ sh:nodeKind sh:BlankNodeOrIRI ]
-    ] ;
-
-    .
-
-
-
-:HCLSVersionShape
-    a sh:NodeShape ;
-    sh:nodeKind sh:IRI ;
-    sh:targetSubjectsOf dcat:distribution, dct:isVersionOf ;
-    sh:severity sh:Info ;
-
-    sh:property [
-        sh:path dct:title ;
-        sh:severity sh:Violation ;
-        sh:minCount 1;
-        sh:or ( [ sh:datatype xsd:string ] [ sh:datatype rdf:langString ] ) ;
-    ] ;
-    sh:property [
-        sh:path dct:description ;
-        sh:severity sh:Violation ;
-        sh:minCount 1;
-        sh:or ( [ sh:datatype xsd:string ] [ sh:datatype rdf:langString ] ) ;
-    ] ;
-    sh:property [
-        sh:path dct:created ;
-        sh:severity sh:Warning ;
-        sh:minCount 1;
-        sh:or ( [ sh:datatype xsd:dateTime ] [ sh:datatype xsd:date ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:gYear ] ) ;
-    ] ;
-    sh:property [
-        sh:path dct:issued ;
-        sh:severity sh:Warning ;
-        sh:minCount 1;
-        sh:or ( [ sh:datatype xsd:dateTime ] [ sh:datatype xsd:date ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:gYear ] ) ;
-    ] ;
-    sh:property [
-        sh:path dct:creator ;
-        sh:severity sh:Violation ;
-        sh:minCount 1;
-        sh:node :HCLSAgentShape
-    ] ;
-    sh:property [
-        sh:path dct:publisher ;
-        sh:severity sh:Violation ;
-        sh:minCount 1;
-        sh:node :HCLSAgentShape
-    ] ;
-    sh:property [
-        sh:path dct:license ;
-        sh:severity sh:Warning ;
-        sh:minCount 1;
-        sh:node [ sh:nodeKind sh:IRI ]
-    ] ;
-    sh:property [
-        sh:path dct:language ;
-        sh:severity sh:Warning ;
-        sh:message "Version SHOULD use dct:language with a lexvo URI: http://lexvo.org/id/iso639-3/{tag}" ;
-        sh:minCount 1;
-        sh:node [ sh:nodeKind sh:IRI ]
-    ] ;
-    sh:property [
-        sh:path pav:version ;
-        sh:severity sh:Violation ;
-        sh:minCount 1;
-        sh:datatype xsd:string
-    ] ;
-
-    sh:property [
-        sh:path dct:isVersionOf ;
-        sh:severity sh:Violation ;
-        sh:minCount 1;
-        sh:node :HCLSSummaryShape
-    ] ;
-    sh:property [
-        sh:path dcat:distribution ;
-        sh:severity sh:Warning ;
-        sh:minCount 1;
-        sh:node :HCLSDistributionShape
-    ] ;
-    sh:property [
-        sh:path pav:createdWith ;
-        sh:severity sh:Warning ;
-        sh:minCount 1;
-        sh:node [ sh:nodeKind sh:IRI ]
-    ] ;
-    sh:property [
-        sh:message "Version SHOULD provide the data source provenance using dct:source, pav:retrievedFrom or prov:wasDerivedFrom" ;
-        sh:or ( 
-            [ sh:path dct:source ; sh:minCount 1 ] 
-            [ sh:path pav:retrievedFrom ; sh:minCount 1 ] 
-            [ sh:path prov:wasDerivedFrom ; sh:minCount 1 ] 
-        ) ;
-        sh:severity sh:Warning ;
-        sh:node [ sh:nodeKind sh:IRI ]
-    ] ;
-
-    .
-
-
-
-:HCLSSummaryShape
-    a sh:NodeShape ;
-    sh:nodeKind sh:IRI ;
-    sh:targetObjectsOf dct:isVersionOf ;
-    sh:severity sh:Info ;
-
-    sh:property [
-        sh:path dct:title ;
-        sh:severity sh:Violation ;
-        sh:minCount 1;
-        sh:or ( [ sh:datatype xsd:string ] [ sh:datatype rdf:langString ] ) ;
-    ] ;
-    sh:property [
-        sh:path dct:description ;
-        sh:severity sh:Violation ;
-        sh:minCount 1;
-        sh:or ( [ sh:datatype xsd:string ] [ sh:datatype rdf:langString ] ) ;
-    ] ;
-    sh:property [
-        sh:path dct:publisher ;
-        sh:severity sh:Violation ;
-        sh:minCount 1;
-        sh:node :HCLSAgentShape
     ] ;
     sh:property [
         sh:path foaf:page ;
-        sh:severity sh:Warning ;
+        sh:name "Homepage URL" ;
+        sh:description "Page provides minimal information, link to access to data" ;
+        sh:severity sh:Violation ;
         sh:minCount 0;
-        sh:node [ sh:nodeKind sh:IRI ]
+        sh:nodeKind sh:IRI ;
     ] ;
     sh:property [
-        sh:path dct:accrualPeriodicity ;
-        sh:severity sh:Warning ;
+        sh:path dct:issued ;
+        sh:name "Published Date" ;
+        sh:description "To provide the date when the KG is published" ;
+        sh:severity sh:Violation ;
         sh:minCount 1;
-        sh:node [ sh:nodeKind sh:IRI ]
+        sh:maxCount 1;
+        # sh:nodeKind sh:IRI ;
+        # sh:datatype xsd:dateTime ;
+        sh:pattern "^\\\\d{4}-(0?[1-9]|1[012])\\\\-(0?[1-9]|[12][0-9]|3[01])$" ;
+        # sh:nodeKind sh:Literal ;
+        sh:or ( [ sh:datatype xsd:dateTime ] [ sh:datatype xsd:date ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:gYear ] ) ;
     ] ;
     sh:property [
-        sh:path void:sparqlEndpoint ;
-        sh:severity sh:Warning ;
+        sh:path void:vocabulary ;
+        sh:name "Vocabularies used" ;
+        sh:description "To specify the vocabularies used in the knowledge" ;
+        sh:severity sh:Violation ;
         sh:minCount 1;
-        sh:node [ sh:nodeKind sh:IRI ]
+        sh:nodeKind sh:IRI ;
+        # TODO: make an enum?
+        # sh:datatype xsd:dateTime ;
+        # sh:pattern "^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$"
+        # sh:or ( [ sh:datatype xsd:dateTime ] [ sh:datatype xsd:date ] [ sh:datatype xsd:gYearMonth ] [ sh:datatype xsd:gYear ] ) ;
+    ] ;
+    sh:property [
+        sh:path foaf:depiction ;
+        sh:name "Meta graph (picture)" ;
+        sh:description "To provide an illustration of the graph connectivity through its types and relations between instances" ;
+        sh:severity sh:Violation ;
+        sh:minCount 1;
+        sh:nodeKind sh:IRI ;
     ] ;
 
-    ## This will trigger an InternalError due to too much recursion:
-    # sh:property [
-    #     sh:path pav:hasCurrentVersion ;
-    #     sh:severity sh:Info ;
-    #     sh:minCount 1;
-    #     sh:node :HCLSVersionShape
-    # ] ;
-    
+    sh:property [
+        sh:path dct:language ;
+        sh:severity sh:Warning ;
+        sh:name "Language" ;
+        sh:description "Language of the distribution" ;
+        sh:message "Distribution SHOULD use dct:language with a lexvo URI: http://lexvo.org/id/iso639-3/{tag}" ;
+        sh:minCount 1;
+        sh:nodeKind sh:IRI
+    ] ;
+    sh:property [
+        sh:path pav:version ;
+        sh:name "Version" ;
+        sh:description "To specify the version of the dataset, if defined" ;
+        sh:severity sh:Warning ;
+        sh:minCount 1;
+        sh:maxCount 1;
+        sh:nodeKind sh:Literal ;
+    ] ;
+    sh:property [
+        sh:path dct:license ;
+        sh:name "License" ;
+        # sh:description "To specify the version of the dataset, if defined" ;
+        sh:severity sh:Warning ;
+        sh:minCount 1;
+        sh:maxCount 1;
+        sh:nodeKind sh:IRI
+    ] ;
+    sh:property [
+        sh:path dcat:keyword ;
+        sh:name "Keywords" ;
+        sh:description "To provide a set of descriptors for the KG" ;
+        sh:minCount 1;
+        sh:nodeKind sh:Literal ;
+        # TODO: add array when maxCount > 1
+    ] ;
+    sh:property [
+        sh:path dct:accessRight ;
+        sh:name "KG Accessibility" ;
+        sh:description "To provide a set of descriptors for the KG" ;
+        sh:minCount 0;
+        sh:nodeKind sh:Literal ;
+        # TODO: add array when maxCount > 1
+    ] ;
+
+
+
+
+
+    sh:property [
+        sh:path dcat:Distribution ;
+        sh:name "Distributions" ;
+        sh:description "To provide different concrete distributions (files) of the resource" ;
+        # sh:minCount 1;
+        # sh:nodeKind sh:IRI ;
+        sh:node :DistributionShape ;
+    ] ;
     .
 
 
 
-:HCLSAgentShape
+:DistributionShape
     a sh:NodeShape ;
-    sh:targetClass foaf:Person, dct:Agent ;
+    sh:targetClass dcat:Distribution ;
     sh:nodeKind sh:IRI ;
     
     sh:property [
-        sh:path dct:title ;
-        sh:name "Title" ;
-        sh:description "Title of the agent" ;
+        sh:path dcat:accessURL ;
+        sh:name "Access URL" ;
+        sh:description "URL to download or access the distribution (e.g. file)" ;
         sh:severity sh:Violation ;
-        sh:minCount 1 ;
+        sh:minCount 0 ;
         sh:or ( [ sh:datatype xsd:string ] [ sh:datatype rdf:langString ] ) ;
         sh:nodeKind sh:Literal ;
-    ] 
+    ] ;
     .
 `
-
-    
-const wizard_jsonld = {
-  "@context": "https://schema.org",
-  "@wizardQuestions": {
-    'name': 'Provide the name of this entity:',
-    'description': 'Give a short description of the content:',
-    'creator': 'Provide the details of the person who created, or initiated, the creation of this work:',
-    'contributor': 'Other persons who contributed to, or co-authored, the dataset:',
-    'publisher': 'Person, or organization, who published this work:',
-    'inLanguage': 'What language is used in the description of this dataset? Use ISO 2 language code e.g. EN for English',
-    'version': 'What is the version number for this dataset? e.g. 1.1.1 or v1.2',
-    'license': 'Link to the full text of the terms of use (license) for this dataset:',
-    'encodingFormat': 'What is the file format of this data?',
-    'url': 'Link to the website or homepage:',
-    'temporalCoverage': 'What is the creation or publishing date range for the documents or contents of this dataset? Use https://en.wikipedia.org/wiki/ISO_8601#Time_intervals format - e.g. 2007-03-01/2008-05-11:',
-    'keywords': 'Provide keywords describing the content in this dataset:',
-    'distribution': 'Supply a direct download link for this dataset:',
-    'contentSize': 'How large is the download file size e.g. 128KB, 54MB, 1.5GB?',
-    'isBasedOn': 'Was this dataset generated with the aid of or using a piece of software?',
-    'applicationCategory': 'Indicate type of software e.g. Python script or Java GUI application:',
-    'citation': 'Is there an academic publication which describes or centrally makes use of this dataset?',
-    'datePublished': 'On what date was the dataset published? YYYY-MM-DD',
-    'dateCreated': 'On what date was the dataset created? YYYY-MM-DD',
-    'affiliation': 'This person is affiliated to or employed by:',
-    'logo': 'Link to an image depicting the logo of this organisation:',
-    'image': 'Provide a link (URL) to a profile photo of the author of the dataset:',
-    'sameAs': 'Provide a Digital Object Identifier (DOI) for this publication:',
-    'frequency': 'How often does a new version get published for this dataset? e.g. daily, weekly, monthly',
-    // 'encodingFormat': 'What is the download file format e.g. Zip archive, CSV file, JSON file etc:',
-  },
-  "@type": "Dataset",
-  "name": "ECJ case law text similarity analysis",
-  "description": "results from a study to analyse how closely the textual similarity of ECJ cases resembles the citation network of the cases.",
-  "version": "v2.0",
-  "url": "https://doi.org/10.5281/zenodo.4228652",
-  "license": "https://www.gnu.org/licenses/agpl-3.0.txt",
-  "encodingFormat": "CSV",
-  "temporalCoverage": "2019-09-14/2020-07-01",
-  "dateCreated": {
-      "@type": "Date",
-      "@value": "2019-09-14"
-  },
-  "datePublished": {
-      "@type": "Date",
-      "@value": "2020-07-01"
-  },
-  "distribution": {
-      "@type": "DataDownload",
-      "contentUrl": {
-          "@type": "URL",
-          "@value": "https://zenodo.org/record/4228652/files/docona_cjeu_results_2018_v2_html.zip?download=1"
-      },
-      "encodingFormat": "application/zip",
-      "contentSize": "1.1MB"
-  },
-  "inLanguage": {
-      "@type": "Language",
-      "name": "EN",
-      "alternateName": "EN"
-  },
-  "keywords": [
-      "case law",
-      "court decisions",
-      "text similarity",
-      "network analysis",
-  ],
-  "creator": {
-      "@type": "Person",
-      "name": "concat @givenName @familyName",
-      "givenName": "Kody",
-      "familyName": "Moodley",
-      "image": "https://www.maastrichtuniversity.nl/sites/default/files/styles/text_with_image_mobile_portrait/public/profile/kody.moodley/kody.moodley_photo_kmoodley.jpg?itok=bN7b8s_-&timestamp=1583505301",
-      "jobTitle": "Postdoctoral researcher",
-      "email": "kody.moodley@maastrichtuniversity.nl",
-      "affiliation": {
-          "@type": "Organization",
-          "name": "Maastricht Law & Tech Lab",
-          "url": {
-              "@type": "URL",
-              "@value": "https://www.maastrichtuniversity.nl/about-um/faculties/law/research/law-and-tech-lab"
-          },
-          "logo": {
-              "@type": "ImageObject",
-              "contentUrl": "https://www.maastrichtuniversity.nl/sites/default/files/styles/page_photo/public/compacte20versie20law20and20tech20lab.jpg?itok=7lm6PEQF"
-          }
-      }
-  },
-  "contributor": [
-      {
-          "@type": "Person",
-          "givenName": "Pedro",
-          "familyName": "Hernandez Serrano",
-          "jobTitle": "Data Scientist",
-          "email": "p.hernandezserrano@maastrichtuniversity.nl",
-          "image": "https://www.maastrichtuniversity.nl/sites/default/files/styles/text_with_image_mobile_portrait/public/profile/p.hernandezserrano/p.hernandezserrano_PP%20%287%20of%2013%29.jpg?itok=IUdreoIw&timestamp=1610395201",
-          "affiliation": {
-              "@type": "Organization",
-              "name": "Institute of Data Science",
-              "url": {
-                  "@type": "URL",
-                  "@value": "https://www.maastrichtuniversity.nl/research/institute-data-science"
-              },
-              "logo": {
-                  "@type": "ImageObject",
-                  "contentUrl": "https://avatars.githubusercontent.com/u/36262526?s=280&v=4"
-              }
-          }
-      }
-  ],
-  "publisher": {
-      "@type": "Person",
-      "name": "Kody Moodley",
-      "givenName": "Kody",
-      "familyName": "Moodley",
-      "jobTitle": "Postdoctoral researcher",
-      "image": "https://www.maastrichtuniversity.nl/sites/default/files/styles/text_with_image_mobile_portrait/public/profile/kody.moodley/kody.moodley_photo_kmoodley.jpg?itok=bN7b8s_-&timestamp=1583505301",
-      "email": "kody.moodley@maastrichtuniversity.nl",
-      "affiliation": {
-          "@type": "Organization",
-          "name": "Maastricht Law & Tech Lab",
-          "url": {
-              "@type": "URL",
-              "@value": "https://www.maastrichtuniversity.nl/about-um/faculties/law/research/law-and-tech-lab"
-          },
-          "logo": {
-              "@type": "ImageObject",
-              "contentUrl": "https://www.maastrichtuniversity.nl/sites/default/files/styles/page_photo/public/compacte20versie20law20and20tech20lab.jpg?itok=7lm6PEQF"
-          }
-      }
-  },
-  "isBasedOn": [
-      {
-          "@type": "SoftwareApplication",
-          "name": "docona",
-          "description": "DoConA (Document Content and Citation Analysis Pipeline) is an open source, configurable and extensible Python tool to analyse the level of agreement between the citation network of a set of textual documents and the textual similarity of these documents.",
-          "applicationCategory": "Python script",
-          "operatingSystem": "cross-platform",
-          "version": "1.0",
-          "url": {
-              "@type": "URL",
-              "@value": "https://github.com/MaastrichtU-IDS/docona"
-          }
-      },
-      {
-          "@type": "CreativeWork",
-          "name": "ECJ case law and citation network",
-          "description": "Citation network and full text documents of each judgement by the Court of Justice of the European Union that was published publicly on the EUR-LEX website (https://eur-lex.europa.eu/homepage.html) up until December 2018",
-          "version": "2.0",
-          "url": {
-              "@type": "URL",
-              "@value": "https://doi.org/10.5281/zenodo.3926736"
-          }
-      }
-  ],
-  "citation": {
-      "@type": "CreativeWork",
-      "name": "Similarity and Relevance of Court Decisions: A Computational Study on CJEU Cases",
-      "creator": [
-          {
-              "@type": "Person",
-              "name": "Kody Moodley"
-          },
-          {
-              "@type": "Person",
-              "name": "Michel Dumontier"
-          }
-      ],
-      "publisher": {
-          "@type": "Organization",
-          "name": "IOS press",
-          "url": {
-              "@type": "URL",
-              "@value": "https://www.iospress.nl"
-          }
-      },
-      "datePublished": {
-          "@type": "Date",
-          "@value": "2019-12-10"
-      },
-      "sameAs": {
-          "@type": "URL",
-          "@value": "https://doi.org/10.3233/FAIA190307"
-      }
-  }
-}
