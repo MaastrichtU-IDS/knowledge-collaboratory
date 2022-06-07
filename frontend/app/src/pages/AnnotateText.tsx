@@ -701,7 +701,7 @@ export default function AnnotateText() {
         index: entIndex,
         text: text, 
         token: text, 
-        type: "Association", 
+        type: "NamedEntity", 
         start: state.inputText.indexOf(text), 
         end: state.inputText.indexOf(text) + text.length,
         curies: curies, id_curie: "", id_label: "", id_uri: "",
