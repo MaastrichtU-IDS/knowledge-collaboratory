@@ -57,12 +57,12 @@ pipeline {
                     dir(".") {
                         sh 'git clone git@github.com:Sphinx-Automation/translator-ops.git'
                         configFileProvider([
-                            configFile(fileId: 'knowledge-collaboratory-ci-values.yaml', targetLocation: 'translator-ops/ops/cdskp/knowledge-collaboratory/values-ncats.yaml')
+                            configFile(fileId: 'knowledge-collaboratory-ci-values.yaml', targetLocation: 'translator-ops/ops/cdskp/knowledge-collaboratory/frontend/values-ncats.yaml')
                         ]){
                             withAWS(credentials:'aws-ifx-deploy') {
                                 sh '''
                                 aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
-                                cd translator-ops/ops/cdskp/knowledge-collaboratory
+                                cd translator-ops/ops/cdskp/knowledge-collaboratory/frontend
                                 /bin/bash deploy.sh
                                 '''
                             }
