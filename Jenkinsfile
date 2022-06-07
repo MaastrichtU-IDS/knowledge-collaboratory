@@ -53,16 +53,21 @@ pipeline {
         }
         stage('Deploy to AWS EKS') {
             steps {
-              configFileProvider([
-                  configFile(fileId: 'knowledge-collaboratory-ci-values.yaml', targetLocation: 'values.ncats.yaml')
-              ]){
-                  withAWS(credentials:'aws-ifx-deploy') 
-                  {
-                      sh '''
-                      aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
-                      cd knowledge-collaboratory && /bin/bash deploy.sh
-                      '''
-                  }
+                sshagent (credentials: ['labshare-svc']) {
+                    dir(".") {
+                        sh 'git clone git@github.com:Sphinx-Automation/translator-ops.git'
+                        configFileProvider([
+                            configFile(fileId: 'knowledge-collaboratory-ci-values.yaml', targetLocation: 'translator-ops/ops/cdskp/knowledge-collaboratory/values-ncats.yaml')
+                        ]){
+                            withAWS(credentials:'aws-ifx-deploy') {
+                                sh '''
+                                aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                                cd translator-ops/ops/cdskp/knowledge-collaboratory
+                                /bin/bash deploy.sh
+                                '''
+                            }
+                        }
+                    }
                 }
             }
         }
