@@ -1248,7 +1248,8 @@ export default function AnnotateText() {
           { user.id && !user.keyfiles_loaded && 
             <>
               <Typography>
-                🔑 You need to upload the authentication keys bound to your ORCID to publish Nanopublications (public and private encryption keys):
+                🔑 You need to upload the authentication keys linked to your ORCID to publish Nanopublications (public and private encryption keys). 
+                If you have not yet created your authentication keys, or linked them to your ORCID, then follow the instructions to complete your profile with the <a href='https://github.com/peta-pico/nanobench/blob/master/INSTALL.md' target="_blank" rel="noopener noreferrer">Nanobench tool</a>.
               </Typography>
               <form encType="multipart/form-data" action="" onSubmit={handleUploadKeys} 
                   style={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>
