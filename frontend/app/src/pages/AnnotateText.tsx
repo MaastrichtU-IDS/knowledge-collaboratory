@@ -117,6 +117,7 @@ export default function AnnotateText() {
     inputSource: '',
     editInputText: '',
     templateSelected: 'RDF reified statements',
+    extractClicked: false,
     entitiesList: [],
     relationsList: [],
     tagSelected: tagSelected,
@@ -245,6 +246,7 @@ export default function AnnotateText() {
         updateState({
           loading: false,
           entitiesList: res.data.entities,
+          extractClicked: true,
         })
         if (res.data.statements) {
           updateState({
@@ -256,7 +258,8 @@ export default function AnnotateText() {
       .catch(error => {
         updateState({
           loading: false,
-          errorMessage: 'Error while extracting entities from the text, please retry. And feel free to create an issue on our GitHub repository if the issue persists.'
+          errorMessage: 'Error while extracting entities from the text, please retry. And feel free to create an issue on our GitHub repository if the issue persists.',
+          extractClicked: true,
         })
         console.log('Error while extracting entities', error)
       })
@@ -955,7 +958,8 @@ export default function AnnotateText() {
         </ClickAwayListener>
       </Popper>
 
-      { state.entitiesList.length > 0 &&
+      { state.extractClicked &&
+      // { state.entitiesList.length > 0 &&
         <> 
           <Typography variant='body1' style={{textAlign: 'center', marginBottom: theme.spacing(2)}}>
             💡 You can edit entities by clicking on their tag, or add new entities by highlighting the text corresponding to the entity. Potential identifiers are automatically retrieved for the highlighted text.
