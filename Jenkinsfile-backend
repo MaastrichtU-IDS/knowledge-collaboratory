@@ -16,35 +16,54 @@ pipeline {
         pollSCM('H/5 * * * *')
     }
     environment {
-        DOCKER_REPO_NAME = "translator-knowledge-collaboratory"
+        DOCKER_REPO_NAME = "translator-cdskp-collaboratory-backend"
         KUBERNETES_BLUE_CLUSTER_NAME = "translator-eks-ci-blue-cluster"
     }
     stages {
-        stage('Build Version'){
-            when { expression { return !params.BUILD_VERSION } }
+        stage('Clean') {
+            steps {
+                cleanWs()
+                checkout scm
+            }
+        }
+        stage('Build Version') {
+            when {
+                allOf {
+                    expression {
+                        return !params.BUILD_VERSION
+                    }
+                    anyOf {
+                        changeset "backend/**"
+                        triggeredBy 'UserIdCause'
+                    }
+                }
+            }
             steps{
-                script {
+               script {
                     BUILD_VERSION_GENERATED = VersionNumber(
                         versionNumberString: 'v${BUILD_YEAR, XX}.${BUILD_MONTH, XX}${BUILD_DAY, XX}.${BUILDS_TODAY}',
                         projectStartDate:    '1970-01-01',
                         skipFailedBuilds:    true)
                     currentBuild.displayName = BUILD_VERSION_GENERATED
                     env.BUILD_VERSION = BUILD_VERSION_GENERATED
-                    env.BUILD = 'true'
-                }
-            }
-        }
-        stage('Checkout source code') {
-            steps {
-                cleanWs()
-                checkout scm
-            }
+              }
+           }
         }
         stage('Build Docker') {
-           when { expression { return env.BUILD == 'true' }}
+            when {
+                allOf {
+                    expression {
+                        return !params.BUILD_VERSION
+                    }
+                    anyOf {
+                        changeset "backend/**"
+                        triggeredBy 'UserIdCause'
+                    }
+                }
+            }           
             steps {
                 script {
-                    docker.build(env.DOCKER_REPO_NAME, "--no-cache ./backend")
+                    docker.build(env.DOCKER_REPO_NAME, "--no-cache ./backend .")
                     docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:aws-ifx-deploy') {
                         docker.image(env.DOCKER_REPO_NAME).push("${BUILD_VERSION}")
                     }
@@ -52,12 +71,18 @@ pipeline {
             }
         }
         stage('Deploy to AWS EKS') {
+            when {
+                anyOf {
+                    changeset "backend/**"
+                    triggeredBy 'UserIdCause'
+                }
+            }
             steps {
                 sshagent (credentials: ['labshare-svc']) {
                     dir(".") {
                         sh 'git clone git@github.com:Sphinx-Automation/translator-ops.git'
                         configFileProvider([
-                            configFile(fileId: 'knowledge-collaboratory-ci-values.yaml', targetLocation: 'translator-ops/ops/cdskp/knowledge-collaboratory/backend/values-ncats.yaml')
+                            configFile(fileId: 'collaboratory-backend-ci-values.yaml', targetLocation: 'translator-ops/ops/cdskp/knowledge-collaboratory/backend/values-ncats.yaml')
                         ]){
                             withAWS(credentials:'aws-ifx-deploy') {
                                 sh '''
