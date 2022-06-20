@@ -67,7 +67,7 @@ pipeline {
                     ]){
                         withAWS(credentials:'aws-ifx-deploy') {
                             sh '''
-                            aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_BLUE_CLUSTER_NAME}
+                            aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
                             cd translator-ops/ops/cdskp/knowledge-collaboratory/collaboratory-frontend
                             /bin/bash deploy.sh
                             '''
