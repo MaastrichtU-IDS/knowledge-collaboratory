@@ -45,8 +45,8 @@ pipeline {
                         skipFailedBuilds:    true)
                     currentBuild.displayName = BUILD_VERSION_GENERATED
                     env.BUILD_VERSION = BUILD_VERSION_GENERATED
-              }
-           }
+                }
+            }
         }
         stage('Build Docker') {
             when {
@@ -83,17 +83,16 @@ pipeline {
                 dir('translator-ops/ops/cdskp/knowledge-collaboratory/backend/') {
                     configFileProvider([
                         configFile(fileId: 'collaboratory-backend-ci-values.yaml', targetLocation: 'values-ncats.yaml')
-                        ]){
-                            withAWS(credentials:'aws-ifx-deploy') {
-                                sh '''
-                                aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
-                                /bin/bash deploy.sh
-                                '''
-                            }
+                    ]){
+                        withAWS(credentials:'aws-ifx-deploy') {
+                            sh '''
+                            aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                            /bin/bash deploy.sh
+                            '''
                         }
                     }
                 }
             }
         }
     }
-}
+}   
