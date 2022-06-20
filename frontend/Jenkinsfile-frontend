@@ -60,7 +60,7 @@ pipeline {
                         triggeredBy 'UserIdCause'
                     }
                 }
-            }           
+            }
             steps {
                 script {
                     docker.build("${env.DOCKER_REPO_NAME}", "--build-arg ORCID_CLIENT_ID=${ORCID_CLIENT_ID} --build-arg ORCID_CLIENT_SECRET=${ORCID_CLIENT_SECRET} --no-cache ./frontend .")
@@ -70,31 +70,24 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to AWS EKS') {
-            when {
-                anyOf {
-                    changeset "frontend/**"
-                    triggeredBy 'UserIdCause'
-                }
-            }
+        stage('Deploy to AWS EKS Blue') {
             steps {
                 sshagent (credentials: ['labshare-svc']) {
                    sh 'git clone -b OM-6383 git@github.com:Sphinx-Automation/translator-ops.git'
                 }
                 dir('translator-ops/ops/cdskp/knowledge-collaboratory/collaboratory-frontend/') {
                     configFileProvider([
-                            configFile(fileId: 'collaboratory-frontend-ci-values.yaml', targetLocation: 'translator-ops/ops/cdskp/knowledge-collaboratory/collaboratory-frontend/values-ncats.yaml')
-                        ]){
-                            withAWS(credentials:'aws-ifx-deploy') {
-                                sh '''
-                                aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
-                                cd translator-ops/ops/cdskp/knowledge-collaboratory/collaboratory-frontend
-                                /bin/bash deploy.sh
-                                '''
-                            }
+                        configFile(fileId: 'collaboratory-frontend-ci-values.yaml', targetLocation: 'translator-ops/ops/cdskp/knowledge-collaboratory/collaboratory-frontend/values-ncats.yaml')
+                    ]){
+                        withAWS(credentials:'aws-ifx-deploy') {
+                            sh '''
+                            aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_BLUE_CLUSTER_NAME}
+                            cd translator-ops/ops/cdskp/knowledge-collaboratory/collaboratory-frontend
+                            /bin/bash deploy.sh
+                            '''
                         }
                     }
-                }
+                }  
             }
         }
     }
