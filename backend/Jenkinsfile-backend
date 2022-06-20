@@ -78,10 +78,11 @@ pipeline {
             }
             steps {
                 sshagent (credentials: ['labshare-svc']) {
-                    dir("translator-ops/ops/cdskp/knowledge-collaboratory/backend/") {
-                        sh 'git clone -b OM-6383 git@github.com:Sphinx-Automation/translator-ops.git'
-                        configFileProvider([
-                            configFile(fileId: 'collaboratory-backend-ci-values.yaml', targetLocation: 'values-ncats.yaml')
+                   sh 'git clone -b OM-6383 git@github.com:Sphinx-Automation/translator-ops.git'
+                }
+                dir('translator-ops/ops/cdskp/knowledge-collaboratory/backend/') {
+                    configFileProvider([
+                        configFile(fileId: 'collaboratory-backend-ci-values.yaml', targetLocation: 'values-ncats.yaml')
                         ]){
                             withAWS(credentials:'aws-ifx-deploy') {
                                 sh '''
