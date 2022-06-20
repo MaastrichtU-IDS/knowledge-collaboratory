@@ -32,7 +32,7 @@ pipeline {
                         return !params.BUILD_VERSION
                     }
                     anyOf {
-                        changeset "frontend/*"
+                        changeset "frontend/**"
                         triggeredBy 'UserIdCause'
                     }
                 }
@@ -77,11 +77,11 @@ pipeline {
                 }
                 dir('translator-ops/ops/cdskp/knowledge-collaboratory/collaboratory-frontend/') {
                     configFileProvider([
-                       configFile(fileId: 'collaboratory-frontend-ci-values.yaml', targetLocation: 'translator-ops/ops/cdskp/knowledge-collaboratory/collaboratory-frontend/values-ncats.yaml')
+                        configFile(fileId: 'collaboratory-frontend-ci-values.yaml', targetLocation: 'translator-ops/ops/cdskp/knowledge-collaboratory/collaboratory-frontend/values-ncats.yaml')
                     ]){
                         withAWS(credentials:'aws-ifx-deploy') {
                             sh '''
-                            aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                            aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_BLUE_CLUSTER_NAME}
                             cd translator-ops/ops/cdskp/knowledge-collaboratory/collaboratory-frontend
                             /bin/bash deploy.sh
                             '''
