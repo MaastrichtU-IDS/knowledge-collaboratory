@@ -31,11 +31,7 @@ pipeline {
                     expression {
                         return !params.BUILD_VERSION
                     }
-                    anyOf {
-                        changeset "backend/**"
-                        triggeredBy 'UserIdCause'
-                    }
-                }
+                }    
             }
             steps{
                script {
@@ -49,17 +45,7 @@ pipeline {
             }
         }
         stage('Build Docker') {
-            when {
-                allOf {
-                    expression {
-                        return !params.BUILD_VERSION
-                    }
-                    anyOf {
-                        changeset "backend/**"
-                        triggeredBy 'UserIdCause'
-                    }
-                }
-            }           
+            when { expression { return env.BUILD == 'true' }}     
             steps {
                 script {
                     docker.build(env.DOCKER_REPO_NAME, "--no-cache ./backend")
@@ -69,13 +55,7 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to AWS EKS') {
-            when {
-                anyOf {
-                    changeset "backend/**"
-                    triggeredBy 'UserIdCause'
-                }
-            }
+        stage('Deploy to AWS EKS'){
             steps {
                 sshagent (credentials: ['labshare-svc']) {
                    sh 'git clone -b OM-6383 git@github.com:Sphinx-Automation/translator-ops.git'
