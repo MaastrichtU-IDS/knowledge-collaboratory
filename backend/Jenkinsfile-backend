@@ -26,14 +26,11 @@ pipeline {
             }
         }
         stage('Build Version') {
+            stage('Build Version'){
             when {
                 allOf {
                     expression {
                         return !params.BUILD_VERSION
-                    }
-                    anyOf {
-                        changeset "backend/**"
-                        triggeredBy 'UserIdCause'
                     }
                 }
             }
@@ -49,17 +46,7 @@ pipeline {
            }
         }
         stage('Build Docker') {
-            when {
-                allOf {
-                    expression {
-                        return !params.BUILD_VERSION
-                    }
-                    anyOf {
-                        changeset "backend/**"
-                        triggeredBy 'UserIdCause'
-                    }
-                }
-            }           
+            when { expression { return env.BUILD == 'true' }}
             steps {
                 script {
                     docker.build(env.DOCKER_REPO_NAME, "--no-cache ./backend")
@@ -70,12 +57,6 @@ pipeline {
             }
         }
         stage('Deploy to AWS EKS') {
-            when {
-                anyOf {
-                    changeset "backend/**"
-                    triggeredBy 'UserIdCause'
-                }
-            }
             steps {
                 sshagent (credentials: ['labshare-svc']) {
                     dir(".") {
