@@ -16,7 +16,7 @@ pipeline {
     }
     environment {
         DOCKER_REPO_NAME = "translator-cdskp-collaboratory-frontend"
-        KUBERNETES_BLUE_CLUSTER_NAME = "translator-eks-ci-blue-cluster"
+        KUBERNETES_CLUSTER_NAME = "translator-eks-ci-blue-cluster"
     }
     stages {
         stage('Checkout source code') {
@@ -79,9 +79,10 @@ pipeline {
             }
             steps {
                 sshagent (credentials: ['labshare-svc']) {
-                    dir(".") {
-                        sh 'git clone -b OM-6383 git@github.com:Sphinx-Automation/translator-ops.git'
-                        configFileProvider([
+                   sh 'git clone -b OM-6383 git@github.com:Sphinx-Automation/translator-ops.git'
+                }
+                dir('translator-ops/ops/cdskp/knowledge-collaboratory/collaboratory-frontend/') {
+                    configFileProvider([
                             configFile(fileId: 'collaboratory-frontend-ci-values.yaml', targetLocation: 'translator-ops/ops/cdskp/knowledge-collaboratory/collaboratory-frontend/values-ncats.yaml')
                         ]){
                             withAWS(credentials:'aws-ifx-deploy') {
