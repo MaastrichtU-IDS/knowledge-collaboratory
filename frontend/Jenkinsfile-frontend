@@ -63,7 +63,7 @@ pipeline {
             }
             steps {
                 script {
-                    docker.build("${env.DOCKER_REPO_NAME}", "--build-arg ORCID_CLIENT_ID=${ORCID_CLIENT_ID} --build-arg ORCID_CLIENT_SECRET=${ORCID_CLIENT_SECRET} --no-cache .")
+                    docker.build("${env.DOCKER_REPO_NAME}", "--build-arg ORCID_CLIENT_ID=APP-TEANCMSUOPYZOGJ3 --build-arg ORCID_CLIENT_SECRET=43ee3e61-200d-4acc-a5f9-dde1e443d69e --no-cache .")
                     docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:aws-ifx-deploy') {
                         docker.image(env.DOCKER_REPO_NAME).push("${BUILD_VERSION}")
                     }
