@@ -63,7 +63,7 @@ pipeline {
                 }
                 dir('translator-ops/ops/cdskp/knowledge-collaboratory/collaboratory-frontend/') {
                     configFileProvider([
-                        configFile(fileId: 'collaboratory-frontend-ci-values.yaml', targetLocation: 'translator-ops/ops/cdskp/knowledge-collaboratory/collaboratory-frontend/values-ncats.yaml')
+                        configFile(fileId: 'collaboratory-frontend-ci-values.yaml', targetLocation: 'values-ncats.yaml')
                     ]){
                         withAWS(credentials:'aws-ifx-deploy') {
                             sh '''
