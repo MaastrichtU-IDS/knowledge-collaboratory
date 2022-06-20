@@ -63,12 +63,12 @@ pipeline {
                 }
                 dir('translator-ops/ops/cdskp/knowledge-collaboratory/collaboratory-frontend/') {
                     configFileProvider([
-                        configFile(fileId: 'collaboratory-frontend-ci-values.yaml', targetLocation: 'ops/cdskp/knowledge-collaboratory/collaboratory-frontend/values-ncats.yaml')
+                        configFile(fileId: 'collaboratory-frontend-ci-values.yaml', targetLocation: 'translator-ops/ops/cdskp/knowledge-collaboratory/collaboratory-frontend/values-ncats.yaml')
                     ]){
                         withAWS(credentials:'aws-ifx-deploy') {
                             sh '''
                             aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
-                            cd ops/cdskp/knowledge-collaboratory/collaboratory-frontend
+                            cd translator-ops/ops/cdskp/knowledge-collaboratory/collaboratory-frontend
                             /bin/bash deploy.sh
                             '''
                         }
