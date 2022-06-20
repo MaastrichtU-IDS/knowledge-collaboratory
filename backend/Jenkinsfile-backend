@@ -41,6 +41,7 @@ pipeline {
                         skipFailedBuilds:    true)
                     currentBuild.displayName = BUILD_VERSION_GENERATED
                     env.BUILD_VERSION = BUILD_VERSION_GENERATED
+                    env.BUILD = 'true'
                 }
             }
         }
