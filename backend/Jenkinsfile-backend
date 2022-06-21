@@ -31,10 +31,6 @@ pipeline {
                     expression {
                         return !params.BUILD_VERSION
                     }
-                    anyOf {
-                        changeset "backend/**"
-                        triggeredBy 'UserIdCause'    
-                    }
                 }    
             }
             steps{
@@ -55,10 +51,6 @@ pipeline {
                     expression {
                         return !params.BUILD_VERSION
                     }
-                    anyOf {
-                        changeset "backend/**"
-                        triggeredBy 'UserIdCause'
-                    }
                 }
             }     
             steps {
@@ -71,12 +63,6 @@ pipeline {
             }
         }
         stage('Deploy to AWS EKS'){
-            when {
-                anyOf {
-                    changeset "backend/**"
-                    triggeredBy 'UserIdCause'
-                }
-            }
             steps {
                 sshagent (credentials: ['labshare-svc']) {
                    sh 'git clone -b OM-6383 git@github.com:Sphinx-Automation/translator-ops.git'
