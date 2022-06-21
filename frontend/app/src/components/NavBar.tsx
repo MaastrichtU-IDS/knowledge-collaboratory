@@ -263,10 +263,12 @@ export default function NavBar() {
             <OAuth2Login
               className={classes.loginButton}
               authorizationUrl="https://orcid.org/oauth/authorize"
+              // authorizationUrl="https://orcid.org/.well-known/openid-configuration"
               responseType="token"
               clientId={process.env.ORCID_CLIENT_ID}
               clientSecret={process.env.ORCID_CLIENT_SECRET}
               redirectUri={settings.OauthRedirectUri}
+              scope="/authenticate"
               // redirectUri=""
               style={{textTransform: 'none', textDecoration: 'none', display: 'none' }}
               onSuccess={onSuccess}

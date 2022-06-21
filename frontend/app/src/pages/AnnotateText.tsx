@@ -117,6 +117,7 @@ export default function AnnotateText() {
     inputSource: '',
     editInputText: '',
     templateSelected: 'RDF reified statements',
+    extractClicked: false,
     entitiesList: [],
     relationsList: [],
     tagSelected: tagSelected,
@@ -245,6 +246,7 @@ export default function AnnotateText() {
         updateState({
           loading: false,
           entitiesList: res.data.entities,
+          extractClicked: true,
         })
         if (res.data.statements) {
           updateState({
@@ -256,7 +258,8 @@ export default function AnnotateText() {
       .catch(error => {
         updateState({
           loading: false,
-          errorMessage: 'Error while extracting entities from the text, please retry. And feel free to create an issue on our GitHub repository if the issue persists.'
+          errorMessage: 'Error while extracting entities from the text, please retry. And feel free to create an issue on our GitHub repository if the issue persists.',
+          extractClicked: true,
         })
         console.log('Error while extracting entities', error)
       })
@@ -701,7 +704,7 @@ export default function AnnotateText() {
         index: entIndex,
         text: text, 
         token: text, 
-        type: "Association", 
+        type: "NamedEntity", 
         start: state.inputText.indexOf(text), 
         end: state.inputText.indexOf(text) + text.length,
         curies: curies, id_curie: "", id_label: "", id_uri: "",
@@ -731,14 +734,15 @@ export default function AnnotateText() {
         🏷️ Annotate biomedical text
       </Typography>
       <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
-        ℹ️ This service helps you to annotate biomedical text using the <a href='https://biolink.github.io/biolink-model/docs/' target="_blank" rel="noopener noreferrer">BioLink model</a> and popular identifiers systems (such as MONDO and PubChem). 
-        You can then download the annotations as RDF, or publish them in Nanopublications.
+        This service helps you annotate biomedical text using the <a href='https://biolink.github.io/biolink-model/docs/' target="_blank" rel="noopener noreferrer">BioLink model</a>, and
+        standard identifiers resolved using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator SRI Name Resolution API</a>, such as MONDO and PubChem. 
+        The annotations are represented using the <a href='https://www.w3.org/RDF' target="_blank" rel="noopener noreferrer">RDF</a> standard. They can be downloaded in the JSON-LD format, or published as Nanopublications.
         {/* A machine learning model automatically extracts biomedical entities from the given text, classify them in different types from the <a href='https://biolink.github.io/biolink-model/docs/' target="_blank" rel="noopener noreferrer">BioLink model</a> (chemical, disease, etc), and retrieve potential standard identifiers for those entities using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator Name Resolution API</a>. */}
       </Typography>
-      <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
+      {/* <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
         🪄 A machine learning model automatically extracts biomedical entities and relations from the given text, classify them in different types from the BioLink model (chemical, disease, etc), 
-        and retrieve potential identifiers for those entities using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator Name Resolution API</a>.
-      </Typography>
+        and retrieve potential identifiers for those entities using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator SRI Name Resolution API</a>.
+      </Typography> */}
       {/* <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
         🪄 You can then compose the statements representing the different assertions present in the text using standard identifiers and properties from the BioLink model.
       </Typography> */}
@@ -750,7 +754,7 @@ export default function AnnotateText() {
       </Typography> */}
 
       <Typography variant='body1' style={{marginTop: theme.spacing(2), marginBottom: theme.spacing(2)}}>
-        1. Extract biomedical entities from text (e.g. a drug indication), note the model can take some time to run if the text is long:
+        1. Provide a short text/claim to annotate (e.g. a drug indication):
       </Typography>
 
       <form onSubmit={handleExtract}>
@@ -955,7 +959,8 @@ export default function AnnotateText() {
         </ClickAwayListener>
       </Popper>
 
-      { state.entitiesList.length > 0 &&
+      { state.extractClicked &&
+      // { state.entitiesList.length > 0 &&
         <> 
           <Typography variant='body1' style={{textAlign: 'center', marginBottom: theme.spacing(2)}}>
             💡 You can edit entities by clicking on their tag, or add new entities by highlighting the text corresponding to the entity. Potential identifiers are automatically retrieved for the highlighted text.
@@ -969,8 +974,8 @@ export default function AnnotateText() {
 
       { state.entitiesList.length > 0 &&
       <>
-        <Typography variant='body1' style={{marginBottom: theme.spacing(2)}}>
-          2. Define the statements that represent the assertions made in the text:
+        <Typography variant='body1' style={{marginBottom: theme.spacing(2), marginTop: theme.spacing(6)}}>
+          2. Define the statements that represent the assertions made in the text, you can add properties to provide more context:
         </Typography>
 
         { state.statements.map((stmtRow: any, index: number) => { 
@@ -1248,7 +1253,8 @@ export default function AnnotateText() {
           { user.id && !user.keyfiles_loaded && 
             <>
               <Typography>
-                🔑 You need to upload the authentication keys bound to your ORCID to publish Nanopublications (public and private encryption keys):
+                🔑 You need to upload the authentication keys linked to your ORCID to publish Nanopublications (public and private encryption keys). 
+                If you have not yet created your authentication keys, or linked them to your ORCID, then follow the instructions to complete your profile with the <a href='https://github.com/peta-pico/nanobench/blob/master/INSTALL.md' target="_blank" rel="noopener noreferrer">Nanobench tool</a>.
               </Typography>
               <form encType="multipart/form-data" action="" onSubmit={handleUploadKeys} 
                   style={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>

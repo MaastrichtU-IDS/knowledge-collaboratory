@@ -87,6 +87,8 @@ export const ents = [
     color: {r: 166, g: 226, b: 45}}, // Light green
   {type: 'OrganismTaxon', label: 'Organism Taxon', id: BIOLINK + 'OrganismTaxon', curie: 'biolink:OrganismTaxon', 
     color: {r: 204, g: 204, b: 0}}, // Yellow
+  {type: 'NamedEntity', label: 'NamedEntity', id: BIOLINK + 'NamedEntity',  curie: 'biolink:NamedEntity', 
+    color: {r: 255, g: 102, b: 102}}, // Red
 ]
 
 
