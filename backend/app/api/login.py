@@ -1,18 +1,17 @@
-from fastapi import APIRouter, Body, Depends, HTTPException, File, UploadFile
-from fastapi.security import OAuth2PasswordBearer, OpenIdConnect
-import requests
-from pathlib import Path
 import shutil
+from pathlib import Path
 
+import requests
 from app import models
 from app.config import settings
+from authlib.integrations.starlette_client import OAuth, OAuthError
+from fastapi import APIRouter, Body, Depends, File, HTTPException, UploadFile
+from fastapi.security import OAuth2PasswordBearer, OpenIdConnect
 
 # Use Authlib for ORCID OpenID Connect
 from starlette.config import Config
 from starlette.requests import Request
-from starlette.responses import HTMLResponse, RedirectResponse, JSONResponse
-from authlib.integrations.starlette_client import OAuth, OAuthError
-
+from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse
 
 # Main issues discussing implementing OpenID Connect / OAuth2 in FastAPI:
 # https://github.com/tiangolo/fastapi/tree/master/fastapi/security
@@ -134,6 +133,7 @@ async def login(request: Request):
     auth_uri = request.url_for('auth')
     return await oauth.orcid.authorize_redirect(request, auth_uri)
 
+
 @router.get('/auth')
 async def auth(request: Request):
     try:
@@ -150,10 +150,12 @@ async def auth(request: Request):
 
 # curl 'http://localhost/rest/current-user' -H 'Authorization: Bearer 21807418-ee11-4097-bdc5-dc9aaf0b9296'
 
+
 @router.get('/logout')
 async def logout(request: Request):
     request.session.pop('user', None)
     return RedirectResponse(url='/docs')
+
 
 @router.get('/current-user')
 async def current_user(current_user: models.User = Depends(get_current_user)):
