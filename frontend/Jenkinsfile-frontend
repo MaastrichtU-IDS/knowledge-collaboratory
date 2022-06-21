@@ -31,6 +31,10 @@ pipeline {
                     expression {
                         return !params.BUILD_VERSION
                     }
+                    anyOf {
+                        changeset "frontend/**"
+                        triggeredBy 'UserIdCause' 
+                    }
                 }
             }
             steps{
@@ -46,7 +50,17 @@ pipeline {
             }
         }
         stage('Build Docker') {
-            when { expression { return env.BUILD == 'true' }}
+            when {
+                allOf {
+                    expression {
+                        return !params.BUILD_VERSION
+                    }
+                    anyOf {
+                        changeset "frontend/**"
+                        triggeredBy 'UserIdCause'
+                    }
+                }
+            }  
             steps {
                 script {
                     docker.build("${env.DOCKER_REPO_NAME}", "--build-arg ORCID_CLIENT_ID=APP-TEANCMSUOPYZOGJ3 --build-arg ORCID_CLIENT_SECRET=43ee3e61-200d-4acc-a5f9-dde1e443d69e --no-cache ./frontend")
@@ -57,6 +71,12 @@ pipeline {
             }
         }
         stage('Deploy to AWS EKS Blue') {
+            when {
+                anyOf {
+                    changeset "frontend/**"
+                    triggeredBy 'UserIdCause'
+                }
+            }
             steps {
                 sshagent (credentials: ['labshare-svc']) {
                    sh 'git clone -b OM-6383 git@github.com:Sphinx-Automation/translator-ops.git'
