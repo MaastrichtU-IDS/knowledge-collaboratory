@@ -14,23 +14,11 @@ import PublishIcon from '@mui/icons-material/Backup';
 import DownloadIcon from '@mui/icons-material/Download';
 import ShexIcon from '@mui/icons-material/TaskAlt';
 import axios from 'axios';
+// @ts-ignore
 import Taggy from 'react-taggy'
-
-// const $rdf = require('rdflib')
-// import { LoggedIn, LoggedOut, Value } from '@solid/react';
-// import * as jsonld from 'jsonld'
-// import {$rdf} from 'rdflib'
-// const jsonld = require('jsonld')
-
-// import hljs from 'highlight.js/lib/core';
-// import 'highlight.js/styles/github-dark-dimmed.css';
-// import turtle from 'highlightjs-turtle';
-// var hljsDefineTurtle = require('highlightjs-turtle');
-// hljs.registerLanguage('turtle', turtle);
 
 import { settings, context, samples, propertiesList, predicatesList, sentenceToAnnotate, biolinkShex, ents, genericContext } from '../settings';
 import { rdfToRdf } from '../utils';
-
 import UserContext from '../UserContext'
 import AutocompleteEntity from '../components/AutocompleteEntity';
 
@@ -122,15 +110,15 @@ export default function AnnotateText() {
     entitiesList: [],
     relationsList: [],
     tagSelected: tagSelected,
-    statements: [{'s': '', 'p': '', 'o': '', 'props': []}],
+    statements: [{'s': '', 'p': '', 'o': '', 'props': [], shex: ''}],
     predicatesList: predicatesList,
     propertiesList: propertiesList,
     loading: false,
     // loadingEntity: false,
     open: false,
     dialogOpen: false,
-    np_jsonld: samples['Drug indication with the BioLink model'],
-    sample_selected: 'Drug indication with the BioLink model',
+    // np_jsonld: samples['Drug indication with the BioLink model'],
+    // sample_selected: 'Drug indication with the BioLink model',
     published_nanopub: '',
     errorMessage: '',
   });
@@ -164,8 +152,8 @@ export default function AnnotateText() {
         inputSource: randomSentence.url,
       })
     }
-    
-  }, [state.np_jsonld])
+
+  }, [])
 
 
   const handleUploadKeys  = (event: React.FormEvent<HTMLFormElement>) => {
@@ -213,10 +201,13 @@ export default function AnnotateText() {
       errorMessage: '',
       inputText: state.editInputText,
       entitiesList: [],
+      statements: [],
     })
     let extract_relations = true
-    if (state.editInputText.length > 1000) {
+    const maxLengthRelExtract = 1000
+    if (state.editInputText.length > maxLengthRelExtract) {
       // We don't extract relations if text too long
+      console.log(`⚠️ Text is more than ${maxLengthRelExtract} characters, we will not extract relations (too long)`)
       extract_relations = false
       // updateState({
       //   loading: false, 
@@ -235,7 +226,7 @@ export default function AnnotateText() {
         //   if (entityMatch.curies) {
         //     Object.keys(entityMatch.curies).map((curie: any) => {
         //       entitiesList.push({
-        //         id: 'https://identifiers.org/' + curie,
+        //         id: curieToUri(curie),
         //         label: entityMatch.curies[curie][0],
         //         curie: curie,
         //         type: entityMatch.type,
@@ -278,7 +269,10 @@ export default function AnnotateText() {
     if (prop['id']) {
       return prop.id
     }
-    return prop.text
+    if (prop['text']) {
+      return prop.text
+    }
+    return prop
   }
   const checkIfUri = (text: string) => {
     return /^https?:\/\/[-_\/#:\?=\+%\.0-9a-zA-Z]+$/i.test(text)
@@ -289,9 +283,7 @@ export default function AnnotateText() {
     const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
     if (state.templateSelected === 'RDF reified statements') {
       state.statements.map((stmt: any, index: number) => {
-        console.log("Iterating state.statements when generateRDF")
-        console.log(stmt)
-        console.log(getPropValue(stmt.s))
+        console.log("Iterating state.statements for generateRDF", stmt)
         const reifiedStmt: any = {
           // '@id': 'https://w3id.org/collaboratory/association/' + index,
           [`${rdf}type`]: {'@id': `${rdf}Statement`},
@@ -299,21 +291,6 @@ export default function AnnotateText() {
           [`${rdf}predicate`]: {'@id': getPropValue(stmt.p)},
           [`${rdf}object`]: {'@id': getPropValue(stmt.o)},
         }
-        // Add properties for reified statements
-        // if (stmt.props) {
-        //   stmt.props.map((stmtProp: any, pindex: number) => {
-        //     if (!reifiedStmt[stmtProp.p]) {
-        //       reifiedStmt[stmtProp.p] = []
-        //     } 
-        //     if (checkIfUri(stmtProp.o)) {
-        //       reifiedStmt[stmtProp.p].push({'@id': stmtProp.o})
-        //     } else {
-        //       reifiedStmt[stmtProp.p].push(stmtProp.o)
-        //     }
-        //     // reifiedStmt[stmtProp.p] = stmtProp.o
-        //   })
-        // }
-        console.log(stmt)
         if (stmt.props) {
           stmt.props.map((prop: any, pindex: number) => {
             let addProp = prop.p
@@ -325,7 +302,9 @@ export default function AnnotateText() {
             } else if (prop.p.text) {
               addProp = prop.p.text
             }
-            if (prop.o.id_uri) {
+            if (prop.o.id) {
+              addValue = prop.o.id
+            } else if (prop.o.id_uri) {
               addValue = prop.o.id_uri
             } else if (prop.o.text) {
               addValue = prop.o.text
@@ -341,24 +320,6 @@ export default function AnnotateText() {
                 reifiedStmt[addProp].push(addValue)
               }
             }
-          })
-        }
-        stmtJsonld.push(reifiedStmt)
-      })
-
-    } else if (state.templateSelected === 'BioLink reified associations') {
-      state.statements.map((stmt: any, index: number) => {
-        const reifiedStmt = {
-          // '@id': 'https://w3id.org/collaboratory/association/' + index,
-          [`${rdf}type`]: {'@id': `${BIOLINK}Association`},
-          [`${rdf}subject`]: {'@id': getPropValue(stmt.s)},
-          [`${rdf}predicate`]: {'@id': getPropValue(stmt.p)},
-          [`${rdf}object`]: {'@id': getPropValue(stmt.o)},
-        }
-        // Add properties for reified statements
-        if (stmt.props) {
-          stmt.props.map((stmtProp: any, pindex: number) => {
-            reifiedStmt[stmtProp.p] = stmtProp.o
           })
         }
         stmtJsonld.push(reifiedStmt)
@@ -537,139 +498,12 @@ export default function AnnotateText() {
     }
     stmts[stmtIndex]['props'].push({p: '', o: ''})
     updateState({statements: stmts})
-    // setState({statements: stmts})
-  }
-  const handleAutocomplete = (event: any, newInputValue: any, edit: any = null) => {
-    const stmts: any = state.statements
-    const entitiesList: any = state.entitiesList
-    const tagSelected: any = state.tagSelected
-    
-    console.log('in autocomplete')
-    if (event && newInputValue && edit) {
-      console.log("Autocomplete 6")
-      // Handle entities annotations in Taggy 
-      if (edit.type == 'entityProp') {
-        const editEnt = edit.editObj
-        // console.log('newInputValue', newInputValue)
-        // console.log('editEnt', editEnt)
-        editEnt.props[edit.index][edit.prop] = newInputValue
-        const entityIndex = entitiesList.findIndex((ent: any) => ent.index === editEnt.index)
-        entitiesList[entityIndex] = editEnt
-        updateState({entitiesList: entitiesList, tagSelected: editEnt})
-      }
-      if (edit.type == 'tagId') {
-        const entityIndex = entitiesList.findIndex((ent: any) => ent.index === tagSelected.index)
-        if (newInputValue.curie) {
-          entitiesList[entityIndex].id_curie = newInputValue.curie
-          entitiesList[entityIndex].id_label = newInputValue.label
-          entitiesList[entityIndex].id_uri = curieToUri(newInputValue.curie)
-          tagSelected.id_curie = newInputValue.curie
-          tagSelected.id_label = newInputValue.label
-          tagSelected.id_uri = curieToUri(newInputValue.curie)
-        } else {
-          delete entitiesList[entityIndex].id_curie
-          delete entitiesList[entityIndex].id_label
-          entitiesList[entityIndex].id_uri = newInputValue
-          delete tagSelected.id_curie
-          delete tagSelected.id_label
-          tagSelected.id_uri = newInputValue
-        }
-        if (newInputValue) {
-          updateState({tagSelected: tagSelected, entitiesList: entitiesList})
-        }
-      }
-      
-    } else if (event && newInputValue) {
-      console.log("Autocomplete 5")
-      console.log(event.target.id)
-      const entityIndex = entitiesList.findIndex((ent: any) => ent.index === tagSelected.index)
-      if (event.target.id.startsWith('tag:type')) {
-        console.log("Autocomplete 4")
-        entitiesList[entityIndex].type = newInputValue.type
-        tagSelected.type = newInputValue.type
-        updateState({tagSelected: tagSelected, entitiesList: entitiesList})
-      } else if (event.target.id.startsWith('prop:')) {
-        console.log("Autocomplete 3")
-        // Edit properties of a statement
-        const index = event.target.id.split('-')[0].split(':')[1]
-        const property = event.target.id.split('-')[0].split(':')[2]
-        const pindex = event.target.id.split('-')[0].split(':')[3]
-        if (newInputValue) {
-          if (newInputValue.id) {
-            stmts[index]['props'][pindex][property] = newInputValue.id as string
-          } else {
-            stmts[index]['props'][pindex][property] = newInputValue as string
-          }
-          updateState({statements: stmts})
-        }
-      } else if (event.target.id.startsWith('shex:')) {
-        console.log("Autocomplete 2")
-        // Edit properties of a statement
-        const index = event.target.id.split('-')[0].split(':')[1]
-        if (newInputValue) {
-          if (newInputValue.id) {
-            stmts[index]['shex'] = newInputValue.id as string
-          } else {
-            stmts[index]['shex'] = newInputValue as string
-          }
-          updateState({statements: stmts})
-        }
-      } else  {
-        console.log("Autocomplete 1")
-        // Edit a statement
-        const property = event.target.id.split('-')[0].split(':')[0]
-        const index = event.target.id.split('-')[0].split(':')[1] 
-        if (newInputValue) {
-          if (newInputValue.id) {
-            stmts[index][property] = newInputValue.id as string
-          } else {
-            stmts[index][property] = newInputValue as string
-          }
-          updateState({statements: stmts})
-          console.log("Update state.statement", stmts)
-        }
-        // console.log(stmts)
-        console.log(state.statements)
-      }
-    }
-  }
-  const getAutocompleteLabel = (option: any, displayProp: string = '') => {
-    // console.log('getAutocompleteLabel', option)
-    if (displayProp) {
-      return option[displayProp]
-    }
-    if (option.id_label && option.id_curie) {
-      return option.id_label + ' (' + option.id_curie + ')'
-    }
-    if (option.text && option.id_curie) {
-      return option.text + ' (' + option.id_curie + ')'
-    }
-    if (option.label && option.curie) {
-      return option.label + ' (' + option.curie + ')'
-    }
-    if (option.id_uri) {
-      return option.id_uri
-    }
-    if (option.text) {
-      return option.text
-    }
-    if (option.label) {
-      return option.label
-    }
-    if (option.id) {
-      return option.id
-    }
-    if (typeof option === 'string')  {
-      return option
-    } else {
-      return ''
-    }
   }
 
-  const triplesTemplates = ["BioLink reified associations", "RDF reified statements", "Plain RDF"]
-  const handleTemplateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    updateState({templateSelected: event.target.value})
-  }
+  // const triplesTemplates = ["RDF reified statements", "Plain RDF"]
+  // const handleTemplateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   updateState({templateSelected: event.target.value})
+  // }
 
   const handleRemoveStmt = (index: number) => {
     // TODO: entities that are not anymore relevant are removed when a statement is removed
@@ -716,7 +550,8 @@ export default function AnnotateText() {
   const clickTag = (event: any, tag: any, elemIndex: any) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
     setOpen((prev) => !prev);
-    tag['id'] = tag['type']
+    // tag['id'] = tag['type']
+    console.log('clickTag', tag)
     updateState({tagSelected: tag})
   }
 
@@ -777,13 +612,18 @@ export default function AnnotateText() {
 
   const addToStatements = (property: string, newInputValue: any, index: any, pindex: any = null) => {
     const stmts: any = state.statements
+    console.log('newInputValue', newInputValue)
     if (newInputValue) {
       if (pindex == null) {
-        stmts[index][property] = newInputValue as string
+        if (typeof newInputValue === 'object' || checkIfUri(newInputValue)) {
+          // To avoid issues with Autocomplete changing the value for the label at init when onInputChange enabled
+          stmts[index][property] = newInputValue as string
+        }
       } else {
         stmts[index]['props'][pindex][property] = newInputValue as string
       }
     }
+    console.log(stmts)
     updateState({statements: stmts})
   }
 
@@ -877,7 +717,11 @@ export default function AnnotateText() {
         </Box>
       }
       { state.errorMessage &&
-        <Paper elevation={4} style={{backgroundColor: "#e57373", padding: theme.spacing(2), marginBottom:theme.spacing(3)}} sx={{ display: state.errorMessage.length > 0 }}>
+        <Paper elevation={4} 
+          style={{backgroundColor: "#e57373", padding: theme.spacing(2), marginBottom:theme.spacing(3)}}
+          // @ts-ignore
+          sx={{ display: state.errorMessage.length > 0 }}
+        >
           ⚠️&nbsp;&nbsp;{state.errorMessage}
         </Paper>
       }
@@ -896,97 +740,88 @@ export default function AnnotateText() {
                     </IconButton>
                   </Tooltip>
                 </Typography>
-                <Autocomplete
-                    id={'tag:type'}
-                    freeSolo
-                    value={state.tagSelected.type}
-                    options={ents}
-                    onChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue)}
-                    onInputChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue)}
-                    // onChange={handleAutocomplete}
-                    // onInputChange={handleAutocomplete}
-                    getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                    groupBy={(option) => option.type ? option.type : null }
-                    style={{marginBottom: theme.spacing(3)}}
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        variant="outlined"
-                        size='small'
-                        className={classes.input}
-                        label="Entity type"
-                        placeholder="Entity type"
-                      />
-                    )}
-                  />
-                <Autocomplete
-                    id={'tag:id'}
-                    freeSolo
-                    value={state.tagSelected}
-                    options={state.tagSelected.curies}
-                    onChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue, {'type': 'tagId'})}
-                    onInputChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue, {'type': 'tagId'})}
-                    getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                    groupBy={(option) => option.type ? option.type : null }
-                    style={{marginBottom: theme.spacing(1)}}
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        variant="outlined"
-                        size='small'
-                        className={classes.input}
-                        label="Entity ID"
-                        placeholder="Entity ID"
-                      />
-                    )}
-                  />
+                <AutocompleteEntity
+                  label="Entity type"
+                  id="tag:type"
+                  value={state.tagSelected.type}
+                  options={ents}
+                  onChange={(event: any, newInputValue: any) => {
+                    const tagSelected: any = state.tagSelected
+                    if (newInputValue && newInputValue != tagSelected.type) {
+                      const entitiesList: any = state.entitiesList
+                      const entityIndex = entitiesList.findIndex((ent: any) => ent.index === tagSelected.index)
+                      entitiesList[entityIndex].type = newInputValue.type
+                      tagSelected.type = newInputValue.type
+                      updateState({tagSelected: tagSelected, entitiesList: entitiesList})
+                    }
+                  }}
+                  groupBy={(option: any) => (option.category ? option.category : null)}
+                  style={{marginBottom: theme.spacing(2)}}
+                />
+                <AutocompleteEntity
+                  label="Entity ID"
+                  id="tag:id"
+                  value={state.tagSelected}
+                  options={state.tagSelected.curies}
+                  onChange={(event: any, newInputValue: any) => {
+                    const entitiesList: any = state.entitiesList
+                    const tagSelected = state.tagSelected
+                    const entityIndex = entitiesList.findIndex((ent: any) => ent.index === tagSelected.index)
+                    if (newInputValue.curie) {
+                      entitiesList[entityIndex].id_curie = newInputValue.curie
+                      entitiesList[entityIndex].id_label = newInputValue.label
+                      entitiesList[entityIndex].id_uri = curieToUri(newInputValue.curie)
+                      tagSelected.id_curie = newInputValue.curie
+                      tagSelected.id_label = newInputValue.label
+                      tagSelected.id_uri = curieToUri(newInputValue.curie)
+                    } else {
+                      delete entitiesList[entityIndex].id_curie
+                      delete entitiesList[entityIndex].id_label
+                      entitiesList[entityIndex].id_uri = newInputValue
+                      delete tagSelected.id_curie
+                      delete tagSelected.id_label
+                      tagSelected.id_uri = newInputValue
+                    }
+                    if (newInputValue) {
+                      updateState({tagSelected: tagSelected, entitiesList: entitiesList})
+                    }
+                  }}
+                  style={{marginBottom: theme.spacing(2)}}
+                />
                 { state.templateSelected !== 'Plain RDF' && state.tagSelected.props &&
                   state.tagSelected.props.map((prop: any, pindex: number) => { 
                     return <Grid container spacing={2} key={'prop:' + prop + pindex} style={{marginLeft: theme.spacing(5), marginBottom: theme.spacing(1)}}>
                     <Grid item xs={5}>
-                      <Autocomplete
-                        // id={'prop:' + index + ':p:'+pindex}
-                        freeSolo
+                      <AutocompleteEntity
+                        label="Property"
+                        id={'tag:prop:p:'+pindex}
                         value={state.tagSelected.props[pindex].p}
                         options={state.propertiesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
-                        onChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue, {'type': 'entityProp', 'editObj': state.tagSelected, index: pindex, prop: 'p'})}
-                        onInputChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue, {'type': 'entityProp', 'editObj': state.tagSelected, index: pindex, prop: 'p'})}
-                        // onChange={handleAutocomplete}
-                        // onInputChange={handleAutocomplete}
-                        getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                        renderInput={params => (
-                          <TextField
-                            {...params}
-                            variant="outlined"
-                            size='small'
-                            className={classes.input}
-                            label="Property"
-                            placeholder="Property"
-                          />
-                        )}
+                        onChange={(event: any, newInputValue: any) => {
+                          const entitiesList: any = state.entitiesList
+                          const tagSelected = state.tagSelected
+                          tagSelected.props[pindex]['p'] = newInputValue
+                          const entityIndex = entitiesList.findIndex((ent: any) => ent.index === pindex)
+                          entitiesList[entityIndex] = tagSelected
+                          updateState({entitiesList: entitiesList, tagSelected: tagSelected})
+                        }}
                       />
                     </Grid>
 
                     <Grid item xs={5}>
-                      <Autocomplete
-                        // id={'prop:' + index + ':o:'+pindex}
-                        freeSolo
+                      <AutocompleteEntity
+                        label="Value"
+                        id={'tag:prop:o:'+pindex}
                         value={state.tagSelected.props[pindex].o}
                         options={state.entitiesList}
-                        onChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue, {'type': 'entityProp', 'editObj': state.tagSelected, index: pindex, prop: 'o'})}
-                        onInputChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue, {'type': 'entityProp', 'editObj': state.tagSelected, index: pindex, prop: 'o'})}
-                        getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                        groupBy={(option) => option.type ? option.type : null }
-                        renderInput={params => (
-                          <TextField
-                            {...params}
-                            variant="outlined"
-                            size='small'
-                            className={classes.input}
-                            label="Value"
-                            placeholder="Value"
-                          />
-                        )}
+                        onChange={(event: any, newInputValue: any) => {
+                          const entitiesList: any = state.entitiesList
+                          const tagSelected = state.tagSelected
+                          tagSelected.props[pindex]['o'] = newInputValue
+                          const entityIndex = entitiesList.findIndex((ent: any) => ent.index === pindex)
+                          entitiesList[entityIndex] = tagSelected
+                          updateState({entitiesList: entitiesList, tagSelected: tagSelected})
+                        }}
                       />
                     </Grid>
                     <Grid item xs={1}>
@@ -1159,25 +994,25 @@ export default function AnnotateText() {
               <Typography>
                 Validate statement against: 
               </Typography>
-              <Autocomplete
+              <AutocompleteEntity
+                label="ShEx shape"
                 id={'shex:' + index}
-                // freeSolo
+                value={state.statements[index].shex}
+                freesolo={undefined}
                 options={biolinkShex.shapes}
-                onChange={handleAutocomplete}
-                onInputChange={handleAutocomplete}
                 getOptionLabel={(option: any) => `${option.label} (${option.id})`}
-                groupBy={(option) => option.type}
+                onChange={(event: any, newInputValue: any) => {
+                  const stmts: any = state.statements
+                  if (newInputValue) {
+                    if (newInputValue.id) {
+                      stmts[index]['shex'] = newInputValue.id as string
+                    } else {
+                      stmts[index]['shex'] = newInputValue as string
+                    }
+                    updateState({statements: stmts})
+                  }
+                }}
                 style={{width: '400px', marginLeft: theme.spacing(2)}}
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    size='small'
-                    className={classes.input}
-                    label="ShEx shape"
-                    placeholder="ShEx shape"
-                  />
-                )}
               />
             </div>
             }
