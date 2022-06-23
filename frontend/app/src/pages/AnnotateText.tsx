@@ -32,6 +32,7 @@ import { settings, context, samples, propertiesList, predicatesList, sentenceToA
 import { rdfToRdf } from '../utils';
 
 import UserContext from '../UserContext'
+import AutocompleteEntity from '../components/AutocompleteEntity';
 
 import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/github-dark-dimmed.css';
@@ -243,6 +244,7 @@ export default function AnnotateText() {
         //     })
         //   }
         // })
+        console.log(res)
         updateState({
           loading: false,
           entitiesList: res.data.entities,
@@ -253,6 +255,7 @@ export default function AnnotateText() {
             relationsList: res.data.relations,
             statements: res.data.statements
           })
+          console.log('Got extraction!', res.data.statements)
         }
       })
       .catch(error => {
@@ -286,6 +289,9 @@ export default function AnnotateText() {
     const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
     if (state.templateSelected === 'RDF reified statements') {
       state.statements.map((stmt: any, index: number) => {
+        console.log("Iterating state.statements when generateRDF")
+        console.log(stmt)
+        console.log(getPropValue(stmt.s))
         const reifiedStmt: any = {
           // '@id': 'https://w3id.org/collaboratory/association/' + index,
           [`${rdf}type`]: {'@id': `${rdf}Statement`},
@@ -294,17 +300,47 @@ export default function AnnotateText() {
           [`${rdf}object`]: {'@id': getPropValue(stmt.o)},
         }
         // Add properties for reified statements
+        // if (stmt.props) {
+        //   stmt.props.map((stmtProp: any, pindex: number) => {
+        //     if (!reifiedStmt[stmtProp.p]) {
+        //       reifiedStmt[stmtProp.p] = []
+        //     } 
+        //     if (checkIfUri(stmtProp.o)) {
+        //       reifiedStmt[stmtProp.p].push({'@id': stmtProp.o})
+        //     } else {
+        //       reifiedStmt[stmtProp.p].push(stmtProp.o)
+        //     }
+        //     // reifiedStmt[stmtProp.p] = stmtProp.o
+        //   })
+        // }
+        console.log(stmt)
         if (stmt.props) {
-          stmt.props.map((stmtProp: any, pindex: number) => {
-            if (!reifiedStmt[stmtProp.p]) {
-              reifiedStmt[stmtProp.p] = []
-            } 
-            if (checkIfUri(stmtProp.o)) {
-              reifiedStmt[stmtProp.p].push({'@id': stmtProp.o})
-            } else {
-              reifiedStmt[stmtProp.p].push(stmtProp.o)
+          stmt.props.map((prop: any, pindex: number) => {
+            let addProp = prop.p
+            let addValue = prop.o
+            if (prop.p.id) {
+              addProp = prop.p.id
+            } else if (prop.p.id_uri) {
+              addProp = prop.p.id_uri
+            } else if (prop.p.text) {
+              addProp = prop.p.text
             }
-            // reifiedStmt[stmtProp.p] = stmtProp.o
+            if (prop.o.id_uri) {
+              addValue = prop.o.id_uri
+            } else if (prop.o.text) {
+              addValue = prop.o.text
+            }
+            if (addProp && addValue) {
+              if (!reifiedStmt[addProp]) {
+                reifiedStmt[addProp] = []
+              } 
+              if (checkIfUri(addValue)) {
+                // Quick check if URI
+                reifiedStmt[addProp].push({'@id': addValue})
+              } else {
+                reifiedStmt[addProp].push(addValue)
+              }
+            }
           })
         }
         stmtJsonld.push(reifiedStmt)
@@ -507,7 +543,11 @@ export default function AnnotateText() {
     const stmts: any = state.statements
     const entitiesList: any = state.entitiesList
     const tagSelected: any = state.tagSelected
+    
+    console.log('in autocomplete')
     if (event && newInputValue && edit) {
+      console.log("Autocomplete 6")
+      // Handle entities annotations in Taggy 
       if (edit.type == 'entityProp') {
         const editEnt = edit.editObj
         // console.log('newInputValue', newInputValue)
@@ -540,13 +580,16 @@ export default function AnnotateText() {
       }
       
     } else if (event && newInputValue) {
+      console.log("Autocomplete 5")
       console.log(event.target.id)
       const entityIndex = entitiesList.findIndex((ent: any) => ent.index === tagSelected.index)
       if (event.target.id.startsWith('tag:type')) {
+        console.log("Autocomplete 4")
         entitiesList[entityIndex].type = newInputValue.type
         tagSelected.type = newInputValue.type
         updateState({tagSelected: tagSelected, entitiesList: entitiesList})
       } else if (event.target.id.startsWith('prop:')) {
+        console.log("Autocomplete 3")
         // Edit properties of a statement
         const index = event.target.id.split('-')[0].split(':')[1]
         const property = event.target.id.split('-')[0].split(':')[2]
@@ -560,6 +603,7 @@ export default function AnnotateText() {
           updateState({statements: stmts})
         }
       } else if (event.target.id.startsWith('shex:')) {
+        console.log("Autocomplete 2")
         // Edit properties of a statement
         const index = event.target.id.split('-')[0].split(':')[1]
         if (newInputValue) {
@@ -571,6 +615,7 @@ export default function AnnotateText() {
           updateState({statements: stmts})
         }
       } else  {
+        console.log("Autocomplete 1")
         // Edit a statement
         const property = event.target.id.split('-')[0].split(':')[0]
         const index = event.target.id.split('-')[0].split(':')[1] 
@@ -581,7 +626,10 @@ export default function AnnotateText() {
             stmts[index][property] = newInputValue as string
           }
           updateState({statements: stmts})
+          console.log("Update state.statement", stmts)
         }
+        // console.log(stmts)
+        console.log(state.statements)
       }
     }
   }
@@ -727,6 +775,17 @@ export default function AnnotateText() {
     }
   }
 
+  const addToStatements = (property: string, newInputValue: any, index: any, pindex: any = null) => {
+    const stmts: any = state.statements
+    if (newInputValue) {
+      if (pindex == null) {
+        stmts[index][property] = newInputValue as string
+      } else {
+        stmts[index]['props'][pindex][property] = newInputValue as string
+      }
+    }
+    updateState({statements: stmts})
+  }
 
   return(
     <Container className='mainContainer'>
@@ -982,75 +1041,38 @@ export default function AnnotateText() {
           return <Box key={'stmt:' + index}>
             <Grid container spacing={2} key={index} style={{marginBottom: theme.spacing(1), marginTop: theme.spacing(1)}}>
               <Grid item xs={4}>
-                <Autocomplete
-                  key={'s:'+index}
+                <AutocompleteEntity
+                  label="Subject"
                   id={'s:'+index}
-                  freeSolo
                   value={state.statements[index].s}
                   options={state.entitiesList}
-                  onChange={handleAutocomplete}
-                  onInputChange={handleAutocomplete}
-                  getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                  groupBy={(option) => option.type ? option.type : null }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      variant="outlined"
-                      size='small'
-                      className={classes.input}
-                      label="Subject"
-                      placeholder="Subject"
-                    />
-                  )}
+                  onChange={(event: any, newInputValue: any) => {
+                    addToStatements('s', newInputValue, index)
+                  }}
                 />
               </Grid>
 
               <Grid item xs={3}>
-                <Autocomplete
-                  key={'p:'+index}
+                <AutocompleteEntity
+                  label="Predicate"
                   id={'p:'+index}
-                  freeSolo
                   value={state.statements[index].p}
                   options={state.predicatesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
-                  // options={state.propertiesList}
-                  onChange={handleAutocomplete}
-                  onInputChange={handleAutocomplete}
-                  getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                  // groupBy={(option) => option.type ? option.type : null }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      variant="outlined"
-                      size='small'
-                      className={classes.input}
-                      label="Predicate"
-                      placeholder="Predicate"
-                    />
-                  )}
+                  onChange={(event: any, newInputValue: any) => {
+                    addToStatements('p', newInputValue, index)
+                  }}
                 />
               </Grid>
 
               <Grid item xs={4}>
-                <Autocomplete
-                  key={'o:'+index}
+                <AutocompleteEntity
+                  label="Object"
                   id={'o:'+index}
-                  freeSolo
                   value={state.statements[index].o}
                   options={state.entitiesList}
-                  onChange={handleAutocomplete}
-                  onInputChange={handleAutocomplete}
-                  getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                  groupBy={(option) => option.type ? option.type : null }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      variant="outlined"
-                      size='small'
-                      className={classes.input}
-                      label="Object"
-                      placeholder="Object"
-                    />
-                  )}
+                  onChange={(event: any, newInputValue: any) => {
+                    addToStatements('o', newInputValue, index)
+                  }}
                 />
               </Grid>
 
@@ -1066,29 +1088,30 @@ export default function AnnotateText() {
               state.statements[index].props.map((prop: any, pindex: number): any => { 
                 return <Grid container spacing={2} key={'prop' + index + prop + pindex} style={{marginLeft: theme.spacing(5), marginBottom: theme.spacing(1)}}>
                 <Grid item xs={4}>
-                  <Autocomplete
+                  <AutocompleteEntity
+                    label="Property"
                     id={'prop:' + index + ':p:'+pindex}
-                    freeSolo
+                    // @ts-ignore
                     value={state.statements[index].props[pindex].p}
                     options={state.propertiesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
-                    onChange={handleAutocomplete}
-                    onInputChange={handleAutocomplete}
-                    getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        variant="outlined"
-                        size='small'
-                        className={classes.input}
-                        label="Property"
-                        placeholder="Property"
-                      />
-                    )}
+                    onChange={(event: any, newInputValue: any) => {
+                      addToStatements('p', newInputValue, index, pindex)
+                    }}
                   />
                 </Grid>
 
                 <Grid item xs={4}>
-                  <Autocomplete
+                  <AutocompleteEntity
+                    label="Value"
+                    id={'prop:' + index + ':o:'+pindex}
+                    // @ts-ignore
+                    value={state.statements[index].props[pindex].o}
+                    options={state.entitiesList}
+                    onChange={(event: any, newInputValue: any) => {
+                      addToStatements('o', newInputValue, index, pindex)
+                    }}
+                  />
+                  {/* <Autocomplete
                     id={'prop:' + index + ':o:'+pindex}
                     freeSolo
                     value={state.statements[index].props[pindex].o}
@@ -1108,7 +1131,7 @@ export default function AnnotateText() {
                         placeholder="Value"
                       />
                     )}
-                  />
+                  /> */}
                 </Grid>
                 <Grid item xs={1}>
                   <Tooltip title={<Typography style={{textAlign: 'center'}}>Delete the statement</Typography>}>
