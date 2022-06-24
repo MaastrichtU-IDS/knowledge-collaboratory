@@ -211,8 +211,6 @@ async def publish_assertion(
     g.add((BASE_URI, DCTERMS.created, Literal(time_created, datatype=XSD.integer, normalize=False), pubinfo_graph))
     g.add((BASE_URI, PAV.createdBy, URIRef(current_user['id']), pubinfo_graph))
     # g.add((BASE_URI, RDF.type, NPX.ExampleNanopub, pubinfo_graph))
-    if add_biolink_version:
-        g.add((URIRef('https://w3id.org/biolink/vocab'), PAV.version, Literal(settings.BIOLINK_VERSION), pubinfo_graph))
 
     # Provenance
     g.add((BASE.assertion, PROV.wasAttributedTo, URIRef(current_user['id']), prov_graph))
@@ -221,6 +219,8 @@ async def publish_assertion(
         g.add((BASE.assertion, PROV.hadPrimarySource, URIRef(source), prov_graph))
     if quoted_from:
         g.add((BASE.assertion, PROV.wasQuotedFrom, Literal(quoted_from), prov_graph))
+    if add_biolink_version:
+        g.add((URIRef('https://w3id.org/biolink/vocab'), PAV.version, Literal(settings.BIOLINK_VERSION), prov_graph))
     # if prov_rdf:
     #     g = add_jsonld_to_graph(prov_rdf, g, prov_graph)
     #     print(f"Triples after loading provenance: {len(g)}")
