@@ -144,6 +144,7 @@ async def publish_assertion(
         publish: bool= False,
         source: Optional[str] = None,
         quoted_from: Optional[str] = None,
+        add_biolink_version: bool = True,
         # prov_rdf: Union[Dict,List,None] = None
     ):
     nanopub_rdf = jsonable_encoder(nanopub_rdf)
@@ -210,6 +211,8 @@ async def publish_assertion(
     g.add((BASE_URI, DCTERMS.created, Literal(time_created, datatype=XSD.integer, normalize=False), pubinfo_graph))
     g.add((BASE_URI, PAV.createdBy, URIRef(current_user['id']), pubinfo_graph))
     # g.add((BASE_URI, RDF.type, NPX.ExampleNanopub, pubinfo_graph))
+    if add_biolink_version:
+        g.add((URIRef('https://w3id.org/biolink/vocab'), PAV.version, Literal(settings.BIOLINK_VERSION), pubinfo_graph))
 
     # Provenance
     g.add((BASE.assertion, PROV.wasAttributedTo, URIRef(current_user['id']), prov_graph))

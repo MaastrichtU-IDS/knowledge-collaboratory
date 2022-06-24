@@ -5,6 +5,7 @@ from pydantic import AnyHttpUrl, BaseSettings, EmailStr, HttpUrl, PostgresDsn, v
 
 
 class Settings(BaseSettings):
+    BIOLINK_VERSION: str = "v.2.4.4"
     API_PATH: str = ""
     SECRET_KEY: str = secrets.token_urlsafe(32)
     # 60 minutes * 24 hours * 8 days = 8 days
