@@ -29,17 +29,21 @@ label2id = {
 }
 
 # Loading models for NER
-ner = spacy.load(Rf"{settings.NER_MODELS_PATH}/litcoin-ner-model")
-# Loading models for relations extraction
-relation_model = Rf"{settings.NER_MODELS_PATH}/litcoin-relations-extraction-model"
-# Instantiate the Bert tokenizer
-tokenizer = BertTokenizer.from_pretrained(relation_model, do_lower_case=False)
-model = BertForSequenceClassification.from_pretrained(relation_model,num_labels=len(label2id))
-device = torch.device("cpu")
-# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-# Send model to device
-model.to(device);
-print('✅ Models for NER and relations extraction loaded')
+try:
+    ner = spacy.load(Rf"{settings.NER_MODELS_PATH}/litcoin-ner-model")
+    # Loading models for relations extraction
+    relation_model = Rf"{settings.NER_MODELS_PATH}/litcoin-relations-extraction-model"
+    # Instantiate the Bert tokenizer
+    tokenizer = BertTokenizer.from_pretrained(relation_model, do_lower_case=False)
+    model = BertForSequenceClassification.from_pretrained(relation_model,num_labels=len(label2id))
+    device = torch.device("cpu")
+    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # Send model to device
+    model.to(device);
+    print('✅ Models for NER and relations extraction loaded')
+except Exception as e:
+    print('⚠️ Could not load the models for NER and relations extraction')
+    print(e)
 
 IDO = 'https://identifiers.org/'
 
