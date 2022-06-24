@@ -29,8 +29,7 @@ from starlette.responses import RedirectResponse
 
 router = APIRouter()
 
-BASE = Namespace(settings.BASE_URI)
-
+BASE = Namespace("http://purl.org/nanopub/temp/")
 PAV = Namespace("http://purl.org/pav/")
 NP = Namespace("http://www.nanopub.org/nschema#")
 NPX = Namespace("http://purl.org/nanopub/x/")
@@ -210,7 +209,7 @@ async def publish_assertion(
     time_created = datetime.datetime.now().astimezone().replace(microsecond=0).isoformat()
     g.add((BASE_URI, DCTERMS.created, Literal(time_created, datatype=XSD.integer, normalize=False), pubinfo_graph))
     g.add((BASE_URI, PAV.createdBy, URIRef(current_user['id']), pubinfo_graph))
-    g.add((BASE_URI, RDF.type, NPX.ExampleNanopub, pubinfo_graph))
+    # g.add((BASE_URI, RDF.type, NPX.ExampleNanopub, pubinfo_graph))
 
     # Provenance
     g.add((BASE.assertion, PROV.wasAttributedTo, URIRef(current_user['id']), prov_graph))
