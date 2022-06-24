@@ -3,6 +3,8 @@ name = "app"
 version = "0.1.0"
 description = ""
 authors = ["Admin <admin@example.com>"]
+# packages = [{ include = "schema_graph" }]
+# include = ["schema_graph/static/schema_graph/main.js"]
 
 [tool.poetry.dependencies]
 python = "^3.8"

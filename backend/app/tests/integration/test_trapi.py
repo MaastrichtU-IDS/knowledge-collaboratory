@@ -2,11 +2,11 @@ import json
 import os
 
 import pytest
-from fastapi.testclient import TestClient
 
 # from reasoner_validator import validate
 # from src.api import start_api
-from src.main import app
+from app.main import app
+from fastapi.testclient import TestClient
 
 VALIDATE_TRAPI_VERSION="1.2.0"
 
@@ -28,8 +28,8 @@ def test_post_trapi():
     """Test Translator ReasonerAPI query POST operation to get predictions"""
     url = '/query'
 
-    for trapi_filename in os.listdir('tests/queries'):
-        with open('tests/queries/' + trapi_filename,'r') as f:
+    for trapi_filename in os.listdir('app/tests/queries'):
+        with open('app/tests/queries/' + trapi_filename,'r') as f:
             reasoner_query = f.read()
             response = client.post(url, 
                                     data=reasoner_query, 

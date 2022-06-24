@@ -1073,9 +1073,7 @@ export default function AnnotateText() {
       }
 
       { state.nanopubPublished &&
-        <Paper elevation={4} 
-          style={{backgroundColor: theme.palette.success.light, padding: theme.spacing(2), marginBottom:theme.spacing(3)}}
-        >
+        <Paper elevation={4} style={{backgroundColor: '#81c784', padding: theme.spacing(2), marginBottom:theme.spacing(3), marginTop:theme.spacing(3)}}>
           ✅&nbsp;&nbsp;Nanopublication successfully published
         </Paper>
       }

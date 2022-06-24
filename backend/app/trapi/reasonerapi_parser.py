@@ -130,6 +130,8 @@ context = data['@context']
 for prefix in context.keys():
     if isinstance(context[prefix], str):
         namespace_resolver[prefix] = context[prefix]
+    elif '@id' in context[prefix].keys():
+        namespace_resolver[prefix] = context[prefix]['@id']
 
 uri_resolver = {v: k for k, v in namespace_resolver.items()}
 uri_resolver['https://identifiers.org/mim/'] = 'OMIM'
@@ -159,9 +161,25 @@ def resolve_uri_with_context(uri_string):
     return uri_string
 
 
-def resolve_curie_to_identifiersorg(curie_string):
-    """Take a CURIE and return the corresponding identifiers.org URI in the Nanopublication network
+def resolve_curie(curie_string):
+    """Take a CURIE and return the corresponding URI in the Nanopublication network
     using the BioLink JSON-LD Context previously loaded
+    """
+    # Quick fix to handle lowercase drugbank and omim
+    # if curie_string.startswith('drugbank:'):
+    #   curie_string = curie_string.replace('drugbank:', 'DRUGBANK:')
+    # if curie_string.startswith('omim:'):
+    #   curie_string = curie_string.replace('omim:', 'OMIM:')
+    
+    ns = curie_string.split(':')[0]
+    id = curie_string.split(':')[1]
+    if ns in namespace_resolver.keys():
+      return namespace_resolver[ns] + id
+    else: 
+      return 'http://identifiers.org/' + curie_string
+
+def resolve_curie_identifiersorg(curie_string):
+    """Take a CURIE and return the corresponding URI in the Nanopublication network
     """
     # Quick fix to handle lowercase drugbank and omim
     if curie_string.startswith('drugbank:'):
@@ -317,10 +335,10 @@ def reasonerapi_to_sparql(reasoner_query):
         except:
           pass
 
-        # Resolve provided CURIE to https://identifiers.org/CURIE
+        # Resolve provided CURIE to the BioLink context and https://identifiers.org/CURIE:ID
         try:
           subject_curies = query_graph['nodes'][edge_props['subject']]['ids']
-          subject_curies = list(map(lambda curie: '?subject = <' +  resolve_curie_to_identifiersorg(curie) + '>', subject_curies))
+          subject_curies = list(map(lambda curie: f"?subject = <{resolve_curie(curie)}> || ?subject =<{resolve_curie_identifiersorg(curie)}>", subject_curies))
           subject_curies = ' || '.join(subject_curies)
           entity_filters = entity_filters + 'FILTER ( ' + subject_curies + ' )\n'
         except:
@@ -328,7 +346,7 @@ def reasonerapi_to_sparql(reasoner_query):
         
         try:
           object_curies = query_graph['nodes'][edge_props['object']]['ids']
-          object_curies = list(map(lambda curie: '?object = <' +  resolve_curie_to_identifiersorg(curie) + '>', object_curies))
+          object_curies = list(map(lambda curie: f"?object = <{resolve_curie(curie)}> || ?object =<{resolve_curie_identifiersorg(curie)}>", object_curies))
           object_curies = ' || '.join(object_curies)
           entity_filters = entity_filters + 'FILTER ( ' + object_curies + ' )\n'
         except:

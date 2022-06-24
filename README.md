@@ -134,6 +134,20 @@ FRONTEND_URL=https://collaboratory.semanticscience.org
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
+## ✅ Tests
+
+You can run the test in docker when the backend is already running: 
+
+```bash
+docker-compose exec backend poetry run pytest -s
+```
+
+Or locally directly with poetry:
+
+```bash
+poetry run pytest -s
+```
+
 ## ➕ Docker Compose files and env vars
 
 There is a main `docker-compose.yml` file with all the configurations that apply to the whole stack, it is used automatically by `docker-compose`.
