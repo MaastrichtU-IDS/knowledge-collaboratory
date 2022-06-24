@@ -29,7 +29,7 @@ from starlette.responses import RedirectResponse
 
 router = APIRouter()
 
-BASE = Namespace("https://w3id.org/collaboratory/")
+BASE = Namespace(settings.BASE_URI)
 
 PAV = Namespace("http://purl.org/pav/")
 NP = Namespace("http://www.nanopub.org/nschema#")

@@ -2,11 +2,11 @@ name: Run backend tests
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches: [ main ]
-  #   paths:
-  #   - 'backend/**'
-  #   - '.github/actions/test-backend.yml'
+  push:
+    branches: [ main ]
+    paths:
+    - 'backend/**'
+    - '.github/actions/test-backend.yml'
 
 jobs:
   build:

@@ -9,7 +9,7 @@ export const settings = {
   OauthRedirectUri: process.env.OAUTH_REDIRECT_FRONTEND || "http://localhost:19006",
   nanopubGrlcUrl: process.env.GRLC_URL || "https://grlc.np.dumontierlab.com/api/local/local",
   nanopubSparqlUrl: "https://virtuoso.nps.petapico.org/sparql",
-  // http://grlc.nanopubs.lod.labs.vu.nl/api/local/local
+  // https://virtuoso.np.dumontierlab.137.120.31.101.nip.io/sparql
 }
 
 export const getUrlHtml = (urlString: string) => {
