@@ -755,22 +755,22 @@ export default function AnnotateText() {
                     const entitiesList: any = state.entitiesList
                     const tagSelected = state.tagSelected
                     const entityIndex = entitiesList.findIndex((ent: any) => ent.index === tagSelected.index)
-                    if (newInputValue.curie) {
-                      entitiesList[entityIndex].id_curie = newInputValue.curie
-                      entitiesList[entityIndex].id_label = newInputValue.label
-                      entitiesList[entityIndex].id_uri = curieToUri(newInputValue.curie)
-                      tagSelected.id_curie = newInputValue.curie
-                      tagSelected.id_label = newInputValue.label
-                      tagSelected.id_uri = curieToUri(newInputValue.curie)
-                    } else {
-                      delete entitiesList[entityIndex].id_curie
-                      delete entitiesList[entityIndex].id_label
-                      entitiesList[entityIndex].id_uri = newInputValue
-                      delete tagSelected.id_curie
-                      delete tagSelected.id_label
-                      tagSelected.id_uri = newInputValue
-                    }
-                    if (newInputValue) {
+                    if (typeof newInputValue === 'object' || checkIfUri(newInputValue)) {
+                      if (newInputValue.curie) {
+                        entitiesList[entityIndex].id_curie = newInputValue.curie
+                        entitiesList[entityIndex].id_label = newInputValue.label
+                        entitiesList[entityIndex].id_uri = curieToUri(newInputValue.curie)
+                        tagSelected.id_curie = newInputValue.curie
+                        tagSelected.id_label = newInputValue.label
+                        tagSelected.id_uri = curieToUri(newInputValue.curie)
+                      } else {
+                        delete entitiesList[entityIndex].id_curie
+                        delete entitiesList[entityIndex].id_label
+                        entitiesList[entityIndex].id_uri = newInputValue
+                        delete tagSelected.id_curie
+                        delete tagSelected.id_label
+                        tagSelected.id_uri = newInputValue
+                      }
                       updateState({tagSelected: tagSelected, entitiesList: entitiesList})
                     }
                   }}
