@@ -91,7 +91,14 @@ async def get_entities_relations(
         if len(name_res.keys()) > 0:
             # entity['curies'] = name_res
             for curie, labels in name_res.items():
-                entity['curies'].append({'curie': curie, 'label': labels[0]})
+                alt_label = None
+                if len(labels) > 1:
+                    alt_label = labels[1]
+                entity['curies'].append({
+                    'curie': curie, 
+                    'label': labels[0],
+                    'altLabel': alt_label,
+                })
             entity['id_curie'] = list(name_res.keys())[0]
             entity['id_label'] = name_res[list(name_res.keys())[0]][0]
             entity['id_uri'] = curie_to_uri(list(name_res.keys())[0])

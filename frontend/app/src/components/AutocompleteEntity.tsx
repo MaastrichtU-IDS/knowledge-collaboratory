@@ -12,6 +12,7 @@ const getAutocompleteLabel = (option: any, displayProp: string = "") => {
   if (displayProp) {
     return option[displayProp]
   }
+  
   if (option.id_label && option.id_curie) {
     return option.id_label + " (" + option.id_curie + ")"
   }
@@ -19,8 +20,12 @@ const getAutocompleteLabel = (option: any, displayProp: string = "") => {
     return option.text + " (" + option.id_curie + ")"
   }
   if (option.label && option.curie) {
+    if (option.altLabel) {
+      return `${option.label}, ${option.altLabel} (${option.curie})`
+    }
     return option.label + " (" + option.curie + ")"
   }
+  // getOptionLabel={(option: any) => `${option.label}${option.altLabel ? `, ${option.altLabel}` : ''} (${option.curie})`}
   if (option.label && option.id) {
     return option.label + " (" + option.id + ")"
   }

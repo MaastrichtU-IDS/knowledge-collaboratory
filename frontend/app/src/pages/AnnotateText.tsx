@@ -583,7 +583,12 @@ export default function AnnotateText() {
       const entityCuries = await getEntityCuries(text)
       if (entityCuries && Object.keys(entityCuries).length > 0) {
         Object.keys(entityCuries).map((curie: any) => {
-          newEntity['curies'].push({'curie': curie, 'label': entityCuries[curie][0]})
+          const addEnt: any = {
+            'curie': curie, 
+            'label': entityCuries[curie][0], 
+            'altLabel': entityCuries[curie][1],
+          }
+          newEntity['curies'].push(addEnt)
         })
         newEntity['id_curie'] = Object.keys(entityCuries)[0]
         newEntity['id_label'] = entityCuries[newEntity['id_curie']][0]
@@ -751,11 +756,12 @@ export default function AnnotateText() {
                   id="tag:id"
                   value={state.tagSelected}
                   options={state.tagSelected.curies}
+                  // getOptionLabel={(option: any) => `${option.label}${option.altLabel ? `, ${option.altLabel}` : ''} (${option.curie})`}
                   onChange={(event: any, newInputValue: any) => {
                     const entitiesList: any = state.entitiesList
                     const tagSelected = state.tagSelected
                     const entityIndex = entitiesList.findIndex((ent: any) => ent.index === tagSelected.index)
-                    if (typeof newInputValue === 'object' || checkIfUri(newInputValue)) {
+                    if (newInputValue && (typeof newInputValue === 'object' || checkIfUri(newInputValue))) {
                       if (newInputValue.curie) {
                         entitiesList[entityIndex].id_curie = newInputValue.curie
                         entitiesList[entityIndex].id_label = newInputValue.label
