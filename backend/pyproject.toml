@@ -1,10 +1,8 @@
 [tool.poetry]
-name = "app"
+name = "knowledge-collaboratory-api"
 version = "0.1.0"
 description = ""
-authors = ["Admin <admin@example.com>"]
-# packages = [{ include = "schema_graph" }]
-# include = ["schema_graph/static/schema_graph/main.js"]
+authors = ["Vincent Emonet <vincent.emonet@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
