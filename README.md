@@ -136,16 +136,19 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 ## ✅ Tests
 
-You can run the test in docker when the backend is already running: 
+2 sets of tests are available: `integration` tests to test local changes, and `production` tests to test the API deployed in production
+
+You can run the tests in docker when the backend is already running: 
 
 ```bash
-docker-compose exec backend poetry run pytest -s
+docker-compose exec backend poetry run pytest tests/integration -s
 ```
 
 Or locally directly with poetry:
 
 ```bash
-poetry run pytest -s
+poetry install
+poetry run pytest tests/integration -s
 ```
 
 ## ➕ Docker Compose files and env vars

@@ -18,10 +18,10 @@ def test_post_trapi():
         {'limit': 'no', 'class': 'anydrugdisease'},
     ]
 
-    for trapi_filename in os.listdir('app/tests/queries'):
+    for trapi_filename in os.listdir('tests/queries'):
     # for trapi_test in tests_list:
         # trapi_filename = 'tests/queries/trapi_' + trapi_test['class'] + '_limit' + str(trapi_test['limit']) + '.json'
-        with open('app/tests/queries/' + trapi_filename,'r') as f:
+        with open('tests/queries/' + trapi_filename,'r') as f:
             trapi_query = f.read()
         print(PROD_API_URL)
         print(trapi_query)
