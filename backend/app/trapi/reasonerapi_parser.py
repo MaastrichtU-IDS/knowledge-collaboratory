@@ -1,11 +1,16 @@
-from SPARQLWrapper import SPARQLWrapper, POST, JSON
-import urllib.request, json 
+import json
+import urllib.request
+
+import requests
+from app.config import settings
+from SPARQLWrapper import JSON, POST, SPARQLWrapper
 
 get_nanopubs_select_query = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX biolink: <https://w3id.org/biolink/vocab/>
 PREFIX np: <http://www.nanopub.org/nschema#>
 PREFIX npx: <http://purl.org/nanopub/x/>
+PREFIX npa: <http://purl.org/nanopub/admin/>
 SELECT DISTINCT *
 WHERE {
   graph ?np_assertion {
@@ -48,6 +53,9 @@ WHERE {
   ?_entity_filters
   graph ?np_head {
     ?np_uri np:hasAssertion ?np_assertion .
+  }
+  graph npa:graph {
+    ?np_uri npa:hasValidSignatureForPublicKey ?pubkey .
   }
   FILTER NOT EXISTS { ?creator npx:retracts ?np_uri }
 }"""
@@ -110,10 +118,6 @@ WHERE {
 }
 """
 
-
-## Virtuoso SPARQL endpoint for the Nanopubs server at IDS
-SPARQL_ENDPOINT_URL = 'http://virtuoso.np.dumontierlab.137.120.31.101.nip.io/sparql'
-
 ## Load BioLink JSON-LD Context to resolve URIs to BioLink CURIEs
 # try:
 with urllib.request.urlopen("https://raw.githubusercontent.com/biolink/biolink-model/master/context.jsonld") as url:
@@ -154,6 +158,7 @@ def resolve_uri_with_context(uri_string):
     # If not found:
     return uri_string
 
+
 def resolve_curie_to_identifiersorg(curie_string):
     """Take a CURIE and return the corresponding identifiers.org URI in the Nanopublication network
     using the BioLink JSON-LD Context previously loaded
@@ -165,6 +170,7 @@ def resolve_curie_to_identifiersorg(curie_string):
       curie_string = curie_string.replace('omim:', 'OMIM:')
     return 'https://identifiers.org/' + curie_string
 
+
 def get_predicates_from_nanopubs():
     """Query the Nanopublications network to get BioLink entity categories and the relation between them
     Formatted for the Translator TRAPI /predicate get call
@@ -172,7 +178,7 @@ def get_predicates_from_nanopubs():
     # TODO: Update to the meta_knowledge_graph for TRAPI 3.1.0
     predicates = {}
     # Run query to get types and relations between them
-    sparql = SPARQLWrapper(SPARQL_ENDPOINT_URL)
+    sparql = SPARQLWrapper(settings.NANOPUB_SPARQL_URL)
     sparql.setReturnFormat(JSON)
     sparql.setQuery(get_metakg_edges_query)
     sparqlwrapper_results = sparql.query().convert()
@@ -191,6 +197,7 @@ def get_predicates_from_nanopubs():
 
     return predicates
 
+
 def get_metakg_from_nanopubs():
     """Query the Nanopublications network to get BioLink entity categories and the relation between them
     Formatted for the Translator TRAPI /predicate get call
@@ -198,7 +205,7 @@ def get_metakg_from_nanopubs():
     # TODO: Update to the meta_knowledge_graph for TRAPI 3.1.0
     predicates = {}
     # Run query to get types and relations between them
-    sparql = SPARQLWrapper(SPARQL_ENDPOINT_URL)
+    sparql = SPARQLWrapper(settings.NANOPUB_SPARQL_URL)
     sparql.setReturnFormat(JSON)
     sparql.setQuery(get_metakg_edges_query)
     print(get_metakg_edges_query)
@@ -228,6 +235,23 @@ def get_metakg_from_nanopubs():
     return {'edges': edges_array, 'nodes': nodes_obj}
 
 
+def get_np_users():
+  pubkeys = {}
+  # shex_shape = requests.get(shape_url).text
+  headers = {'Accept': 'application/json'}
+  res = requests.get(f"{settings.NANOPUB_GRLC_URL}/get_all_users", headers=headers).json()
+  for user in res['results']['bindings']:
+    print(user)
+    # Remove bad ORCID URLs
+    if not user['user']['value'].startswith('https://orcid.org/https://orcid.org/'):
+      if 'name' not in user:
+        user['name'] = {'value': user['user']['value']}
+
+      pubkeys[user['pubkey']['value']] = user
+      # users_orcid[user['user']['value']] = user
+  return pubkeys
+
+
 def reasonerapi_to_sparql(reasoner_query):
     """Convert an array of predictions objects to ReasonerAPI format
     Run the get_predict to get the QueryGraph edges and nodes
@@ -236,6 +260,8 @@ def reasonerapi_to_sparql(reasoner_query):
     :param: reasoner_query Query from Reasoner API
     :return: Results as ReasonerAPI object
     """
+    np_users = get_np_users()
+    print(np_users)
     query_graph = reasoner_query["message"]["query_graph"]
     query_options = {}
     n_results = None
@@ -317,9 +343,9 @@ def reasonerapi_to_sparql(reasoner_query):
     query_results = []
     kg_edge_count = 0
 
-    print('Running the following SPARQL query to retrieve nanopublications from ' + SPARQL_ENDPOINT_URL)
+    print('Running the following SPARQL query to retrieve nanopublications from ' + settings.NANOPUB_SPARQL_URL)
     print(sparql_query_get_nanopubs)
-    sparql = SPARQLWrapper(SPARQL_ENDPOINT_URL)
+    sparql = SPARQLWrapper(settings.NANOPUB_SPARQL_URL)
     sparql.setReturnFormat(JSON)
     sparql.setQuery(sparql_query_get_nanopubs)
     sparqlwrapper_results = sparql.query().convert()
@@ -328,6 +354,7 @@ def reasonerapi_to_sparql(reasoner_query):
     # Check current official example of Reasoner query results: https://github.com/NCATSTranslator/ReasonerAPI/blob/master/examples/Message/simple.json
     # Now iterates the Nanopubs SPARQL query results:
     for edge_result in sparql_results:
+        print(edge_result)
         edge_uri = edge_result['association']['value']
         # Create edge object in knowledge_graph
         knowledge_graph['edges'][edge_uri] = {
@@ -344,6 +371,12 @@ def reasonerapi_to_sparql(reasoner_query):
                 }
             ]
         }
+        if 'pubkey' in edge_result and 'user' in np_users[edge_result['pubkey']['value']]:
+          knowledge_graph['edges'][edge_uri]['attributes'].append({
+              'attribute_type_id': 'biolink:author',
+              'value': np_users[edge_result['pubkey']['value']]['user']['value']
+          })
+
         if 'relation' in edge_result:
           # knowledge_graph['edges'][edge_uri]['relation'] = resolve_uri_with_context(edge_result['relation']['value'])
           knowledge_graph['edges'][edge_uri]['attributes'].append({

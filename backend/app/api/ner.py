@@ -1,16 +1,16 @@
-from fastapi import FastAPI, Response, APIRouter, Body, HTTPException
+from typing import List, Optional
+
+import numpy as np
+import requests
+import spacy
+import torch
+from app.config import biolink_context, settings
+from fastapi import APIRouter, Body, FastAPI, HTTPException, Response
 from fastapi.responses import JSONResponse
+
 # from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
-from typing import List, Optional
-from app.config import settings, biolink_context
-
-import spacy
-import requests
-import numpy as np
-import torch
-from transformers import BertTokenizer, BertForSequenceClassification
-
+from transformers import BertForSequenceClassification, BertTokenizer
 
 router = APIRouter()
 

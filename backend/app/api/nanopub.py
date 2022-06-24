@@ -1,22 +1,31 @@
-from json import encoder
-from fastapi import FastAPI, Response, APIRouter, Body, HTTPException, status, Depends, Header, Query
-from fastapi.responses import JSONResponse
-from fastapi.encoders import jsonable_encoder
-# from typing import Collection, List, Optional
-from typing import List, Optional, Union, Dict
-from starlette.responses import RedirectResponse
-from rdflib import Graph, ConjunctiveGraph, Dataset, URIRef, Namespace, RDF, Literal
-from rdflib.namespace import RDFS, XSD, DC, DCTERMS, VOID, PROV
-from pyld import jsonld
-
-import os
-import json
-from pathlib import Path
 import datetime
+import json
+import os
+from json import encoder
 
-from app.models import User
+# from typing import Collection, List, Optional
+from typing import Dict, List, Optional, Union
+
 from app.api.login import get_current_user, reusable_oauth2
 from app.config import settings
+from app.models import User
+from fastapi import (
+    APIRouter,
+    Body,
+    Depends,
+    FastAPI,
+    Header,
+    HTTPException,
+    Query,
+    Response,
+    status,
+)
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+from pyld import jsonld
+from rdflib import RDF, ConjunctiveGraph, Dataset, Graph, Literal, Namespace, URIRef
+from rdflib.namespace import DC, DCTERMS, PROV, RDFS, VOID, XSD
+from starlette.responses import RedirectResponse
 
 router = APIRouter()
 
@@ -64,6 +73,7 @@ NANOPUB_EXAMPLE = """@prefix : <https://w3id.org/collaboratory/> .
     response_model={})
 async def publish_nanopub(
         nanopub_rdf: str = Body(..., example=NANOPUB_EXAMPLE),
+        publish: bool= False,
         # Query( None, description=self.example_query)
         # nanopub_rdf: str = Body(..., example=json.dumps(NANOPUB_EXAMPLE, indent=2)),
         current_user: User = Depends(get_current_user)
@@ -86,8 +96,10 @@ async def publish_nanopub(
     os.system(sign_cmd)
 
     signed_path = f"{settings.KEYSTORE_PATH}/{current_user['sub']}/signed.publication.trig"
-    # publish_cmd = f'java -jar /opt/nanopub.jar publish {signed_path} -k {keyfile_path}'
-    # os.system(publish_cmd)
+    
+    if publish:
+        publish_cmd = f'java -jar /opt/nanopub.jar publish {signed_path} -k {keyfile_path}'
+        os.system(publish_cmd)
 
     with open(signed_path, 'r') as f:
         signed_trig = f.read()
@@ -97,6 +109,17 @@ async def publish_nanopub(
     #     'message': 'Nanopublication published with ' + current_user['id']
     # })
 
+
+def add_jsonld_to_graph(jsonld, g, graph_uri):
+    if jsonld:
+        load_g = Graph()
+        load_g.parse(
+            data=jsonld, 
+            format='json-ld'
+        )
+        for s, p, o in load_g:
+            g.add((s, p, o, URIRef(str(graph_uri))))
+    return g
 
 
 ASSERTION_EXAMPLE = [{
@@ -119,10 +142,11 @@ async def publish_assertion(
         nanopub_rdf: Union[Dict,List] = Body(..., example=ASSERTION_EXAMPLE),
         # nanopub_rdf: Any = Body(..., example=ASSERTION_EXAMPLE),
         current_user: User = Depends(get_current_user),
+        publish: bool= False,
         source: Optional[str] = None,
-        quoted_from: Optional[str] = None
+        quoted_from: Optional[str] = None,
+        # prov_rdf: Union[Dict,List,None] = None
     ):
-    print(f"nanopub_rdf begin: {nanopub_rdf}")
     nanopub_rdf = jsonable_encoder(nanopub_rdf)
 
     if not current_user or 'id' not in current_user.keys():
@@ -134,7 +158,6 @@ async def publish_assertion(
             status_code=403, detail=f"You need to first store a Nanopub key with the /authentication-key call")
 
     assertion_graph = URIRef(str(BASE) + 'assertion')
-    print(assertion_graph)
     head_graph = URIRef(str(BASE) + 'Head')
     prov_graph = URIRef(str(BASE) + 'provenance')
     pubinfo_graph = URIRef(str(BASE) + 'pubinfo')
@@ -150,16 +173,7 @@ async def publish_assertion(
     # nanopub_rdf = jsonld.expand(nanopub_rdf)
     # nanopub_rdf = json.dumps(nanopub_rdf, ensure_ascii=False).encode("utf-8")
     nanopub_rdf = json.dumps(nanopub_rdf)
-    print(f"nanopub_rdf after dump: {nanopub_rdf}")
-
-    # RDFLib does not allow to load triples in a specific graph so we need to use another graph
-    loader_g = Graph()
-    loader_g.parse(
-        data=nanopub_rdf, 
-        format='json-ld'
-    )
-
-    print(f"Loaded from assertion: {len(loader_g)}")
+    # print(f"nanopub_rdf after dump: {nanopub_rdf}")
 
     g = Dataset(default_graph_base=str(BASE))
     # g = ConjunctiveGraph(identifier=assertion_graph, default_graph_base=str(BASE))
@@ -173,11 +187,18 @@ async def publish_assertion(
     g.bind("schema", URIRef('http://schema.org/'))
     g.bind("schemaorg", URIRef('https://schema.org/'))
     g.bind("biolink", URIRef('https://w3id.org/biolink/vocab/'))
-    
     BASE_URI = URIRef(str(BASE))
 
-    for s, p, o in loader_g:
-        g.add((s, p, o, assertion_graph))
+    # RDFLib does not allow to load triples in a specific graph so we need to use another graph
+    g = add_jsonld_to_graph(nanopub_rdf, g, assertion_graph)
+    print(f"Triples after loading assertion: {len(g)}")
+    # loader_g = Graph()
+    # loader_g.parse(
+    #     data=nanopub_rdf, 
+    #     format='json-ld'
+    # )
+    # for s, p, o in loader_g:
+    #     g.add((s, p, o, assertion_graph))
 
     # Head
     g.add((BASE_URI, NP.hasAssertion, BASE.assertion, head_graph))
@@ -192,13 +213,15 @@ async def publish_assertion(
     g.add((BASE_URI, RDF.type, NPX.ExampleNanopub, pubinfo_graph))
 
     # Provenance
+    g.add((BASE.assertion, PROV.wasAttributedTo, URIRef(current_user['id']), prov_graph))
+    g.add((BASE.assertion, PROV.generatedAtTime, Literal(time_created, datatype=XSD.integer, normalize=False), prov_graph))
     if source:
         g.add((BASE.assertion, PROV.hadPrimarySource, URIRef(source), prov_graph))
     if quoted_from:
         g.add((BASE.assertion, PROV.wasQuotedFrom, Literal(quoted_from), prov_graph))
-    
-    # g.add((BASE.assertion, PROV.wasAttributedTo, URIRef(current_user['id']), prov_graph))
-    g.add((BASE.assertion, PROV.generatedAtTime, Literal(time_created, datatype=XSD.integer, normalize=False), prov_graph))
+    # if prov_rdf:
+    #     g = add_jsonld_to_graph(prov_rdf, g, prov_graph)
+    #     print(f"Triples after loading provenance: {len(g)}")
     
 
     # :Head {
@@ -218,7 +241,7 @@ async def publish_assertion(
 
     triple_count = len(g)
     print(triple_count, 'triples')
-    print(g.serialize(format='trig'))
+    # print(g.serialize(format='trig'))
 
     nanopub_path = f"{settings.KEYSTORE_PATH}/{current_user['sub']}/publication.trig"
     with open(nanopub_path, 'w') as f:
@@ -229,13 +252,39 @@ async def publish_assertion(
     os.system(sign_cmd)
 
     signed_path = f"{settings.KEYSTORE_PATH}/{current_user['sub']}/signed.publication.trig"
-    # publish_cmd = f'java -jar /opt/nanopub.jar publish {signed_path} -k {keyfile_path}'
-    # os.system(publish_cmd)
+
+    if publish:
+        print("📬️ Publishing the nanopubs to the Nanopublication network")
+        publish_cmd = f'java -jar /opt/nanopub.jar publish {signed_path} -k {keyfile_path}'
+        os.system(publish_cmd)
 
     with open(signed_path, 'r') as f:
         signed_trig = f.read()
         return Response(content=signed_trig, media_type="application/trig")
 
-    # return JSONResponse({
-    #     'message': f'Nanopublication containing an assertion of {triple_count} triples published with ' + current_user['id']
-    # })
+
+
+@router.post("/publish-last-signed", name="Publish the last nanopub you signed",
+    description="""Useful to first sign a nanopub, verify it, then publish it""",
+    response_description="Operation result", 
+    response_model={})
+async def publish_last_signed(
+        current_user: User = Depends(get_current_user),
+    ):
+    if not current_user or 'id' not in current_user.keys():
+        raise HTTPException(status_code=403, detail=f"You need to login with ORCID to publish a Nanopublication")
+
+    keyfile_path = f"{settings.KEYSTORE_PATH}/{current_user['sub']}/idrsa"
+    signed_path = f"{settings.KEYSTORE_PATH}/{current_user['sub']}/signed.publication.trig"
+    
+    if not os.path.isfile(signed_path):
+        raise HTTPException(
+            status_code=403, detail=f"You need to first sign a Nanopub with the /assertion or /nanopub call")
+    
+    publish_cmd = f'java -jar /opt/nanopub.jar publish {signed_path} -k {keyfile_path}'
+    os.system(publish_cmd)
+    
+    with open(signed_path, 'r') as f:
+        signed_trig = f.read()
+        return Response(content=signed_trig, media_type="application/trig")
+
