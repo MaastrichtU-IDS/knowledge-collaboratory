@@ -67,7 +67,7 @@ pipeline {
                 sshagent (credentials: ['labshare-svc']) {
                    sh 'git clone -b OM-6383 git@github.com:Sphinx-Automation/translator-ops.git'
                 }
-                dir('translator-ops/ops/cdskp/knowledge-collaboratory/backend/') {
+                dir('translator-ops/ops/cdskp/knowledge-collaboratory/knowledge-collaboratory-backend/') {
                     configFileProvider([
                         configFile(fileId: 'collaboratory-backend-ci-values.yaml', targetLocation: 'values-ncats.yaml')
                     ]){
