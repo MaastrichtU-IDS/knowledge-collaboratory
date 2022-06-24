@@ -488,7 +488,7 @@ array_json = {
       },
       "nodes": {
         "n0": {
-          "category": ["biolink:ChemicalSubstance", "biolink:Drug"],
+          "category": ["biolink:ChemicalEntity", "biolink:Drug"],
           "id": ["CHEBI:75725", "DRUGBANK:DB00394"]
         },
         "n1": {

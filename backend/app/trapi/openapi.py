@@ -167,7 +167,7 @@ TRAPI_EXAMPLE = {
         "n0": {
           "categories": [
             "biolink:Drug",
-            "biolink:ChemicalSubstance"
+            "biolink:ChemicalEntity"
           ],
           "ids": [
             "DRUGBANK:DB00394",
