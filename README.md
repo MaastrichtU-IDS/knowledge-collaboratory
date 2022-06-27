@@ -16,7 +16,23 @@ Frontend built with [React](https://reactjs.org) and [Material UI](https://mui.c
 
 * [Node.js](https://nodejs.org/en/) (with `npm`) and [`yarn`](https://yarnpkg.com/) if you need to do frontend development
 
-## 🐳 Backend local development
+## 🚀 Production deployment 
+
+1. Create a `.env` file with your production settings:
+
+```
+ORCID_CLIENT_ID=APP-XXX
+ORCID_CLIENT_SECRET=XXXX
+FRONTEND_URL=https://collaboratory.semanticscience.org
+```
+
+2. Deploy the app with production config: 
+
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
+
+## 🐳 Local development
 
 ### Prepare the data
 
@@ -115,24 +131,6 @@ poetry shell
 Next, open your editor at `./backend/` (instead of the project root: `./`), so that you see an `./app/` directory with your code inside. That way, your editor will be able to find all the imports, etc. Make sure your editor uses the environment you just created with Poetry.
 
 During development, you can change Docker Compose settings that will only affect the local development environment, in the file `docker-compose.override.yml`
-
-## 🚀 Production deployment 
-
-1. Create a `.env` file with your production settings:
-
-```
-ORCID_CLIENT_ID=APP-XXX
-ORCID_CLIENT_SECRET=XXXX
-FRONTEND_URL=https://collaboratory.semanticscience.org
-```
-
-2. Download the models
-
-3. Deploy the app with production config: 
-
-```bash
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-```
 
 ## ✅ Tests
 
