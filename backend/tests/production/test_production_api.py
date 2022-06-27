@@ -1,5 +1,6 @@
-import pytest
 import os
+
+import pytest
 import requests
 from reasoner_validator import validate
 

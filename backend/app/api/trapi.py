@@ -1,10 +1,10 @@
-from fastapi import FastAPI, Body, APIRouter, Request, Response
-from fastapi.responses import JSONResponse, RedirectResponse
-from reasoner_pydantic import Query, Message
-# from typing import Optional, Dict
-
-from app.trapi.reasonerapi_parser import reasonerapi_to_sparql, get_metakg_from_nanopubs
 from app.trapi.openapi import TRAPI, TRAPI_EXAMPLE
+from app.trapi.reasonerapi_parser import get_metakg_from_nanopubs, reasonerapi_to_sparql
+from fastapi import APIRouter, Body, FastAPI, Request, Response
+from fastapi.responses import JSONResponse, RedirectResponse
+from reasoner_pydantic import Message, Query
+
+# from typing import Optional, Dict
 
 
 router = APIRouter()

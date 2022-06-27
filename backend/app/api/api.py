@@ -1,6 +1,5 @@
+from app.api import login, nanopub, ner, trapi, validation
 from fastapi import APIRouter
-
-from app.api import login, nanopub, trapi, ner, validation
 
 api_router = APIRouter()
 api_router.include_router(ner.router, tags=["entity recognition"])

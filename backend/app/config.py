@@ -1,12 +1,14 @@
+import os
 import secrets
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 from pydantic import AnyHttpUrl, BaseSettings, EmailStr, HttpUrl, PostgresDsn, validator
 
 
 class Settings(BaseSettings):
+    BIOLINK_VERSION: str = "v.2.4.4"
     API_PATH: str = ""
-    BASE_URI: str = "https://w3id.org/collaboratory"
     SECRET_KEY: str = secrets.token_urlsafe(32)
     # 60 minutes * 24 hours * 8 days = 8 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
@@ -17,6 +19,10 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = 'Knowledge Collaboratory API'
     KEYSTORE_PATH: str = "/data/nanopub-keystore"
     NER_MODELS_PATH: str = "/data/ner-models"
+
+    NANOPUB_GRLC_URL: str = 'https://grlc.np.dumontierlab.com/api/local/local'
+    NANOPUB_SPARQL_URL: str = 'https://virtuoso.nps.petapico.org/sparql'
+    # NANOPUB_SPARQL_URL: str = 'http://virtuoso.np.dumontierlab.137.120.31.101.nip.io/sparql'
 
     # SERVER_NAME: str = 'localhost'
     # SERVER_HOST: AnyHttpUrl = 'http://localhost'
@@ -62,6 +68,24 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
+
+# def get_initial_data() -> None:
+#     print("🔑 Using keystore folder: " + settings.KEYSTORE_PATH)
+#     Path(settings.KEYSTORE_PATH).mkdir(parents=True, exist_ok=True)
+
+#     if not os.path.exists(f"{settings.NER_MODELS_PATH}/litcoin-ner-model"):
+#         print("📥️ litcoin-ner-model not present, downloading it")
+#         os.system("wget https://download.dumontierlab.com/ner-models/litcoin-ner-model.zip")
+#         Path(f"{settings.NER_MODELS_PATH}/litcoin-ner-model").mkdir(parents=True, exist_ok=True)
+#         os.system(f'unzip "{settings.NER_MODELS_PATH}/*.zip" -d {settings.NER_MODELS_PATH}/litcoin-ner-model"')
+#         os.system(f"rm {settings.NER_MODELS_PATH}/*.zip")
+
+#     if not os.path.exists(f"{settings.NER_MODELS_PATH}/litcoin-relations-extraction-model"):
+#         print("📥️ litcoin-relations-extraction-model not present, downloading it")
+#         os.system("wget https://download.dumontierlab.com/ner-models/litcoin-relations-extraction-model.zip")
+#         Path(f"{settings.NER_MODELS_PATH}/litcoin-relations-extraction-model").mkdir(parents=True, exist_ok=True)
+#         os.system(f'unzip "{settings.NER_MODELS_PATH}/*.zip" -d {settings.NER_MODELS_PATH}/litcoin-relations-extraction-model"')
+#         os.system(f"rm {settings.NER_MODELS_PATH}/*.zip")
 
 
 biolink_context = {

@@ -1,7 +1,6 @@
 # import json
 # import rdflib
 # from rdflib import ConjunctiveGraph
-# from app.config import settings
 
 mime_types = {
     'datacite_json': 'application/vnd.datacite.datacite+json',

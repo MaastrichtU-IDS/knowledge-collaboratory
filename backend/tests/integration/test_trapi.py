@@ -1,11 +1,12 @@
-import pytest
-from fastapi.testclient import TestClient
-import os
 import json
+import os
+
+import pytest
+
 # from reasoner_validator import validate
 # from src.api import start_api
-from src.main import app
-
+from app.main import app
+from fastapi.testclient import TestClient
 
 VALIDATE_TRAPI_VERSION="1.2.0"
 

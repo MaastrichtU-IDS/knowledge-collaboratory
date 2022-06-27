@@ -14,24 +14,13 @@ import PublishIcon from '@mui/icons-material/Backup';
 import DownloadIcon from '@mui/icons-material/Download';
 import ShexIcon from '@mui/icons-material/TaskAlt';
 import axios from 'axios';
+// @ts-ignore
 import Taggy from 'react-taggy'
-
-// const $rdf = require('rdflib')
-// import { LoggedIn, LoggedOut, Value } from '@solid/react';
-// import * as jsonld from 'jsonld'
-// import {$rdf} from 'rdflib'
-// const jsonld = require('jsonld')
-
-// import hljs from 'highlight.js/lib/core';
-// import 'highlight.js/styles/github-dark-dimmed.css';
-// import turtle from 'highlightjs-turtle';
-// var hljsDefineTurtle = require('highlightjs-turtle');
-// hljs.registerLanguage('turtle', turtle);
 
 import { settings, context, samples, propertiesList, predicatesList, sentenceToAnnotate, biolinkShex, ents, genericContext } from '../settings';
 import { rdfToRdf } from '../utils';
-
 import UserContext from '../UserContext'
+import AutocompleteEntity from '../components/AutocompleteEntity';
 
 import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/github-dark-dimmed.css';
@@ -53,10 +42,10 @@ const curieToUri = (curie: string) => {
   return IDO + curie
 }
 
+
 export default function AnnotateText() {
   const theme = useTheme();
   const { user }: any = useContext(UserContext)
-
   const useStyles = makeStyles(() => ({
     link: {
       color: theme.palette.primary.main,
@@ -88,23 +77,10 @@ export default function AnnotateText() {
       textTransform: 'none',
       margin: theme.spacing(2, 2),
     },
-    addEntryButton: {
-      textTransform: 'none',
-      marginLeft: theme.spacing(2),
-      // marginTop: theme.spacing(2),
-    },
-    formInput: {
-      background: 'white',
-      width: '100%'
-    },
     paperPadding: {
       padding: theme.spacing(2, 2),
       margin: theme.spacing(2, 2),
     },
-    paperTitle: {
-      fontWeight: 300,
-      marginBottom: theme.spacing(1),
-    }
   }))
   const classes = useStyles();
 
@@ -121,15 +97,17 @@ export default function AnnotateText() {
     entitiesList: [],
     relationsList: [],
     tagSelected: tagSelected,
-    statements: [{'s': '', 'p': '', 'o': '', 'props': []}],
+    statements: [{'s': '', 'p': '', 'o': '', 'props': [], shex: ''}],
     predicatesList: predicatesList,
     propertiesList: propertiesList,
     loading: false,
     // loadingEntity: false,
     open: false,
+    nanopubGenerated: false,
+    nanopubPublished: false,
     dialogOpen: false,
-    np_jsonld: samples['Drug indication with the BioLink model'],
-    sample_selected: 'Drug indication with the BioLink model',
+    // np_jsonld: samples['Drug indication with the BioLink model'],
+    // sample_selected: 'Drug indication with the BioLink model',
     published_nanopub: '',
     errorMessage: '',
   });
@@ -163,8 +141,8 @@ export default function AnnotateText() {
         inputSource: randomSentence.url,
       })
     }
-    
-  }, [state.np_jsonld])
+
+  }, [])
 
 
   const handleUploadKeys  = (event: React.FormEvent<HTMLFormElement>) => {
@@ -212,10 +190,15 @@ export default function AnnotateText() {
       errorMessage: '',
       inputText: state.editInputText,
       entitiesList: [],
+      statements: [],
+      nanopubGenerated: false,
+      nanopubPublished: false,
     })
     let extract_relations = true
-    if (state.editInputText.length > 1000) {
+    const maxLengthRelExtract = 1000
+    if (state.editInputText.length > maxLengthRelExtract) {
       // We don't extract relations if text too long
+      console.log(`⚠️ Text is more than ${maxLengthRelExtract} characters, we will not extract relations (too long)`)
       extract_relations = false
       // updateState({
       //   loading: false, 
@@ -228,21 +211,6 @@ export default function AnnotateText() {
         {'params': {'extract_relations': extract_relations}}
       )
       .then(res => {
-        // const entitiesList: any = []
-        // console.log(res.data)
-        // res.data.entities.map((entityMatch: any) => {
-        //   if (entityMatch.curies) {
-        //     Object.keys(entityMatch.curies).map((curie: any) => {
-        //       entitiesList.push({
-        //         id: 'https://identifiers.org/' + curie,
-        //         label: entityMatch.curies[curie][0],
-        //         curie: curie,
-        //         type: entityMatch.type,
-        //         typeMatch: entityMatch.type + ' ' + entityMatch.text
-        //       })
-        //     })
-        //   }
-        // })
         updateState({
           loading: false,
           entitiesList: res.data.entities,
@@ -275,61 +243,64 @@ export default function AnnotateText() {
     if (prop['id']) {
       return prop.id
     }
-    return prop.text
+    if (prop['text']) {
+      return prop.text
+    }
+    return prop
   }
   const checkIfUri = (text: string) => {
     return /^https?:\/\/[-_\/#:\?=\+%\.0-9a-zA-Z]+$/i.test(text)
+  }
+  const getUri  = (prop: any) => {
+    if (prop['id_uri']) {
+      return prop.id_uri
+    }
+    if (prop['id']) {
+      return prop.id
+    }
+    // if (prop['text']) {
+    //   return prop.text
+    // }
+    return prop
   }
 
   const generateRDF  = () => {
     const stmtJsonld: any = []
     const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+
     if (state.templateSelected === 'RDF reified statements') {
       state.statements.map((stmt: any, index: number) => {
+        console.log("Iterating state.statements for generateRDF", stmt)
+        // Generate spo statement
         const reifiedStmt: any = {
           // '@id': 'https://w3id.org/collaboratory/association/' + index,
-          [`${rdf}type`]: {'@id': `${rdf}Statement`},
+          [`@type`]: `${rdf}Statement`,
           [`${rdf}subject`]: {'@id': getPropValue(stmt.s)},
           [`${rdf}predicate`]: {'@id': getPropValue(stmt.p)},
           [`${rdf}object`]: {'@id': getPropValue(stmt.o)},
         }
-        // Add properties for reified statements
+        // Add props to the statement
         if (stmt.props) {
-          stmt.props.map((stmtProp: any, pindex: number) => {
-            if (!reifiedStmt[stmtProp.p]) {
-              reifiedStmt[stmtProp.p] = []
-            } 
-            if (checkIfUri(stmtProp.o)) {
-              reifiedStmt[stmtProp.p].push({'@id': stmtProp.o})
-            } else {
-              reifiedStmt[stmtProp.p].push(stmtProp.o)
+          stmt.props.map((prop: any, pindex: number) => {
+            const addProp = getPropValue(prop.p)
+            const addValue = getPropValue(prop.o)
+            if (addProp && addValue) {
+              if (!reifiedStmt[addProp]) {
+                reifiedStmt[addProp] = []
+              } 
+              if (checkIfUri(addValue)) {
+                reifiedStmt[addProp].push({'@id': addValue})
+              } else {
+                reifiedStmt[addProp].push(addValue)
+              }
             }
-            // reifiedStmt[stmtProp.p] = stmtProp.o
-          })
-        }
-        stmtJsonld.push(reifiedStmt)
-      })
-
-    } else if (state.templateSelected === 'BioLink reified associations') {
-      state.statements.map((stmt: any, index: number) => {
-        const reifiedStmt = {
-          // '@id': 'https://w3id.org/collaboratory/association/' + index,
-          [`${rdf}type`]: {'@id': `${BIOLINK}Association`},
-          [`${rdf}subject`]: {'@id': getPropValue(stmt.s)},
-          [`${rdf}predicate`]: {'@id': getPropValue(stmt.p)},
-          [`${rdf}object`]: {'@id': getPropValue(stmt.o)},
-        }
-        // Add properties for reified statements
-        if (stmt.props) {
-          stmt.props.map((stmtProp: any, pindex: number) => {
-            reifiedStmt[stmtProp.p] = stmtProp.o
           })
         }
         stmtJsonld.push(reifiedStmt)
       })
 
     } else {
-      // Plain RDF
+      // If Plain RDF mode enabled (disabled atm)
       state.statements.map((stmt: any) => {
         stmtJsonld.push({
           '@id': getPropValue(stmt.s),
@@ -337,7 +308,8 @@ export default function AnnotateText() {
         })
       })
     }
-    // Add triples for entities
+
+    // Generate triples for the entities
     state.entitiesList.map((entity: any) => {
       if (entity.id_uri && entity.type) {
         const entityJsonld = {
@@ -345,22 +317,11 @@ export default function AnnotateText() {
           '@type': BIOLINK + entity.type,
           [RDFS + 'label']: entity.id_label,
         }
+        // Generate the props of the entity
         if (entity.props) {
           entity.props.map((prop: any, pindex: number) => {
-            let addProp = prop.p
-            let addValue = prop.o
-            if (prop.p.id) {
-              addProp = prop.p.id
-            } else if (prop.p.id_uri) {
-              addProp = prop.p.id_uri
-            } else if (prop.p.text) {
-              addProp = prop.p.text
-            }
-            if (prop.o.id_uri) {
-              addValue = prop.o.id_uri
-            } else if (prop.o.text) {
-              addValue = prop.o.text
-            }
+            const addProp = getPropValue(prop.p)
+            const addValue = getPropValue(prop.o)
             if (addProp && addValue) {
               if (!entityJsonld[addProp]) {
                 entityJsonld[addProp] = []
@@ -436,16 +397,14 @@ export default function AnnotateText() {
   }
 
 
-  const handleSubmit  = (event: React.FormEvent) => {
-    // Trigger JSON-LD file download
+  const generateNanopub  = (event: React.FormEvent, publish: boolean = false) => {
     event.preventDefault();
-    // var element = document.createElement('a');
-    console.log(user);
     const stmtJsonld: any = generateRDF()
-    // console.log(stmtJsonld)
     if (!user.error) {
-      console.log('Publishing!', stmtJsonld)
-      const requestParams: any = {}
+      console.log('Publishing!', publish, stmtJsonld)
+      const requestParams: any = {
+        publish: publish
+      }
       if (state.inputSource) {
         requestParams['source'] = state.inputSource
       }
@@ -464,11 +423,51 @@ export default function AnnotateText() {
         .then(res => {
           updateState({
             open: true,
+            nanopubGenerated: true,
+            nanopubPublished: false,
             published_nanopub: res.data
           })
         })
         .catch(error => {
-          updateState({errorMessage: 'Error publishing the Nanopublication.'})
+          updateState({
+            errorMessage: 'Error generating the Nanopublication.',
+            nanopubGenerated: false,
+            nanopubPublished: false,
+          })
+          console.log(error)
+        })
+        .finally(() => {
+          hljs.highlightAll();
+        })
+    } else {
+      console.log('You need to be logged in with ORCID to publish a Nanopublication')
+    }
+  }
+
+  const publishSignedNanopub  = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!user.error) {
+      const access_token = user['access_token']
+      axios.post(
+          `${settings.apiUrl}/publish-last-signed`,
+          null, 
+          { 
+            headers: { Authorization: `Bearer ${access_token}` },
+            // params: requestParams
+          } 
+        )
+        .then(res => {
+          updateState({
+            open: true,
+            nanopubPublished: true,
+            published_nanopub: res.data
+          })
+        })
+        .catch(error => {
+          updateState({
+            nanopubPublished: true,
+            errorMessage: 'Error publishing the Nanopublication.'
+          })
           console.log(error)
         })
         .finally(() => {
@@ -501,127 +500,12 @@ export default function AnnotateText() {
     }
     stmts[stmtIndex]['props'].push({p: '', o: ''})
     updateState({statements: stmts})
-    // setState({statements: stmts})
-  }
-  const handleAutocomplete = (event: any, newInputValue: any, edit: any = null) => {
-    const stmts: any = state.statements
-    const entitiesList: any = state.entitiesList
-    const tagSelected: any = state.tagSelected
-    if (event && newInputValue && edit) {
-      if (edit.type == 'entityProp') {
-        const editEnt = edit.editObj
-        // console.log('newInputValue', newInputValue)
-        // console.log('editEnt', editEnt)
-        editEnt.props[edit.index][edit.prop] = newInputValue
-        const entityIndex = entitiesList.findIndex((ent: any) => ent.index === editEnt.index)
-        entitiesList[entityIndex] = editEnt
-        updateState({entitiesList: entitiesList, tagSelected: editEnt})
-      }
-      if (edit.type == 'tagId') {
-        const entityIndex = entitiesList.findIndex((ent: any) => ent.index === tagSelected.index)
-        if (newInputValue.curie) {
-          entitiesList[entityIndex].id_curie = newInputValue.curie
-          entitiesList[entityIndex].id_label = newInputValue.label
-          entitiesList[entityIndex].id_uri = curieToUri(newInputValue.curie)
-          tagSelected.id_curie = newInputValue.curie
-          tagSelected.id_label = newInputValue.label
-          tagSelected.id_uri = curieToUri(newInputValue.curie)
-        } else {
-          delete entitiesList[entityIndex].id_curie
-          delete entitiesList[entityIndex].id_label
-          entitiesList[entityIndex].id_uri = newInputValue
-          delete tagSelected.id_curie
-          delete tagSelected.id_label
-          tagSelected.id_uri = newInputValue
-        }
-        if (newInputValue) {
-          updateState({tagSelected: tagSelected, entitiesList: entitiesList})
-        }
-      }
-      
-    } else if (event && newInputValue) {
-      console.log(event.target.id)
-      const entityIndex = entitiesList.findIndex((ent: any) => ent.index === tagSelected.index)
-      if (event.target.id.startsWith('tag:type')) {
-        entitiesList[entityIndex].type = newInputValue.type
-        tagSelected.type = newInputValue.type
-        updateState({tagSelected: tagSelected, entitiesList: entitiesList})
-      } else if (event.target.id.startsWith('prop:')) {
-        // Edit properties of a statement
-        const index = event.target.id.split('-')[0].split(':')[1]
-        const property = event.target.id.split('-')[0].split(':')[2]
-        const pindex = event.target.id.split('-')[0].split(':')[3]
-        if (newInputValue) {
-          if (newInputValue.id) {
-            stmts[index]['props'][pindex][property] = newInputValue.id as string
-          } else {
-            stmts[index]['props'][pindex][property] = newInputValue as string
-          }
-          updateState({statements: stmts})
-        }
-      } else if (event.target.id.startsWith('shex:')) {
-        // Edit properties of a statement
-        const index = event.target.id.split('-')[0].split(':')[1]
-        if (newInputValue) {
-          if (newInputValue.id) {
-            stmts[index]['shex'] = newInputValue.id as string
-          } else {
-            stmts[index]['shex'] = newInputValue as string
-          }
-          updateState({statements: stmts})
-        }
-      } else  {
-        // Edit a statement
-        const property = event.target.id.split('-')[0].split(':')[0]
-        const index = event.target.id.split('-')[0].split(':')[1] 
-        if (newInputValue) {
-          if (newInputValue.id) {
-            stmts[index][property] = newInputValue.id as string
-          } else {
-            stmts[index][property] = newInputValue as string
-          }
-          updateState({statements: stmts})
-        }
-      }
-    }
-  }
-  const getAutocompleteLabel = (option: any, displayProp: string = '') => {
-    // console.log('getAutocompleteLabel', option)
-    if (displayProp) {
-      return option[displayProp]
-    }
-    if (option.id_label && option.id_curie) {
-      return option.id_label + ' (' + option.id_curie + ')'
-    }
-    if (option.text && option.id_curie) {
-      return option.text + ' (' + option.id_curie + ')'
-    }
-    if (option.label && option.curie) {
-      return option.label + ' (' + option.curie + ')'
-    }
-    if (option.id_uri) {
-      return option.id_uri
-    }
-    if (option.text) {
-      return option.text
-    }
-    if (option.label) {
-      return option.label
-    }
-    if (option.id) {
-      return option.id
-    }
-    if (typeof option === 'string')  {
-      return option
-    } else {
-      return ''
-    }
   }
 
-  const triplesTemplates = ["BioLink reified associations", "RDF reified statements", "Plain RDF"]
-  const handleTemplateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    updateState({templateSelected: event.target.value})
-  }
+  // const triplesTemplates = ["RDF reified statements", "Plain RDF"]
+  // const handleTemplateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   updateState({templateSelected: event.target.value})
+  // }
 
   const handleRemoveStmt = (index: number) => {
     // TODO: entities that are not anymore relevant are removed when a statement is removed
@@ -642,7 +526,6 @@ export default function AnnotateText() {
     updateState({entitiesList: entitiesList, tagSelected: editEnt})
   }
   const handleRemoveEntity = (index: any) => {
-    // TODO: entities that are not anymore relevant are removed when a statement is removed
     const entitiesList = state.entitiesList
     // Delete the entity with the same index
     entitiesList.splice(entitiesList.findIndex((ent: any) => ent.index === index), 1);
@@ -650,13 +533,11 @@ export default function AnnotateText() {
     handleClickAway()
   }
   const handleRemoveProp = (stmtIndex: number, pindex: number) => {
-    // TODO: entities that are not anymore relevant are removed when a statement is removed
     const stmts = state.statements
     stmts[stmtIndex].props.splice(pindex, 1);
     updateState({statements: stmts})
   }
   const handleRemoveEntityProp = (editEnt: any, pindex: number) => {
-    // TODO: entities that are not anymore relevant are removed when a statement is removed
     const entitiesList: any = state.entitiesList
     editEnt.props.splice(pindex, 1);
     // editEnt.props.splice(entitiesList.findIndex((ent: any) => ent.index === editEnt.index), 1);
@@ -668,7 +549,8 @@ export default function AnnotateText() {
   const clickTag = (event: any, tag: any, elemIndex: any) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
     setOpen((prev) => !prev);
-    tag['id'] = tag['type']
+    // tag['id'] = tag['type']
+    console.log('clickTag', tag)
     updateState({tagSelected: tag})
   }
 
@@ -713,7 +595,12 @@ export default function AnnotateText() {
       const entityCuries = await getEntityCuries(text)
       if (entityCuries && Object.keys(entityCuries).length > 0) {
         Object.keys(entityCuries).map((curie: any) => {
-          newEntity['curies'].push({'curie': curie, 'label': entityCuries[curie][0]})
+          const addEnt: any = {
+            'curie': curie, 
+            'label': entityCuries[curie][0], 
+            'altLabel': entityCuries[curie][1],
+          }
+          newEntity['curies'].push(addEnt)
         })
         newEntity['id_curie'] = Object.keys(entityCuries)[0]
         newEntity['id_label'] = entityCuries[newEntity['id_curie']][0]
@@ -727,6 +614,23 @@ export default function AnnotateText() {
     }
   }
 
+  const addToStatements = (property: string, newInputValue: any, index: any, pindex: any = null) => {
+    const stmts: any = state.statements
+    console.log('newInputValue', newInputValue)
+    if (newInputValue) {
+      if (pindex == null) {
+        if (typeof newInputValue === 'object' || checkIfUri(newInputValue)) {
+          stmts[index][property] = newInputValue as string
+        }
+      } else {
+        if (typeof newInputValue === 'object' || checkIfUri(newInputValue)) {
+          stmts[index]['props'][pindex][property] = newInputValue as string
+        }
+      }
+    }
+    console.log(stmts)
+    updateState({statements: stmts})
+  }
 
   return(
     <Container className='mainContainer'>
@@ -818,7 +722,11 @@ export default function AnnotateText() {
         </Box>
       }
       { state.errorMessage &&
-        <Paper elevation={4} style={{backgroundColor: "#e57373", padding: theme.spacing(2), marginBottom:theme.spacing(3)}} sx={{ display: state.errorMessage.length > 0 }}>
+        <Paper elevation={4} 
+          style={{backgroundColor: "#e57373", padding: theme.spacing(2), marginBottom:theme.spacing(3)}}
+          // @ts-ignore
+          sx={{ display: state.errorMessage.length > 0 }}
+        >
           ⚠️&nbsp;&nbsp;{state.errorMessage}
         </Paper>
       }
@@ -837,97 +745,96 @@ export default function AnnotateText() {
                     </IconButton>
                   </Tooltip>
                 </Typography>
-                <Autocomplete
-                    id={'tag:type'}
-                    freeSolo
-                    value={state.tagSelected.type}
-                    options={ents}
-                    onChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue)}
-                    onInputChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue)}
-                    // onChange={handleAutocomplete}
-                    // onInputChange={handleAutocomplete}
-                    getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                    groupBy={(option) => option.type ? option.type : null }
-                    style={{marginBottom: theme.spacing(3)}}
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        variant="outlined"
-                        size='small'
-                        className={classes.input}
-                        label="Entity type"
-                        placeholder="Entity type"
-                      />
-                    )}
-                  />
-                <Autocomplete
-                    id={'tag:id'}
-                    freeSolo
-                    value={state.tagSelected}
-                    options={state.tagSelected.curies}
-                    onChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue, {'type': 'tagId'})}
-                    onInputChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue, {'type': 'tagId'})}
-                    getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                    groupBy={(option) => option.type ? option.type : null }
-                    style={{marginBottom: theme.spacing(1)}}
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        variant="outlined"
-                        size='small'
-                        className={classes.input}
-                        label="Entity ID"
-                        placeholder="Entity ID"
-                      />
-                    )}
-                  />
+                <AutocompleteEntity
+                  label="Entity type"
+                  id="tag:type"
+                  value={state.tagSelected.type}
+                  options={ents}
+                  onChange={(event: any, newInputValue: any) => {
+                    const tagSelected: any = state.tagSelected
+                    if (newInputValue && newInputValue != tagSelected.type) {
+                      const entitiesList: any = state.entitiesList
+                      const entityIndex = entitiesList.findIndex((ent: any) => ent.index === tagSelected.index)
+                      entitiesList[entityIndex].type = newInputValue.type
+                      tagSelected.type = newInputValue.type
+                      updateState({tagSelected: tagSelected, entitiesList: entitiesList})
+                    }
+                  }}
+                  groupBy={(option: any) => (option.category ? option.category : null)}
+                  style={{marginBottom: theme.spacing(2)}}
+                />
+                <AutocompleteEntity
+                  label="Entity ID"
+                  id="tag:id"
+                  value={state.tagSelected}
+                  options={state.tagSelected.curies}
+                  // getOptionLabel={(option: any) => `${option.label}${option.altLabel ? `, ${option.altLabel}` : ''} (${option.curie})`}
+                  onChange={(event: any, newInputValue: any) => {
+                    const entitiesList: any = state.entitiesList
+                    const tagSelected = state.tagSelected
+                    const entityIndex = entitiesList.findIndex((ent: any) => ent.index === tagSelected.index)
+                    if (newInputValue && (typeof newInputValue === 'object' || checkIfUri(newInputValue))) {
+                      if (newInputValue.curie) {
+                        entitiesList[entityIndex].id_curie = newInputValue.curie
+                        entitiesList[entityIndex].id_label = newInputValue.label
+                        entitiesList[entityIndex].id_uri = curieToUri(newInputValue.curie)
+                        tagSelected.id_curie = newInputValue.curie
+                        tagSelected.id_label = newInputValue.label
+                        tagSelected.id_uri = curieToUri(newInputValue.curie)
+                      } else {
+                        delete entitiesList[entityIndex].id_curie
+                        delete entitiesList[entityIndex].id_label
+                        entitiesList[entityIndex].id_uri = newInputValue
+                        delete tagSelected.id_curie
+                        delete tagSelected.id_label
+                        tagSelected.id_uri = newInputValue
+                      }
+                      updateState({tagSelected: tagSelected, entitiesList: entitiesList})
+                    }
+                  }}
+                  style={{marginBottom: theme.spacing(2)}}
+                />
                 { state.templateSelected !== 'Plain RDF' && state.tagSelected.props &&
                   state.tagSelected.props.map((prop: any, pindex: number) => { 
                     return <Grid container spacing={2} key={'prop:' + prop + pindex} style={{marginLeft: theme.spacing(5), marginBottom: theme.spacing(1)}}>
                     <Grid item xs={5}>
-                      <Autocomplete
-                        // id={'prop:' + index + ':p:'+pindex}
-                        freeSolo
+                      <AutocompleteEntity
+                        label="Property"
+                        id={'tag:prop:p:'+pindex}
                         value={state.tagSelected.props[pindex].p}
                         options={state.propertiesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
-                        onChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue, {'type': 'entityProp', 'editObj': state.tagSelected, index: pindex, prop: 'p'})}
-                        onInputChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue, {'type': 'entityProp', 'editObj': state.tagSelected, index: pindex, prop: 'p'})}
-                        // onChange={handleAutocomplete}
-                        // onInputChange={handleAutocomplete}
-                        getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                        renderInput={params => (
-                          <TextField
-                            {...params}
-                            variant="outlined"
-                            size='small'
-                            className={classes.input}
-                            label="Property"
-                            placeholder="Property"
-                          />
-                        )}
+                        onChange={(event: any, newInputValue: any) => {
+                          // if (newInputValue && newInputValue != tagSelected.type) {
+                          if (typeof newInputValue === 'object' || checkIfUri(newInputValue)) {
+                            const entitiesList: any = state.entitiesList
+                            const tagSelected = state.tagSelected
+                            tagSelected.props[pindex]['p'] = newInputValue
+                            const entityIndex = entitiesList.findIndex((ent: any) => ent.index === pindex)
+                            entitiesList[entityIndex] = tagSelected
+                            updateState({entitiesList: entitiesList, tagSelected: tagSelected})
+                          }
+                        }}
+                        validate="entity"
                       />
                     </Grid>
 
                     <Grid item xs={5}>
-                      <Autocomplete
-                        // id={'prop:' + index + ':o:'+pindex}
-                        freeSolo
+                      <AutocompleteEntity
+                        label="Value"
+                        id={'tag:prop:o:'+pindex}
                         value={state.tagSelected.props[pindex].o}
                         options={state.entitiesList}
-                        onChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue, {'type': 'entityProp', 'editObj': state.tagSelected, index: pindex, prop: 'o'})}
-                        onInputChange={(event: any, newInputValue: any) => handleAutocomplete(event, newInputValue, {'type': 'entityProp', 'editObj': state.tagSelected, index: pindex, prop: 'o'})}
-                        getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                        groupBy={(option) => option.type ? option.type : null }
-                        renderInput={params => (
-                          <TextField
-                            {...params}
-                            variant="outlined"
-                            size='small'
-                            className={classes.input}
-                            label="Value"
-                            placeholder="Value"
-                          />
-                        )}
+                        onChange={(event: any, newInputValue: any) => {
+                          if (typeof newInputValue === 'object' || checkIfUri(newInputValue)) {
+                            const entitiesList: any = state.entitiesList
+                            const tagSelected = state.tagSelected
+                            tagSelected.props[pindex]['o'] = newInputValue
+                            const entityIndex = entitiesList.findIndex((ent: any) => ent.index === pindex)
+                            entitiesList[entityIndex] = tagSelected
+                            updateState({entitiesList: entitiesList, tagSelected: tagSelected})
+                          }
+                        }}
+                        validate="entity"
                       />
                     </Grid>
                     <Grid item xs={1}>
@@ -982,75 +889,41 @@ export default function AnnotateText() {
           return <Box key={'stmt:' + index}>
             <Grid container spacing={2} key={index} style={{marginBottom: theme.spacing(1), marginTop: theme.spacing(1)}}>
               <Grid item xs={4}>
-                <Autocomplete
-                  key={'s:'+index}
+                <AutocompleteEntity
+                  label="Subject"
                   id={'s:'+index}
-                  freeSolo
                   value={state.statements[index].s}
                   options={state.entitiesList}
-                  onChange={handleAutocomplete}
-                  onInputChange={handleAutocomplete}
-                  getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                  groupBy={(option) => option.type ? option.type : null }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      variant="outlined"
-                      size='small'
-                      className={classes.input}
-                      label="Subject"
-                      placeholder="Subject"
-                    />
-                  )}
+                  onChange={(event: any, newInputValue: any) => {
+                    addToStatements('s', newInputValue, index)
+                  }}
+                  validate="entity"
                 />
               </Grid>
 
               <Grid item xs={3}>
-                <Autocomplete
-                  key={'p:'+index}
+                <AutocompleteEntity
+                  label="Predicate"
                   id={'p:'+index}
-                  freeSolo
                   value={state.statements[index].p}
                   options={state.predicatesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
-                  // options={state.propertiesList}
-                  onChange={handleAutocomplete}
-                  onInputChange={handleAutocomplete}
-                  getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                  // groupBy={(option) => option.type ? option.type : null }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      variant="outlined"
-                      size='small'
-                      className={classes.input}
-                      label="Predicate"
-                      placeholder="Predicate"
-                    />
-                  )}
+                  onChange={(event: any, newInputValue: any) => {
+                    addToStatements('p', newInputValue, index)
+                  }}
+                  validate="entity"
                 />
               </Grid>
 
               <Grid item xs={4}>
-                <Autocomplete
-                  key={'o:'+index}
+                <AutocompleteEntity
+                  label="Object"
                   id={'o:'+index}
-                  freeSolo
                   value={state.statements[index].o}
                   options={state.entitiesList}
-                  onChange={handleAutocomplete}
-                  onInputChange={handleAutocomplete}
-                  getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                  groupBy={(option) => option.type ? option.type : null }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      variant="outlined"
-                      size='small'
-                      className={classes.input}
-                      label="Object"
-                      placeholder="Object"
-                    />
-                  )}
+                  onChange={(event: any, newInputValue: any) => {
+                    addToStatements('o', newInputValue, index)
+                  }}
+                  validate="entity"
                 />
               </Grid>
 
@@ -1066,48 +939,30 @@ export default function AnnotateText() {
               state.statements[index].props.map((prop: any, pindex: number): any => { 
                 return <Grid container spacing={2} key={'prop' + index + prop + pindex} style={{marginLeft: theme.spacing(5), marginBottom: theme.spacing(1)}}>
                 <Grid item xs={4}>
-                  <Autocomplete
+                  <AutocompleteEntity
+                    label="Property"
                     id={'prop:' + index + ':p:'+pindex}
-                    freeSolo
+                    // @ts-ignore
                     value={state.statements[index].props[pindex].p}
                     options={state.propertiesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
-                    onChange={handleAutocomplete}
-                    onInputChange={handleAutocomplete}
-                    getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        variant="outlined"
-                        size='small'
-                        className={classes.input}
-                        label="Property"
-                        placeholder="Property"
-                      />
-                    )}
+                    onChange={(event: any, newInputValue: any) => {
+                      addToStatements('p', newInputValue, index, pindex)
+                    }}
+                    validate="entity"
                   />
                 </Grid>
 
                 <Grid item xs={4}>
-                  <Autocomplete
+                  <AutocompleteEntity
+                    label="Value"
                     id={'prop:' + index + ':o:'+pindex}
-                    freeSolo
+                    // @ts-ignore
                     value={state.statements[index].props[pindex].o}
                     options={state.entitiesList}
-                    onChange={handleAutocomplete}
-                    onInputChange={handleAutocomplete}
-                    // onKeyPress={handleAutocomplete}
-                    getOptionLabel={(option: any) => getAutocompleteLabel(option)}
-                    groupBy={(option) => option.type ? option.type : null }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        variant="outlined"
-                        size='small'
-                        className={classes.input}
-                        label="Value"
-                        placeholder="Value"
-                      />
-                    )}
+                    onChange={(event: any, newInputValue: any) => {
+                      addToStatements('o', newInputValue, index, pindex)
+                    }}
+                    validate="entity"
                   />
                 </Grid>
                 <Grid item xs={1}>
@@ -1136,25 +991,25 @@ export default function AnnotateText() {
               <Typography>
                 Validate statement against: 
               </Typography>
-              <Autocomplete
+              <AutocompleteEntity
+                label="ShEx shape"
                 id={'shex:' + index}
-                // freeSolo
+                value={state.statements[index].shex}
+                freesolo={undefined}
                 options={biolinkShex.shapes}
-                onChange={handleAutocomplete}
-                onInputChange={handleAutocomplete}
                 getOptionLabel={(option: any) => `${option.label} (${option.id})`}
-                groupBy={(option) => option.type}
+                onChange={(event: any, newInputValue: any) => {
+                  const stmts: any = state.statements
+                  if (newInputValue) {
+                    if (newInputValue.id) {
+                      stmts[index]['shex'] = newInputValue.id as string
+                    } else {
+                      stmts[index]['shex'] = newInputValue as string
+                    }
+                    updateState({statements: stmts})
+                  }
+                }}
                 style={{width: '400px', marginLeft: theme.spacing(2)}}
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    size='small'
-                    className={classes.input}
-                    label="ShEx shape"
-                    placeholder="ShEx shape"
-                  />
-                )}
               />
             </div>
             }
@@ -1186,56 +1041,67 @@ export default function AnnotateText() {
         ))}
       </TextField> */}
 
-      <form onSubmit={handleSubmit}>
-        <FormControl className={classes.settingsForm}>
+      { state.extractClicked &&
+        <form>
+          <FormControl className={classes.settingsForm}>
+            {/* Button to download the JSON-LD */}
+            <div style={{width: '100%', textAlign: 'center'}}>
+              <Button 
+                onClick={shexValidation}
+                variant="contained" 
+                className={classes.saveButton} 
+                startIcon={<ShexIcon />}
+                style={{marginRight: theme.spacing(2)}}
+                disabled={state.entitiesList.length < 1}
+                color="warning" >
+                  Validate with ShEx
+              </Button>
+              <Button 
+                onClick={handleDownloadRDF}
+                variant="contained" 
+                className={classes.saveButton} 
+                startIcon={<DownloadIcon />}
+                style={{marginRight: theme.spacing(2)}}
+                disabled={state.entitiesList.length < 1}
+                color="secondary" >
+                  Download RDF
+              </Button>
+              <Button
+                onClick={(event) => generateNanopub(event, false)}
+                variant="contained" 
+                className={classes.saveButton} 
+                startIcon={<GenerateIcon />}
+                disabled={!user.id}
+                style={{marginRight: theme.spacing(2)}}
+                color="info" >
+                  Generate Nanopublication
+              </Button>
+              { state.nanopubGenerated &&
+                <Button
+                  onClick={publishSignedNanopub}
+                  variant="contained" 
+                  className={classes.saveButton} 
+                  startIcon={<PublishIcon />}
+                  disabled={!state.nanopubGenerated}
+                  color="error" >
+                    Publish Nanopublication
+                </Button>
+              }
+              { !user.id &&
+                <Typography style={{marginTop: theme.spacing(2)}}>
+                  🔒️ You need to login with your ORCID to generate Nanopublications
+                </Typography>
+              }
+            </div>
+          </FormControl>
+        </form>
+      }
 
-          {/* Button to download the JSON-LD */}
-          <div style={{width: '100%', textAlign: 'center'}}>
-            <Button 
-              onClick={shexValidation}
-              variant="contained" 
-              className={classes.saveButton} 
-              startIcon={<ShexIcon />}
-              style={{marginRight: theme.spacing(2)}}
-              disabled={state.entitiesList.length < 1}
-              color="warning" >
-                Validate with ShEx
-            </Button>
-            <Button 
-              onClick={handleDownloadRDF}
-              variant="contained" 
-              className={classes.saveButton} 
-              startIcon={<DownloadIcon />}
-              style={{marginRight: theme.spacing(2)}}
-              disabled={state.entitiesList.length < 1}
-              color="secondary" >
-                Download RDF
-            </Button>
-            <Button type="submit" 
-              variant="contained" 
-              className={classes.saveButton} 
-              startIcon={<GenerateIcon />}
-              disabled={!user.id}
-              style={{marginRight: theme.spacing(2)}}
-              color="info" >
-                Generate Nanopublication
-            </Button>
-            <Button type="submit" 
-              variant="contained" 
-              className={classes.saveButton} 
-              startIcon={<PublishIcon />}
-              disabled={!user.id}
-              color="error" >
-                Publish Nanopublication
-            </Button>
-            { !user.id &&
-              <Typography style={{marginTop: theme.spacing(2)}}>
-                🔒️ You need to login with your ORCID to generate Nanopublications
-              </Typography>
-            }
-          </div>
-        </FormControl>
-      </form>
+      { state.nanopubPublished &&
+        <Paper elevation={4} style={{backgroundColor: '#81c784', padding: theme.spacing(2), marginBottom:theme.spacing(3), marginTop:theme.spacing(3)}}>
+          ✅&nbsp;&nbsp;Nanopublication successfully published
+        </Paper>
+      }
 
       { user.id &&
         <Card className={classes.paperPadding} style={{textAlign: 'center'}}>

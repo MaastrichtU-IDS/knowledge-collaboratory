@@ -1,6 +1,6 @@
 # Knowledge Collaboratory
 
-[![Run backend tests](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/test-backend.yml/badge.svg)](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/test-backend.yml) [![CodeQL analysis](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/codeql-analysis.yml)
+[![Test production API](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/test-prod.yml/badge.svg)](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/test-prod.yml) [![Run backend tests](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/test-backend.yml/badge.svg)](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/test-backend.yml) [![CodeQL analysis](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/codeql-analysis.yml)
 
 Services to query the Nanopublications network using Translator standards to retrieve the Knowledge Collaboratory graph, a collection of drug indications annotated using  preferred identifiers (usually from MONDO, CHEBI, DrugBank, etc).
 
@@ -16,7 +16,23 @@ Frontend built with [React](https://reactjs.org) and [Material UI](https://mui.c
 
 * [Node.js](https://nodejs.org/en/) (with `npm`) and [`yarn`](https://yarnpkg.com/) if you need to do frontend development
 
-## 🐳 Backend local development
+## 🚀 Production deployment 
+
+1. Create a `.env` file with your production settings:
+
+```
+ORCID_CLIENT_ID=APP-XXX
+ORCID_CLIENT_SECRET=XXXX
+FRONTEND_URL=https://collaboratory.semanticscience.org
+```
+
+2. Deploy the app with production config: 
+
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
+
+## 🐳 Local development
 
 ### Prepare the data
 
@@ -116,22 +132,21 @@ Next, open your editor at `./backend/` (instead of the project root: `./`), so t
 
 During development, you can change Docker Compose settings that will only affect the local development environment, in the file `docker-compose.override.yml`
 
-## 🚀 Production deployment 
+## ✅ Tests
 
-1. Create a `.env` file with your production settings:
+2 sets of tests are available: `integration` tests to test local changes, and `production` tests to test the API deployed in production
 
-```
-ORCID_CLIENT_ID=APP-XXX
-ORCID_CLIENT_SECRET=XXXX
-FRONTEND_URL=https://collaboratory.semanticscience.org
-```
-
-2. Download the models
-
-3. Deploy the app with production config: 
+You can run the tests in docker when the backend is already running: 
 
 ```bash
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+docker-compose exec backend poetry run pytest tests/integration -s
+```
+
+Or locally directly with poetry:
+
+```bash
+poetry install
+poetry run pytest tests/integration -s
 ```
 
 ## ➕ Docker Compose files and env vars

@@ -8,7 +8,9 @@ export const settings = {
   graphqlUrl: ((process.env.API_URL) ? process.env.API_URL + '/graphql' : null) || 'http://localhost/graphql',
   OauthRedirectUri: process.env.OAUTH_REDIRECT_FRONTEND || "http://localhost:19006",
   nanopubGrlcUrl: process.env.GRLC_URL || "https://grlc.np.dumontierlab.com/api/local/local",
-  // http://grlc.nanopubs.lod.labs.vu.nl/api/local/local
+  nanopubSparqlUrl: "https://virtuoso.nps.petapico.org/sparql",
+  // https://virtuoso.np.dumontierlab.137.120.31.101.nip.io/sparql
+  // biolinkVersion: "v.2.4.4",
 }
 
 export const getUrlHtml = (urlString: string) => {
