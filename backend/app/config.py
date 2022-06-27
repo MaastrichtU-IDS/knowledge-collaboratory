@@ -1,4 +1,6 @@
+import os
 import secrets
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 from pydantic import AnyHttpUrl, BaseSettings, EmailStr, HttpUrl, PostgresDsn, validator
@@ -66,6 +68,24 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
+
+def get_initial_data() -> None:
+    print("🔑 Using keystore folder: " + settings.KEYSTORE_PATH)
+    Path(settings.KEYSTORE_PATH).mkdir(parents=True, exist_ok=True)
+
+    if not os.path.exists(f"{settings.NER_MODELS_PATH}/litcoin-ner-model"):
+        print("📥️ litcoin-ner-model not present, downloading it")
+        os.system("wget https://download.dumontierlab.com/ner-models/litcoin-ner-model.zip")
+        Path(f"{settings.NER_MODELS_PATH}/litcoin-ner-model").mkdir(parents=True, exist_ok=True)
+        os.system(f'unzip "{settings.NER_MODELS_PATH}/*.zip" -d {settings.NER_MODELS_PATH}/litcoin-ner-model"')
+        os.system(f"rm {settings.NER_MODELS_PATH}/*.zip")
+
+    if not os.path.exists(f"{settings.NER_MODELS_PATH}/litcoin-relations-extraction-model"):
+        print("📥️ litcoin-relations-extraction-model not present, downloading it")
+        os.system("wget https://download.dumontierlab.com/ner-models/litcoin-relations-extraction-model.zip")
+        Path(f"{settings.NER_MODELS_PATH}/litcoin-relations-extraction-model").mkdir(parents=True, exist_ok=True)
+        os.system(f'unzip "{settings.NER_MODELS_PATH}/*.zip" -d {settings.NER_MODELS_PATH}/litcoin-relations-extraction-model"')
+        os.system(f"rm {settings.NER_MODELS_PATH}/*.zip")
 
 
 biolink_context = {

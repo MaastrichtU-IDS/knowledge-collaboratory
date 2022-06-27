@@ -2,12 +2,14 @@ from typing import List, Optional
 
 import strawberry
 from app.api.api import api_router
-from app.config import settings
+from app.config import get_initial_data, settings
 from app.trapi.openapi import TRAPI
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
+
+get_initial_data()
 
 # app = FastAPI(
 app = TRAPI(

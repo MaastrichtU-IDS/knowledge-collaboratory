@@ -251,6 +251,18 @@ export default function AnnotateText() {
   const checkIfUri = (text: string) => {
     return /^https?:\/\/[-_\/#:\?=\+%\.0-9a-zA-Z]+$/i.test(text)
   }
+  const getUri  = (prop: any) => {
+    if (prop['id_uri']) {
+      return prop.id_uri
+    }
+    if (prop['id']) {
+      return prop.id
+    }
+    // if (prop['text']) {
+    //   return prop.text
+    // }
+    return prop
+  }
 
   const generateRDF  = () => {
     const stmtJsonld: any = []
@@ -802,6 +814,7 @@ export default function AnnotateText() {
                             updateState({entitiesList: entitiesList, tagSelected: tagSelected})
                           }
                         }}
+                        validate="entity"
                       />
                     </Grid>
 
@@ -821,6 +834,7 @@ export default function AnnotateText() {
                             updateState({entitiesList: entitiesList, tagSelected: tagSelected})
                           }
                         }}
+                        validate="entity"
                       />
                     </Grid>
                     <Grid item xs={1}>
@@ -883,6 +897,7 @@ export default function AnnotateText() {
                   onChange={(event: any, newInputValue: any) => {
                     addToStatements('s', newInputValue, index)
                   }}
+                  validate="entity"
                 />
               </Grid>
 
@@ -895,6 +910,7 @@ export default function AnnotateText() {
                   onChange={(event: any, newInputValue: any) => {
                     addToStatements('p', newInputValue, index)
                   }}
+                  validate="entity"
                 />
               </Grid>
 
@@ -907,6 +923,7 @@ export default function AnnotateText() {
                   onChange={(event: any, newInputValue: any) => {
                     addToStatements('o', newInputValue, index)
                   }}
+                  validate="entity"
                 />
               </Grid>
 
@@ -931,6 +948,7 @@ export default function AnnotateText() {
                     onChange={(event: any, newInputValue: any) => {
                       addToStatements('p', newInputValue, index, pindex)
                     }}
+                    validate="entity"
                   />
                 </Grid>
 
@@ -944,6 +962,7 @@ export default function AnnotateText() {
                     onChange={(event: any, newInputValue: any) => {
                       addToStatements('o', newInputValue, index, pindex)
                     }}
+                    validate="entity"
                   />
                 </Grid>
                 <Grid item xs={1}>

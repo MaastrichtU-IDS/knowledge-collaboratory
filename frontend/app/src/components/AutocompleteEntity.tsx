@@ -40,6 +40,16 @@ const getAutocompleteLabel = (option: any, displayProp: string = "") => {
   }
 };
 
+const checkIfUri = (text: string) => {
+  return /^https?:\/\/[-_\/#:\?=\+%\.0-9a-zA-Z]+$/i.test(text)
+}
+
+const checkIfEntity = (entity: any) => {
+  if (entity.id_uri) return checkIfUri(entity.id_uri)
+  if (entity.id) return checkIfUri(entity.id)
+  return checkIfUri(entity)
+};
+
 
 const AutocompleteEntity = ({
   label,
@@ -48,6 +58,7 @@ const AutocompleteEntity = ({
   id,
   options,
   entity,
+  validate,
   getOptionLabel=(option: any) => getAutocompleteLabel(option),
   groupBy=(option: any) => (option.type ? option.type : null),
   ...args
@@ -84,6 +95,10 @@ const AutocompleteEntity = ({
           className={classes.input}
           label={label}
           placeholder={label}
+          error={validate == 'entity' && !checkIfEntity(value)}
+          helperText={validate == 'entity' && !checkIfEntity(value) && "This value is not valid, make sure the selected entity has an identifier, or provid a valid URI."}
+          // TODO: only works at init
+          // try Controller hook? https://stackoverflow.com/questions/69295842/error-validation-with-material-ui-autcomplete-react-hook-form
         />
       )}
       {...args}

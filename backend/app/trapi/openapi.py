@@ -1,15 +1,16 @@
 import os
-from fastapi import FastAPI
-from fastapi.openapi.utils import get_openapi
-from fastapi.middleware.cors import CORSMiddleware
-from reasoner_pydantic import Query, Message
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional
 
-import spacy
 import numpy as np
+import spacy
 import torch
-from transformers import BertTokenizer, BertForSequenceClassification
 from app.config import settings
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
+from reasoner_pydantic import Message, Query
+from transformers import BertForSequenceClassification, BertTokenizer
+
 
 class TRAPI(FastAPI):
     """Translator Reasoner API - wrapper for FastAPI."""
