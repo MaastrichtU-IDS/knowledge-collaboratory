@@ -18,6 +18,8 @@ Frontend built with [React](https://reactjs.org) and [Material UI](https://mui.c
 
 ## 🚀 Production deployment 
 
+Checkout the `docker-compose.prod.yml` file for more details about the deployment.
+
 1. Create a `.env` file with your production settings:
 
 ```

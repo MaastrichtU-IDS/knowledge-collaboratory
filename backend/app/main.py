@@ -39,6 +39,12 @@ if settings.BACKEND_CORS_ORIGINS:
     )
 
 
+@app.get("/health", include_in_schema=False)
+def health_check():
+    """Health check for Translator elastic load balancer"""
+    return {'status': 'ok'}
+
+
 @app.get("/", include_in_schema=False)
 def redirect_root_to_docs():
     """Redirect the route / to /docs"""
