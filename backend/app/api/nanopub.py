@@ -208,13 +208,13 @@ async def publish_assertion(
 
     # Pubinfo
     time_created = datetime.datetime.now().astimezone().replace(microsecond=0).isoformat()
-    g.add((BASE_URI, DCTERMS.created, Literal(time_created, datatype=XSD.integer, normalize=False), pubinfo_graph))
+    g.add((BASE_URI, DCTERMS.created, Literal(time_created, datatype=XSD.dateTime, normalize=False), pubinfo_graph))
     g.add((BASE_URI, PAV.createdBy, URIRef(current_user['id']), pubinfo_graph))
     # g.add((BASE_URI, RDF.type, NPX.ExampleNanopub, pubinfo_graph))
 
     # Provenance
     g.add((BASE.assertion, PROV.wasAttributedTo, URIRef(current_user['id']), prov_graph))
-    g.add((BASE.assertion, PROV.generatedAtTime, Literal(time_created, datatype=XSD.integer, normalize=False), prov_graph))
+    g.add((BASE.assertion, PROV.generatedAtTime, Literal(time_created, datatype=XSD.dateTime, normalize=False), prov_graph))
     if source:
         g.add((BASE.assertion, PROV.hadPrimarySource, URIRef(source), prov_graph))
     if quoted_from:
