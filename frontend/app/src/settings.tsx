@@ -82,7 +82,9 @@ export const ents = [
   {type: 'Drug', label: 'Drug', id: BIOLINK + 'Drug',  curie: 'biolink:Drug', 
     color: {r: 255, g: 102, b: 102}}, // Red
   {type: 'DiseaseOrPhenotypicFeature', label: 'Disease or Phenotypic Feature', id: BIOLINK + 'DiseaseOrPhenotypicFeature', curie: 'biolink:DiseaseOrPhenotypicFeature', 
-  color: {r: 47, g: 187, b: 171}}, // Blue green  
+  color: {r: 47, g: 187, b: 171}}, // Blue green
+  {type: 'Disease', label: 'Disease', id: BIOLINK + 'Disease', curie: 'biolink:Disease', 
+  color: {r: 47, g: 187, b: 171}}, // Blue green
   {type: 'GeneOrGeneProduct', label: 'Gene or Gene Product', id: BIOLINK + 'GeneOrGeneProduct', curie: 'biolink:GeneOrGeneProduct', 
     color: {r: 218, g: 112, b: 214}}, // Purple
   {type: 'SequenceVariant', label: 'Sequence Variant', id: BIOLINK + 'SequenceVariant', curie: 'biolink:SequenceVariant', 
