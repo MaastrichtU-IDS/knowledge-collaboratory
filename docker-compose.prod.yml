@@ -17,6 +17,7 @@ services:
       context: ./frontend
       args:
         # FRONTEND_ENV: dev
+        API_URL: https://api.collaboratory.semanticscience.org
         ORCID_CLIENT_ID: ${ORCID_CLIENT_ID}
         ORCID_CLIENT_SECRET: ${ORCID_CLIENT_SECRET}
         OAUTH_REDIRECT_FRONTEND: ${OAUTH_REDIRECT_FRONTEND-https://collaboratory.semanticscience.org}

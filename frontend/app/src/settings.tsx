@@ -3,9 +3,7 @@ import { useTheme } from '@mui/material/styles';
 
 export const settings = {
   apiUrl: process.env.API_URL || 'http://localhost',
-  restUrl: ((process.env.API_URL) ? process.env.API_URL + '' : null) || 'http://localhost',
   docsUrl: ((process.env.API_URL) ? process.env.API_URL + '/docs' : null) || 'http://localhost/docs',
-  graphqlUrl: ((process.env.API_URL) ? process.env.API_URL + '/graphql' : null) || 'http://localhost/graphql',
   OauthRedirectUri: process.env.OAUTH_REDIRECT_FRONTEND || "http://localhost:19006",
   nanopubGrlcUrl: process.env.GRLC_URL || "https://grlc.np.dumontierlab.com/api/local/local",
   nanopubSparqlUrl: "https://virtuoso.nps.petapico.org/sparql",
