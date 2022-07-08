@@ -1,16 +1,16 @@
-from fastapi import FastAPI, Response, APIRouter, Body, HTTPException
+from typing import List, Optional
+
+import numpy as np
+import requests
+import spacy
+import torch
+from app.config import biolink_context, settings
+from fastapi import APIRouter, Body, FastAPI, HTTPException, Response
 from fastapi.responses import JSONResponse
+
 # from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
-from typing import List, Optional
-from app.config import settings, biolink_context
-
-import spacy
-import requests
-import numpy as np
-import torch
-from transformers import BertTokenizer, BertForSequenceClassification
-
+from transformers import BertForSequenceClassification, BertTokenizer
 
 router = APIRouter()
 
@@ -29,17 +29,21 @@ label2id = {
 }
 
 # Loading models for NER
-ner = spacy.load(Rf"{settings.NER_MODELS_PATH}/litcoin-ner-model")
-# Loading models for relations extraction
-relation_model = Rf"{settings.NER_MODELS_PATH}/litcoin-relations-extraction-model"
-# Instantiate the Bert tokenizer
-tokenizer = BertTokenizer.from_pretrained(relation_model, do_lower_case=False)
-model = BertForSequenceClassification.from_pretrained(relation_model,num_labels=len(label2id))
-device = torch.device("cpu")
-# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-# Send model to device
-model.to(device);
-print('✅ Models for NER and relations extraction loaded')
+try:
+    ner = spacy.load(Rf"{settings.NER_MODELS_PATH}/litcoin-ner-model")
+    # Loading models for relations extraction
+    relation_model = Rf"{settings.NER_MODELS_PATH}/litcoin-relations-extraction-model"
+    # Instantiate the Bert tokenizer
+    tokenizer = BertTokenizer.from_pretrained(relation_model, do_lower_case=False)
+    model = BertForSequenceClassification.from_pretrained(relation_model,num_labels=len(label2id))
+    device = torch.device("cpu")
+    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # Send model to device
+    model.to(device);
+    print('✅ Models for NER and relations extraction loaded')
+except Exception as e:
+    print('⚠️ Could not load the models for NER and relations extraction')
+    print(e)
 
 IDO = 'https://identifiers.org/'
 
@@ -87,7 +91,14 @@ async def get_entities_relations(
         if len(name_res.keys()) > 0:
             # entity['curies'] = name_res
             for curie, labels in name_res.items():
-                entity['curies'].append({'curie': curie, 'label': labels[0]})
+                alt_label = None
+                if len(labels) > 1:
+                    alt_label = labels[1]
+                entity['curies'].append({
+                    'curie': curie, 
+                    'label': labels[0],
+                    'altLabel': alt_label,
+                })
             entity['id_curie'] = list(name_res.keys())[0]
             entity['id_label'] = name_res[list(name_res.keys())[0]][0]
             entity['id_uri'] = curie_to_uri(list(name_res.keys())[0])

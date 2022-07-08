@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "app"
+name = "knowledge-collaboratory-api"
 version = "0.1.0"
 description = ""
-authors = ["Admin <admin@example.com>"]
+authors = ["Vincent Emonet <vincent.emonet@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -30,7 +30,7 @@ SPARQLWrapper = "^1.8.5"
 transformers = "^4.17.0"
 spacy = {extras = ["cuda110"], version = "^3.2.3"}
 spacy-transformers = "^1.1.5"
-PyShEx = "0.8.0"
+PyShEx = "0.8.1"
 rdflib = ">=6.1.1"
 
 [tool.poetry.dev-dependencies]

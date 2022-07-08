@@ -237,8 +237,7 @@ export default function BrowseNanopub() {
           }
         } ORDER BY desc(?date) LIMIT ` + state.results_count
     
-      const sparqlEndpoint = 'https://virtuoso.nps.petapico.org/sparql'
-      get_nanopubs_url = `${sparqlEndpoint}?query=${encodeURIComponent(getLatestNanopubsQuery)}`
+      get_nanopubs_url = `${settings.nanopubSparqlUrl}?query=${encodeURIComponent(getLatestNanopubsQuery)}`
       console.log('filterPerResource')
       console.log(state.filterPerResource)
       console.log(getLatestNanopubsQuery)
@@ -250,8 +249,7 @@ export default function BrowseNanopub() {
         get_nanopubs_url = settings.nanopubGrlcUrl + '/find_valid_signed_nanopubs_with_text?text=' + search
       }
     } else {
-      const sparqlEndpoint = 'https://virtuoso.nps.petapico.org/sparql'
-      get_nanopubs_url = `${sparqlEndpoint}?query=${encodeURIComponent(getLatestNanopubsQuery)}`
+      get_nanopubs_url = `${settings.nanopubSparqlUrl}?query=${encodeURIComponent(getLatestNanopubsQuery)}`
     }
     // if (user.id) {
     //   // If user is logged in, by default 

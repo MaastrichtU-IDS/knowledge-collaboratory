@@ -36,10 +36,10 @@ jobs:
     - name: Install dependencies
       run: |
         cd backend
-        pip install poetry reasoner-validator
+        pip install poetry
         poetry install
 
     - name: Test with pytest
       run: |
         cd backend
-        pytest tests/production -s
+        poetry run pytest tests/production -s
