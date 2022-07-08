@@ -15,7 +15,7 @@ ARG ORCID_CLIENT_SECRET
 ARG OAUTH_REDIRECT_FRONTEND
 ARG API_URL
 ENV API_URL=$API_URL
-
+RUN echo $API_URL
 # Install the react-taggy lib from git to get latest fixes:
 RUN apk add git
 WORKDIR /opt
@@ -42,7 +42,7 @@ WORKDIR /app
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nodejs -u 1001
 
-COPY server.ts package.json yarn.lock ./ 
+COPY server.ts package.json yarn.lock ./
 RUN chown -R nodejs:nodejs /app
 
 COPY --from=deps --chown=nodejs:nodejs /app/node_modules ./node_modules
