@@ -1,5 +1,7 @@
 FROM node:16-alpine
 
+# Not used in prod, only used for development
+
 WORKDIR /webapp
 ARG ORCID_CLIENT_ID
 ARG ORCID_CLIENT_SECRET

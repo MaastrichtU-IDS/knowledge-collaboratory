@@ -119,7 +119,7 @@ export default function NavBar() {
   }
 
   const getCurrentUser = (configState: any) => {
-    axios.get(settings.restUrl + '/current-user', {
+    axios.get(settings.apiUrl + '/current-user', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + configState['access_token']

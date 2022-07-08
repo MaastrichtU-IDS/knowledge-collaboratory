@@ -13,9 +13,10 @@ FROM node:16-alpine AS build-react
 ARG ORCID_CLIENT_ID
 ARG ORCID_CLIENT_SECRET
 ARG OAUTH_REDIRECT_FRONTEND
-ENV API_URL=http://localhost
+ARG API_URL
+ENV API_URL=$API_URL
 
-# Install the react-taggy lib from git to get latest fix:
+# Install the react-taggy lib from git to get latest fixes:
 RUN apk add git
 WORKDIR /opt
 RUN git clone --branch add-onclick-callback https://github.com/vemonet/react-taggy.git
@@ -27,7 +28,8 @@ COPY app /app
 WORKDIR /app
 # RUN yarn install --frozen-lockfile
 RUN yarn install
-RUN yarn build-prod
+RUN API_URL=$API_URL yarn build
+# RUN yarn build-prod
 
 
 ## Build and run the server

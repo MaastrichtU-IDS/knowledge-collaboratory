@@ -14,7 +14,7 @@ RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-
 RUN apt-get update && \
     apt-get install -y openjdk-11-jdk wget
 
-RUN wget -O /opt/nanopub.jar https://github.com/Nanopublication/nanopub-java/releases/download/nanopub-1.34/nanopub-1.34-jar-with-dependencies.jar
+RUN wget -O /opt/nanopub.jar https://github.com/Nanopublication/nanopub-java/releases/download/nanopub-1.38/nanopub-1.38-jar-with-dependencies.jar
 
 # Copy poetry.lock* in case it doesn't exist in the repo
 COPY ./pyproject.toml ./poetry.lock* /app/

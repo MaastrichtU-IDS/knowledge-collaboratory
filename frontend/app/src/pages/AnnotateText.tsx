@@ -315,7 +315,7 @@ export default function AnnotateText() {
         const entityJsonld = {
           '@id': entity.id_uri,
           '@type': BIOLINK + entity.type,
-          [RDFS + 'label']: entity.id_label,
+          [RDFS + 'label']: entity.text,
         }
         // Generate the props of the entity
         if (entity.props) {

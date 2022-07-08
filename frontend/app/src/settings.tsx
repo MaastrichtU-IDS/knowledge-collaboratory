@@ -3,9 +3,7 @@ import { useTheme } from '@mui/material/styles';
 
 export const settings = {
   apiUrl: process.env.API_URL || 'http://localhost',
-  restUrl: ((process.env.API_URL) ? process.env.API_URL + '' : null) || 'http://localhost',
   docsUrl: ((process.env.API_URL) ? process.env.API_URL + '/docs' : null) || 'http://localhost/docs',
-  graphqlUrl: ((process.env.API_URL) ? process.env.API_URL + '/graphql' : null) || 'http://localhost/graphql',
   OauthRedirectUri: process.env.OAUTH_REDIRECT_FRONTEND || "http://localhost:19006",
   nanopubGrlcUrl: process.env.GRLC_URL || "https://grlc.np.dumontierlab.com/api/local/local",
   nanopubSparqlUrl: "https://virtuoso.nps.petapico.org/sparql",
@@ -82,7 +80,9 @@ export const ents = [
   {type: 'Drug', label: 'Drug', id: BIOLINK + 'Drug',  curie: 'biolink:Drug', 
     color: {r: 255, g: 102, b: 102}}, // Red
   {type: 'DiseaseOrPhenotypicFeature', label: 'Disease or Phenotypic Feature', id: BIOLINK + 'DiseaseOrPhenotypicFeature', curie: 'biolink:DiseaseOrPhenotypicFeature', 
-  color: {r: 47, g: 187, b: 171}}, // Blue green  
+  color: {r: 47, g: 187, b: 171}}, // Blue green
+  {type: 'Disease', label: 'Disease', id: BIOLINK + 'Disease', curie: 'biolink:Disease', 
+  color: {r: 47, g: 187, b: 171}}, // Blue green
   {type: 'GeneOrGeneProduct', label: 'Gene or Gene Product', id: BIOLINK + 'GeneOrGeneProduct', curie: 'biolink:GeneOrGeneProduct', 
     color: {r: 218, g: 112, b: 214}}, // Purple
   {type: 'SequenceVariant', label: 'Sequence Variant', id: BIOLINK + 'SequenceVariant', curie: 'biolink:SequenceVariant', 

@@ -437,7 +437,7 @@ def reasonerapi_to_sparql(reasoner_query):
         # if edge_result['association_type']:
         #   knowledge_graph['edges'][edge_uri]['association_type'] = resolve_uri_with_context(edge_result['association_type']['value'])
 
-        if edge_result['provided_by']:
+        if 'provided_by' in edge_result:
           # Add provided_by attribute
           knowledge_graph['edges'][edge_uri]['attributes'].append({
               'attribute_type_id': 'biolink:provided_by',
