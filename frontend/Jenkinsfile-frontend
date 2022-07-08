@@ -60,12 +60,16 @@ pipeline {
                         triggeredBy 'UserIdCause'
                     }
                 }
-            }  
+            }
+             withEnv([
+                    "API_URL=https://collaboratory-api.ci.transltr.io"
+                ]){  
             steps {
                 script {
                     docker.build("${env.DOCKER_REPO_NAME}", "--build-arg ORCID_CLIENT_ID=APP-TEANCMSUOPYZOGJ3 --build-arg ORCID_CLIENT_SECRET=43ee3e61-200d-4acc-a5f9-dde1e443d69e --build-arg OAUTH_REDIRECT_FRONTEND=collaboratory-api.ci.transltr.io --no-cache ./frontend")
                     docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:aws-ifx-deploy') {
                         docker.image(env.DOCKER_REPO_NAME).push("${BUILD_VERSION}")
+                        }
                     }
                 }
             }
