@@ -15,7 +15,7 @@ ARG ORCID_CLIENT_SECRET
 ARG OAUTH_REDIRECT_FRONTEND
 ARG API_URL
 ENV API_URL=$API_URL
-RUN echo $$API_URL
+RUN echo $API_URL
 # Install the react-taggy lib from git to get latest fixes:
 RUN apk add git
 WORKDIR /opt
