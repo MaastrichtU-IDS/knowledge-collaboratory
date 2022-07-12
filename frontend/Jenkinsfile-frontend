@@ -63,7 +63,7 @@ pipeline {
             }
             steps {
                 withCredentials([ 
-                    string(credentialsId: 'API_URL', variable: 'API_URL'),
+                    string(credentialsId: 'KC_FRONTEND_CI_API_URL', variable: 'API_URL'),
                     string(credentialsId: 'ORCID_CLIENT_ID', variable: 'ORCID_CLIENT_ID'),
                     string(credentialsId: 'ORCID_CLIENT_SECRET', variable: 'ORCID_CLIENT_SECRET'),
                     string(credentialsId: 'OAUTH_REDIRECT_FRONTEND', variable: 'OAUTH_REDIRECT_FRONTEND')
