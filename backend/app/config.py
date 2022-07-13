@@ -6,10 +6,10 @@ from pydantic import AnyHttpUrl, BaseSettings, EmailStr, HttpUrl, PostgresDsn, v
 
 
 class Settings(BaseSettings):
-    PROD_URL: str = 'https://collaboratory.transltr.io'
-    TEST_URL: str = 'https://collaboratory.test.transltr.io'
-    STAGING_URL: str = 'https://collaboratory.ci.transltr.io'
-    DEV_URL: str = 'https://collaboratory.semanticscience.org'
+    PROD_URL: str = 'https://collaboratory-api.transltr.io'
+    TEST_URL: str = 'https://collaboratory-api.test.transltr.io'
+    STAGING_URL: str = 'https://collaboratory-api.ci.transltr.io'
+    DEV_URL: str = 'https://api.collaboratory.semanticscience.org'
 
 
     BIOLINK_VERSION: str = "v.2.4.4"
