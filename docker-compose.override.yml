@@ -9,15 +9,12 @@ services:
       - ./backend:/app
     environment:
       - FRONTEND_URL=http://localhost:19006
-      - DEV_MODE=true
-      # - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:8888
-      # - SERVER_HOST=http://${DOMAIN?Variable not set}
+      - INSTALL_DEV=true
     build:
       context: ./backend
       dockerfile: Dockerfile
       args:
         INSTALL_DEV: ${INSTALL_DEV-true}
-        INSTALL_JUPYTER: ${INSTALL_JUPYTER-false}
 
 
   ## We recommend to use `yarn dev` locally to start it (easier than in docker for dev)

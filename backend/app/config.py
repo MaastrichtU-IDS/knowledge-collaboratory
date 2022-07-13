@@ -1,4 +1,3 @@
-import os
 import secrets
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
@@ -7,12 +6,13 @@ from pydantic import AnyHttpUrl, BaseSettings, EmailStr, HttpUrl, PostgresDsn, v
 
 
 class Settings(BaseSettings):
+    PROD_URL: str = 'https://collaboratory.transltr.io'
+    TEST_URL: str = 'https://collaboratory.test.transltr.io'
+    STAGING_URL: str = 'https://collaboratory.ci.transltr.io'
+    DEV_URL: str = 'https://collaboratory.semanticscience.org'
+
+
     BIOLINK_VERSION: str = "v.2.4.4"
-    API_PATH: str = ""
-    SECRET_KEY: str = secrets.token_urlsafe(32)
-    # 60 minutes * 24 hours * 8 days = 8 days
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
-    DEV_MODE: bool = False
 
     # Those defaults are used by GitHub Actions for testing
     # The settings used by Docker deployment are in the .env file
@@ -34,10 +34,11 @@ class Settings(BaseSettings):
     ORCID_CLIENT_SECRET: Optional[str]
     OAUTH_REDIRECT_URI: str = 'http://localhost/api/auth'
 
-    # MONGODB_URL: str = f'mongodb://root:oursecretkey@mongodb:27017/'
-
-    # CONTEXT = 'https://raw.githubusercontent.com/MaastrichtU-IDS/knowledge-collaboratory/main/context.jsonld'
-    
+    API_PATH: str = ""
+    SECRET_KEY: str = secrets.token_urlsafe(32)
+    # 60 minutes * 24 hours * 8 days = 8 days
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
+    INSTALL_DEV: bool = False
 
     # BACKEND_CORS_ORIGINS is a JSON-formatted list of origins
     # e.g: '["http://localhost", "http://localhost:4200", "http://localhost:3000", \
@@ -67,25 +68,6 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-
-
-# def get_initial_data() -> None:
-#     print("🔑 Using keystore folder: " + settings.KEYSTORE_PATH)
-#     Path(settings.KEYSTORE_PATH).mkdir(parents=True, exist_ok=True)
-
-#     if not os.path.exists(f"{settings.NER_MODELS_PATH}/litcoin-ner-model"):
-#         print("📥️ litcoin-ner-model not present, downloading it")
-#         os.system("wget https://download.dumontierlab.com/ner-models/litcoin-ner-model.zip")
-#         Path(f"{settings.NER_MODELS_PATH}/litcoin-ner-model").mkdir(parents=True, exist_ok=True)
-#         os.system(f'unzip "{settings.NER_MODELS_PATH}/*.zip" -d {settings.NER_MODELS_PATH}/litcoin-ner-model"')
-#         os.system(f"rm {settings.NER_MODELS_PATH}/*.zip")
-
-#     if not os.path.exists(f"{settings.NER_MODELS_PATH}/litcoin-relations-extraction-model"):
-#         print("📥️ litcoin-relations-extraction-model not present, downloading it")
-#         os.system("wget https://download.dumontierlab.com/ner-models/litcoin-relations-extraction-model.zip")
-#         Path(f"{settings.NER_MODELS_PATH}/litcoin-relations-extraction-model").mkdir(parents=True, exist_ok=True)
-#         os.system(f'unzip "{settings.NER_MODELS_PATH}/*.zip" -d {settings.NER_MODELS_PATH}/litcoin-relations-extraction-model"')
-#         os.system(f"rm {settings.NER_MODELS_PATH}/*.zip")
 
 
 biolink_context = {

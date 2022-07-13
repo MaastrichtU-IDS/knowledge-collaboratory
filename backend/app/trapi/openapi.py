@@ -98,16 +98,29 @@ This service is supported by the [NIH NCATS Biomedical Data Translator project](
             tags=tags,
         )
 
-        if os.getenv('LETSENCRYPT_HOST'):
-            # Retrieving URL used for nginx reverse proxy
-            openapi_schema["servers"] = [
-                {
-                    "url": 'https://' + os.getenv('LETSENCRYPT_HOST'),
-                    "description": 'Production Knowledge Collaboratory API',
-                    "x-maturity": 'production',
-                    "x-location": 'IDS'
-                }
-            ]
+        openapi_schema["servers"] = [
+            {
+                "url": settings.PROD_URL,
+                "description": 'Knowledge Collaboratory TRAPI ITRB Production Server',
+                "x-maturity": 'production'
+            },
+            {
+                "url": settings.TEST_URL,
+                "description": 'Knowledge Collaboratory TRAPI ITRB Test Server',
+                "x-maturity": 'testing'
+            },
+            {
+                "url": settings.STAGING_URL,
+                "description": 'Knowledge Collaboratory TRAPI ITRB CI Server',
+                "x-maturity": 'staging'
+            },
+            {
+                "url": settings.DEV_URL,
+                "description": 'Knowledge Collaboratory TRAPI ITRB Development Server',
+                "x-maturity": 'development',
+                "x-location": 'IDS'
+            },
+        ]
 
         openapi_schema["info"]["x-translator"] = {
             "component": 'KP',
