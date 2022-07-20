@@ -12,8 +12,8 @@ Frontend built with [React](https://reactjs.org) and [Material UI](https://mui.c
 
 * [Docker](https://www.docker.com/)
 * [Docker Compose](https://docs.docker.com/compose/install/)
-  * [Poetry](https://python-poetry.org/) if you need to install new Python packages.
 
+* [Poetry](https://python-poetry.org/) for backend development
 * [Node.js](https://nodejs.org/en/) (with `npm`) and [`yarn`](https://yarnpkg.com/) if you need to do frontend development
 
 ## 🚀 Production deployment 
@@ -98,18 +98,24 @@ docker-compose build --no-cache
 
 ### Add new packages
 
-By default, the dependencies are managed with [Poetry](https://python-poetry.org/), go there and install it.
+By default, the dependencies for the backend are managed with [Poetry](https://python-poetry.org/), install it if necessary.
 
-From `./backend/` you can install all the dependencies with:
+In the `backend` folder you can install all the dependencies with:
 
 ```bash
 poetry install
 ```
 
-To add new dependencies, run:
+To add a new dependencies, run:
 
 ```bash
-poetry add my-package
+poetry add my-package@^1.0.0
+```
+
+You can also directly change the `pyproject.toml` file, and update the installed dependencies with:
+
+```bash
+poetry update
 ```
 
 > If you don't have poetry installed locally or are facing issue with it, you can also add new packages with `docker-compose`, while the docker-compose is running run:

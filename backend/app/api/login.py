@@ -8,7 +8,7 @@ from authlib.integrations.starlette_client import OAuth, OAuthError
 from fastapi import APIRouter, Body, Depends, File, HTTPException, UploadFile
 from fastapi.security import OAuth2PasswordBearer, OpenIdConnect
 
-# Use Authlib for ORCID OpenID Connect
+# Use Authlib for ORCID OpenID Connect?
 from starlette.config import Config
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse
