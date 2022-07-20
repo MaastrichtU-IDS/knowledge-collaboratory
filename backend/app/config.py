@@ -12,7 +12,9 @@ class Settings(BaseSettings):
     DEV_URL: str = 'https://api.collaboratory.semanticscience.org'
 
 
-    BIOLINK_VERSION: str = "v.2.4.4"
+    BIOLINK_VERSION: str = "2.4.4"
+    TRAPI_VERSION: str = "1.3.0"
+    
 
     # Those defaults are used by GitHub Actions for testing
     # The settings used by Docker deployment are in the .env file

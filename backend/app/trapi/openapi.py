@@ -125,7 +125,7 @@ This service is supported by the [NIH NCATS Biomedical Data Translator project](
         openapi_schema["info"]["x-translator"] = {
             "component": 'KP',
             "team": ["Clinical Data Provider"],
-            "biolink-version": "1.8.2",
+            "biolink-version": settings.BIOLINK_VERSION,
             "infores": 'infores:knowledge-collaboratory',
             "externalDocs": {
                 "description": "The values for component and team are restricted according to this external JSON schema. See schema and examples at url",
@@ -133,7 +133,8 @@ This service is supported by the [NIH NCATS Biomedical Data Translator project](
             },
         }
         openapi_schema["info"]["x-trapi"] = {
-            "version": "1.2.0",
+            "version": settings.TRAPI_VERSION,
+            "asyncquery": False,
             "operations": [
                 "lookup",
             ],
