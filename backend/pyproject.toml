@@ -6,19 +6,20 @@ authors = ["Vincent Emonet <vincent.emonet@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.10"
-uvicorn = "^0.15.0"
-fastapi = "^0.68.1"
 requests = "^2.23.0"
 pydantic = "^1.4"
+fastapi = "^0.68.1"
+uvicorn = "^0.15.0"
 gunicorn = "^20.0.4"
+Authlib = "^0.15.4"
 reasoner-pydantic = "^2.2.3"
 reasoner-validator = "^2.2.5"
+rdflib = "^6.1.1"
 SPARQLWrapper = "^1.8.5"
+PyShEx = "^0.8.1"
 transformers = "^4.17.0"
 spacy = {extras = ["cuda110"], version = "^3.2.3"}
 spacy-transformers = "^1.1.5"
-PyShEx = "^0.8.1"
-rdflib = "^6.1.1"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.770"
