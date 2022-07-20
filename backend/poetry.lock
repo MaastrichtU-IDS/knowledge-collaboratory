@@ -1361,7 +1361,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9,<3.10"
-content-hash = "23d8707201d4835ff98875a2335744d67d4a50471748f70c46b3bb170d776af0"
+content-hash = "56dc1bfbef37b3b9e8df21962297de2b474d96b09b5eb03ec8018fc8334fc28f"
 
 [metadata.files]
 antlr4-python3-runtime = [
