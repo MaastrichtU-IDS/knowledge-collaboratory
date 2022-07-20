@@ -5,7 +5,7 @@ description = "An API for the Knowledge Collaboratory developed at the Institute
 authors = ["Vincent Emonet <vincent.emonet@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "=3.9"
+python = ">=3.9,<3.10"
 uvicorn = "^0.15.0"
 fastapi = "^0.68.1"
 python-multipart = "^0.0.5"
