@@ -115,44 +115,6 @@ async def delete_keyfile(
     })
 
 
-# TODO: remove /login and /auth that are not used? we do everything through OpenID connect and /current-user
-
-oauth = OAuth()
-oauth.register(
-    name='orcid',
-    server_metadata_url='https://orcid.org/.well-known/openid-configuration',
-    client_id=settings.ORCID_CLIENT_ID,
-    client_secret=settings.ORCID_CLIENT_SECRET,
-    redirect_uri=settings.OAUTH_REDIRECT_URI,
-    client_kwargs={
-        'scope': '/authenticate'
-        # 'scope': 'openid email profile'
-    }
-)
-
-@router.get('/login')
-async def login(request: Request):
-    auth_uri = request.url_for('auth')
-    return await oauth.orcid.authorize_redirect(request, auth_uri)
-
-
-@router.get('/auth')
-async def auth(request: Request):
-    try:
-        token = await oauth.orcid.authorize_access_token(request)
-    except OAuthError as error:
-        return HTMLResponse(f'<h1>{error.error}</h1>')
-    user = token.get('userinfo')
-    if user:
-        request.session['user'] = dict(user)
-    return RedirectResponse(url=f'{settings.OAUTH_REDIRECT_FRONTEND}',
-        headers={"Authorization": 'Bearer ' + str(token['access_token'])})
-    # return JSONResponse({"access_token": token['access_token'], "token_type": 'bearer'}, 
-    #     headers={"Authorization": 'Bearer ' + str(token['access_token'])})
-
-# curl 'http://localhost/rest/current-user' -H 'Authorization: Bearer 21807418-ee11-4097-bdc5-dc9aaf0b9296'
-
-
 @router.get('/logout')
 async def logout(request: Request):
     request.session.pop('user', None)
@@ -166,6 +128,42 @@ async def current_user(current_user: models.User = Depends(get_current_user)):
     return current_user
 
 
+
+
+# TODO: remove /login and /auth that are not used? we do everything through OpenID connect and /current-user
+oauth = OAuth()
+oauth.register(
+    name='orcid',
+    server_metadata_url='https://orcid.org/.well-known/openid-configuration',
+    client_id=settings.ORCID_CLIENT_ID,
+    client_secret=settings.ORCID_CLIENT_SECRET,
+    redirect_uri=settings.BACKEND_URL,
+    client_kwargs={
+        'scope': '/authenticate'
+        # 'scope': 'openid email profile'
+    }
+)
+
+@router.get('/login')
+async def login(request: Request):
+    auth_uri = request.url_for('auth')
+    return await oauth.orcid.authorize_redirect(request, auth_uri)
+
+@router.get('/auth')
+async def auth(request: Request):
+    try:
+        token = await oauth.orcid.authorize_access_token(request)
+    except OAuthError as error:
+        return HTMLResponse(f'<h1>{error.error}</h1>')
+    user = token.get('userinfo')
+    if user:
+        request.session['user'] = dict(user)
+    return RedirectResponse(url=f'{settings.FRONTEND_URL}',
+        headers={"Authorization": 'Bearer ' + str(token['access_token'])})
+    # return JSONResponse({"access_token": token['access_token'], "token_type": 'bearer'}, 
+    #     headers={"Authorization": 'Bearer ' + str(token['access_token'])})
+
+# curl 'http://localhost/rest/current-user' -H 'Authorization: Bearer 21807418-ee11-4097-bdc5-dc9aaf0b9296'
 
 
 

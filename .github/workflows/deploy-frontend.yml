@@ -22,7 +22,7 @@ jobs:
         API_URL: "https://api.collaboratory.semanticscience.org"
         ORCID_CLIENT_ID: ""
         ORCID_CLIENT_SECRET: ""
-        OAUTH_REDIRECT_FRONTEND: ""
+        FRONTEND_URL: ""
       run: |
         git config --global user.email "vincent.emonet@gmail.com"
         git config --global user.name "Vincent Emonet"

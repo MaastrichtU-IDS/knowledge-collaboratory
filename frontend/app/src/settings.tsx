@@ -2,9 +2,9 @@ import React from "react";
 import { useTheme } from '@mui/material/styles';
 
 export const settings = {
+  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:19006',
   apiUrl: process.env.API_URL || 'http://localhost',
   docsUrl: ((process.env.API_URL) ? process.env.API_URL + '/docs' : null) || 'http://localhost/docs',
-  OauthRedirectUri: process.env.OAUTH_REDIRECT_FRONTEND || "http://localhost:19006",
   nanopubGrlcUrl: process.env.GRLC_URL || "https://grlc.np.dumontierlab.com/api/local/local",
   nanopubSparqlUrl: "https://virtuoso.nps.petapico.org/sparql",
   // https://virtuoso.np.dumontierlab.137.120.31.101.nip.io/sparql
