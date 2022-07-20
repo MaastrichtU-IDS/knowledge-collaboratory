@@ -2,8 +2,6 @@ import datetime
 import json
 import os
 from json import encoder
-
-# from typing import Collection, List, Optional
 from typing import Dict, List, Optional, Union
 
 from app.api.login import get_current_user, reusable_oauth2
@@ -22,10 +20,11 @@ from fastapi import (
 )
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from pyld import jsonld
 from rdflib import RDF, ConjunctiveGraph, Dataset, Graph, Literal, Namespace, URIRef
 from rdflib.namespace import DC, DCTERMS, PROV, RDFS, VOID, XSD
 from starlette.responses import RedirectResponse
+
+# from pyld import jsonld
 
 router = APIRouter()
 
