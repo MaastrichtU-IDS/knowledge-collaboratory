@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     DEV_URL: str = 'https://api.collaboratory.semanticscience.org'
 
 
-    BIOLINK_VERSION: str = "2.4.4"
+    BIOLINK_VERSION: str = "2.3.0"
     TRAPI_VERSION: str = "1.2.0"
     
 
