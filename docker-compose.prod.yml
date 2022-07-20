@@ -5,9 +5,12 @@ services:
     restart: unless-stopped
     environment:
       - FRONTEND_URL=https://collaboratory.semanticscience.org
+      - ORCID_CLIENT_ID=${ORCID_CLIENT_ID}
+      - ORCID_CLIENT_SECRET=${ORCID_CLIENT_SECRET}
+      # - OAUTH_REDIRECT_URI=api.collaboratory.semanticscience.org
+      - VIRTUAL_PORT=80
       - VIRTUAL_HOST=api.collaboratory.semanticscience.org
       - LETSENCRYPT_HOST=api.collaboratory.semanticscience.org
-      - VIRTUAL_PORT=80
     volumes:
       - /data/knowledge-collaboratory/ner-models:/data/ner-models
       - /data/knowledge-collaboratory/nanopub-keystore:/data/nanopub-keystore
@@ -29,3 +32,4 @@ services:
       VIRTUAL_HOST: collaboratory.semanticscience.org
       LETSENCRYPT_HOST: collaboratory.semanticscience.org
       VIRTUAL_PORT: 4000
+  
