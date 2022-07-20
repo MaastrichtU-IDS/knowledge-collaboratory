@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "knowledge-collaboratory-api"
 version = "0.1.0"
-description = ""
+description = "An API for the Knowledge Collaboratory developed at the Institute of Data Science at Maastricht University"
 authors = ["Vincent Emonet <vincent.emonet@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "=3.9"
 uvicorn = "^0.15.0"
 fastapi = "^0.68.1"
 python-multipart = "^0.0.5"
@@ -24,8 +24,8 @@ PyLD = "^2.0.3"
 google = "^3.0.0"
 beautifulsoup4 = "^4.10.0"
 strawberry-graphql = {extras = ["asgi"], version = "^0.83.4"}
-reasoner-pydantic = ">=1.2.0.4"
-reasoner-validator = "^2.1.0"
+reasoner-pydantic = "^2.2.3"
+reasoner-validator = "^2.2.5"
 SPARQLWrapper = "^1.8.5"
 transformers = "^4.17.0"
 spacy = {extras = ["cuda110"], version = "^3.2.3"}
