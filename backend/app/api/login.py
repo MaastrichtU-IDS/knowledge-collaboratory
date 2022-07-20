@@ -64,19 +64,6 @@ router = APIRouter()
 # https://github.com/authlib/demo-oauth-client/blob/master/fastapi-google-login/app.py
 # Load client id and secret from env: https://docs.authlib.org/en/latest/client/starlette.html
 
-oauth = OAuth()
-oauth.register(
-    name='orcid',
-    server_metadata_url='https://orcid.org/.well-known/openid-configuration',
-    client_id=settings.ORCID_CLIENT_ID,
-    client_secret=settings.ORCID_CLIENT_SECRET,
-    redirect_uri=settings.OAUTH_REDIRECT_URI,
-    client_kwargs={
-        'scope': '/authenticate'
-        # 'scope': 'openid email profile'
-    }
-)
-
 
 @router.post("/upload-keys", 
     description="""Login with ORCID, and upload and store your authentications keys used to publish Nanopublication on our server""",
@@ -127,6 +114,21 @@ async def delete_keyfile(
         'message': 'The Nanopub keyfile has been properly deleted from our servers for the ORCID user ' + current_user['id']
     })
 
+
+# TODO: remove /login and /auth that are not used? we do everything through OpenID connect and /current-user
+
+oauth = OAuth()
+oauth.register(
+    name='orcid',
+    server_metadata_url='https://orcid.org/.well-known/openid-configuration',
+    client_id=settings.ORCID_CLIENT_ID,
+    client_secret=settings.ORCID_CLIENT_SECRET,
+    redirect_uri=settings.OAUTH_REDIRECT_URI,
+    client_kwargs={
+        'scope': '/authenticate'
+        # 'scope': 'openid email profile'
+    }
+)
 
 @router.get('/login')
 async def login(request: Request):
