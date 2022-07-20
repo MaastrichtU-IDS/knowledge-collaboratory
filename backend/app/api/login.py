@@ -23,14 +23,7 @@ reusable_oauth2 = OpenIdConnect(
     auto_error=False
     # flow='implicit' not working
 )
-# reusable_oauth2 = OAuth2PasswordBearer(
-#     # tokenUrl=f"{settings.API_PATH}/login/access-token"
-#     tokenUrl=f"https://orcid.org/oauth/authorize?client_id={settings.ORCID_CLIENT_ID}&response_type=code&scope=/authenticate&redirect_uri=http://localhost/api/login/orcid"
-# )
-# reusable_oauth2 = OAuth2AuthorizationCodeBearer(
-#     authorizationUrl=settings.AUTHORIZATION_URL,
-#     tokenUrl=settings.TOKEN_URL
-# )
+
 
 def get_current_user(
     token: str = Depends(reusable_oauth2)

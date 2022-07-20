@@ -7,6 +7,7 @@ authors = ["Vincent Emonet <vincent.emonet@gmail.com>"]
 [tool.poetry.dependencies]
 python = ">=3.9,<3.10"
 requests = "^2.23.0"
+httpx = "^0.21.1"
 pydantic = "^1.4"
 fastapi = "^0.68.1"
 uvicorn = "^0.15.0"
