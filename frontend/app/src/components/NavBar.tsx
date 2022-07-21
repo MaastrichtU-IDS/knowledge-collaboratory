@@ -267,7 +267,7 @@ export default function NavBar() {
               responseType="token"
               clientId={process.env.ORCID_CLIENT_ID}
               clientSecret={process.env.ORCID_CLIENT_SECRET}
-              redirectUri={settings.frontendUrl}
+              redirectUri={process.env.FRONTEND_URL}
               scope="/authenticate"
               // redirectUri=""
               style={{textTransform: 'none', textDecoration: 'none', display: 'none' }}
