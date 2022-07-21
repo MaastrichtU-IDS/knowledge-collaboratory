@@ -1,6 +1,6 @@
 FROM node:16-alpine
 
-# Not used in prod, only used for development
+# NOT USED in prod, only used for development with hot reload
 
 WORKDIR /webapp
 ARG ORCID_CLIENT_ID

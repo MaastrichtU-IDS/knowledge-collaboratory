@@ -17,7 +17,8 @@ import axios from 'axios';
 // @ts-ignore
 import Taggy from 'react-taggy'
 
-import { settings, context, samples, propertiesList, predicatesList, sentenceToAnnotate, biolinkShex, ents, genericContext } from '../settings';
+import { settings, genericContext, samples } from '../settings';
+import { context, propertiesList, predicatesList, sentenceToAnnotate, biolinkShex, ents } from '../components/biolinkModel';
 import { rdfToRdf } from '../utils';
 import UserContext from '../UserContext'
 import AutocompleteEntity from '../components/AutocompleteEntity';

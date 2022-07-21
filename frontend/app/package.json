@@ -7,7 +7,6 @@
     "dev": "API_URL=http://localhost expo web",
     "eject": "expo eject",
     "build": "expo build:web",
-    "build-prod": "API_URL=https://api.collaboratory.semanticscience.org expo build:web",
     "serve": "serve -s web-build",
     "start": "npm run build && npm run serve",
     "predeploy": "npm run build",
