@@ -25,7 +25,7 @@ RUN yarn
 # Compile the frontend
 COPY app /app
 WORKDIR /app
-RUN yarn install --frozen-lockfile
+RUN yarn install
 RUN FRONTEND_URL=$FRONTEND_URL API_URL=$API_URL yarn build
 
 
