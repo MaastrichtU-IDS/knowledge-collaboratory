@@ -17,28 +17,7 @@ import UserContext from "./src/UserContext";
 // import { AuthProvider, useAuth } from 'oidc-react';
 
 import './src/App.css';
-// CSS for rjsf fluent UI grid:
-// import './assets/fabric.min.css';
 
-// import 'antd/dist/antd.css';
-// Required for rjsf antd form
-
-// const UserContext = createContext(null);
-
-// https://github.com/kolitiri/fastapi-oidc-react
-// const oidcConfig = {
-//   onSignIn: async (user: any) => {
-//     alert('You just signed in, congratz! Check out the console!');
-//     console.log(user);
-//     window.location.hash = '';
-//   },
-//   authority: 'https://orcid.org',
-//   clientId: process.env.ORCID_CLIENT_ID,
-//   // redirectUri: 'http://localhost/rest/auth',
-//   redirectUri: 'http://localhost:19006/',
-//   autoSignIn: false
-//   // redirectUri="http://localhost:3000/oauth-callback"
-// };
 
 // Change theme color and typography here
 const theme = createTheme({
@@ -81,7 +60,6 @@ const theme = createTheme({
 // app.get('/mysub-application1/*', (req,res) => { //this is required to support any client side routing written in react.
 //  res.sendFile(path.join(__dirname, '../../public', 'index.html'))
 // })
-
 
 // context for User
 function reducer(state: any, item: any) {

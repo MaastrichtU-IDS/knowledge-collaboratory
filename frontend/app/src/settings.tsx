@@ -1,9 +1,11 @@
 import React from "react";
 import { useTheme } from '@mui/material/styles';
+import Constants from 'expo-constants';
 
 
 export const settings = {
-  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:19006',
+  frontendUrl: Constants.manifest.extra.frontendUrl || 'http://localhost:19006',
+  
   apiUrl: process.env.API_URL || 'http://localhost',
   docsUrl: ((process.env.API_URL) ? process.env.API_URL + '/docs' : null) || 'http://localhost/docs',
   nanopubGrlcUrl: process.env.GRLC_URL || "https://grlc.np.dumontierlab.com/api/local/local",
