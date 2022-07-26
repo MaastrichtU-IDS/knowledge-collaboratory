@@ -26,6 +26,10 @@ RUN yarn
 COPY app /app
 WORKDIR /app
 RUN yarn install
+
+RUN echo "CHECK FRONTEND_URL"
+RUN echo $FRONTEND_URL
+
 RUN FRONTEND_URL=$FRONTEND_URL API_URL=$API_URL yarn build
 
 
