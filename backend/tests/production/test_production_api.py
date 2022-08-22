@@ -2,11 +2,11 @@ import os
 
 import pytest
 import requests
+from app.config import settings
 from reasoner_validator import validate
 
 PROD_API_URL = 'https://api.collaboratory.semanticscience.org'
 # PROD_API_URL = 'http://localhost:8808'
-VALIDATE_TRAPI_VERSION="1.2.0"
 
 def test_post_trapi():
     """Test Translator ReasonerAPI query POST operation to get predictions"""
@@ -32,7 +32,7 @@ def test_post_trapi():
         edges = trapi_results['message']['knowledge_graph']['edges'].items()
 
         # Validating attributes bug, the JSON schema only accepts subject, predicate, object. Which does not make sense
-        # assert validate(trapi_results['message'], "Message", VALIDATE_TRAPI_VERSION) == None
+        # assert validate(trapi_results['message'], "Message", settings.TRAPI_VERSION_TEST) == None
 
         if trapi_filename.endswith('limit1.json'):
             assert len(edges) == 1
