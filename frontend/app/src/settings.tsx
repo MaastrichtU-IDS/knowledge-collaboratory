@@ -1,10 +1,12 @@
 import React from "react";
 import { useTheme } from '@mui/material/styles';
-import Constants from 'expo-constants';
+// import Constants from 'expo-constants';
 
 
 export const settings = {
-  frontendUrl: Constants.manifest.extra.frontendUrl || 'http://localhost:19006',
+  // TODO: not working, changes made in: https://github.com/MaastrichtU-IDS/knowledge-collaboratory/commit/713df9952f72a2b0c0666adb376a627df862be29
+  // frontendUrl: Constants.manifest.extra.frontendUrl || 'http://localhost:19006',
+  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:19006',
   
   apiUrl: process.env.API_URL || 'http://localhost',
   docsUrl: ((process.env.API_URL) ? process.env.API_URL + '/docs' : null) || 'http://localhost/docs',
