@@ -24,6 +24,7 @@ client = TestClient(app)
 
 def test_post_trapi():
     """Test Translator ReasonerAPI query POST operation to get predictions"""
+    print(f'Testing for TRAPI version {settings.TRAPI_VERSION_TEST} 🏷️')
     url = '/query'
 
     for trapi_filename in os.listdir('tests/queries'):
@@ -36,7 +37,7 @@ def test_post_trapi():
             # print(response.json)
             edges = response.json()['message']['knowledge_graph']['edges'].items()
             # print(response)
-            print(trapi_filename)
+            # print(trapi_filename)
             assert validate(response.json()['message'], "Message", settings.TRAPI_VERSION_TEST) == None
             if trapi_filename.endswith('limit3.json'):
                 assert len(edges) == 3

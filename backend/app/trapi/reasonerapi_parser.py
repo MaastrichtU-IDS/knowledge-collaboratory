@@ -259,7 +259,7 @@ def get_np_users():
   headers = {'Accept': 'application/json'}
   res = requests.get(f"{settings.NANOPUB_GRLC_URL}/get_all_users", headers=headers).json()
   for user in res['results']['bindings']:
-    print(user)
+    # print(user)
     # Remove bad ORCID URLs
     if not user['user']['value'].startswith('https://orcid.org/https://orcid.org/'):
       if 'name' not in user:
@@ -279,7 +279,7 @@ def reasonerapi_to_sparql(reasoner_query):
     :return: Results as ReasonerAPI object
     """
     np_users = get_np_users()
-    print(np_users)
+    # print(np_users)
     query_graph = reasoner_query["message"]["query_graph"]
     query_options = {}
     n_results = None
@@ -361,8 +361,8 @@ def reasonerapi_to_sparql(reasoner_query):
     query_results = []
     kg_edge_count = 0
 
-    print('Running the following SPARQL query to retrieve nanopublications from ' + settings.NANOPUB_SPARQL_URL)
-    print(sparql_query_get_nanopubs)
+    # print('Running the following SPARQL query to retrieve nanopublications from ' + settings.NANOPUB_SPARQL_URL)
+    # print(sparql_query_get_nanopubs)
     sparql = SPARQLWrapper(settings.NANOPUB_SPARQL_URL)
     sparql.setReturnFormat(JSON)
     sparql.setQuery(sparql_query_get_nanopubs)
@@ -372,7 +372,7 @@ def reasonerapi_to_sparql(reasoner_query):
     # Check current official example of Reasoner query results: https://github.com/NCATSTranslator/ReasonerAPI/blob/master/examples/Message/simple.json
     # Now iterates the Nanopubs SPARQL query results:
     for edge_result in sparql_results:
-        print(edge_result)
+        # print(edge_result)
         edge_uri = edge_result['association']['value']
         # Create edge object in knowledge_graph
         knowledge_graph['edges'][edge_uri] = {

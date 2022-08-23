@@ -34,7 +34,7 @@ FRONTEND_URL=https://collaboratory.semanticscience.org
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
-## 🐳 Local development
+## 🐳 Local development with docker
 
 ### Prepare the data
 
@@ -96,7 +96,26 @@ sudo rm -rf **/__pycache__
 docker-compose build --no-cache
 ```
 
-### Add new packages
+## ✅ Tests
+
+2 sets of tests are available: `integration` tests to test local changes, and `production` tests to test the API deployed in production
+
+You can run the tests in docker when the backend is already running: 
+
+```bash
+docker-compose exec backend poetry run pytest tests/integration -s
+```
+
+Or locally directly with poetry:
+
+```bash
+poetry install
+poetry run pytest tests/integration -s
+```
+
+## 🔧 Maintenance
+
+### 📦️ Add new packages
 
 By default, the dependencies for the backend are managed with [Poetry](https://python-poetry.org/), install it if necessary.
 
@@ -140,24 +159,29 @@ Next, open your editor at `./backend/` (instead of the project root: `./`), so t
 
 During development, you can change Docker Compose settings that will only affect the local development environment, in the file `docker-compose.override.yml`
 
-## ✅ Tests
+### ⏫ Upgrade TRAPI version
 
-2 sets of tests are available: `integration` tests to test local changes, and `production` tests to test the API deployed in production
+Get the latest TRAPI YAML: https://github.com/NCATSTranslator/ReasonerAPI/blob/master/TranslatorReasonerAPI.yaml
 
-You can run the tests in docker when the backend is already running: 
+For the OpenAPI specifications: change the `TRAPI_VERSION_TEST` in `backend/app/config.py`
+
+For the reasoner_validator tests:
+
+1. Change `TRAPI_VERSION_TEST` in `backend/app/config.py`
+
+2. In `pyproject.toml` upgrade the version for the [reasoner-validator](https://pypi.org/project/reasoner-validator/), and update the dependencies locally:
 
 ```bash
-docker-compose exec backend poetry run pytest tests/integration -s
+poetry update
 ```
 
-Or locally directly with poetry:
+3. Run the tests:
 
 ```bash
-poetry install
 poetry run pytest tests/integration -s
 ```
 
-## ➕ Docker Compose files and env vars
+## 🐋 Docker Compose files and env vars
 
 There is a main `docker-compose.yml` file with all the configurations that apply to the whole stack, it is used automatically by `docker-compose`.
 
