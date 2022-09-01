@@ -1,0 +1,59 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX biolink: <https://w3id.org/biolink/vocab/>
+PREFIX np: <http://www.nanopub.org/nschema#>
+PREFIX npx: <http://purl.org/nanopub/x/>
+PREFIX npa: <http://purl.org/nanopub/admin/>
+SELECT DISTINCT *
+WHERE {
+  graph ?np_assertion {
+    ?association
+      biolink:provided_by <https://w3id.org/um/NeuroDKG> ;
+      rdf:subject ?subject ;
+      rdf:predicate ?predicate ;
+      rdf:object ?object .
+    OPTIONAL {
+      ?association biolink:relation ?relation .
+    }
+    OPTIONAL {
+      ?association biolink:provided_by ?provided_by .
+    }
+    OPTIONAL {
+      ?association biolink:association_type ?association_type .
+    }
+    OPTIONAL {
+      ?association biolink:publications ?publications .
+    }
+    OPTIONAL {
+      ?association rdfs:label ?label .
+    }
+    OPTIONAL {
+      ?association biolink:description ?description .
+    }
+    OPTIONAL {
+      ?association biolink:has_population_context [
+        rdfs:label ?has_population_context ;
+        biolink:has_phenotype ?populationHasPhenotype ;
+      ] .
+    }
+    {
+      ?subject a ?subject_category .
+      ?object a ?object_category .
+    } UNION {
+      ?subject biolink:category ?subject_category .
+      ?object biolink:category ?object_category .
+    }
+  }
+  FILTER ( ?subject_category = biolink:Drug || ?subject_category = biolink:ChemicalEntity )
+  FILTER ( ?object_category = biolink:Disease )
+  FILTER ( ?subject = <http://identifiers.org/drugbank/DB00394> || ?subject =<https://identifiers.org/DRUGBANK:DB00394> || ?subject = <http://purl.obolibrary.org/obo/CHEBI_75725> || ?subject =<https://identifiers.org/CHEBI:75725> )
+
+  graph ?np_head {
+    ?np_uri np:hasAssertion ?np_assertion .
+  }
+  graph npa:graph {
+    ?np_uri npa:hasValidSignatureForPublicKey ?pubkey .
+  }
+  FILTER NOT EXISTS { ?creator npx:retracts ?np_uri }
+
+} LIMIT 30

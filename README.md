@@ -206,3 +206,8 @@ Livestream logs:
 
 Project bootstrapped with https://github.com/tiangolo/full-stack-fastapi-postgresql
 
+## 🗃️ Current resources in the Collaboratory
+
+- 3866 drug indications from the reference dataset of the [PREDICT publication](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3159979/)
+- 328 [Off-label drug indications](https://docs.google.com/spreadsheets/d/1fCykLEgAd2Z7nC9rTcW296KtBsFBBZMD8Yghcwv4WaE/edit#gid=428566902) found in PubMed publications
+- Drug indications added by users (mainly from the default set of DailyMed indications proposed)
