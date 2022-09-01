@@ -131,7 +131,7 @@ This service is supported by the [NIH NCATS Biomedical Data Translator project](
                 servers_list.append(server)
                 break
             # Add other servers
-            for server in servers_list:
+            for server in unordered_servers_list:
               if not settings.VIRTUAL_HOST in server.url:
                 servers_list.append(server)
           else:
