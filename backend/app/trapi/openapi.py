@@ -127,12 +127,12 @@ This service is supported by the [NIH NCATS Biomedical Data Translator project](
             servers_list = []
             # Add the current server as 1st server in the list
             for server in unordered_servers_list:
-              if settings.VIRTUAL_HOST in server.url:
+              if settings.VIRTUAL_HOST in server['url']:
                 servers_list.append(server)
                 break
             # Add other servers
             for server in unordered_servers_list:
-              if not settings.VIRTUAL_HOST in server.url:
+              if not settings.VIRTUAL_HOST in server['url']:
                 servers_list.append(server)
           else:
             servers_list = unordered_servers_list
