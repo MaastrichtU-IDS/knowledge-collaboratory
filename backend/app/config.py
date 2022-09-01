@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     STAGING_URL: str = 'https://collaboratory-api.ci.transltr.io'
     DEV_URL: str = 'https://api.collaboratory.semanticscience.org'
 
+    VIRTUAL_HOST: str
 
     BIOLINK_VERSION: str = "2.3.0"
     TRAPI_VERSION: str = "1.3.0"
