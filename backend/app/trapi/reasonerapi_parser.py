@@ -361,8 +361,10 @@ def reasonerapi_to_sparql(reasoner_query):
     query_results = []
     kg_edge_count = 0
 
-    # print('Running the following SPARQL query to retrieve nanopublications from ' + settings.NANOPUB_SPARQL_URL)
-    # print(sparql_query_get_nanopubs)
+    if settings.DEV_MODE == True:
+      print(f'Running the following SPARQL query to retrieve nanopublications from {settings.NANOPUB_SPARQL_URL}')
+      print(sparql_query_get_nanopubs)
+      
     sparql = SPARQLWrapper(settings.NANOPUB_SPARQL_URL)
     sparql.setReturnFormat(JSON)
     sparql.setQuery(sparql_query_get_nanopubs)
