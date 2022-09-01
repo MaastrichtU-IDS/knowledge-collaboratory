@@ -16,7 +16,7 @@ services:
       dockerfile: Dockerfile
       args:
         INSTALL_DEV: ${INSTALL_DEV-true}
-        DEV_MODE: true
+        DEV_MODE: "true"
 
 
   ## We recommend to use `yarn dev` locally to start it (easier than in docker for dev)
