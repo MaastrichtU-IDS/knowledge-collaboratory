@@ -54,6 +54,12 @@ export const ents = [
     color: {r: 218, g: 112, b: 214}}, // Purple
   {type: 'SequenceVariant', label: 'Sequence Variant', id: BIOLINK + 'SequenceVariant', curie: 'biolink:SequenceVariant', 
     color: {r: 166, g: 226, b: 45}}, // Light green
+  {type: 'Cohort', label: 'Cohort', id: BIOLINK + 'Cohort', curie: 'biolink:Cohort', 
+    color: {r: 204, g: 204, b: 0}}, // Yellow
+  {type: 'StudyPopulation', label: 'Study Population', id: BIOLINK + 'StudyPopulation', curie: 'biolink:StudyPopulation', 
+    color: {r: 204, g: 204, b: 0}}, // Yellow
+  {type: 'PopulationOfIndividualOrganisms', label: 'Population of Individual Organisms ', id: BIOLINK + 'PopulationOfIndividualOrganisms ', curie: 'biolink:PopulationOfIndividualOrganisms ', 
+    color: {r: 204, g: 204, b: 0}}, // Yellow
   {type: 'OrganismTaxon', label: 'Organism Taxon', id: BIOLINK + 'OrganismTaxon', curie: 'biolink:OrganismTaxon', 
     color: {r: 204, g: 204, b: 0}}, // Yellow
   {type: 'NamedEntity', label: 'NamedEntity', id: BIOLINK + 'NamedEntity',  curie: 'biolink:NamedEntity', 

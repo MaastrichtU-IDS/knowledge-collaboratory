@@ -181,7 +181,7 @@ poetry update
 poetry run pytest tests/integration -s
 ```
 
-## 🐋 Docker Compose files and env vars
+## 🐳 Docker Compose files and env vars
 
 There is a main `docker-compose.yml` file with all the configurations that apply to the whole stack, it is used automatically by `docker-compose`.
 

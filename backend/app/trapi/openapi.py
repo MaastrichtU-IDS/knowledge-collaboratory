@@ -11,6 +11,30 @@ from fastapi.openapi.utils import get_openapi
 from reasoner_pydantic import Message, Query
 from transformers import BertForSequenceClassification, BertTokenizer
 
+unordered_servers_list = [
+    {
+        "url": settings.PROD_URL,
+        "description": 'Knowledge Collaboratory TRAPI ITRB Production Server',
+        "x-maturity": 'production'
+    },
+    {
+        "url": settings.TEST_URL,
+        "description": 'Knowledge Collaboratory TRAPI ITRB Test Server',
+        "x-maturity": 'testing'
+    },
+    {
+        "url": settings.STAGING_URL,
+        "description": 'Knowledge Collaboratory TRAPI ITRB CI Server',
+        "x-maturity": 'staging'
+    },
+    {
+        "url": settings.DEV_URL,
+        "description": 'Knowledge Collaboratory TRAPI ITRB Development Server',
+        "x-maturity": 'development',
+        "x-location": 'IDS'
+    },
+]
+
 
 class TRAPI(FastAPI):
     """Translator Reasoner API - wrapper for FastAPI."""
@@ -98,29 +122,22 @@ This service is supported by the [NIH NCATS Biomedical Data Translator project](
             tags=tags,
         )
 
-        openapi_schema["servers"] = [
-            {
-                "url": settings.PROD_URL,
-                "description": 'Knowledge Collaboratory TRAPI ITRB Production Server',
-                "x-maturity": 'production'
-            },
-            {
-                "url": settings.TEST_URL,
-                "description": 'Knowledge Collaboratory TRAPI ITRB Test Server',
-                "x-maturity": 'testing'
-            },
-            {
-                "url": settings.STAGING_URL,
-                "description": 'Knowledge Collaboratory TRAPI ITRB CI Server',
-                "x-maturity": 'staging'
-            },
-            {
-                "url": settings.DEV_URL,
-                "description": 'Knowledge Collaboratory TRAPI ITRB Development Server',
-                "x-maturity": 'development',
-                "x-location": 'IDS'
-            },
-        ]
+        if not settings.DEV_MODE:
+          if settings.VIRTUAL_HOST:
+            servers_list = []
+            # Add the current server as 1st server in the list
+            for server in unordered_servers_list:
+              if settings.VIRTUAL_HOST in server.url:
+                servers_list.append(server)
+                break
+            # Add other servers
+            for server in servers_list:
+              if not settings.VIRTUAL_HOST in server.url:
+                servers_list.append(server)
+          else:
+            servers_list = unordered_servers_list
+
+          openapi_schema["servers"] = servers_list
 
         openapi_schema["info"]["x-translator"] = {
             "component": 'KP',
