@@ -275,7 +275,9 @@ export default function AnnotateText() {
         // Generate spo statement
         const reifiedStmt: any = {
           // '@id': 'https://w3id.org/collaboratory/association/' + index,
-          [`@type`]: `${rdf}Statement`,
+          // [`@type`]: `${rdf}Statement`,
+          [`@type`]: `${BIOLINK}Association`,
+          [BIOLINK + 'category']: {'@id': `${BIOLINK}Association`},
           [`${rdf}subject`]: {'@id': getPropValue(stmt.s)},
           [`${rdf}predicate`]: {'@id': getPropValue(stmt.p)},
           [`${rdf}object`]: {'@id': getPropValue(stmt.o)},
@@ -322,6 +324,7 @@ export default function AnnotateText() {
         const entityJsonld = {
           '@id': entity.id_uri,
           '@type': BIOLINK + entity.type,
+          [BIOLINK + 'category']: {'@id': BIOLINK + entity.type},
           [RDFS + 'label']: entity.text,
         }
         // Generate the props of the entity

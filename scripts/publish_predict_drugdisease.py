@@ -18,7 +18,7 @@ parser.add_argument('--validate', action='store_true',
 args = parser.parse_args()
 
 CREATOR_ORCID = "https://orcid.org/0000-0001-7769-4272"
-
+CREATION_TIME = "2020-09-21T00:00:00"
 
 # Create the client, that allows searching, fetching and publishing nanopubs
 np_client = NanopubClient()
@@ -29,10 +29,10 @@ url = 'https://raw.githubusercontent.com/MaastrichtU-IDS/translator-openpredict/
 data = pd.read_csv(url)
 
 np_list = []
-for index, row in data.iterrows(): 
+for index, row in data.iterrows():
     drug_id = row['drugid']
     disease_id = row['omimid']
-    
+
     assertion = init_graph()
     assertion.bind("biolink", URIRef('https://w3id.org/biolink/vocab/'))
     assertion.bind("drugbank", URIRef('http://identifiers.org/drugbank/'))
@@ -62,7 +62,7 @@ for index, row in data.iterrows():
 
     # is substance that treats
     assertion.add( (association_uri, BIOLINK.relation, URIRef("http://purl.obolibrary.org/obo/RO_0002606") ) )
-    
+
     assertion.add( (association_uri, BIOLINK['category'], BIOLINK.ChemicalToDiseaseOrPhenotypicFeatureAssociation) )
     assertion.add( (association_uri, RDF.type, BIOLINK.ChemicalToDiseaseOrPhenotypicFeatureAssociation ) )
 
@@ -74,20 +74,25 @@ for index, row in data.iterrows():
     assertion.add( (association_uri, BIOLINK['aggregator_knowledge_source'], knowledge_provider_uri) )
     # assertion.add( (association_uri, BIOLINK['primary_knowledge_source'], knowledge_source_uri) )
     assertion.add( (association_uri, BIOLINK['publications'], knowledge_source_uri) )
-    
+
     pubinfo = Graph()
     pubinfo.add( (
         URIRef('https://w3id.org/biolink/vocab/'),
-        URIRef('http://purl.org/pav/version'), 
+        URIRef('http://purl.org/pav/version'),
         Literal('2.3.0')
     ) )
 
     # Add provenance infos
     prov = Graph()
     prov.add( (
-        NP['assertion'], 
+        NP['assertion'],
         PROV.wasAttributedTo,
         URIRef(CREATOR_ORCID)
+    ) )
+    prov.add( (
+        NP['assertion'],
+        DCTERMS.created,
+        Literal(CREATION_TIME, datatype=XSD.dateTime, normalize=False)
     ) )
     # prov.add( (
     #     NP['assertion'],
@@ -98,7 +103,8 @@ for index, row in data.iterrows():
     publication = np_client.create_publication(
         assertion_rdf=assertion,
         provenance_rdf=prov,
-        pubinfo_rdf=pubinfo
+        pubinfo_rdf=pubinfo,
+        add_prov_generated_time=False
     )
 
     if args.publish:
@@ -115,7 +121,7 @@ for index, row in data.iterrows():
         print('🔬 One of the nanopub published:')
         # print(publication._rdf.serialize(format='trig').decode('utf-8'))
         print(publication._rdf.serialize(format='trig'))
-        
+
         if args.validate:
             shex_validation(
                 assertion,
@@ -128,18 +134,18 @@ for index, row in data.iterrows():
     if not args.publish and len(np_list) >= 10:
         break
 
-# Print the list of published np URIs in case we need to reuse it to republish the np index 
+# Print the list of published np URIs in case we need to reuse it to republish the np index
 # print('["' + '", "'.join(np_list) + '"]')
 print(f'🛎️  {str(len(np_list))} nanopublications published')
 
 np_index = np_client.create_nanopub_index(
-    np_list, 
-    title="OpenPredict reference dataset", 
+    np_list,
+    title="OpenPredict reference dataset",
     description="""A dataset of 1972 drug indications retrieved from the PREDICT publication and used as reference dataset for the OpenPredict model.
-See https://github.com/MaastrichtU-IDS/translator-openpredict for more details.""", 
+See https://github.com/MaastrichtU-IDS/translator-openpredict for more details.""",
     see_also="https://github.com/MaastrichtU-IDS/translator-openpredict",
-    creators=[CREATOR_ORCID], 
-    creation_time="2020-09-21T00:00:00"
+    creators=[CREATOR_ORCID],
+    creation_time=CREATION_TIME
 )
 
 if args.publish:
