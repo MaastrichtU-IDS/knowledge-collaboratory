@@ -2,13 +2,14 @@ from typing import List, Optional
 
 import requests
 import spacy
-from app.config import settings
 from fastapi import APIRouter, Body, FastAPI, HTTPException, Response
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from pyshex import ShExEvaluator
 from rdflib import Graph, URIRef
 from rdflib.namespace import DC, DCTERMS, RDF, RDFS
+
+from app.config import settings
 
 router = APIRouter()
 

@@ -2,17 +2,17 @@ import shutil
 from pathlib import Path
 
 import requests
-from app import models
-from app.config import settings
 from authlib.integrations.starlette_client import OAuth, OAuthError
 from fastapi import APIRouter, Body, Depends, File, HTTPException, UploadFile
 from fastapi.security import OAuth2PasswordBearer, OpenIdConnect
-
-# Use Authlib for ORCID OpenID Connect?
 from starlette.config import Config
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse
 
+from app import models
+from app.config import settings
+
+# Use Authlib for ORCID OpenID Connect?
 # Main issues discussing implementing OpenID Connect / OAuth2 in FastAPI:
 # https://github.com/tiangolo/fastapi/tree/master/fastapi/security
 # https://github.com/tiangolo/fastapi/issues/488
@@ -58,9 +58,9 @@ router = APIRouter()
 # Load client id and secret from env: https://docs.authlib.org/en/latest/client/starlette.html
 
 
-@router.post("/upload-keys", 
+@router.post("/upload-keys",
     description="""Login with ORCID, and upload and store your authentications keys used to publish Nanopublication on our server""",
-    response_description="Operation result", 
+    response_description="Operation result",
     response_model={})
 async def store_keyfile(
         publicKey: UploadFile = File(...),
@@ -87,9 +87,9 @@ async def store_keyfile(
     })
 
 
-@router.delete("/delete-keys", 
+@router.delete("/delete-keys",
     description="""Delete the Nanopub keys stored on our server associated to your ORCID""",
-    response_description="Operation result", 
+    response_description="Operation result",
     response_model={})
 async def delete_keyfile(
         current_user: models.User = Depends(get_current_user)
@@ -153,7 +153,7 @@ async def auth(request: Request):
         request.session['user'] = dict(user)
     return RedirectResponse(url=f'{settings.FRONTEND_URL}',
         headers={"Authorization": 'Bearer ' + str(token['access_token'])})
-    # return JSONResponse({"access_token": token['access_token'], "token_type": 'bearer'}, 
+    # return JSONResponse({"access_token": token['access_token'], "token_type": 'bearer'},
     #     headers={"Authorization": 'Bearer ' + str(token['access_token'])})
 
 # curl 'http://localhost/rest/current-user' -H 'Authorization: Bearer 21807418-ee11-4097-bdc5-dc9aaf0b9296'

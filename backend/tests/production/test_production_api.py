@@ -2,8 +2,9 @@ import os
 
 import pytest
 import requests
-from app.config import settings
 from reasoner_validator import validate
+
+from app.config import settings
 
 PROD_API_URL = 'https://api.collaboratory.semanticscience.org'
 # PROD_API_URL = 'http://localhost:8808'

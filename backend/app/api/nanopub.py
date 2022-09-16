@@ -4,9 +4,6 @@ import os
 from json import encoder
 from typing import Dict, List, Optional, Union
 
-from app.api.login import get_current_user, reusable_oauth2
-from app.config import settings
-from app.models import User
 from fastapi import (
     APIRouter,
     Body,
@@ -23,6 +20,10 @@ from fastapi.responses import JSONResponse
 from rdflib import RDF, ConjunctiveGraph, Dataset, Graph, Literal, Namespace, URIRef
 from rdflib.namespace import DC, DCTERMS, PROV, RDFS, VOID, XSD
 from starlette.responses import RedirectResponse
+
+from app.api.login import get_current_user, reusable_oauth2
+from app.config import settings
+from app.models import User
 
 # from pyld import jsonld
 

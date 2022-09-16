@@ -1,12 +1,13 @@
 from typing import List, Optional
 
-from app.api.api import api_router
-from app.config import settings
-from app.trapi.openapi import TRAPI
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
+
+from app.api.api import api_router
+from app.config import settings
+from app.trapi.openapi import TRAPI
 
 # app = FastAPI(
 app = TRAPI(

@@ -2,12 +2,12 @@ import json
 import os
 
 import pytest
-from app.config import settings
-
-# from src.api import start_api
-from app.main import app
 from fastapi.testclient import TestClient
 from reasoner_validator import validate
+
+from app.config import settings
+# from src.api import start_api
+from app.main import app
 
 # # os.chdir('../..')
 # # Create and start Flask from openapi.yml before running tests

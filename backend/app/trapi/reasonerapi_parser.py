@@ -2,8 +2,9 @@ import json
 import urllib.request
 
 import requests
-from app.config import settings
 from SPARQLWrapper import JSON, POST, SPARQLWrapper
+
+from app.config import settings
 
 KNOWLEDGE_PROVIDER = 'https://w3id.org/biolink/infores/knowledge-collaboratory'
 

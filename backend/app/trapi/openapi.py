@@ -4,12 +4,13 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 import spacy
 import torch
-from app.config import settings
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from reasoner_pydantic import Message, Query
 from transformers import BertForSequenceClassification, BertTokenizer
+
+from app.config import settings
 
 unordered_servers_list = [
     {
