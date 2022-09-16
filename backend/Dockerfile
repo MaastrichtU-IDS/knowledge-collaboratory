@@ -5,10 +5,16 @@ WORKDIR /app/
 ENV PYTHONUNBUFFERED='1'
 
 # Install Poetry
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | POETRY_HOME=/opt/poetry python && \
-    cd /usr/local/bin && \
-    ln -s /opt/poetry/bin/poetry && \
-    poetry config virtualenvs.create false
+ENV POETRY_VERSION=1.2.0
+RUN curl -sSL https://install.python-poetry.org | python - --version $POETRY_VERSION
+ENV PATH=/root/.local/bin:$PATH
+RUN poetry config virtualenvs.create false
+
+# ENV POETRY_VERSION=1.1.13
+# RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | POETRY_HOME=/opt/poetry python && \
+#     cd /usr/local/bin && \
+#     ln -s /opt/poetry/bin/poetry && \
+#     poetry config virtualenvs.create false
 
 # Install Java
 RUN apt-get update && \

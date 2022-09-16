@@ -121,6 +121,11 @@ for index, row in df.iterrows():
     ) )
     # prov.add( (
     #     NP['assertion'],
+    #     DCTERMS.created,
+    #     Literal(CREATION_TIME, datatype=XSD.dateTime, normalize=False)
+    # ) )
+    # prov.add( (
+    #     NP['assertion'],
     #     PROV.hadPrimarySource,
     #     knowledge_source_uri
     # ) )

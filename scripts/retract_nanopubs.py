@@ -42,7 +42,7 @@ MLS = Namespace("http://www.w3.org/ns/mls#")
 
 #     nanopub_rdf.add( (association_uri, BIOLINK['provided_by'], URIRef("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3159979") ) )
 #     nanopub_rdf.add( (association_uri, BIOLINK['relation'], URIRef("http://purl.obolibrary.org/obo/RO_0002606") ) )
-    
+
 
 #     # https://identifiers.org/drugbank/DB01148
 #     # https://identifiers.org/mim/231200
@@ -81,7 +81,7 @@ print(str(count) + ' nanopublications')
 
 # data = pd.read_csv(url)
 
-# for index, row in data.iterrows(): 
+# for index, row in data.iterrows():
 #     nanopub_uri = create_drug_indic_nanopub(np_client, row['drugid'], row['omimid'])
 #     print(nanopub_uri)
 

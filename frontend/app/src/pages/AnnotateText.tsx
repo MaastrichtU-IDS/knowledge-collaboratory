@@ -128,7 +128,7 @@ export default function AnnotateText() {
     setAnchorEl(anchorEl ? null : anchorEl);
   };
   // const id = open ? 'simple-popper' : undefined;
-  
+
 
   React.useEffect(() => {
     // const params = new URLSearchParams(location.search + location.hash);
@@ -156,15 +156,15 @@ export default function AnnotateText() {
 
     const access_token = user['access_token']
     axios.post(
-        settings.apiUrl + '/upload-keys', 
-        formData, 
-        { 
-          headers: { 
+        settings.apiUrl + '/upload-keys',
+        formData,
+        {
+          headers: {
             Authorization: `Bearer ${access_token}`,
             "Content-Type": "multipart/form-data",
             "type": "formData"
           }
-        } 
+        }
       )
       .then(res => {
         updateState({
@@ -187,7 +187,7 @@ export default function AnnotateText() {
   const handleExtract  = (event: React.FormEvent) => {
     event.preventDefault();
     updateState({
-      loading: true, 
+      loading: true,
       errorMessage: '',
       inputText: state.editInputText,
       entitiesList: [],
@@ -202,13 +202,13 @@ export default function AnnotateText() {
       console.log(`⚠️ Text is more than ${maxLengthRelExtract} characters, we will not extract relations (too long)`)
       extract_relations = false
       // updateState({
-      //   loading: false, 
+      //   loading: false,
       //   errorMessage: "Input text is too large for the machine learning model, try submitting less than 1000 characters"
       // })
     }
     axios.post(
-        settings.apiUrl + '/get-entities-relations', 
-        {'text': state.editInputText}, 
+        settings.apiUrl + '/get-entities-relations',
+        {'text': state.editInputText},
         {'params': {'extract_relations': extract_relations}}
       )
       .then(res => {
@@ -284,8 +284,6 @@ export default function AnnotateText() {
           [`${BIOLINK}aggregator_knowledge_source`]: {'@id': 'https://w3id.org/biolink/infores/knowledge-collaboratory'},
         }
         if (state.inputSource) {
-          // TODO: use publications or primary_knowledge_source?
-          // reifiedStmt[BIOLINK +'primary_knowledge_source'] = {'@id': state.inputSource}
           reifiedStmt[BIOLINK +'publications'] = {'@id': state.inputSource}
         }
         // Add props to the statement
@@ -296,7 +294,7 @@ export default function AnnotateText() {
             if (addProp && addValue) {
               if (!reifiedStmt[addProp]) {
                 reifiedStmt[addProp] = []
-              } 
+              }
               if (checkIfUri(addValue)) {
                 reifiedStmt[addProp].push({'@id': addValue})
               } else {
@@ -335,7 +333,7 @@ export default function AnnotateText() {
             if (addProp && addValue) {
               if (!entityJsonld[addProp]) {
                 entityJsonld[addProp] = []
-              } 
+              }
               if (checkIfUri(addValue)) {
                 // Quick check if URI
                 entityJsonld[addProp].push({'@id': addValue})
@@ -385,14 +383,14 @@ export default function AnnotateText() {
       const shapemap = `<${stmt.s}>@<${stmt.shex}>`
       axios.post(
         `${settings.apiUrl}/validation/shex`,
-        stmtJsonld, 
-        { 
-          params: { 
+        stmtJsonld,
+        {
+          params: {
             shape_start: `${BIOLINK}Association`,
             focus_types: `${BIOLINK}Association`,
             shape_url: 'https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.shex'
-          } 
-        } 
+          }
+        }
       )
       .then(res => {
         console.log(res)
@@ -415,20 +413,20 @@ export default function AnnotateText() {
       const requestParams: any = {
         publish: publish
       }
-      if (state.inputSource) {
-        requestParams['source'] = state.inputSource
-      }
+      // if (state.inputSource) {
+      //   requestParams['source'] = state.inputSource
+      // }
       if (state.inputText) {
         requestParams['quoted_from'] = state.inputText
       }
       const access_token = user['access_token']
       axios.post(
           `${settings.apiUrl}/assertion`,
-          stmtJsonld, 
-          { 
+          stmtJsonld,
+          {
             headers: { Authorization: `Bearer ${access_token}` },
             params: requestParams
-          } 
+          }
         )
         .then(res => {
           updateState({
@@ -460,11 +458,11 @@ export default function AnnotateText() {
       const access_token = user['access_token']
       axios.post(
           `${settings.apiUrl}/publish-last-signed`,
-          null, 
-          { 
+          null,
+          {
             headers: { Authorization: `Bearer ${access_token}` },
             // params: requestParams
-          } 
+          }
         )
         .then(res => {
           updateState({
@@ -496,7 +494,7 @@ export default function AnnotateText() {
   const addStatement  = (event: React.FormEvent) => {
     event.preventDefault();
     const stmts: any = state.statements
-    stmts.push({'s': '', 'p': '', 'o': '', 'props': [], 
+    stmts.push({'s': '', 'p': '', 'o': '', 'props': [],
       'shex': {id: `${BIOLINK}Association`, label: 'Association', type: 'ShapeOr'}})
     updateState({statements: stmts})
   }
@@ -566,7 +564,7 @@ export default function AnnotateText() {
 
   const getEntityCuries = async (text: string) => {
     const data = await axios.post(
-      'https://name-resolution-sri.renci.org/lookup', 
+      'https://name-resolution-sri.renci.org/lookup',
       {},
       {
         'params': {
@@ -594,10 +592,10 @@ export default function AnnotateText() {
       const curies: any = []
       const newEntity = {
         index: entIndex,
-        text: text, 
-        token: text, 
-        type: "NamedEntity", 
-        start: state.inputText.indexOf(text), 
+        text: text,
+        token: text,
+        type: "NamedEntity",
+        start: state.inputText.indexOf(text),
         end: state.inputText.indexOf(text) + text.length,
         curies: curies, id_curie: "", id_label: "", id_uri: "",
         props: []
@@ -606,8 +604,8 @@ export default function AnnotateText() {
       if (entityCuries && Object.keys(entityCuries).length > 0) {
         Object.keys(entityCuries).map((curie: any) => {
           const addEnt: any = {
-            'curie': curie, 
-            'label': entityCuries[curie][0], 
+            'curie': curie,
+            'label': entityCuries[curie][0],
             'altLabel': entityCuries[curie][1],
           }
           newEntity['curies'].push(addEnt)
@@ -649,12 +647,12 @@ export default function AnnotateText() {
       </Typography>
       <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
         This service helps you annotate biomedical text using the <a href='https://biolink.github.io/biolink-model/docs/' target="_blank" rel="noopener noreferrer">BioLink model</a>, and
-        standard identifiers resolved using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator SRI Name Resolution API</a>, such as MONDO and PubChem. 
+        standard identifiers resolved using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator SRI Name Resolution API</a>, such as MONDO and PubChem.
         The annotations are represented using the <a href='https://www.w3.org/RDF' target="_blank" rel="noopener noreferrer">RDF</a> standard. They can be downloaded in the JSON-LD format, or published as Nanopublications.
         {/* A machine learning model automatically extracts biomedical entities from the given text, classify them in different types from the <a href='https://biolink.github.io/biolink-model/docs/' target="_blank" rel="noopener noreferrer">BioLink model</a> (chemical, disease, etc), and retrieve potential standard identifiers for those entities using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator Name Resolution API</a>. */}
       </Typography>
       {/* <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
-        🪄 A machine learning model automatically extracts biomedical entities and relations from the given text, classify them in different types from the BioLink model (chemical, disease, etc), 
+        🪄 A machine learning model automatically extracts biomedical entities and relations from the given text, classify them in different types from the BioLink model (chemical, disease, etc),
         and retrieve potential identifiers for those entities using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator SRI Name Resolution API</a>.
       </Typography> */}
       {/* <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
@@ -664,7 +662,7 @@ export default function AnnotateText() {
         🗜️ In the last step you will define the model used to generate the statements, reified associations enable you to attach additional properties to each statement.
       </Typography> */}
       {/* <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
-        📥️ Finally you can either download the statements as RDF, or directly publish them in a Nanopublication. 
+        📥️ Finally you can either download the statements as RDF, or directly publish them in a Nanopublication.
       </Typography> */}
 
       <Typography variant='body1' style={{marginTop: theme.spacing(2), marginBottom: theme.spacing(2)}}>
@@ -705,9 +703,9 @@ export default function AnnotateText() {
           />
 
           <div style={{width: '100%', textAlign: 'center', marginBottom: theme.spacing(2)}}>
-            <Button type="submit" 
-              variant="contained" 
-              className={classes.saveButton} 
+            <Button type="submit"
+              variant="contained"
+              className={classes.saveButton}
               startIcon={<ExtractIcon />}
               color="secondary" >
                 Extract entities
@@ -732,7 +730,7 @@ export default function AnnotateText() {
         </Box>
       }
       { state.errorMessage &&
-        <Paper elevation={4} 
+        <Paper elevation={4}
           style={{backgroundColor: "#e57373", padding: theme.spacing(2), marginBottom:theme.spacing(3)}}
           // @ts-ignore
           sx={{ display: state.errorMessage.length > 0 }}
@@ -744,12 +742,12 @@ export default function AnnotateText() {
       <Popper open={open} anchorEl={anchorEl}>
         <ClickAwayListener onClickAway={handleClickAway}>
           <Paper elevation={4} style={{minWidth: theme.spacing(100), padding: theme.spacing(2, 2), textAlign: 'left'}}>
-            { state.tagSelected && 
+            { state.tagSelected &&
               <>
                 <Typography variant='h5' style={{textAlign: 'center', marginBottom: theme.spacing(3)}}>
                   {state.tagSelected.token}
                   <Tooltip title={<Typography style={{textAlign: 'center'}}>Delete the entity</Typography>}>
-                    <IconButton onClick={() => handleRemoveEntity(state.tagSelected.index)} 
+                    <IconButton onClick={() => handleRemoveEntity(state.tagSelected.index)}
                       style={{marginLeft: theme.spacing(1), alignContent: 'right'}} color="default">
                         <RemoveIcon />
                     </IconButton>
@@ -805,7 +803,7 @@ export default function AnnotateText() {
                   style={{marginBottom: theme.spacing(2)}}
                 />
                 { state.templateSelected !== 'Plain RDF' && state.tagSelected.props &&
-                  state.tagSelected.props.map((prop: any, pindex: number) => { 
+                  state.tagSelected.props.map((prop: any, pindex: number) => {
                     return <Grid container spacing={2} key={'prop:' + prop + pindex} style={{marginLeft: theme.spacing(5), marginBottom: theme.spacing(1)}}>
                     <Grid item xs={5}>
                       <AutocompleteEntity
@@ -859,11 +857,11 @@ export default function AnnotateText() {
                 }
 
                 <div style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap'}}>
-                  <Button 
+                  <Button
                     onClick={(event: any) => addEntityProperty(event, state.tagSelected)}
                     id={"addProp:"}
-                    variant="contained" 
-                    className={classes.saveButton} 
+                    variant="contained"
+                    className={classes.saveButton}
                     startIcon={<AddIcon />}
                     style={{marginLeft: theme.spacing(5), marginRight: theme.spacing(4), textTransform: 'none'}}
                     color="inherit" >
@@ -878,12 +876,12 @@ export default function AnnotateText() {
 
       { state.extractClicked &&
       // { state.entitiesList.length > 0 &&
-        <> 
+        <>
           <Typography variant='body1' style={{textAlign: 'center', marginBottom: theme.spacing(2)}}>
             💡 You can edit entities by clicking on their tag, or add new entities by highlighting the text corresponding to the entity. Potential identifiers are automatically retrieved for the highlighted text.
           </Typography>
           <Card className={classes.paperPadding} >
-            <Taggy text={state.inputText} spans={state.entitiesList} 
+            <Taggy text={state.inputText} spans={state.entitiesList}
               ents={ents} onClick={clickTag} onHighlight={highlightCallback}  />
           </Card>
         </>
@@ -895,7 +893,7 @@ export default function AnnotateText() {
           2. Define the statements that represent the assertions made in the text, you can add properties to provide more context:
         </Typography>
 
-        { state.statements.map((stmtRow: any, index: number) => { 
+        { state.statements.map((stmtRow: any, index: number) => {
           return <Box key={'stmt:' + index}>
             <Grid container spacing={2} key={index} style={{marginBottom: theme.spacing(1), marginTop: theme.spacing(1)}}>
               <Grid item xs={4}>
@@ -946,7 +944,7 @@ export default function AnnotateText() {
               </Grid>
             </Grid>
             { state.templateSelected !== 'Plain RDF' && state.statements[index].props &&
-              state.statements[index].props.map((prop: any, pindex: number): any => { 
+              state.statements[index].props.map((prop: any, pindex: number): any => {
                 return <Grid container spacing={2} key={'prop' + index + prop + pindex} style={{marginLeft: theme.spacing(5), marginBottom: theme.spacing(1)}}>
                 <Grid item xs={4}>
                   <AutocompleteEntity
@@ -985,21 +983,21 @@ export default function AnnotateText() {
               </Grid>
               })
             }
-            { state.templateSelected !== 'Plain RDF' && 
+            { state.templateSelected !== 'Plain RDF' &&
             <div style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap'}}>
-              <Button 
+              <Button
                 // onClick={() => addProperty(event, index)}
                 onClick={addProperty}
                 id={"addProp:" + index}
-                variant="contained" 
-                className={classes.saveButton} 
+                variant="contained"
+                className={classes.saveButton}
                 startIcon={<AddIcon />}
                 style={{marginLeft: theme.spacing(5), marginRight: theme.spacing(4), textTransform: 'none'}}
                 color="inherit" >
                   Add a property to this statement
               </Button>
               <Typography>
-                Validate statement against: 
+                Validate statement against:
               </Typography>
               <AutocompleteEntity
                 label="ShEx shape"
@@ -1026,8 +1024,8 @@ export default function AnnotateText() {
           </Box>
         })}
         <Button onClick={addStatement}
-          variant="contained" 
-          className={classes.saveButton} 
+          variant="contained"
+          className={classes.saveButton}
           startIcon={<AddIcon />}
           style={{textTransform: 'none', marginTop: theme.spacing(1)}}
           color="info" >
@@ -1039,13 +1037,13 @@ export default function AnnotateText() {
         3. Choose the template used to generate the triples:
       </Typography>
       <TextField select
-          value={state.templateSelected} 
-          label={"Use the template"} 
-          id="collectionSelected" 
-          onChange={handleTemplateChange} 
+          value={state.templateSelected}
+          label={"Use the template"}
+          id="collectionSelected"
+          onChange={handleTemplateChange}
           SelectProps={{ MenuProps: { disableScrollLock: true } }}
           style={{marginBottom: theme.spacing(3), backgroundColor: 'white'}}
-          variant="outlined"> 
+          variant="outlined">
         { triplesTemplates.map((template: any, key: number) => (
           <MenuItem key={template} value={template}>{template}</MenuItem>
         ))}
@@ -1056,20 +1054,20 @@ export default function AnnotateText() {
           <FormControl className={classes.settingsForm}>
             {/* Button to download the JSON-LD */}
             <div style={{width: '100%', textAlign: 'center'}}>
-              <Button 
+              <Button
                 onClick={shexValidation}
-                variant="contained" 
-                className={classes.saveButton} 
+                variant="contained"
+                className={classes.saveButton}
                 startIcon={<ShexIcon />}
                 style={{marginRight: theme.spacing(2)}}
                 disabled={state.entitiesList.length < 1}
                 color="warning" >
                   Validate with ShEx
               </Button>
-              <Button 
+              <Button
                 onClick={handleDownloadRDF}
-                variant="contained" 
-                className={classes.saveButton} 
+                variant="contained"
+                className={classes.saveButton}
                 startIcon={<DownloadIcon />}
                 style={{marginRight: theme.spacing(2)}}
                 disabled={state.entitiesList.length < 1}
@@ -1078,8 +1076,8 @@ export default function AnnotateText() {
               </Button>
               <Button
                 onClick={(event) => generateNanopub(event, false)}
-                variant="contained" 
-                className={classes.saveButton} 
+                variant="contained"
+                className={classes.saveButton}
                 startIcon={<GenerateIcon />}
                 disabled={!user.id}
                 style={{marginRight: theme.spacing(2)}}
@@ -1089,8 +1087,8 @@ export default function AnnotateText() {
               { state.nanopubGenerated &&
                 <Button
                   onClick={publishSignedNanopub}
-                  variant="contained" 
-                  className={classes.saveButton} 
+                  variant="contained"
+                  className={classes.saveButton}
                   startIcon={<PublishIcon />}
                   disabled={!state.nanopubGenerated}
                   color="error" >
@@ -1120,19 +1118,19 @@ export default function AnnotateText() {
               🔒️ You need to login with ORCID to publish Nanopublications
             </Typography>
           } */}
-          { user.id && user.keyfiles_loaded && 
+          { user.id && user.keyfiles_loaded &&
             <Typography>
               ✅ Your authentication keys are successfully loaded, you can start publishing Nanopublications
             </Typography>
           }
 
-          { user.id && !user.keyfiles_loaded && 
+          { user.id && !user.keyfiles_loaded &&
             <>
               <Typography>
-                🔑 You need to upload the authentication keys linked to your ORCID to publish Nanopublications (public and private encryption keys). 
+                🔑 You need to upload the authentication keys linked to your ORCID to publish Nanopublications (public and private encryption keys).
                 If you have not yet created your authentication keys, or linked them to your ORCID, then follow the instructions to complete your profile with the <a href='https://github.com/peta-pico/nanobench/blob/master/INSTALL.md' target="_blank" rel="noopener noreferrer">Nanobench tool</a>.
               </Typography>
-              <form encType="multipart/form-data" action="" onSubmit={handleUploadKeys} 
+              <form encType="multipart/form-data" action="" onSubmit={handleUploadKeys}
                   style={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>
                 <Typography style={{marginTop: theme.spacing(1)}}>
                   Select the <b>Public</b> key:&nbsp;&nbsp;
@@ -1143,9 +1141,9 @@ export default function AnnotateText() {
                   <input type="file" id="privateKey" />
                 </Typography>
 
-                <Button type="submit" 
-                  variant="contained" 
-                  className={classes.saveButton} 
+                <Button type="submit"
+                  variant="contained"
+                  className={classes.saveButton}
                   startIcon={<UploadIcon />}
                   style={{textTransform: 'none', marginTop: theme.spacing(1)}}
                   color="secondary" >

@@ -24,6 +24,7 @@ transformers = "^4.17.0"
 spacy = {extras = ["cuda110"], version = "^3.2.3"}
 spacy-transformers = "^1.1.5"
 nanopub = {git = "https://github.com/vemonet/nanopub.git", rev = "dev-vemonet"}
+# nanopub = {path = "/opt/nanopub", develop = true}
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.770"

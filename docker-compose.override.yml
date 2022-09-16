@@ -7,6 +7,7 @@ services:
     command: /start-reload.sh
     volumes:
       - ./backend:/app
+      - ../nanopub:/opt/nanopub
     environment:
       - FRONTEND_URL=http://localhost:19006
       - INSTALL_DEV=true

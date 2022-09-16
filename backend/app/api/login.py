@@ -1,9 +1,12 @@
+import os
 import shutil
+import zipfile
+from io import BytesIO
 from pathlib import Path
 
 import requests
 from authlib.integrations.starlette_client import OAuth, OAuthError
-from fastapi import APIRouter, Body, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, Body, Depends, File, HTTPException, Response, UploadFile
 from fastapi.security import OAuth2PasswordBearer, OpenIdConnect
 from starlette.config import Config
 from starlette.requests import Request
@@ -71,19 +74,79 @@ async def store_keyfile(
     if not current_user or 'id' not in current_user.keys():
         raise HTTPException(status_code=403, detail=f"You need to login to upload the authentication keys bound to your ORCID")
 
+    user_dir = f"{settings.KEYSTORE_PATH}/{current_user['sub']}"
     # Create user directory if does not exist
-    Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}").mkdir(parents=True, exist_ok=True)
+    Path(user_dir).mkdir(parents=True, exist_ok=True)
 
-    with open(f"{settings.KEYSTORE_PATH}/{current_user['sub']}/idrsa.pub", 'w') as f:
-        data = await publicKey.read()
-        f.write(data.decode("utf-8"))
+    pubkey_path = f"{user_dir}/idrsa.pub"
+    with open(pubkey_path, 'w') as f:
+        pubkey = await publicKey.read()
+        f.write(pubkey.decode("utf-8"))
 
-    with open(f"{settings.KEYSTORE_PATH}/{current_user['sub']}/idrsa", 'w') as f:
-        data = await privateKey.read()
-        f.write(data.decode("utf-8"))
+    privkey_path = f"{user_dir}/idrsa"
+    with open(privkey_path, 'w') as f:
+        privkey = await privateKey.read()
+        f.write(privkey.decode("utf-8"))
+
+    username = ''
+    if current_user['given_name'] or current_user['family_name']:
+        username = current_user['given_name'] + ' ' + current_user['family_name']
+        username = username.strip()
+    elif current_user['name']:
+        username = current_user['name']
+
+    profile_yaml = f"""orcid_id: {current_user['id']}
+name: {username}
+public_key: {pubkey_path}
+private_key: {privkey_path}
+introduction_nanopub_uri:
+"""
+    with open(f"{user_dir}/profile.yml", 'w') as f:
+        f.write(profile_yaml)
 
     return JSONResponse({
         'message': 'Nanopub key stored for ' + current_user['id']
+    })
+
+
+@router.get("/download-keys",
+    description="""Download the Nanopub keys stored on our server associated to your ORCID""",
+    response_description="Operation result",
+    response_model={})
+async def download_keyfile(
+        current_user: models.User = Depends(get_current_user)
+    ):
+
+    if not current_user or 'id' not in current_user.keys():
+        raise HTTPException(status_code=403, detail=f"You need to login to download the keys associated with your ORCID")
+
+    user_dir = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}")
+
+    if user_dir.exists():
+        # shutil.make_archive(f"{user_dir}/nanopub_profile.zip", 'zip', user_dir)
+        zip_filename = "nanopub_profile.zip"
+        # Open BytesIO to grab in-memory ZIP contents
+        s = BytesIO()
+        # The zip compressor
+        zf = zipfile.ZipFile(s, "w")
+        for root, dirs, files in os.walk(user_dir):
+            for fpath in files:
+                # Add file, at correct path
+                print(os.path.join(root, fpath))
+                zf.write(os.path.join(root, fpath), fpath)
+        zf.close()
+
+        # Grab ZIP file from in-memory, make response with correct MIME-type
+        return Response(
+            s.getvalue(),
+            media_type="application/x-zip-compressed",
+            headers={
+                'Content-Disposition': f'attachment;filename={zip_filename}'
+            }
+        )
+
+    return JSONResponse({
+        'message': 'No files has been found on our servers for the ORCID user ' + current_user['id']
     })
 
 
