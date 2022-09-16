@@ -5,6 +5,8 @@ import requests
 from app.config import settings
 from SPARQLWrapper import JSON, POST, SPARQLWrapper
 
+KNOWLEDGE_PROVIDER = 'https://w3id.org/biolink/infores/knowledge-collaboratory'
+
 get_nanopubs_select_query = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX biolink: <https://w3id.org/biolink/vocab/>
@@ -15,9 +17,13 @@ SELECT DISTINCT *
 WHERE {
   graph ?np_assertion {
     ?association
+      biolink:aggregator_knowledge_source <""" + KNOWLEDGE_PROVIDER + """> ;
       rdf:subject ?subject ;
       rdf:predicate ?predicate ;
       rdf:object ?object .
+    OPTIONAL {
+      ?association biolink:primary_knowledge_source ?primary_knowledge_source .
+    }
     OPTIONAL {
       ?association biolink:relation ?relation .
     }
@@ -39,7 +45,7 @@ WHERE {
     OPTIONAL {
       ?association biolink:has_population_context [
         rdfs:label ?has_population_context ;
-        biolink:has_phenotype ?populationHasPhenotype ;
+        biolink:has_phenotype ?population_has_phenotype ;
       ] .
     }
     {
@@ -51,8 +57,11 @@ WHERE {
     }
   }
   ?_entity_filters
+  ?_prov_block
+  ?_np_index_filter
   graph ?np_head {
-    ?np_uri np:hasAssertion ?np_assertion .
+    ?np_uri np:hasAssertion ?np_assertion ;
+      np:hasProvenance ?np_prov .
   }
   graph npa:graph {
     ?np_uri npa:hasValidSignatureForPublicKey ?pubkey .
@@ -71,6 +80,7 @@ WHERE {
     ?subject biolink:category ?subject_category .
     ?object biolink:category ?object_category .
     ?association
+      biolink:aggregator_knowledge_source <""" + KNOWLEDGE_PROVIDER + """> ;
       rdf:subject ?subject ;
       rdf:predicate ?predicate_category ;
       rdf:object ?object .
@@ -98,18 +108,26 @@ WHERE {
   graph ?np_assertion {
     {
       ?association
+        biolink:aggregator_knowledge_source <""" + KNOWLEDGE_PROVIDER + """> ;
         rdf:subject ?node ;
         rdf:predicate ?predicate_category ;
         rdf:object ?object .
     } UNION {
       ?association
+        biolink:aggregator_knowledge_source <""" + KNOWLEDGE_PROVIDER + """> ;
         rdf:subject ?subject ;
         rdf:predicate ?predicate_category ;
         rdf:object ?node .
     }
     ?node biolink:category ?node_category .
-    BIND(UCASE(STRBEFORE(REPLACE(STRAFTER(str(?node), ":"), "//identifiers.org/", ""), ":")) AS ?node_prefix)
+    VALUES (?namespace ?separator) {
+      ("//identifiers.org/" "/")
+      ("//purl.obolibrary.org/obo/" "_")
+      ("//www.ebi.ac.uk/efo/" "_")
+    }
+    BIND(UCASE(STRBEFORE(REPLACE(STRAFTER(str(?node), ":"), ?namespace, ""), ?separator)) AS ?node_prefix)
     FILTER(strlen(?node_prefix)>0)
+    FILTER(!strstarts(?node_prefix, "//"))
   }
   graph ?np_head {
     ?np_uri np:hasAssertion ?np_assertion .
@@ -226,7 +244,7 @@ def get_metakg_from_nanopubs():
     sparql = SPARQLWrapper(settings.NANOPUB_SPARQL_URL)
     sparql.setReturnFormat(JSON)
     sparql.setQuery(get_metakg_edges_query)
-    print(get_metakg_edges_query)
+    # print(get_metakg_edges_query)
     sparqlwrapper_results = sparql.query().convert()
     sparql_results = sparqlwrapper_results["results"]["bindings"]
     edges_array = []
@@ -237,6 +255,7 @@ def get_metakg_from_nanopubs():
             "object": resolve_uri_with_context(result['object_category']['value'])
         })
 
+    print(get_metakg_prefixes_query)
     sparql.setQuery(get_metakg_prefixes_query)
     sparqlwrapper_results = sparql.query().convert()
     prefixes_results = sparqlwrapper_results["results"]["bindings"]
@@ -283,10 +302,13 @@ def reasonerapi_to_sparql(reasoner_query):
     query_graph = reasoner_query["message"]["query_graph"]
     query_options = {}
     n_results = None
+    primary_knowledge_source = None
     if 'query_options' in reasoner_query.keys():
         query_options = reasoner_query["query_options"]
         if 'n_results' in query_options:
             n_results = int(query_options["n_results"])
+        if 'primary_knowledge_source' in query_options:
+            primary_knowledge_source = str(query_options["primary_knowledge_source"])
 
     if len(query_graph["edges"]) != 1:
         return {'error': len(query_graph["edges"]) + """ edges have been provided. 
@@ -297,6 +319,25 @@ def reasonerapi_to_sparql(reasoner_query):
     predicate_edge_id = ''
     subject_node_id = ''
     object_node_id = ''
+    prov_block = ''
+    np_index_block = ''
+
+    if primary_knowledge_source == 'infores:knowledge-collaboratory':
+      # TODO: filter just on nanopubs created via annotate tool, maybe use prov?
+      # knowledge_source_block = f"biolink:primary_knowledge_source <{KNOWLEDGE_PROVIDER}> ;"
+      prov_block = """graph ?np_prov {
+        ?np_assertion prov:wasQuotedFrom ?wasQuotedFrom .
+      }"""
+    elif primary_knowledge_source:
+      np_index_block = """graph ?indexAssertionGraph {
+        <""" + primary_knowledge_source + """> npx:includesElement ?np .
+      }"""
+    
+    sparql_query_get_nanopubs = sparql_query_get_nanopubs.replace('?_np_index_filter', np_index_block)
+    sparql_query_get_nanopubs = sparql_query_get_nanopubs.replace('?_prov_block', prov_block)
+    # else:
+    #   knowledge_source_block = f"biolink:aggregator_knowledge_source <{KNOWLEDGE_PROVIDER}> ;"
+    #   sparql_query_get_nanopubs = sparql_query_get_nanopubs.replace('?_knowledge_source', knowledge_source_block)
 
     for edge_id in query_graph['edges'].keys():
         edge_props = query_graph['edges'][edge_id]
@@ -352,6 +393,7 @@ def reasonerapi_to_sparql(reasoner_query):
         except:
           pass
         sparql_query_get_nanopubs = sparql_query_get_nanopubs.replace('?_entity_filters', entity_filters)
+        sparql_query_get_nanopubs = sparql_query_get_nanopubs.replace('?_prov_block', prov_block)
 
     # Add LIMIT to the SPARQL query if n_results provided
     if n_results:
@@ -397,6 +439,11 @@ def reasonerapi_to_sparql(reasoner_query):
               'value': np_users[edge_result['pubkey']['value']]['user']['value']
           })
 
+        # TODO: refactor to use a list and a loop
+        # extract_attributes = [
+        #   'relation', 'publications', 'knowledge_source', 'label', 'provided_by',
+        #   'description', 'has_population_context', 'population_has_phenotype'
+        # ]
         if 'relation' in edge_result:
           # knowledge_graph['edges'][edge_uri]['relation'] = resolve_uri_with_context(edge_result['relation']['value'])
           knowledge_graph['edges'][edge_uri]['attributes'].append({
@@ -407,6 +454,11 @@ def reasonerapi_to_sparql(reasoner_query):
           knowledge_graph['edges'][edge_uri]['attributes'].append({
               'attribute_type_id': 'biolink:publications',
               'value': resolve_uri_with_context(edge_result['publications']['value'])
+          })
+        if 'knowledge_source' in edge_result:
+          knowledge_graph['edges'][edge_uri]['attributes'].append({
+              'attribute_type_id': 'biolink:knowledge_source',
+              'value': resolve_uri_with_context(edge_result['knowledge_source']['value'])
           })
         
         if 'label' in edge_result:
@@ -428,11 +480,11 @@ def reasonerapi_to_sparql(reasoner_query):
               # 'value_type_id': 'biolink:Cohort',
           })
         
-        if 'populationHasPhenotype' in edge_result:
+        if 'population_has_phenotype' in edge_result:
           # TODO: fix the key
           knowledge_graph['edges'][edge_uri]['attributes'].append({
               'attribute_type_id': 'biolink:has_phenotype',
-              'value': resolve_uri_with_context(edge_result['populationHasPhenotype']['value']),
+              'value': resolve_uri_with_context(edge_result['population_has_phenotype']['value']),
               # 'value_type_id': 'biolink:Phenotype',
           })
         

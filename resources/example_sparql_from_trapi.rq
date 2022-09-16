@@ -55,5 +55,5 @@ WHERE {
     ?np_uri npa:hasValidSignatureForPublicKey ?pubkey .
   }
   FILTER NOT EXISTS { ?creator npx:retracts ?np_uri }
-
+  
 } LIMIT 30

@@ -1,0 +1,5 @@
+rdflib
+PyShEx
+pandas
+# nanopub
+nanopub@git+https://github.com/vemonet/nanopub.git@dev-vemonet

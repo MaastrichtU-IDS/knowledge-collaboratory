@@ -9,6 +9,7 @@
     "build": "expo build:web",
     "serve": "serve -s web-build",
     "start": "npm run build && npm run serve",
+    "dev-prod": "expo web",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d web-build"
   },

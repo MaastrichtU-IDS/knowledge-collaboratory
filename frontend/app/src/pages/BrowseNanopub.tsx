@@ -18,7 +18,7 @@ hljs.registerLanguage("turtle", hljsDefineTurtle)
 
 import {CytoscapeRdfGraph, rdfToCytoscape} from "../components/CytoscapeRdf";
 
-import { Graph } from "perfect-graph";
+// import { Graph } from "perfect-graph";
 // yarn add perfect-graph@0.0.158 colay@0.0.68 colay-ui@0.0.145 immer@9.0.12 react@^17.0.2 react-dom@^17.0.2
 // yarn add react@^17.0.2 react-dom@^17.0.2
 
@@ -95,7 +95,12 @@ export default function BrowseNanopub() {
   }))
   const classes = useStyles();
 
-  const resourceTypesList: any = [{uri: 'http://www.w3.org/ns/dcat#Dataset', label: 'dcat:Dataset'}]
+  const resourceTypesList: any = [
+    {label: 'PREDICT reference dataset', uri: 'http://www.ncbi.nlm.nih.gov/pubmed/PMC3159979'},
+    {label: 'Off-Label drug indication dataset', uri: 'http://purl.org/np/RAaZp4akBZI6FuRzIpeksyYxTArOtxqmhuv9on-YssEzA'},
+    {label: 'Claims published with Annotate biomedical text', uri: 'https://w3id.org/biolink/infores/knowledge-collaboratory'},
+    {label: 'All nanopublications', uri: 'All nanopublications',},
+  ]
   const users_pubkeys: any = {}
   const nanopub_obj: any = {}
   const users_orcid: any = {}
@@ -190,77 +195,108 @@ export default function BrowseNanopub() {
 
   const getNanopubs = (search: string = '') => {
     let get_nanopubs_url = settings.nanopubGrlcUrl + '/find_valid_signed_nanopubs?'
-
-    if (Object.keys(state.filterPerResource).length > 0) {
-      
-      const getLatestNanopubsQuery = `prefix np: <http://www.nanopub.org/nschema#>
-        prefix npa: <http://purl.org/nanopub/admin/>
-        prefix npx: <http://purl.org/nanopub/x/>
-        prefix xsd: <http://www.w3.org/2001/XMLSchema#>
-        prefix dct: <http://purl.org/dc/terms/>
-
-        select ?np ?date ?pubkey where {
-          graph npa:graph {
-            ?np npa:hasHeadGraph ?h .
-            ?np dct:created ?date .
-            ?np npa:hasValidSignatureForPublicKey ?pubkey.
-          }
-          graph ?h {
-            ?np np:hasAssertion ?assertionGraph .
-          }
-          graph ?assertionGraph {
-            ?s a <${state.filterPerResource.uri}> .
-          }
-          filter not exists {
-            graph npa:graph {
-              ?newversion npa:hasHeadGraph ?nh .
-              ?newversion npa:hasValidSignatureForPublicKey ?pubkey .
-            }
-            graph ?nh {
-              ?newversion np:hasPublicationInfo ?ni .
-            }
-            graph ?ni {
-              ?newversion npx:supersedes ?np .
-            }
-          }
-          filter not exists {
-            graph npa:graph {
-              ?retraction npa:hasHeadGraph ?rh .
-              ?retraction npa:hasValidSignatureForPublicKey ?pubkey .
-            }
-            graph ?rh {
-              ?retraction np:hasAssertion ?ra .
-            }
-            graph ?ra {
-              ?somebody npx:retracts ?np .
-            }
-          }
-        } ORDER BY desc(?date) LIMIT ` + state.results_count
+    const knowledgeProvider = 'https://w3id.org/biolink/infores/knowledge-collaboratory'
+    const assertionBlocks = []
+    const provBlocks = []
     
-      get_nanopubs_url = `${settings.nanopubSparqlUrl}?query=${encodeURIComponent(getLatestNanopubsQuery)}`
-      console.log('filterPerResource')
-      console.log(state.filterPerResource)
-      console.log(getLatestNanopubsQuery)
+    if (search) {
+      assertionBlocks.push(`             ?association ?pred ?v .
+      FILTER(contains(lcase(str(?v)), lcase("${search}") ) )`)
+      // Using Virtuoso full text search (misses URIs):
+      // assertionBlocks.push(`            { ?association ?pred ?v . ?v luc:npIdx "${search}" . }
+      // UNION
+      // { ?association ?pred ?v .  ?v <bif:contains> "${search}" . }`)
+    }
 
-    } else if (search) {
-      if (search.startsWith('http://') || search.startsWith('https://')) {
-        get_nanopubs_url = settings.nanopubGrlcUrl + '/find_valid_signed_nanopubs_with_uri?ref=' + search
-      } else {
-        get_nanopubs_url = settings.nanopubGrlcUrl + '/find_valid_signed_nanopubs_with_text?text=' + search
+    let filterNpIndexBlock = ''
+    if (Object.keys(state.filterPerResource).length > 0) {
+      if (state.filterPerResource.uri === "https://w3id.org/biolink/infores/knowledge-collaboratory") {
+        // Only claims published with the collaboratory tools
+        provBlocks.push(`?np_assertion prov:wasQuotedFrom ?wasQuotedFrom .`)
+      } else if (state.filterPerResource.uri !== "All nanopublications") {
+        // assertionBlocks.push(`?association biolink:primary_knowledge_source <${state.filterPerResource.uri}> .`)
+        filterNpIndexBlock = `graph ?indexAssertionGraph {
+          <${state.filterPerResource.uri}> npx:includesElement ?np .
+        }`
       }
     } else {
-      get_nanopubs_url = `${settings.nanopubSparqlUrl}?query=${encodeURIComponent(getLatestNanopubsQuery)}`
-    }
-    // if (user.id) {
-    //   // If user is logged in, by default 
-    //   const user_pubkey = state.users_orcid[user.id]['pubkey']['value']
-    //   get_nanopubs_url = settings.nanopubGrlcUrl + '/find_valid_signed_nanopubs?pubkey=' + user_pubkey
-    // }
-    if (state.filter_user.pubkey) {
-      get_nanopubs_url = get_nanopubs_url + '&pubkey=' + encodeURIComponent(state.filter_user.pubkey.value)
+      // By default we show all nanopubs in the Knowledge Collaboratory
+      assertionBlocks.push(`?association biolink:aggregator_knowledge_source <${knowledgeProvider}> .`)
     }
 
-    console.log('URL to retrieve the Nanopubs:', get_nanopubs_url);
+    let assertionGraphBlock = ''
+    if (assertionBlocks.length > 0) {
+      assertionGraphBlock = `graph ?assertionGraph {
+        ${assertionBlocks.join('\n')}
+      }`
+    }
+
+    let provGraphBlock = ''
+    if (provBlocks.length > 0) {
+      provGraphBlock = `graph ?provGraph {
+        ${provBlocks.join('\n')}
+      }`
+    }
+
+    let filterPubkey = ''
+    if (state.filter_user && state.filter_user.pubkey) {
+      filterPubkey = `FILTER contains(?pubkey, "${state.filter_user.pubkey.value}")`
+    }
+
+    const getLatestNanopubsQuery = `prefix np: <http://www.nanopub.org/nschema#>
+      prefix npa: <http://purl.org/nanopub/admin/>
+      prefix npx: <http://purl.org/nanopub/x/>
+      prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+      prefix dct: <http://purl.org/dc/terms/>
+      prefix biolink: <https://w3id.org/biolink/vocab/>
+      prefix luc: <http://www.ontotext.com/owlim/lucene#>
+      prefix bif: <http://www.openlinksw.com/schemas/bif#>
+      prefix npx: <http://purl.org/nanopub/x/>
+
+      SELECT DISTINCT ?np ?date ?pubkey WHERE {
+        GRAPH npa:graph {
+          ?np npa:hasHeadGraph ?h .
+          ?np dct:created ?date .
+          ?np npa:hasValidSignatureForPublicKey ?pubkey.
+        }
+        GRAPH ?h {
+          ?np np:hasAssertion ?assertionGraph ;
+            np:hasPublicationInfo ?pubInfoGraph ;
+            np:hasProvenance ?provGraph .
+        }
+        ${assertionGraphBlock}
+        ${provGraphBlock}
+        ${filterNpIndexBlock}
+        FILTER not exists {
+          GRAPH npa:graph {
+            ?newversion npa:hasHeadGraph ?nh .
+            ?newversion npa:hasValidSignatureForPublicKey ?pubkey .
+          }
+          GRAPH ?nh {
+            ?newversion np:hasPublicationInfo ?ni .
+          }
+          GRAPH ?ni {
+            ?newversion npx:supersedes ?np .
+          }
+        }
+        FILTER not exists {
+          GRAPH npa:graph {
+            ?retraction npa:hasHeadGraph ?rh .
+            ?retraction npa:hasValidSignatureForPublicKey ?pubkey .
+          }
+          GRAPH ?rh {
+            ?retraction np:hasAssertion ?ra .
+          }
+          GRAPH ?ra {
+            ?somebody npx:retracts ?np .
+          }
+        }
+        ${filterPubkey}
+      } ORDER BY desc(?date) LIMIT ` + state.results_count
+  
+    get_nanopubs_url = `${settings.nanopubSparqlUrl}?query=${encodeURIComponent(getLatestNanopubsQuery)}`
+    console.log(`Search: sending SPARQL query to ${settings.nanopubSparqlUrl}`)
+    console.log(getLatestNanopubsQuery)
 
     // Get the list of signed nanopubs
     axios.get(get_nanopubs_url,
@@ -297,8 +333,7 @@ export default function BrowseNanopub() {
                 "accept": "application/trig",
                 // "accept": "application/json",
               }
-            }
-            )
+            })
               .then(res => {
                 nanopub_obj[nanopub_url]['rdf'] = res.data
                 nanopub_obj[nanopub_url]['expanded'] = false
@@ -310,9 +345,8 @@ export default function BrowseNanopub() {
                 updateState({
                   nanopub_obj: nanopub_obj,
                 })
-                console.log('nanopub_obj', nanopub_obj)
-                console.log('nanopubObj', nanopubObj)
-
+                // console.log('nanopub_obj', nanopub_obj)
+                // console.log('nanopubObj', nanopubObj)
               })
               .catch(error => {
                 console.log(error)
@@ -360,47 +394,6 @@ export default function BrowseNanopub() {
   //     updateState({nanopub_obj: {...state.nanopub_obj, [np]: expand_nanopub} });
   //   })
   // }
-
-  const getLatestNanopubsQuery = `prefix np: <http://www.nanopub.org/nschema#>
-prefix npa: <http://purl.org/nanopub/admin/>
-prefix npx: <http://purl.org/nanopub/x/>
-prefix xsd: <http://www.w3.org/2001/XMLSchema#>
-prefix dct: <http://purl.org/dc/terms/>
-
-select ?np ?date ?pubkey where {
-  graph npa:graph {
-    ?np npa:hasHeadGraph ?h .
-    ?np dct:created ?date .
-    ?np npa:hasValidSignatureForPublicKey ?pubkey.
-  }
-  filter not exists {
-    graph npa:graph {
-      ?newversion npa:hasHeadGraph ?nh .
-      ?newversion npa:hasValidSignatureForPublicKey ?pubkey .
-    }
-    graph ?nh {
-      ?newversion np:hasPublicationInfo ?ni .
-    }
-    graph ?ni {
-      ?newversion npx:supersedes ?np .
-    }
-  }
-  filter not exists {
-    graph npa:graph {
-      ?retraction npa:hasHeadGraph ?rh .
-      ?retraction npa:hasValidSignatureForPublicKey ?pubkey .
-    }
-    graph ?rh {
-      ?retraction np:hasAssertion ?ra .
-    }
-    graph ?ra {
-      ?somebody npx:retracts ?np .
-    }
-  }
-} ORDER BY desc(?date) LIMIT ` + state.results_count
-
-
-
 
   return(
     <Container className='mainContainer' >
@@ -456,7 +449,7 @@ select ?np ?date ?pubkey where {
           // options={state.users_list.sort((a: any, b: any) => -b.firstLetter.localeCompare(a.firstLetter))}
           getOptionLabel={(option: any) => option.label}
           sx={{ width: 250 }}
-          renderInput={(params) => <TextField {...params} label={"📂 Filter per resource type"} />}
+          renderInput={(params) => <TextField {...params} label={"📂 Filter per knowledge source"} />}
           onChange={(event, newInputValue: any) => {
             updateState({
               filterPerResource: newInputValue

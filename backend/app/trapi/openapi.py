@@ -202,7 +202,7 @@ TRAPI_EXAMPLE = {
             "biolink:ChemicalEntity"
           ],
           "ids": [
-            "DRUGBANK:DB00394",
+            "DRUGBANK:DB00313",
             "CHEBI:75725"
           ]
         },
@@ -215,6 +215,6 @@ TRAPI_EXAMPLE = {
     }
   },
   "query_options": {
-    "n_results": 30
+    "n_results": 30,
   }
 }

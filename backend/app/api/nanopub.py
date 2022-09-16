@@ -186,6 +186,7 @@ async def publish_assertion(
     g.bind("schema", URIRef('http://schema.org/'))
     g.bind("schemaorg", URIRef('https://schema.org/'))
     g.bind("biolink", URIRef('https://w3id.org/biolink/vocab/'))
+    BIOLINK = Namespace("https://w3id.org/biolink/vocab/")
     BASE_URI = URIRef(str(BASE))
 
     # RDFLib does not allow to load triples in a specific graph so we need to use another graph
@@ -214,8 +215,10 @@ async def publish_assertion(
     # Provenance
     g.add((BASE.assertion, PROV.wasAttributedTo, URIRef(current_user['id']), prov_graph))
     g.add((BASE.assertion, PROV.generatedAtTime, Literal(time_created, datatype=XSD.dateTime, normalize=False), prov_graph))
-    if source:
-        g.add((BASE.assertion, PROV.hadPrimarySource, URIRef(source), prov_graph))
+    # g.add((BASE.assertion, BIOLINK['aggregator_knowledge_source'], URIRef('https://w3id.org/biolink/infores/knowledge-collaboratory'), prov_graph))
+    # if source:
+    #     g.add((BASE.assertion, BIOLINK['primary_knowledge_source'], URIRef(source), prov_graph))
+        # g.add((BASE.assertion, PROV.hadPrimarySource, URIRef(source), prov_graph))
     if quoted_from:
         g.add((BASE.assertion, PROV.wasQuotedFrom, Literal(quoted_from), prov_graph))
     if add_biolink_version:

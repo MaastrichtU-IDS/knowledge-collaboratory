@@ -279,6 +279,12 @@ export default function AnnotateText() {
           [`${rdf}subject`]: {'@id': getPropValue(stmt.s)},
           [`${rdf}predicate`]: {'@id': getPropValue(stmt.p)},
           [`${rdf}object`]: {'@id': getPropValue(stmt.o)},
+          [`${BIOLINK}aggregator_knowledge_source`]: {'@id': 'https://w3id.org/biolink/infores/knowledge-collaboratory'},
+        }
+        if (state.inputSource) {
+          // TODO: use publications or primary_knowledge_source?
+          // reifiedStmt[BIOLINK +'primary_knowledge_source'] = {'@id': state.inputSource}
+          reifiedStmt[BIOLINK +'publications'] = {'@id': state.inputSource}
         }
         // Add props to the statement
         if (stmt.props) {
