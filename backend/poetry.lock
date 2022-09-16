@@ -941,7 +941,7 @@ dev = ["coveralls", "flake8", "flaky", "pytest", "pytest-cov", "recommonmark", "
 type = "git"
 url = "https://github.com/vemonet/nanopub.git"
 reference = "dev-vemonet"
-resolved_reference = "67af2ca996bb336b5bf76d2002340d920246c308"
+resolved_reference = "1e314d52480e7ca6b064d973f4533f32fff0b907"
 
 [[package]]
 name = "numpy"
