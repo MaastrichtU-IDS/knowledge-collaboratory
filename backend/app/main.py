@@ -1,6 +1,3 @@
-from typing import List, Optional
-
-from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
@@ -11,12 +8,12 @@ from app.trapi.openapi import TRAPI
 
 # app = FastAPI(
 app = TRAPI(
-    swagger_ui_init_oauth = {
+    swagger_ui_init_oauth={
         # https://swagger.io/docs/open-source-tools/swagger-ui/usage/oauth2/
         # "usePkceWithAuthorizationCodeGrant": True,
         "clientId": settings.ORCID_CLIENT_ID,
         "scopes": "/authenticate",
-        "appName": "Knowledge Collaboratory"
+        "appName": "Knowledge Collaboratory",
     },
 )
 
@@ -42,10 +39,10 @@ if settings.BACKEND_CORS_ORIGINS:
 @app.get("/health", include_in_schema=False)
 def health_check():
     """Health check for Translator elastic load balancer"""
-    return {'status': 'ok'}
+    return {"status": "ok"}
 
 
 @app.get("/", include_in_schema=False)
 def redirect_root_to_docs():
     """Redirect the route / to /docs"""
-    return RedirectResponse(url='/docs')
+    return RedirectResponse(url="/docs")

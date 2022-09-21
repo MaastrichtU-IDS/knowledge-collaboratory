@@ -1,15 +1,11 @@
-from typing import List, Optional
+from typing import List
 
 import requests
-import spacy
-from fastapi import APIRouter, Body, FastAPI, HTTPException, Response
+from fastapi import APIRouter, Body
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
 from pyshex import ShExEvaluator
 from rdflib import Graph, URIRef
-from rdflib.namespace import DC, DCTERMS, RDF, RDFS
-
-from app.config import settings
+from rdflib.namespace import RDF
 
 router = APIRouter()
 
@@ -39,17 +35,20 @@ sub:association rdf:object <http://purl.obolibrary.org/obo/DOID_1040>;
 """
 
 
-@router.post("/validation/shex", name="Validate RDF with ShEx shapes",
+@router.post(
+    "/validation/shex",
+    name="Validate RDF with ShEx shapes",
     description="""Validate RDF with ShEx shapes""",
-    response_description="Result of the ShEx execution", 
-    response_model={})
+    response_description="Result of the ShEx execution",
+    response_model={},
+)
 async def validation_shex(
-        rdf_input: str = Body(..., example=example_rdf),
-        # rdf_input: str = Body(...),
-        shape_start: str = 'https://w3id.org/biolink/vocab/Associationaaa',
-        shape_url: str = 'https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.shex',
-        focus_types: List[str] = ['https://w3id.org/biolink/vocab/Association'],
-    ):
+    rdf_input: str = Body(..., example=example_rdf),
+    # rdf_input: str = Body(...),
+    shape_start: str = "https://w3id.org/biolink/vocab/Associationaaa",
+    shape_url: str = "https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.shex",
+    focus_types: List[str] = ["https://w3id.org/biolink/vocab/Association"],
+):
     # shapemap: str = '{ FOCUS rdf:type <https://w3id.org/biolink/vocab/Association> }@<https://w3id.org/biolink/vocab/Association>',
 
     # if shape_url == 'https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.shex':
@@ -57,17 +56,19 @@ async def validation_shex(
 
     g = Graph()
     g.parse(
-        data=rdf_input, 
+        data=rdf_input,
         # format='json-ld'
     )
 
-    evaluator = ShExEvaluator(g.serialize(format='turtle'), shex_shape,
+    evaluator = ShExEvaluator(
+        g.serialize(format="turtle"),
+        shex_shape,
         start=shape_start,
         # start="http://purl.org/ejp-rd/metadata-model/v1/shex/patientRegistryShape",
     )
-    output = ''
+    output = ""
     shex_failed = False
-    for validate_type in focus_types: 
+    for validate_type in focus_types:
         for s, p, o in g.triples((None, RDF.type, URIRef(validate_type))):
             # print('ShEx evaluate focus entity ' + str(s))
             # For specific RDF format: evaluator.evaluate(rdf_format="json-ld")
@@ -75,17 +76,23 @@ async def validation_shex(
                 # output = output + f"{result.focus}: "
                 if shex_eval.result:
                     if not shex_failed:
-                        output = output + f"ShEx validation passing for type <{validate_type}> with focus <{shex_eval.focus}>"
+                        output = (
+                            output
+                            + f"ShEx validation passing for type <{validate_type}> with focus <{shex_eval.focus}>"
+                        )
                         # eval.success(f'ShEx validation passing for type <{validate_type}> with focus <{shex_eval.focus}>')
                     else:
-                        output = output + f'ShEx validation passing for type <{validate_type}> with focus <{shex_eval.focus}>'
+                        output = (
+                            output
+                            + f"ShEx validation passing for type <{validate_type}> with focus <{shex_eval.focus}>"
+                        )
                 else:
-                    output = output + f'ShEx validation failing for type <{validate_type}> with focus <{shex_eval.focus}> due to {shex_eval.reason}'
+                    output = (
+                        output
+                        + f"ShEx validation failing for type <{validate_type}> with focus <{shex_eval.focus}> due to {shex_eval.reason}"
+                    )
                     shex_failed = True
 
-    return JSONResponse({
-        'comments': output,
-        'valid': not shex_failed
-    })
+    return JSONResponse({"comments": output, "valid": not shex_failed})
 
     # return JSONResponse({'output': 'Not implemented'})

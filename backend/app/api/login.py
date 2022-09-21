@@ -6,9 +6,8 @@ from pathlib import Path
 
 import requests
 from authlib.integrations.starlette_client import OAuth, OAuthError
-from fastapi import APIRouter, Body, Depends, File, HTTPException, Response, UploadFile
-from fastapi.security import OAuth2PasswordBearer, OpenIdConnect
-from starlette.config import Config
+from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile
+from fastapi.security import OpenIdConnect
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse
 
@@ -22,32 +21,31 @@ from app.config import settings
 # https://github.com/tiangolo/fastapi/issues/12 OAuthFlowImplicit, OAuthFlowAuthorizationCode
 
 reusable_oauth2 = OpenIdConnect(
-    openIdConnectUrl='https://orcid.org/.well-known/openid-configuration',
+    openIdConnectUrl="https://orcid.org/.well-known/openid-configuration",
     auto_error=False
     # flow='implicit' not working
 )
 
 
-def get_current_user(
-    token: str = Depends(reusable_oauth2)
-) -> models.User:
+def get_current_user(token: str = Depends(reusable_oauth2)) -> models.User:
     # curl -i -L -H "Accept: application/json" -H "Authorization: Bearer aa4629f3-b0a2-4edd-b77a-398d7afe3c90" 'https://sandbox.orcid.org/oauth/userinfo'
     if token:
-        orcid_user = requests.get('https://orcid.org/oauth/userinfo',
-                            headers={'Accept': 'application/json',
-                                    'Authorization': 'Bearer ' + token})
+        orcid_user = requests.get(
+            "https://orcid.org/oauth/userinfo",
+            headers={"Accept": "application/json", "Authorization": "Bearer " + token},
+        )
     else:
         return None
     current_user = orcid_user.json()
-    if 'sub' in current_user.keys():
+    if "sub" in current_user.keys():
         keyfile_pub = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}/idrsa.pub")
         keyfile_priv = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}/idrsa")
         if keyfile_pub.exists() and keyfile_priv.exists():
-            current_user['keyfiles_loaded'] = True
+            current_user["keyfiles_loaded"] = True
         else:
-            current_user['keyfiles_loaded'] = False
+            current_user["keyfiles_loaded"] = False
     else:
-        current_user['keyfiles_loaded'] = False
+        current_user["keyfiles_loaded"] = False
 
     return current_user
 
@@ -61,39 +59,44 @@ router = APIRouter()
 # Load client id and secret from env: https://docs.authlib.org/en/latest/client/starlette.html
 
 
-@router.post("/upload-keys",
+@router.post(
+    "/upload-keys",
     description="""Login with ORCID, and upload and store your authentications keys used to publish Nanopublication on our server""",
     response_description="Operation result",
-    response_model={})
+    response_model={},
+)
 async def store_keyfile(
-        publicKey: UploadFile = File(...),
-        privateKey: UploadFile = File(...),
-        current_user: models.User = Depends(get_current_user)
-    ):
+    publicKey: UploadFile = File(...),
+    privateKey: UploadFile = File(...),
+    current_user: models.User = Depends(get_current_user),
+):
 
-    if not current_user or 'id' not in current_user.keys():
-        raise HTTPException(status_code=403, detail=f"You need to login to upload the authentication keys bound to your ORCID")
+    if not current_user or "id" not in current_user.keys():
+        raise HTTPException(
+            status_code=403,
+            detail=f"You need to login to upload the authentication keys bound to your ORCID",
+        )
 
     user_dir = f"{settings.KEYSTORE_PATH}/{current_user['sub']}"
     # Create user directory if does not exist
     Path(user_dir).mkdir(parents=True, exist_ok=True)
 
     pubkey_path = f"{user_dir}/idrsa.pub"
-    with open(pubkey_path, 'w') as f:
+    with open(pubkey_path, "w") as f:
         pubkey = await publicKey.read()
         f.write(pubkey.decode("utf-8"))
 
     privkey_path = f"{user_dir}/idrsa"
-    with open(privkey_path, 'w') as f:
+    with open(privkey_path, "w") as f:
         privkey = await privateKey.read()
         f.write(privkey.decode("utf-8"))
 
-    username = ''
-    if current_user['given_name'] or current_user['family_name']:
-        username = current_user['given_name'] + ' ' + current_user['family_name']
+    username = ""
+    if current_user["given_name"] or current_user["family_name"]:
+        username = current_user["given_name"] + " " + current_user["family_name"]
         username = username.strip()
-    elif current_user['name']:
-        username = current_user['name']
+    elif current_user["name"]:
+        username = current_user["name"]
 
     profile_yaml = f"""orcid_id: {current_user['id']}
 name: {username}
@@ -101,24 +104,25 @@ public_key: {pubkey_path}
 private_key: {privkey_path}
 introduction_nanopub_uri:
 """
-    with open(f"{user_dir}/profile.yml", 'w') as f:
+    with open(f"{user_dir}/profile.yml", "w") as f:
         f.write(profile_yaml)
 
-    return JSONResponse({
-        'message': 'Nanopub key stored for ' + current_user['id']
-    })
+    return JSONResponse({"message": "Nanopub key stored for " + current_user["id"]})
 
 
-@router.get("/download-keys",
+@router.get(
+    "/download-keys",
     description="""Download the Nanopub keys stored on our server associated to your ORCID""",
     response_description="Operation result",
-    response_model={})
-async def download_keyfile(
-        current_user: models.User = Depends(get_current_user)
-    ):
+    response_model={},
+)
+async def download_keyfile(current_user: models.User = Depends(get_current_user)):
 
-    if not current_user or 'id' not in current_user.keys():
-        raise HTTPException(status_code=403, detail=f"You need to login to download the keys associated with your ORCID")
+    if not current_user or "id" not in current_user.keys():
+        raise HTTPException(
+            status_code=403,
+            detail=f"You need to login to download the keys associated with your ORCID",
+        )
 
     user_dir = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}")
 
@@ -140,87 +144,96 @@ async def download_keyfile(
         return Response(
             s.getvalue(),
             media_type="application/x-zip-compressed",
-            headers={
-                'Content-Disposition': f'attachment;filename={zip_filename}'
-            }
+            headers={"Content-Disposition": f"attachment;filename={zip_filename}"},
         )
 
-    return JSONResponse({
-        'message': 'No files has been found on our servers for the ORCID user ' + current_user['id']
-    })
+    return JSONResponse(
+        {
+            "message": "No files has been found on our servers for the ORCID user "
+            + current_user["id"]
+        }
+    )
 
 
-@router.delete("/delete-keys",
+@router.delete(
+    "/delete-keys",
     description="""Delete the Nanopub keys stored on our server associated to your ORCID""",
     response_description="Operation result",
-    response_model={})
-async def delete_keyfile(
-        current_user: models.User = Depends(get_current_user)
-    ):
+    response_model={},
+)
+async def delete_keyfile(current_user: models.User = Depends(get_current_user)):
 
-    if not current_user or 'id' not in current_user.keys():
-        raise HTTPException(status_code=403, detail=f"You need to login to delete the keys associated with your ORCID")
+    if not current_user or "id" not in current_user.keys():
+        raise HTTPException(
+            status_code=403,
+            detail=f"You need to login to delete the keys associated with your ORCID",
+        )
 
     keyfile_folder = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}")
 
     if keyfile_folder.exists():
         shutil.rmtree(keyfile_folder)
 
-    return JSONResponse({
-        'message': 'The Nanopub keyfile has been properly deleted from our servers for the ORCID user ' + current_user['id']
-    })
+    return JSONResponse(
+        {
+            "message": "The Nanopub keyfile has been properly deleted from our servers for the ORCID user "
+            + current_user["id"]
+        }
+    )
 
 
-@router.get('/logout')
+@router.get("/logout")
 async def logout(request: Request):
-    request.session.pop('user', None)
-    return RedirectResponse(url='/docs')
+    request.session.pop("user", None)
+    return RedirectResponse(url="/docs")
 
 
-@router.get('/current-user')
+@router.get("/current-user")
 async def current_user(current_user: models.User = Depends(get_current_user)):
     # print('current_user')
     # print(current_user)
     return current_user
 
 
-
-
 # TODO: remove /login and /auth that are not used? we do everything through OpenID connect and /current-user
 oauth = OAuth()
 oauth.register(
-    name='orcid',
-    server_metadata_url='https://orcid.org/.well-known/openid-configuration',
+    name="orcid",
+    server_metadata_url="https://orcid.org/.well-known/openid-configuration",
     client_id=settings.ORCID_CLIENT_ID,
     client_secret=settings.ORCID_CLIENT_SECRET,
     redirect_uri=settings.BACKEND_URL,
     client_kwargs={
-        'scope': '/authenticate'
+        "scope": "/authenticate"
         # 'scope': 'openid email profile'
-    }
+    },
 )
 
-@router.get('/login')
+
+@router.get("/login")
 async def login(request: Request):
-    auth_uri = request.url_for('auth')
+    auth_uri = request.url_for("auth")
     return await oauth.orcid.authorize_redirect(request, auth_uri)
 
-@router.get('/auth')
+
+@router.get("/auth")
 async def auth(request: Request):
     try:
         token = await oauth.orcid.authorize_access_token(request)
     except OAuthError as error:
-        return HTMLResponse(f'<h1>{error.error}</h1>')
-    user = token.get('userinfo')
+        return HTMLResponse(f"<h1>{error.error}</h1>")
+    user = token.get("userinfo")
     if user:
-        request.session['user'] = dict(user)
-    return RedirectResponse(url=f'{settings.FRONTEND_URL}',
-        headers={"Authorization": 'Bearer ' + str(token['access_token'])})
+        request.session["user"] = dict(user)
+    return RedirectResponse(
+        url=f"{settings.FRONTEND_URL}",
+        headers={"Authorization": "Bearer " + str(token["access_token"])},
+    )
     # return JSONResponse({"access_token": token['access_token'], "token_type": 'bearer'},
     #     headers={"Authorization": 'Bearer ' + str(token['access_token'])})
 
-# curl 'http://localhost/rest/current-user' -H 'Authorization: Bearer 21807418-ee11-4097-bdc5-dc9aaf0b9296'
 
+# curl 'http://localhost/rest/current-user' -H 'Authorization: Bearer 21807418-ee11-4097-bdc5-dc9aaf0b9296'
 
 
 # def get_current_active_superuser(

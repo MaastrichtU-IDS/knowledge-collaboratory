@@ -1,11 +1,11 @@
 import json
 import os
 
-import pytest
 from fastapi.testclient import TestClient
 from reasoner_validator import validate
 
 from app.config import settings
+
 # from src.api import start_api
 from app.main import app
 
@@ -24,24 +24,29 @@ client = TestClient(app)
 
 def test_post_trapi():
     """Test Translator ReasonerAPI query POST operation to get predictions"""
-    print(f'Testing for TRAPI version {settings.TRAPI_VERSION_TEST} 🏷️')
-    url = '/query'
+    print(f"Testing for TRAPI version {settings.TRAPI_VERSION_TEST} 🏷️")
+    url = "/query"
 
-    for trapi_filename in os.listdir('tests/queries'):
-        with open('tests/queries/' + trapi_filename,'r') as f:
+    for trapi_filename in os.listdir("tests/queries"):
+        with open("tests/queries/" + trapi_filename, "r") as f:
             reasoner_query = f.read()
-            response = client.post(url, 
-                                    data=reasoner_query, 
-                                    headers={"Content-Type": "application/json"})
+            response = client.post(
+                url, data=reasoner_query, headers={"Content-Type": "application/json"}
+            )
 
             # print(response.json)
-            edges = response.json()['message']['knowledge_graph']['edges'].items()
+            edges = response.json()["message"]["knowledge_graph"]["edges"].items()
             # print(response)
             # print(trapi_filename)
-            assert validate(response.json()['message'], "Message", settings.TRAPI_VERSION_TEST) == None
-            if trapi_filename.endswith('limit3.json'):
+            assert (
+                validate(
+                    response.json()["message"], "Message", settings.TRAPI_VERSION_TEST
+                )
+                == None
+            )
+            if trapi_filename.endswith("limit3.json"):
                 assert len(edges) == 3
-            elif trapi_filename.endswith('limit1.json'):
+            elif trapi_filename.endswith("limit1.json"):
                 assert len(edges) == 1
             else:
                 assert len(edges) >= 5
@@ -55,25 +60,26 @@ def test_trapi_empty_response():
                     "e00": {
                         "subject": "n00",
                         "object": "n01",
-                        "predicates": ["biolink:physically_interacts_with"]
+                        "predicates": ["biolink:physically_interacts_with"],
                     }
                 },
                 "nodes": {
-                    "n00": {
-                        "ids": ["CHEMBL.COMPOUND:CHEMBL112"]
-                    },
-                    "n01": {
-                        "categories": ["biolink:Protein"]
-                    }
-                }
+                    "n00": {"ids": ["CHEMBL.COMPOUND:CHEMBL112"]},
+                    "n01": {"categories": ["biolink:Protein"]},
+                },
             }
         }
     }
 
-    response = client.post('/query',
+    response = client.post(
+        "/query",
         data=json.dumps(reasoner_query),
-        headers={"Content-Type": "application/json"})
+        headers={"Content-Type": "application/json"},
+    )
 
     print(response.json())
-    assert validate(response.json()['message'], "Message", settings.TRAPI_VERSION_TEST) == None
-    assert len(response.json()['message']['results']) == 0
+    assert (
+        validate(response.json()["message"], "Message", settings.TRAPI_VERSION_TEST)
+        == None
+    )
+    assert len(response.json()["message"]["results"]) == 0

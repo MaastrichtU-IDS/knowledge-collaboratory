@@ -1,7 +1,7 @@
 import argparse
 
 import pandas as pd
-from nanopub import NanopubClient, Publication
+from nanopub import NanopubClient, NanopubConfig
 from pyshex import ShExEvaluator
 from rdflib import FOAF, RDF, RDFS, XSD, Graph, Literal, Namespace, URIRef
 from rdflib.namespace import DC, DCTERMS, PROV, RDFS, VOID, XSD
@@ -22,7 +22,9 @@ args = parser.parse_args()
 
 
 # Initialize the nanopub client using the encrypted keys in the ~/.nanopub folder
-np_client = NanopubClient()
+np_client = NanopubClient(
+    nanopub_config=NanopubConfig(add_prov_generated_time=False)
+)
 # np_client = NanopubClient(
 #     profile_path='/home/vemonet/.not_nanopub/profile.yml',
 #     sign_explicit_private_key=True,
@@ -130,11 +132,10 @@ for index, row in df.iterrows():
     #     knowledge_source_uri
     # ) )
 
-    publication = np_client.create_publication(
+    publication = np_client.create_nanopub(
         assertion_rdf=g,
         provenance_rdf=prov,
         pubinfo_rdf=pubinfo,
-        add_prov_generated_time=False
     )
 
     if args.publish:
@@ -179,7 +180,10 @@ Drugs are identified by their DrugBank IDs, and conditions are identified by the
 Curated by Ricardo de Miranda Azevedo. See https://github.com/MaastrichtU-IDS/off-label-drug-indications-dataset for more details.""",
     see_also="https://github.com/MaastrichtU-IDS/off-label-drug-indications-dataset",
     creators=[CREATOR_ORCID],
-    creation_time="2021-10-02T00:00:00"
+    creation_time="2021-10-02T00:00:00",
+    nanopub_config=NanopubConfig(
+        add_prov_generated_time=False,
+    ),
 )
 
 if args.publish:

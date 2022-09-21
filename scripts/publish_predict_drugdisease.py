@@ -1,16 +1,20 @@
 import argparse
+import logging
 
 import pandas as pd
-from nanopub import NanopubClient, Publication
+from nanopub import NanopubClient, NanopubConfig, Publication
 from pyshex import ShExEvaluator
-from rdflib import FOAF, RDF, RDFS, Graph, Literal, Namespace, URIRef
+from rdflib import (FOAF, RDF, RDFS, ConjunctiveGraph, Graph, Literal,
+                    Namespace, URIRef)
 from rdflib.namespace import DC, DCTERMS, PROV, RDFS, VOID, XSD
 
 from nanopub_utils import (BIOLINK, DCAT, MLS, NP, NP_URI, NPX, PAV, PROV,
-                           SCHEMA, SKOS, init_graph, shex_validation)
+                           SCHEMA, SKOS, init_graph, log, shex_validation)
 
 # Get arguments
 parser = argparse.ArgumentParser(description='Publish nanopublications.')
+parser.add_argument('--verbose', action='store_true',
+                    help='Show more logs (default: False)')
 parser.add_argument('--publish', action='store_true',
                     help='Publish nanopubs (default: False)')
 parser.add_argument('--validate', action='store_true',
@@ -21,7 +25,12 @@ CREATOR_ORCID = "https://orcid.org/0000-0001-7769-4272"
 CREATION_TIME = "2020-09-21T00:00:00"
 
 # Create the client, that allows searching, fetching and publishing nanopubs
-np_client = NanopubClient()
+np_client = NanopubClient(
+    nanopub_config=NanopubConfig(add_prov_generated_time=False)
+)
+
+if args.verbose:
+    log.setLevel(logging.INFO)
 
 # Generate nanopubs from OpenPredict drug-disease gold standard
 # url = 'https://raw.githubusercontent.com/MaastrichtU-IDS/translator-openpredict/master/openpredict/data/resources/openpredict-omim-drug.csv'
@@ -100,11 +109,11 @@ np_client = NanopubClient()
 #     #     knowledge_source_uri
 #     # ) )
 
-#     publication = np_client.create_publication(
-#         assertion_rdf=assertion,
-#         provenance_rdf=prov,
-#         pubinfo_rdf=pubinfo,
-#         add_prov_generated_time=False
+#     publication = np_client.create_nanopub(
+#         assertion=assertion,
+#         provenance=prov,
+#         pubinfo=pubinfo,
+#         # nanopub_config=NanopubConfig(add_prov_generated_time=False)
 #     )
 
 #     if args.publish:
@@ -131,9 +140,13 @@ np_client = NanopubClient()
 #                 # focus=str(URIRef('http://identifiers.org/drugbank/DB01148'))
 #             )
 
-#     if not args.publish and len(np_list) >= 10:
+#     if not args.publish and len(np_list) >= 2:
 #         break
 
+
+
+
+# Generate the Nanopub Index
 
 np_list = ["http://purl.org/np/RAWvxpICqjTVzgKSfeSqvJxu9HMp2psgOjMxFYWjW9D3I", "http://purl.org/np/RAAbr0us5K5CqWY8SGPnqV3AMINWr1GE2_o7Myi-El-Wc", "http://purl.org/np/RA64_aGmDqLClqAPY7kbJQYXB5sfep9cNC-Jnn2bdO4HM", "http://purl.org/np/RAkfiEFw0HXoyEp0SJiEMyLa3itF2ySrt4EWJKH3A-FNw", "http://purl.org/np/RAEQ9XwQGJMUc3D0M1NB5cwtI8oapttKuyhF4u2JRziRg", "http://purl.org/np/RAQ2L55Krp2da10ieUV_oy2NLoNULKAsuwifEDJROglCg", "http://purl.org/np/RAcLiuAXYqq2Y1y1Crpu8YhXBKa240TvnrDkgCrmQKRBI", "http://purl.org/np/RAlG_AW8GzDaN-HVbccjCMGi_lO3jgWaBudg7XFmmgJQ8", "http://purl.org/np/RAb5-UfG6p8RlCuFUMa-PgeRB1D0HUuUtP3Zmbawzg0tg", "http://purl.org/np/RANY-blvSXzSywee_qrR2culqSaXxZo2tSq1cnIg8ErYI", "http://purl.org/np/RA0yXqlxoQLIVWvvRjYffKR6I8Dae9SU62x8UEwVLk0Fc", "http://purl.org/np/RASXaFMxSkGCOh14MEI8aU8NThXAwJ1BDTDfE-nT3yGxw", "http://purl.org/np/RAJjix6kKWiSzZdO3eam4DUgry64g5XRnZstTDnEEAEQ8", "http://purl.org/np/RARejX2A_HFOvIdIA43pNJelu6GcnnQ22e1V0ZHcthXEE", "http://purl.org/np/RAdKj5OXoL1IjQzKvtlisBRW9TF0YJwi1A1GIU0wJjfpw", "http://purl.org/np/RANavKd2Tnq4JNa59mFTwu7SCpmFLxZliMSs8yWgyhqRc", "http://purl.org/np/RAlvCibukoLsJUV663glEn5JOldn9cW-PQyvgIPOqhbvY", "http://purl.org/np/RAF8pOOeznidVvxTB1HcRfn-2wetiCgfZMXJ2kyQ5L34E", "http://purl.org/np/RA7hoJl2GkZFIuGfSb4OP4ymocQcPGLq5GFh_GkjZZEVE", "http://purl.org/np/RAZOi_QhJLohSu7RSkqIWd2rAWgtCdBMUtc7kvhH6K_rg", "http://purl.org/np/RAl6MUSipMiWedUHBRJj_CRpnVzRojSpIx4gWPVWXV6O0", "http://purl.org/np/RAhypsYc_3EmhRQkunrrtPf1RfyPnm9Sp4TUyy2ZgCWtw", "http://purl.org/np/RAENpgJVYwsJzxtRa1njYvevPhmegIUDsIJJe8erTdnQk", "http://purl.org/np/RAWjNpuZJelG8pfUeCnfGAXFiyVglcMSBVRCYrSzWfHZY", "http://purl.org/np/RAaDnMIgc5_nsSGYA3WfaWy2VRa1kX3iOhV-gJOgdUCys", "http://purl.org/np/RA313Ge2nxj-LrAYm7_wy_OQ5KdEpjTB4dNlDgSjOjM-M", "http://purl.org/np/RAHPByqr72Zsf8psBoIfMzpyceJh5tKLWhBMir-A9s1jQ", "http://purl.org/np/RA2BtMaKK3eRPBoxQ2nknxhwd5EjGsaVKmLWrziUm-ClM", "http://purl.org/np/RASBYbTfzV9dJyFmSzfIS34B6DCwMigAJ7IWitsyCuhJ4", "http://purl.org/np/RAVzS9O-KsYXlJiqnO551EPNiuQCIeaUeI8d2ZgHCz4AM", "http://purl.org/np/RANi3x3URYbAIJcxYO8nhC-ayCoxE9mEIcFD5UehW6fPo", "http://purl.org/np/RAqov1ZF88zps_3IrazNI0_n2WovDB-drpigNvI5eklyQ", "http://purl.org/np/RATizmsvE2lXKoxvwxrPW7_ivq50-9o0fOCygB9-46SrY", "http://purl.org/np/RAAXt8rns7EIcd7S_pUXzNoQG0saQvZUceWTV5QAKLNo0", "http://purl.org/np/RAtQW3-Kwt_jIoKcCIQdAbtXdZyQCqr2_F47rpTsz2XiA", "http://purl.org/np/RAYl_a33Ja9FbAunEXTdXthhLgXjYDzIBkUxAlMYU5Uh8", "http://purl.org/np/RAOeotB6_DtpO3h5x8AVhSWr4GujjMBf4f49VoHvKlhcw", "http://purl.org/np/RAYWVgkxwA_6UY1xO4BkGiuKmXvmlInrczqB4p0C0SWzk", "http://purl.org/np/RA0LvWWJ5sfPJsZrphThdK8BCbWdx0z4aCfcF8XBOSl2Q", "http://purl.org/np/RAIx5V5SGSf40UBoCPuvaiWBVBuMbP191bR8RC-6oFoSs", "http://purl.org/np/RAQSzwURz3AmpOv40nmj_l3qd-mkPKgy282IxrEzxJ9pw", "http://purl.org/np/RA8vfHiL_eluSmRx0w0QYRiUW2oa3g3oCpHrKF7MqhhTc", "http://purl.org/np/RA654BcbKMXAMnGeN5a6-Ft43rZBy55q_97KLcw9srcrE", "http://purl.org/np/RAWdqa6B-mIaC2E0jsJiMxrROWBRUcezN1rM3zHbx6stQ", "http://purl.org/np/RA3L2I2-c9IgNqPhaAnqo2YchwsJvjff3jyuhpkhYKrLU", "http://purl.org/np/RA6yrrFLw1eAgvCxiXHh9NlEFgMBqqWvHW3J6zViCV9Hg", "http://purl.org/np/RA_KOkE3P0pVHoUHlTqA3x1BfP-R07-WBz6Y_Faigd6iE", "http://purl.org/np/RAWBoMgWpDXDuQHoP1qm8e1iPv0g46KR1SYbi3dAhRyQ0", "http://purl.org/np/RA7i3b3JsyfpCs8FF6sKcJL4xGjwMzILNnpoPvxZMPkLo", "http://purl.org/np/RAZlBPRWQnMUqVSrhRCHfwNTyzOS447HMoNLokO-NIOE0", "http://purl.org/np/RAx43fWZyH6rz3Wdq02KE46NxrbsLtVp8F4ainKxIfENs", "http://purl.org/np/RAt_bA4Sy4loEplhS-b6OwztUjsCKIj_my-PQ8rFGEHTU", "http://purl.org/np/RAe6o_xJCj04Bu2KwmA83NfGvN2-Hnzr1SSGaV6J8Esyw", "http://purl.org/np/RAgZX7RgarxrH9UsSQF7py5LV3Ffbus_XTCxp01cp1JCw", "http://purl.org/np/RAU0cnRB0XVxdWhvdkklovfU7nPg8IeUxMDxKxm1QX0JM", "http://purl.org/np/RAsEnnTc2T7mHor4OV1OecnhadHW3M2euFOzzb1-Od-uY",
 "http://purl.org/np/RATAQe4biF4fINx9DahvWij6VVVobu2ckX05rrFkn4Bpo", "http://purl.org/np/RAE2hzU6tkZ-jO1nPzdPMRGzejogArlfYWAN_qisamN5I", "http://purl.org/np/RAnOBOVTDIB4ANI3pDU1g5v2pg-AYxn8DW2e2pD5UU0SI", "http://purl.org/np/RAClTGRlGuREttzK5NmannngizCGaqJCkb3pFycJU8I0w", "http://purl.org/np/RAzZQqunAUMrGd3-oynd_ttz7lNpi1mQhsxr4Vgl-dlRU", "http://purl.org/np/RAElLrCorInflGT-LYbhhnRBIWmuSX9_LyTgidSh8YLF0", "http://purl.org/np/RAeeqWgxOhsWDLWHzbG2OQu5IivAeYuWYUVoaTSETe7go", "http://purl.org/np/RAztUEnrWuycQM8_r1AVM1V4O8fsYd2Fb8j2YF5L-A5LY", "http://purl.org/np/RAwIscNeL_Cox0VILLQciV0VydgSoQjt9AE_LjyEKv8T0", "http://purl.org/np/RAgTgfpmeS8SgILeeB1WS1P6SCL5xXJuiikI1U5vl9uL4", "http://purl.org/np/RATePDX-2e3n61BOQkj04-jeVvoFZJVCgbVqoP5mOhF38", "http://purl.org/np/RA0I3HaseiFvKtD3UTlhU2ka8VV2IHtzw45IJXZlZUGCc", "http://purl.org/np/RAr0l2AHfnCMWcSKifDhMhO6Lg0038nX_0gOMRmMS90tE", "http://purl.org/np/RA17jpytrkMPZVPSX-cEekbpqO0sfL1IiLSZ8AmrIzVYM", "http://purl.org/np/RATmXsI0zPHvQfS6b8a3nay1h4X3C4clO0Xo2JM1SnqkY", "http://purl.org/np/RAPQ6cP2V4GpR8zxzLSbYyUECOAHdoZyn4-oiHsI1W1m0", "http://purl.org/np/RAMNR47yhdvvPAtgCwYoK-FBAW_oUzX-3DOLw1vW_ZBss", "http://purl.org/np/RATTWeJq7YTywtkKi2kZOfPguLZv02Iyn9Kco0BqZhKaw", "http://purl.org/np/RAcFJ1ivwjn97B9fm5CondwkGAGnmWI-we3t3YvibCm_M", "http://purl.org/np/RAP6co3p4Yp9jcuNZ4suzIrhGXUoOFO-q7HFy-66nYCag", "http://purl.org/np/RAl9uUpnGtcR8cFep6fA73T9g7nfpkwwJZUkws5d3PxiI", "http://purl.org/np/RAfLspG66Cyj-RQgjkB14ZGs_ZWI8pL-lAADqD1uzDJZQ", "http://purl.org/np/RA0j1h17N1_0Uz004JxeL6Y3k-lq6VNSxnTID6fdXETog", "http://purl.org/np/RAmj5F99hiIAylq4a4IWC5hUYd1oMAyWxLsI860OmF9Mk", "http://purl.org/np/RAI5uf0VSKVduJ71Mt2-YCyTdXx0fZS6IwwASzpEDp3p4", "http://purl.org/np/RAS0gAajJpprk33LM3n2SfPZtobBX5DAyv5mAjzxdW7b0", "http://purl.org/np/RA6agxSl7IO-8jDyNWvi9WEgIgCKaxZPMvk1GW7-niQPc", "http://purl.org/np/RA2MSqrcYRnJrYqR9qbZRdoAVbFthkM97_Lg8vNlnbPNI", "http://purl.org/np/RADEozfllanz_rAOv8zlqULJsw9SqnpfBgTXj-6klptBw", "http://purl.org/np/RA5g9FqUbechHzTQf7tunxek_lsHawQp4SF02tnOEoNW4", "http://purl.org/np/RAx0oyGqTtb3ZAkGbRt2MCwaJGGZtlg1rl2R4jHiV11v8", "http://purl.org/np/RAcpYbZpE72bzcpuQ4PTUZkLEThF7EIJgT74FjHX9ynHY", "http://purl.org/np/RA5YqOCh_142bhmb3lnkQHsRK2b37Y5oA6NCg-5I0N-O4", "http://purl.org/np/RA0vEO0PTSotlS7aZ_djnCC_KDUFEw71XQiHIBPBmyimY", "http://purl.org/np/RAcKqTQMlZc-nXcvwnXfDh52MbkQ3WCLpJWw3a5JavnHE", "http://purl.org/np/RARmGWpH56kXYFj_LPp38PHwkSAWi-XyYKw-gkRd7QPeU", "http://purl.org/np/RAsQKo_jsmCMPJ0ATVHad4mpsDYG5uh7wpJy1frcfgWgw", "http://purl.org/np/RAYQEZRm33pZwkLFiDUt3dyRSRsNRPxQVklN2p--RBZ04", "http://purl.org/np/RAE5w99ee83iBEDRd-FreAcNTAGnhgzX3JaeVwxm3uAKk", "http://purl.org/np/RAkjb6I3e8uJkvmgzyzMlp4_MoI9OX-F0UXanpN0-Kd5s", "http://purl.org/np/RAvbsHNo6cr-nN9Wp3WJP_VxY75PB4pMuJ9_uEANDiTXo", "http://purl.org/np/RAXXlFF3ZL0axuweLmDJvlt-K1joyJLwvRZ2GR5j_fEDs", "http://purl.org/np/RAogYLhVdJx3Kjzgi4H1nUUy7PlKFX4WBA5evrD0AcQ-o", "http://purl.org/np/RAcy7mZVjnpbJtQU4aP4ZEgHjnRq6ipv325_RqsecDt8c", "http://purl.org/np/RAbLAC-bJ0MDqSC3FsgX6jjS7TN6EphZOnJ5YUYNMozwA", "http://purl.org/np/RAppBvkarxoYJb_61iDLg4uN1u29LRV87nhIgZmEDygmU", "http://purl.org/np/RAruxIptjE_3C5SDn3Fmm6sBuFHLXkpXuzEcH6eJ5jT3A", "http://purl.org/np/RAP4gsLoi0POXegb0rht7hkibtcxDx5hnkYf7EKSayUXY", "http://purl.org/np/RAB-7NA8FO_0Or0jhIckoHsJkMeAuz1wbHPM2WpPDD0mc", "http://purl.org/np/RAG7I_uYMEdpqC2gzOn1kRn-hbBM9eH_uoa5y-P6B4wFE", "http://purl.org/np/RALNItLdE25TjEvYyvH5fit1bXtlzD54d_r0eoZyHm9vA", "http://purl.org/np/RA0HBVRYOu3tM-VPWFtsGtJwN3R0Gu-mUlqeIE5Qi1VrI", "http://purl.org/np/RAUSGSuIZKPawuHFALiMgRbUWStk2Ip6ohfohHPYb6nJ4", "http://purl.org/np/RAZqAKukBDBR7MErmxbmF4cIYBSbtUogeTzLTuNaRsK0k", "http://purl.org/np/RA457lB2TMmTdRAY2VXbE3Ytnsgd_qhtStBRJZjo4II8s", "http://purl.org/np/RASFCGLSCF1g5LzMNaEsuzbZQUTtOwX-OoyG56g4aCxxg", "http://purl.org/np/RAQz9-3yDSqyY6FURJTUPqPe3X4gdh4nYsXQtAP9zTrNg", "http://purl.org/np/RA38O1SX_0B7K0WF5y-XUwc_WYWEen-JDZnhuMzE20-dU", "http://purl.org/np/RA9_TPI61DfcKhHXX9UnIe93qmGOAT2DKpRZmpw560dG4", "http://purl.org/np/RA7pp26qmunAfng8L9Nai-CVfUqllcY9soFxrpZn_earY", "http://purl.org/np/RAH7BR4oIzVHfDjt0apSujRswUl4Z6fLP7E7P3cQx9s_o", "http://purl.org/np/RAzL51lvJzK0W20cD40VAEKw1ii0fML2Zf3ouzeBskoI8", "http://purl.org/np/RAPETBgPQhh8NyyS0Thvq4hVGzdoyqXATjvNnwGSIKAbQ", "http://purl.org/np/RAAyPzeyQHcGEPISlghgl6VmVrgboPOLi4NGxsQYmUmxA", "http://purl.org/np/RAZU8KFOWfkO1OJolHQh5nUrYvPg0XYJLVX1zm-QwO_SE", "http://purl.org/np/RA1jI2Eu2ZyqRANQhH-x_y3PuXck2AOe_ECb8qxjAdKnE", "http://purl.org/np/RAFtCIsu1-ryleJ2S0isK2Z46EiL6g52kyiQW9fyRB880", "http://purl.org/np/RAleGP9SCNS2tydkWThCK3J1GYStLCU0Y4AHamE59VA9E", "http://purl.org/np/RAwCzFHKuZXc10c7NAcvNEz1mkn4jiZus8wGAS99y86uM", "http://purl.org/np/RAdkfdAo4vJeLVRrMnv8Nr_dt4RY5zrsJcqveGCTV4pU8", "http://purl.org/np/RA_e3wHB0Ed47ODh3hUG2rRGpYX4gqHlT2XxyN48N_aKs", "http://purl.org/np/RAB0nylKYGof69k2ifpX15L54_3KxgxOF8xV6cmF4YZIc", "http://purl.org/np/RAANzPOM767Wdk6p8u-7RTf3ylT4QGFPmDdAKSR0gZNFI", "http://purl.org/np/RAul0ma9fGo2DJcKHFDm9qUohn4_kKsuQ8IsGO19PCcCo", "http://purl.org/np/RAhIv_IbBo9WSzB-zCdSlmpuvXA8FtThMZ3ovCttlV2G0", "http://purl.org/np/RA7rNJcNVb99XYt_ygfsNQQe_FvFO1dVCTaANJKEe1nxE", "http://purl.org/np/RAdxuOE5BzpAaYIyVvrgRIPUpTXdCim6ql4dwbUaT3hSM", "http://purl.org/np/RASzZGNLgsKBjEj9iH1HwagLOfoZh78bDFHdU5-kKCS24", "http://purl.org/np/RADi6SOeWhNmR0knB1EUoeRbUwfWQZrkBcOC841G0rN58", "http://purl.org/np/RA223n1l_Xb0Ew7SdiCEH-DoloqiJ1nv4Ni1MK42EHt0E", "http://purl.org/np/RAF0hsq-7qT6g6xYDJKMI8xa6n_yHgheOTrTuOf8PLy_Q", "http://purl.org/np/RA-wRpLSxawQ-e-YXN0xp09hZTVFMHzfSQwgrzjqMzOO4", "http://purl.org/np/RAwCz1gZ595o94e5PIo2e59I8cZt-2hnBUSK--Zjcxsz0", "http://purl.org/np/RAcp0ShJpD743vQkyknloboyVYPtoH9Ns9ZJnpHvs3HlE", "http://purl.org/np/RAE7K5NQAsFDUtWeXx4VNEuENkKMbvysSznJ6TNw5lasQ", "http://purl.org/np/RAdTDFWAa-UWmER0ZUWRtSL7yUt2iduYueheaxSy1p30Q", "http://purl.org/np/RAdxIBQ95cCIQp9U2kg9K3aSxTWS1CB4lDiGx30mdsTyg", "http://purl.org/np/RAPxOgnrIXXLow8Mifrti2Ux4OJ4EyWJIQXA-dltxZw3E", "http://purl.org/np/RAEFHoc7R8VwEKb4UPI-Xq6OsAptbLLK1DIQEsq5t5_kU", "http://purl.org/np/RA20uqPjB50UhMTu4wSKK5VnE8JBa-3Z7uiYxz-vQ8zWQ",
@@ -163,21 +176,36 @@ np_list = ["http://purl.org/np/RAWvxpICqjTVzgKSfeSqvJxu9HMp2psgOjMxFYWjW9D3I", "
 # print('["' + '", "'.join(np_list) + '"]')
 print(f'🛎️  {str(len(np_list))} nanopublications published')
 
-np_index = np_client.create_nanopub_index(
+np_indexes = np_client.create_nanopub_index(
     np_list,
     title="OpenPredict reference dataset",
     description="""A dataset of 1971 drug indications retrieved from the PREDICT publication and used as reference dataset for the OpenPredict model.
 See https://github.com/MaastrichtU-IDS/translator-openpredict for more details.""",
     see_also="https://github.com/MaastrichtU-IDS/translator-openpredict",
     creators=[CREATOR_ORCID],
-    creation_time=CREATION_TIME
+    creation_time=CREATION_TIME,
+    nanopub_config=NanopubConfig(
+        add_prov_generated_time=False,
+    ),
+    publish=args.publish
 )
 
-if args.publish:
-    index_uri = np_client.publish(np_index)
-else:
-    print(np_index._rdf.serialize(format='trig'))
-    index_uri = np_client.sign(np_index)
+print(np_indexes)
+for filepath in np_indexes:
+    g = ConjunctiveGraph()
+    g.parse(filepath, format="trig")
+    print("✒️  Nanopub index signed:")
+    print(g.serialize(format="trig"))
 
-print('✅ Published Nanopub Index:')
-print(index_uri)
+# print(f'🛎️  {str(len(np_indexes))} Nanopub Index published')
+
+
+
+
+# if args.publish:
+#     index_uri = np_client.publish(np_index)
+# else:
+#     print(np_index._rdf.serialize(format='trig'))
+#     index_uri = np_client.sign(np_index)
+# print('✅ Published Nanopub Index:')
+# print(index_uri)

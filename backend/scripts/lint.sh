@@ -2,7 +2,7 @@
 
 set -x
 
-mypy app
-black app --check
-isort --recursive --check-only app
-flake8
+poetry run mypy .
+poetry run black app --check
+poetry run isort --check-only .
+poetry run flake8

@@ -29,4 +29,3 @@ services:
       VIRTUAL_HOST: collaboratory.semanticscience.org
       LETSENCRYPT_HOST: collaboratory.semanticscience.org
       VIRTUAL_PORT: 4000
-  

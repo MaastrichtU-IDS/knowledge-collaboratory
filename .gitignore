@@ -9,6 +9,7 @@ node_modules
 
 .env
 data
+.venv
 
 __pycache__
 .pytest_cache

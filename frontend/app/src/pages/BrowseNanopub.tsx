@@ -131,8 +131,8 @@ export default function BrowseNanopub() {
 
   // const initNanopubObj: any = {}
   const [nanopubObj, setNanopubObj] = React.useState([])
-  
-  
+
+
   React.useEffect(() => {
     // Get the edit URL param if provided
     // const params = new URLSearchParams(location.search + location.hash);
@@ -145,8 +145,8 @@ export default function BrowseNanopub() {
     })
 
     // First call to get users
-    axios.get(settings.nanopubGrlcUrl + '/get_all_users', 
-      { 
+    axios.get(settings.nanopubGrlcUrl + '/get_all_users',
+      {
         headers: {
           "accept": "application/json",
         }
@@ -198,7 +198,7 @@ export default function BrowseNanopub() {
     const knowledgeProvider = 'https://w3id.org/biolink/infores/knowledge-collaboratory'
     const assertionBlocks = []
     const provBlocks = []
-    
+
     if (search) {
       assertionBlocks.push(`             ?association ?pred ?v .
       FILTER(contains(lcase(str(?v)), lcase("${search}") ) )`)
@@ -216,7 +216,12 @@ export default function BrowseNanopub() {
       } else if (state.filterPerResource.uri !== "All nanopublications") {
         // assertionBlocks.push(`?association biolink:primary_knowledge_source <${state.filterPerResource.uri}> .`)
         filterNpIndexBlock = `graph ?indexAssertionGraph {
-          <${state.filterPerResource.uri}> npx:includesElement ?np .
+          {
+            <${state.filterPerResource.uri}> npx:appendsIndex* ?index .
+            ?index npx:includesElement ?np .
+          } UNION {
+            <${state.filterPerResource.uri}> npx:includesElement ?np .
+          }
         }`
       }
     } else {
@@ -293,14 +298,14 @@ export default function BrowseNanopub() {
         }
         ${filterPubkey}
       } ORDER BY desc(?date) LIMIT ` + state.results_count
-  
+
     get_nanopubs_url = `${settings.nanopubSparqlUrl}?query=${encodeURIComponent(getLatestNanopubsQuery)}`
     console.log(`Search: sending SPARQL query to ${settings.nanopubSparqlUrl}`)
     console.log(getLatestNanopubsQuery)
 
     // Get the list of signed nanopubs
     axios.get(get_nanopubs_url,
-      { 
+      {
         headers: {
           "accept": "application/json",
         }
@@ -327,8 +332,8 @@ export default function BrowseNanopub() {
           // console.log(nanopub_list);
           Object.keys(nanopub_obj).map((nanopub_url: any) => {
             // Finally iterate over the list of nanopubs to get their RDF content
-            axios.get(nanopub_url, 
-            { 
+            axios.get(nanopub_url,
+            {
               headers: {
                 "accept": "application/trig",
                 // "accept": "application/json",
@@ -478,8 +483,8 @@ export default function BrowseNanopub() {
             </>
           } */}
           {/* <Button onClick={hideAllNanopubs}
-            variant="contained" 
-            className={classes.saveButton} 
+            variant="contained"
+            className={classes.saveButton}
             startIcon={<HideNanopubs />}
             style={{textTransform: 'none', margin: theme.spacing(1, 2)}}
             color="inherit" >
@@ -505,7 +510,7 @@ export default function BrowseNanopub() {
               Published on the {state.nanopub_obj[np]['date']['value']}
               { state.users_pubkeys[state.nanopub_obj[np]['pubkey']['value']] &&
                 <>
-                  &nbsp;by <a href={state.users_pubkeys[state.nanopub_obj[np]['pubkey']['value']]['user']['value']} 
+                  &nbsp;by <a href={state.users_pubkeys[state.nanopub_obj[np]['pubkey']['value']]['user']['value']}
                       className={classes.link} target="_blank" rel="noopener noreferrer">
                     {state.users_pubkeys[state.nanopub_obj[np]['pubkey']['value']]['name']['value']}
                   </a>
@@ -564,8 +569,8 @@ export default function BrowseNanopub() {
             <Collapse in={state.nanopub_obj[np]['expanded_graph']} timeout="auto" unmountOnExit>
               <CardContent style={{margin: theme.spacing(0,0), padding: theme.spacing(0,0)}}>
                 <Paper elevation={2} className={classes.paperPadding} style={{ height: '80vh', textAlign: 'left' }}>
-                  <CytoscapeRdfGraph 
-                    // rdf={state.nanopub_obj[np]['rdf']} 
+                  <CytoscapeRdfGraph
+                    // rdf={state.nanopub_obj[np]['rdf']}
                     // cytoscapeElems={state.nanopub_obj[np]['cytoscape']}
                     cytoscapeElems={nanopubObj[np]['cytoscape']}
                   />
@@ -591,5 +596,5 @@ export default function BrowseNanopub() {
     </Container>
   )
 
-  
+
 }

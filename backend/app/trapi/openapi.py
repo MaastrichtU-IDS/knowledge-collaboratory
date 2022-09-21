@@ -1,38 +1,32 @@
-import os
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
-import numpy as np
-import spacy
-import torch
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
-from reasoner_pydantic import Message, Query
-from transformers import BertForSequenceClassification, BertTokenizer
 
 from app.config import settings
 
 unordered_servers_list = [
     {
         "url": settings.PROD_URL,
-        "description": 'Knowledge Collaboratory TRAPI ITRB Production Server',
-        "x-maturity": 'production'
+        "description": "Knowledge Collaboratory TRAPI ITRB Production Server",
+        "x-maturity": "production",
     },
     {
         "url": settings.TEST_URL,
-        "description": 'Knowledge Collaboratory TRAPI ITRB Test Server',
-        "x-maturity": 'testing'
+        "description": "Knowledge Collaboratory TRAPI ITRB Test Server",
+        "x-maturity": "testing",
     },
     {
         "url": settings.STAGING_URL,
-        "description": 'Knowledge Collaboratory TRAPI ITRB CI Server',
-        "x-maturity": 'staging'
+        "description": "Knowledge Collaboratory TRAPI ITRB CI Server",
+        "x-maturity": "staging",
     },
     {
         "url": settings.DEV_URL,
-        "description": 'Knowledge Collaboratory TRAPI ITRB Development Server',
-        "x-maturity": 'development',
-        "x-location": 'IDS'
+        "description": "Knowledge Collaboratory TRAPI ITRB Development Server",
+        "x-maturity": "development",
+        "x-location": "IDS",
     },
 ]
 
@@ -62,8 +56,8 @@ class TRAPI(FastAPI):
     def __init__(
         self,
         *args,
-        ner_model_name: Optional[str] = 'litcoin-ner-model',
-        relation_model_name: Optional[str] = 'litcoin-relations-extraction-model',
+        ner_model_name: Optional[str] = "litcoin-ner-model",
+        relation_model_name: Optional[str] = "litcoin-relations-extraction-model",
         # contact: Optional[Dict[str, Any]] = None,
         **kwargs,
     ):
@@ -75,7 +69,7 @@ class TRAPI(FastAPI):
 
         # Load NER model
         # self.ner_model = spacy.load(Rf"{settings.NER_MODELS_PATH}/{ner_model_name}")
-        
+
         # Load relations extraction model
         # self.relations_model = Rf"{settings.NER_MODELS_PATH}/{relation_model_name}"
         # self.relations_tokenizer = BertTokenizer.from_pretrained(self.relations_model, do_lower_case=False)
@@ -100,11 +94,11 @@ class TRAPI(FastAPI):
         tags = self.required_tags
         if self.openapi_tags:
             tags += self.openapi_tags
-    
+
         openapi_schema = get_openapi(
-            title=settings.PROJECT_NAME, 
-            version='1.0.0',
-            openapi_version='3.0.1',
+            title=settings.PROJECT_NAME,
+            version="1.0.0",
+            openapi_version="3.0.1",
             description=f"""Knowledge Collaboratory API, to publish [Nanopublications](http://nanopub.org/wordpress/) and query the Nanopublications network using [Translator Reasoner API](https://github.com/NCATSTranslator/ReasonerAPI) queries (TRAPI).
 
 To login, click on the **Authorize 🔓️** button, and use the 2nd option: **OpenIdConnect (OAuth2, implicit)**
@@ -124,27 +118,27 @@ This service is supported by the [NIH NCATS Biomedical Data Translator project](
         )
 
         if not settings.DEV_MODE:
-          if settings.VIRTUAL_HOST:
-            servers_list = []
-            # Add the current server as 1st server in the list
-            for server in unordered_servers_list:
-              if settings.VIRTUAL_HOST in server['url']:
-                servers_list.append(server)
-                break
-            # Add other servers
-            for server in unordered_servers_list:
-              if not settings.VIRTUAL_HOST in server['url']:
-                servers_list.append(server)
-          else:
-            servers_list = unordered_servers_list
+            if settings.VIRTUAL_HOST:
+                servers_list = []
+                # Add the current server as 1st server in the list
+                for server in unordered_servers_list:
+                    if settings.VIRTUAL_HOST in server["url"]:
+                        servers_list.append(server)
+                        break
+                # Add other servers
+                for server in unordered_servers_list:
+                    if not settings.VIRTUAL_HOST in server["url"]:
+                        servers_list.append(server)
+            else:
+                servers_list = unordered_servers_list
 
-          openapi_schema["servers"] = servers_list
+            openapi_schema["servers"] = servers_list
 
         openapi_schema["info"]["x-translator"] = {
-            "component": 'KP',
+            "component": "KP",
             "team": ["Clinical Data Provider"],
             "biolink-version": settings.BIOLINK_VERSION,
-            "infores": 'infores:knowledge-collaboratory',
+            "infores": "infores:knowledge-collaboratory",
             "externalDocs": {
                 "description": "The values for component and team are restricted according to this external JSON schema. See schema and examples at url",
                 "url": "https://github.com/NCATSTranslator/translator_extensions/blob/production/x-translator/",
@@ -168,12 +162,14 @@ This service is supported by the [NIH NCATS Biomedical Data Translator project](
             # "x-id": "vemonet",
             "x-role": "responsible developer",
         }
-        openapi_schema["info"]["termsOfService"] = 'https://raw.githubusercontent.com/MaastrichtU-IDS/translator-openpredict/master/LICENSE'
+        openapi_schema["info"][
+            "termsOfService"
+        ] = "https://raw.githubusercontent.com/MaastrichtU-IDS/translator-openpredict/master/LICENSE"
         openapi_schema["info"]["license"] = {
             "name": "MIT license",
             "url": "https://opensource.org/licenses/MIT",
         }
-        
+
         # From fastapi:
         openapi_schema["info"]["x-logo"] = {
             # "url": "https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png"
@@ -185,37 +181,26 @@ This service is supported by the [NIH NCATS Biomedical Data Translator project](
 
 
 TRAPI_EXAMPLE = {
-  "message": {
-    "query_graph": {
-      "edges": {
-        "e01": {
-          "object": "n1",
-          "predicates": [
-            "biolink:treats"
-          ],
-          "subject": "n0"
+    "message": {
+        "query_graph": {
+            "edges": {
+                "e01": {
+                    "object": "n1",
+                    "predicates": ["biolink:treats"],
+                    "subject": "n0",
+                }
+            },
+            "nodes": {
+                "n0": {
+                    "categories": ["biolink:Drug", "biolink:ChemicalEntity"],
+                    "ids": ["DRUGBANK:DB00313", "CHEBI:75725"],
+                },
+                "n1": {"categories": ["biolink:Disease"]},
+            },
         }
-      },
-      "nodes": {
-        "n0": {
-          "categories": [
-            "biolink:Drug",
-            "biolink:ChemicalEntity"
-          ],
-          "ids": [
-            "DRUGBANK:DB00313",
-            "CHEBI:75725"
-          ]
-        },
-        "n1": {
-          "categories": [
-            "biolink:Disease"
-          ]
-        }
-      }
-    }
-  },
-  "query_options": {
-    "n_results": 30,
-  }
+    },
+    "query_options": {
+        "n_results": 30,
+        # "in_index": "http://purl.org/np/RAaZp4akBZI6FuRzIpeksyYxTArOtxqmhuv9on-YssEzA",
+    },
 }

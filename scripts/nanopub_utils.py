@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from nanopub import NanopubClient, Publication
@@ -17,6 +18,17 @@ NP = Namespace("http://purl.org/nanopub/temp/mynanopub#")
 NP_URI = URIRef("http://purl.org/nanopub/temp/mynanopub#")
 
 
+# Setup logger for nanopub lib
+log = logging.getLogger()
+# log.setLevel(logging.INFO)
+console_handler = logging.StreamHandler()
+formatter = logging.Formatter(
+    "%(asctime)s %(levelname)s: [%(module)s:%(funcName)s] %(message)s"
+)
+console_handler.setFormatter(formatter)
+log.addHandler(console_handler)
+
+
 def init_graph() -> Graph:
   """Initialize a RDFLib Graph with popular namespaces pre-bound"""
   g = Graph()
@@ -26,8 +38,8 @@ def init_graph() -> Graph:
   g.bind("drugbank", URIRef('http://identifiers.org/drugbank/'))
   g.bind("pmid", URIRef('http://www.ncbi.nlm.nih.gov/pubmed/'))
   g.bind("ro", URIRef('http://purl.obolibrary.org/obo/RO_'))
-  g.bind("omim", URIRef('http://purl.obolibrary.org/obo/OMIM_'))
-  g.bind("mondo", URIRef('http://purl.obolibrary.org/obo/MONDO_'))
+  g.bind("omim", Namespace('http://purl.obolibrary.org/obo/OMIM_'))
+  g.bind("mondo", Namespace('http://purl.obolibrary.org/obo/MONDO_'))
   g.bind("ncit", URIRef('http://purl.obolibrary.org/obo/NCIT_'))
   g.bind("hp", URIRef('http://purl.obolibrary.org/obo/HP_'))
   g.bind("efo", URIRef('http://www.ebi.ac.uk/efo/EFO_'))
@@ -70,7 +82,7 @@ def create_nanopub_index(
         assertion.add( (NP_URI, NPX.includesElement, URIRef(np)) )
 
     pubinfo = init_graph()
-   
+
     pubinfo.add( (
         NP_URI,
         RDF.type,

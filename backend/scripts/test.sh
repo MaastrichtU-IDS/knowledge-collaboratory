@@ -3,4 +3,4 @@
 set -e
 set -x
 
-poetry run pytest -s --cov=app --cov-report=term-missing app/tests "${@}"
+poetry run pytest -s --cov=app --cov-report=term-missing tests/integration "${@}"
