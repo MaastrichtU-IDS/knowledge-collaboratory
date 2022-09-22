@@ -2,12 +2,14 @@ import json
 import os
 import shutil
 from typing import Dict, List, Optional, Union
+from pathlib import Path
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Response
 from fastapi.encoders import jsonable_encoder
 from nanopub import NanopubClient, NanopubConfig
 from rdflib import Graph, Literal, Namespace, URIRef
 from rdflib.namespace import DCTERMS, PROV
+from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse
 
 from app.api.login import get_current_user
 from app.config import settings
@@ -67,7 +69,7 @@ async def publish_assertion(
 
     client = get_client(current_user["sub"])
 
-    keyfile_path = f"{settings.KEYSTORE_PATH}/{current_user['sub']}/idrsa"
+    keyfile_path = f"{settings.KEYSTORE_PATH}/{current_user['sub']}/id_rsa"
     if not os.path.isfile(keyfile_path):
         raise HTTPException(
             status_code=403,
@@ -153,8 +155,8 @@ async def publish_assertion(
 
     if publish:
         client.publish_signed(signed_path)
-        os.remove(signed_path)
-        publication.signed_file = None
+        # os.remove(signed_path)
+        # publication.signed_file = None
 
     return Response(content=signed_trig, media_type="application/trig")
 
@@ -211,7 +213,7 @@ async def publish_nanopub(
             detail=f"You need to login with ORCID to publish a Nanopublication",
         )
 
-    keyfile_path = f"{settings.KEYSTORE_PATH}/{current_user['sub']}/idrsa"
+    keyfile_path = f"{settings.KEYSTORE_PATH}/{current_user['sub']}/id_rsa"
     if not os.path.isfile(keyfile_path):
         raise HTTPException(
             status_code=403,
@@ -288,3 +290,126 @@ async def publish_last_signed(
     # with open(signed_path, 'r') as f:
     #     signed_trig = f.read()
     #     return Response(content=signed_trig, media_type="application/trig")
+
+
+
+@router.get(
+    "/generate-keys",
+    description="""This will generate authentications keys and register them in the Nanopublication network for your ORCID""",
+    response_description="Operation result",
+    response_model={},
+)
+async def store_keyfile(current_user: User = Depends(get_current_user)):
+
+    if not current_user or "id" not in current_user.keys():
+        raise HTTPException(
+            status_code=403,
+            detail=f"You need to login to generate and register authentication keys to your ORCID",
+        )
+
+    user_dir = f"{settings.KEYSTORE_PATH}/{current_user['sub']}"
+    # Create user directory if does not exist
+    Path(user_dir).mkdir(parents=True, exist_ok=True)
+
+    pubkey_path = f"{user_dir}/id_rsa.pub"
+    privkey_path = f"{user_dir}/id_rsa"
+
+    username = ""
+    if current_user["given_name"] or current_user["family_name"]:
+        username = current_user["given_name"] + " " + current_user["family_name"]
+        username = username.strip()
+    elif current_user["name"]:
+        username = current_user["name"]
+
+    profile_yaml = f"""orcid_id: {current_user['id']}
+name: {username}
+public_key: {pubkey_path}
+private_key: {privkey_path}
+introduction_nanopub_uri:
+"""
+    with open(f"{user_dir}/profile.yml", "w") as f:
+        f.write(profile_yaml)
+
+    client = get_client(current_user["sub"])
+    np_intro = client.create_nanopub_intro()
+    np_intro = client.sign(np_intro)
+    # np_intro = client.publish(np_intro)
+    print(np_intro.signed_file)
+
+    return JSONResponse({"message": "Nanopub key generated for " + current_user["id"]})
+
+
+
+@router.delete(
+    "/delete-keys",
+    description="""Delete the Nanopub keys stored on our server associated to your ORCID""",
+    response_description="Operation result",
+    response_model={},
+)
+async def delete_keyfile(current_user: User = Depends(get_current_user)):
+
+    if not current_user or "id" not in current_user.keys():
+        raise HTTPException(
+            status_code=403,
+            detail=f"You need to login to delete the keys associated with your ORCID",
+        )
+
+    keyfile_folder = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}")
+
+    if keyfile_folder.exists():
+        shutil.rmtree(keyfile_folder)
+
+    return JSONResponse(
+        {
+            "message": "The Nanopub keyfile has been properly deleted from our servers for the ORCID user "
+            + current_user["id"]
+        }
+    )
+
+
+
+
+# import zipfile
+# @router.get(
+#     "/download-keys",
+#     description="""Download the Nanopub keys stored on our server associated to your ORCID""",
+#     response_description="Operation result",
+#     response_model={},
+# )
+# async def download_keyfile(current_user: models.User = Depends(get_current_user)):
+
+#     if not current_user or "id" not in current_user.keys():
+#         raise HTTPException(
+#             status_code=403,
+#             detail=f"You need to login to download the keys associated with your ORCID",
+#         )
+
+#     user_dir = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}")
+
+#     if user_dir.exists():
+#         # shutil.make_archive(f"{user_dir}/nanopub_profile.zip", 'zip', user_dir)
+#         zip_filename = "nanopub_profile.zip"
+#         # Open BytesIO to grab in-memory ZIP contents
+#         s = BytesIO()
+#         # The zip compressor
+#         zf = zipfile.ZipFile(s, "w")
+#         for root, dirs, files in os.walk(user_dir):
+#             for fpath in files:
+#                 # Add file, at correct path
+#                 print(os.path.join(root, fpath))
+#                 zf.write(os.path.join(root, fpath), fpath)
+#         zf.close()
+
+#         # Grab ZIP file from in-memory, make response with correct MIME-type
+#         return Response(
+#             s.getvalue(),
+#             media_type="application/x-zip-compressed",
+#             headers={"Content-Disposition": f"attachment;filename={zip_filename}"},
+#         )
+
+#     return JSONResponse(
+#         {
+#             "message": "No files has been found on our servers for the ORCID user "
+#             + current_user["id"]
+#         }
+#     )

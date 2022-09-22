@@ -226,11 +226,14 @@ unicode_backport = ["unicodedata2"]
 
 [[package]]
 name = "click"
-version = "7.1.2"
+version = "8.1.3"
 description = "Composable command line interface toolkit"
 category = "main"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+python-versions = ">=3.7"
+
+[package.dependencies]
+colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
 name = "colorama"
@@ -717,7 +720,7 @@ data = ["language-data (>=1.1,<2.0)"]
 
 [[package]]
 name = "linkml"
-version = "1.3.4"
+version = "1.3.5"
 description = "Linked Open Data Modeling Language"
 category = "main"
 optional = false
@@ -924,7 +927,8 @@ python-versions = ">=3.6"
 develop = false
 
 [package.dependencies]
-click = "7.1.2"
+click = ">=7.1.2"
+cryptography = ">=38.0.0"
 rdflib = ">=6.0.0,<7.0.0"
 requests = "*"
 yatiml = "*"
@@ -936,7 +940,7 @@ dev = ["coveralls", "flake8", "flaky", "pytest", "pytest-cov", "recommonmark", "
 type = "git"
 url = "https://github.com/vemonet/nanopub.git"
 reference = "dev-vemonet"
-resolved_reference = "02e1095dd9829b9a4cb0451877023dbcd1bc8b2a"
+resolved_reference = "bcba34ab509e4b4f8b990738d2e2a5bbceca704b"
 
 [[package]]
 name = "numpy"
@@ -2215,7 +2219,7 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9,<3.10"
-content-hash = "739384e9d8f6d34eb1ef529cd450e16938e8daf8faf13e1e0456759a910ad2e2"
+content-hash = "e479015bd908e072c8da452120312ffa4e263d7479cd8d527ff3e9c392f93509"
 
 [metadata.files]
 alabaster = [
@@ -2376,8 +2380,8 @@ charset-normalizer = [
     {file = "charset_normalizer-2.1.1-py3-none-any.whl", hash = "sha256:83e9a75d1911279afd89352c68b45348559d1fc0506b054b346651b5e7fee29f"},
 ]
 click = [
-    {file = "click-7.1.2-py2.py3-none-any.whl", hash = "sha256:dacca89f4bfadd5de3d7489b7c8a566eee0d3676333fbb50030263894c38c0dc"},
-    {file = "click-7.1.2.tar.gz", hash = "sha256:d2b5255c7c6349bc1bd1e59e08cd12acbbd63ce649f2588755783aa94dfb6b1a"},
+    {file = "click-8.1.3-py3-none-any.whl", hash = "sha256:bb4d8133cb15a609f44e8213d9b391b0809795062913b383c62be0ee95b1db48"},
+    {file = "click-8.1.3.tar.gz", hash = "sha256:7682dc8afb30297001674575ea00d1814d808d6a36af415a82bd481d37ba7b8e"},
 ]
 colorama = [
     {file = "colorama-0.4.5-py2.py3-none-any.whl", hash = "sha256:854bf444933e37f5824ae7bfc1e98d5bce2ebe4160d46b5edf346a89358e99da"},
@@ -2719,8 +2723,8 @@ langcodes = [
     {file = "langcodes-3.3.0.tar.gz", hash = "sha256:794d07d5a28781231ac335a1561b8442f8648ca07cd518310aeb45d6f0807ef6"},
 ]
 linkml = [
-    {file = "linkml-1.3.4-py3-none-any.whl", hash = "sha256:117e390953b778124bcc3f80adc2b89812183b910b94eb83f92709333371422a"},
-    {file = "linkml-1.3.4.tar.gz", hash = "sha256:ac07daf8d82d36299b996cbbe8bb867ca78a6a3ec565fb3528b3a1b02a93d752"},
+    {file = "linkml-1.3.5-py3-none-any.whl", hash = "sha256:40b41dfed21c668fa28b78fa9c2388b6b03a7d9aef749d0efe8b6f3f8699f286"},
+    {file = "linkml-1.3.5.tar.gz", hash = "sha256:3eb4c42dea3e95f4e1e8e1822478efb5d9086783895ff8b6fee6bf02cb8985e7"},
 ]
 linkml-dataops = [
     {file = "linkml_dataops-0.1.0-py3-none-any.whl", hash = "sha256:193cf7f659e5f07946d2c2761896910d5f7151d91282543b1363801f68307f4c"},

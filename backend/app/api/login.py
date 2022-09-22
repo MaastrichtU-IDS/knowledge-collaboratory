@@ -1,7 +1,3 @@
-import os
-import shutil
-import zipfile
-from io import BytesIO
 from pathlib import Path
 
 import requests
@@ -38,8 +34,8 @@ def get_current_user(token: str = Depends(reusable_oauth2)) -> models.User:
         return None
     current_user = orcid_user.json()
     if "sub" in current_user.keys():
-        keyfile_pub = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}/idrsa.pub")
-        keyfile_priv = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}/idrsa")
+        keyfile_pub = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}/id_rsa.pub")
+        keyfile_priv = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}/id_rsa")
         if keyfile_pub.exists() and keyfile_priv.exists():
             current_user["keyfiles_loaded"] = True
         else:
@@ -81,12 +77,12 @@ async def store_keyfile(
     # Create user directory if does not exist
     Path(user_dir).mkdir(parents=True, exist_ok=True)
 
-    pubkey_path = f"{user_dir}/idrsa.pub"
+    pubkey_path = f"{user_dir}/id_rsa.pub"
     with open(pubkey_path, "w") as f:
         pubkey = await publicKey.read()
         f.write(pubkey.decode("utf-8"))
 
-    privkey_path = f"{user_dir}/idrsa"
+    privkey_path = f"{user_dir}/id_rsa"
     with open(privkey_path, "w") as f:
         privkey = await privateKey.read()
         f.write(privkey.decode("utf-8"))
@@ -108,78 +104,6 @@ introduction_nanopub_uri:
         f.write(profile_yaml)
 
     return JSONResponse({"message": "Nanopub key stored for " + current_user["id"]})
-
-
-@router.get(
-    "/download-keys",
-    description="""Download the Nanopub keys stored on our server associated to your ORCID""",
-    response_description="Operation result",
-    response_model={},
-)
-async def download_keyfile(current_user: models.User = Depends(get_current_user)):
-
-    if not current_user or "id" not in current_user.keys():
-        raise HTTPException(
-            status_code=403,
-            detail=f"You need to login to download the keys associated with your ORCID",
-        )
-
-    user_dir = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}")
-
-    if user_dir.exists():
-        # shutil.make_archive(f"{user_dir}/nanopub_profile.zip", 'zip', user_dir)
-        zip_filename = "nanopub_profile.zip"
-        # Open BytesIO to grab in-memory ZIP contents
-        s = BytesIO()
-        # The zip compressor
-        zf = zipfile.ZipFile(s, "w")
-        for root, dirs, files in os.walk(user_dir):
-            for fpath in files:
-                # Add file, at correct path
-                print(os.path.join(root, fpath))
-                zf.write(os.path.join(root, fpath), fpath)
-        zf.close()
-
-        # Grab ZIP file from in-memory, make response with correct MIME-type
-        return Response(
-            s.getvalue(),
-            media_type="application/x-zip-compressed",
-            headers={"Content-Disposition": f"attachment;filename={zip_filename}"},
-        )
-
-    return JSONResponse(
-        {
-            "message": "No files has been found on our servers for the ORCID user "
-            + current_user["id"]
-        }
-    )
-
-
-@router.delete(
-    "/delete-keys",
-    description="""Delete the Nanopub keys stored on our server associated to your ORCID""",
-    response_description="Operation result",
-    response_model={},
-)
-async def delete_keyfile(current_user: models.User = Depends(get_current_user)):
-
-    if not current_user or "id" not in current_user.keys():
-        raise HTTPException(
-            status_code=403,
-            detail=f"You need to login to delete the keys associated with your ORCID",
-        )
-
-    keyfile_folder = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}")
-
-    if keyfile_folder.exists():
-        shutil.rmtree(keyfile_folder)
-
-    return JSONResponse(
-        {
-            "message": "The Nanopub keyfile has been properly deleted from our servers for the ORCID user "
-            + current_user["id"]
-        }
-    )
 
 
 @router.get("/logout")
