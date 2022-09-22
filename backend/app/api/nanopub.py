@@ -1,15 +1,15 @@
 import json
 import os
 import shutil
-from typing import Dict, List, Optional, Union
 from pathlib import Path
+from typing import Dict, List, Union
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Response
 from fastapi.encoders import jsonable_encoder
 from nanopub import NanopubClient, NanopubConfig
 from rdflib import Graph, Literal, Namespace, URIRef
 from rdflib.namespace import DCTERMS, PROV
-from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse
+from starlette.responses import JSONResponse
 
 from app.api.login import get_current_user
 from app.config import settings
@@ -292,7 +292,6 @@ async def publish_last_signed(
     #     return Response(content=signed_trig, media_type="application/trig")
 
 
-
 @router.get(
     "/generate-keys",
     description="""This will generate authentications keys and register them in the Nanopublication network for your ORCID""",
@@ -339,7 +338,6 @@ introduction_nanopub_uri:
     return JSONResponse({"message": "Nanopub key generated for " + current_user["id"]})
 
 
-
 @router.delete(
     "/delete-keys",
     description="""Delete the Nanopub keys stored on our server associated to your ORCID""",
@@ -365,8 +363,6 @@ async def delete_keyfile(current_user: User = Depends(get_current_user)):
             + current_user["id"]
         }
     )
-
-
 
 
 # import zipfile
