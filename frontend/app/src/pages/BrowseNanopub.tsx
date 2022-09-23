@@ -96,7 +96,7 @@ export default function BrowseNanopub() {
   const classes = useStyles();
 
   const resourceTypesList: any = [
-    {label: 'PREDICT reference dataset', uri: 'http://www.ncbi.nlm.nih.gov/pubmed/PMC3159979'},
+    {label: 'PREDICT reference dataset', uri: 'http://purl.org/np/RAWWaT9M_Nd8cVm_-amJErz60Ak__tkS6ROi2P-swdmMw'},
     {label: 'Off-Label drug indication dataset', uri: 'http://purl.org/np/RAaZp4akBZI6FuRzIpeksyYxTArOtxqmhuv9on-YssEzA'},
     {label: 'Claims published with Annotate biomedical text', uri: 'https://w3id.org/biolink/infores/knowledge-collaboratory'},
     {label: 'All nanopublications', uri: 'All nanopublications',},

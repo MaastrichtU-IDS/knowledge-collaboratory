@@ -292,13 +292,14 @@ async def publish_last_signed(
     #     return Response(content=signed_trig, media_type="application/trig")
 
 
+
 @router.get(
     "/generate-keys",
     description="""This will generate authentications keys and register them in the Nanopublication network for your ORCID""",
     response_description="Operation result",
     response_model={},
 )
-async def store_keyfile(current_user: User = Depends(get_current_user)):
+async def generate_keyfile(current_user: User = Depends(get_current_user)):
 
     if not current_user or "id" not in current_user.keys():
         raise HTTPException(
@@ -307,11 +308,17 @@ async def store_keyfile(current_user: User = Depends(get_current_user)):
         )
 
     user_dir = f"{settings.KEYSTORE_PATH}/{current_user['sub']}"
-    # Create user directory if does not exist
-    Path(user_dir).mkdir(parents=True, exist_ok=True)
-
     pubkey_path = f"{user_dir}/id_rsa.pub"
     privkey_path = f"{user_dir}/id_rsa"
+
+    if pubkey_path.exists() or privkey_path.exists():
+        raise HTTPException(
+            status_code=500,
+            detail=f"A key pair already exist for user {current_user['id']}",
+        )
+
+    # Create user directory if does not exist
+    Path(user_dir).mkdir(parents=True, exist_ok=True)
 
     username = ""
     if current_user["given_name"] or current_user["family_name"]:
@@ -331,11 +338,12 @@ introduction_nanopub_uri:
 
     client = get_client(current_user["sub"])
     np_intro = client.create_nanopub_intro()
-    np_intro = client.sign(np_intro)
-    # np_intro = client.publish(np_intro)
-    print(np_intro.signed_file)
+    # np_intro = client.sign(np_intro)
+    np_intro = client.publish(np_intro)
+    # print(np_intro.signed_file)
 
     return JSONResponse({"message": "Nanopub key generated for " + current_user["id"]})
+
 
 
 @router.delete(

@@ -33,115 +33,115 @@ if args.verbose:
     log.setLevel(logging.INFO)
 
 # Generate nanopubs from OpenPredict drug-disease gold standard
-# url = 'https://raw.githubusercontent.com/MaastrichtU-IDS/translator-openpredict/master/openpredict/data/resources/openpredict-omim-drug.csv'
+url = 'https://raw.githubusercontent.com/MaastrichtU-IDS/translator-openpredict/master/openpredict/data/resources/openpredict-omim-drug.csv'
 
-# data = pd.read_csv(url)
+data = pd.read_csv(url)
 
-# np_list = []
-# for index, row in data.iterrows():
-#     drug_id = row['drugid']
-#     disease_id = row['omimid']
+np_list = []
+for index, row in data.iterrows():
+    drug_id = row['drugid']
+    disease_id = row['omimid']
 
-#     assertion = init_graph()
-#     assertion.bind("biolink", URIRef('https://w3id.org/biolink/vocab/'))
-#     assertion.bind("drugbank", URIRef('http://identifiers.org/drugbank/'))
-#     assertion.bind("pmid", URIRef('http://www.ncbi.nlm.nih.gov/pubmed/'))
-#     assertion.bind("ro", URIRef('http://purl.obolibrary.org/obo/RO_'))
-#     assertion.bind("omim", URIRef('http://purl.obolibrary.org/obo/OMIM_'))
-#     assertion.bind("pav", URIRef('http://purl.org/pav/'))
-#     assertion.bind("orcid", URIRef('https://orcid.org/'))
+    assertion = init_graph()
+    assertion.bind("biolink", URIRef('https://w3id.org/biolink/vocab/'))
+    assertion.bind("drugbank", URIRef('http://identifiers.org/drugbank/'))
+    assertion.bind("pmid", URIRef('http://www.ncbi.nlm.nih.gov/pubmed/'))
+    assertion.bind("ro", URIRef('http://purl.obolibrary.org/obo/RO_'))
+    assertion.bind("omim", URIRef('http://purl.obolibrary.org/obo/OMIM_'))
+    assertion.bind("pav", URIRef('http://purl.org/pav/'))
+    assertion.bind("orcid", URIRef('https://orcid.org/'))
 
-#     # Use BioLink JSON-LD context: https://github.com/biolink/biolink-model/blob/master/context.jsonld
-#     drug_uri = URIRef('http://identifiers.org/drugbank/' + drug_id)
-#     disease_uri = URIRef('http://purl.obolibrary.org/obo/OMIM_' + str(disease_id))
+    # Use BioLink JSON-LD context: https://github.com/biolink/biolink-model/blob/master/context.jsonld
+    drug_uri = URIRef('http://identifiers.org/drugbank/' + drug_id)
+    disease_uri = URIRef('http://purl.obolibrary.org/obo/OMIM_' + str(disease_id))
 
-#     association_uri = NP['association']
+    association_uri = NP['association']
 
-#     # BioLink do not require to define rdf:type, but we do it anyway
-#     assertion.add( (drug_uri, RDF.type, BIOLINK['Drug'] ) )
-#     assertion.add( (drug_uri, BIOLINK.category, BIOLINK['Drug'] ) )
+    # BioLink do not require to define rdf:type, but we do it anyway
+    assertion.add( (drug_uri, RDF.type, BIOLINK['Drug'] ) )
+    assertion.add( (drug_uri, BIOLINK.category, BIOLINK['Drug'] ) )
 
-#     assertion.add( (disease_uri, RDF.type, BIOLINK.Disease ) )
-#     assertion.add( (disease_uri, BIOLINK.category, BIOLINK['Disease'] ) )
+    assertion.add( (disease_uri, RDF.type, BIOLINK.Disease ) )
+    assertion.add( (disease_uri, BIOLINK.category, BIOLINK['Disease'] ) )
 
-#     # Generate triples for the association
-#     assertion.add( (association_uri, RDF.subject, drug_uri ) )
-#     assertion.add( (association_uri, RDF.object, disease_uri ) )
-#     assertion.add( (association_uri, RDF.predicate, BIOLINK.treats ) )
+    # Generate triples for the association
+    assertion.add( (association_uri, RDF.subject, drug_uri ) )
+    assertion.add( (association_uri, RDF.object, disease_uri ) )
+    assertion.add( (association_uri, RDF.predicate, BIOLINK.treats ) )
 
-#     # is substance that treats
-#     assertion.add( (association_uri, BIOLINK.relation, URIRef("http://purl.obolibrary.org/obo/RO_0002606") ) )
+    # is substance that treats
+    assertion.add( (association_uri, BIOLINK.relation, URIRef("http://purl.obolibrary.org/obo/RO_0002606") ) )
 
-#     assertion.add( (association_uri, BIOLINK['category'], BIOLINK.ChemicalToDiseaseOrPhenotypicFeatureAssociation) )
-#     assertion.add( (association_uri, RDF.type, BIOLINK.ChemicalToDiseaseOrPhenotypicFeatureAssociation ) )
+    assertion.add( (association_uri, BIOLINK['category'], BIOLINK.ChemicalToDiseaseOrPhenotypicFeatureAssociation) )
+    assertion.add( (association_uri, RDF.type, BIOLINK.ChemicalToDiseaseOrPhenotypicFeatureAssociation ) )
 
-#     # Information about the dataset providing of the statement
-#     knowledge_provider_uri = URIRef('https://w3id.org/biolink/infores/knowledge-collaboratory')
-#     knowledge_source_uri = URIRef("http://www.ncbi.nlm.nih.gov/pubmed/PMC3159979")
-#     # primary_source_uri = 'https://docs.google.com/spreadsheets/d/1fCykLEgAd2Z7nC9rTcW296KtBsFBBZMD8Yghcwv4WaE/edit#gid=428566902'
+    # Information about the dataset providing of the statement
+    knowledge_provider_uri = URIRef('https://w3id.org/biolink/infores/knowledge-collaboratory')
+    knowledge_source_uri = URIRef("http://www.ncbi.nlm.nih.gov/pubmed/PMC3159979")
+    # primary_source_uri = 'https://docs.google.com/spreadsheets/d/1fCykLEgAd2Z7nC9rTcW296KtBsFBBZMD8Yghcwv4WaE/edit#gid=428566902'
 
-#     assertion.add( (association_uri, BIOLINK['aggregator_knowledge_source'], knowledge_provider_uri) )
-#     # assertion.add( (association_uri, BIOLINK['primary_knowledge_source'], knowledge_source_uri) )
-#     assertion.add( (association_uri, BIOLINK['publications'], knowledge_source_uri) )
+    assertion.add( (association_uri, BIOLINK['aggregator_knowledge_source'], knowledge_provider_uri) )
+    # assertion.add( (association_uri, BIOLINK['primary_knowledge_source'], knowledge_source_uri) )
+    assertion.add( (association_uri, BIOLINK['publications'], knowledge_source_uri) )
 
-#     pubinfo = Graph()
-#     pubinfo.add( (
-#         URIRef('https://w3id.org/biolink/vocab/'),
-#         URIRef('http://purl.org/pav/version'),
-#         Literal('2.3.0')
-#     ) )
+    pubinfo = Graph()
+    pubinfo.add( (
+        URIRef('https://w3id.org/biolink/vocab/'),
+        URIRef('http://purl.org/pav/version'),
+        Literal('2.3.0')
+    ) )
 
-#     # Add provenance infos
-#     prov = Graph()
-#     prov.add( (
-#         NP['assertion'],
-#         PROV.wasAttributedTo,
-#         URIRef(CREATOR_ORCID)
-#     ) )
-#     prov.add( (
-#         NP['assertion'],
-#         DCTERMS.created,
-#         Literal(CREATION_TIME, datatype=XSD.dateTime, normalize=False)
-#     ) )
-#     # prov.add( (
-#     #     NP['assertion'],
-#     #     PROV.hadPrimarySource,
-#     #     knowledge_source_uri
-#     # ) )
+    # Add provenance infos
+    prov = Graph()
+    prov.add( (
+        NP['assertion'],
+        PROV.wasAttributedTo,
+        URIRef(CREATOR_ORCID)
+    ) )
+    prov.add( (
+        NP['assertion'],
+        DCTERMS.created,
+        Literal(CREATION_TIME, datatype=XSD.dateTime, normalize=False)
+    ) )
+    # prov.add( (
+    #     NP['assertion'],
+    #     PROV.hadPrimarySource,
+    #     knowledge_source_uri
+    # ) )
 
-#     publication = np_client.create_nanopub(
-#         assertion=assertion,
-#         provenance=prov,
-#         pubinfo=pubinfo,
-#         # nanopub_config=NanopubConfig(add_prov_generated_time=False)
-#     )
+    publication = np_client.create_nanopub(
+        assertion=assertion,
+        provenance=prov,
+        pubinfo=pubinfo,
+        # nanopub_config=NanopubConfig(add_prov_generated_time=False)
+    )
 
-#     if args.publish:
-#         published_info = np_client.publish(publication)
-#         print(published_info['nanopub_uri'])
-#     else:
-#         signed_file = np_client.sign(publication)
-#         published_info = {'nanopub_uri': f'http://np#{str(len(np_list))}'}
+    if args.publish:
+        published_info = np_client.publish(publication)
+        print(published_info['nanopub_uri'])
+    else:
+        signed_file = np_client.sign(publication)
+        published_info = {'nanopub_uri': f'http://np#{str(len(np_list))}'}
 
-#     np_list.append(published_info['nanopub_uri'])
-#     print(str(len(np_list)))
+    np_list.append(published_info['nanopub_uri'])
+    print(str(len(np_list)))
 
-#     if len(np_list) == 1:
-#         print('🔬 One of the nanopub published:')
-#         # print(publication._rdf.serialize(format='trig').decode('utf-8'))
-#         print(publication._rdf.serialize(format='trig'))
+    if len(np_list) == 1:
+        print('🔬 One of the nanopub published:')
+        # print(publication._rdf.serialize(format='trig').decode('utf-8'))
+        print(publication._rdf.serialize(format='trig'))
 
-#         if args.validate:
-#             shex_validation(
-#                 assertion,
-#                 start=str(BIOLINK.ChemicalToDiseaseOrPhenotypicFeatureAssociation),
-#                 focus=str(association_uri)
-#                 # start=str(BIOLINK.Drug),
-#                 # focus=str(URIRef('http://identifiers.org/drugbank/DB01148'))
-#             )
+        if args.validate:
+            shex_validation(
+                assertion,
+                start=str(BIOLINK.ChemicalToDiseaseOrPhenotypicFeatureAssociation),
+                focus=str(association_uri)
+                # start=str(BIOLINK.Drug),
+                # focus=str(URIRef('http://identifiers.org/drugbank/DB01148'))
+            )
 
-#     if not args.publish and len(np_list) >= 2:
-#         break
+    if not args.publish and len(np_list) >= 2:
+        break
 
 
 
@@ -191,21 +191,11 @@ See https://github.com/MaastrichtU-IDS/translator-openpredict for more details."
 )
 
 print(np_indexes)
-for filepath in np_indexes:
-    g = ConjunctiveGraph()
-    g.parse(filepath, format="trig")
-    print("✒️  Nanopub index signed:")
-    print(g.serialize(format="trig"))
+# for filepath in np_indexes:
+#     g = ConjunctiveGraph()
+#     g.parse(filepath, format="trig")
+#     print("✒️  Nanopub index signed:")
+#     print(g.serialize(format="trig"))
 
-# print(f'🛎️  {str(len(np_indexes))} Nanopub Index published')
+print(f'🛎️  {str(len(np_indexes))} Nanopub Index published')
 
-
-
-
-# if args.publish:
-#     index_uri = np_client.publish(np_index)
-# else:
-#     print(np_index._rdf.serialize(format='trig'))
-#     index_uri = np_client.sign(np_index)
-# print('✅ Published Nanopub Index:')
-# print(index_uri)

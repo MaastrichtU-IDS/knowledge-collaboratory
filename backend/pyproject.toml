@@ -23,11 +23,11 @@ PyShEx = "^0.8.1"
 transformers = "^4.17.0"
 spacy = {extras = ["cuda110"], version = "^3.2.3"}
 spacy-transformers = "^1.1.5"
-nanopub = {git = "https://github.com/vemonet/nanopub.git", rev = "dev-vemonet"}
-
-# To load from local path for development:
+nanopub = {path = "/opt/nanopub", develop = true}
 # nanopub = {path = "../../nanopub", develop = true}
-# nanopub = {path = "/opt/nanopub", develop = true}
+# nanopub = {git = "https://github.com/vemonet/nanopub.git", rev = "dev-vemonet"}
+
+# To load from local path for development
 
 [tool.poetry.dev-dependencies]
 mypy = "=0.770"
