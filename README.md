@@ -208,11 +208,11 @@ Project bootstrapped with https://github.com/tiangolo/full-stack-fastapi-postgre
 
 ## 🗃️ Current resources in the Collaboratory
 
-- 3866 drug indications from the reference dataset of the [PREDICT publication](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3159979/)
+- A dataset of 1971 drug indications retrieved from the [PREDICT publication](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3159979/) and used as reference dataset for the [OpenPredict model](https://github.com/MaastrichtU-IDS/translator-openpredict)
   - Published in Nanopub Index http://purl.org/np/RAWWaT9M_Nd8cVm_-amJErz60Ak__tkS6ROi2P-swdmMw
   - Containing the following subsets:
     - http://purl.org/np/RAVQGOE6nCeX6Tp1rqBOKleQElWhgb1PGHvbIvH1TCE1A
     - http://purl.org/np/RA556Vv9lmc7jqKZkRV_5CP8Xz4GZaVbgUdIsye7tynN0
-- 328 [Off-label drug indications](https://docs.google.com/spreadsheets/d/1fCykLEgAd2Z7nC9rTcW296KtBsFBBZMD8Yghcwv4WaE/edit#gid=428566902) found in PubMed publications
+- 324 [Off-label drug indications](https://docs.google.com/spreadsheets/d/1fCykLEgAd2Z7nC9rTcW296KtBsFBBZMD8Yghcwv4WaE/edit#gid=428566902) found in PubMed publications
   - Published in Nanopub Index http://purl.org/np/RAaZp4akBZI6FuRzIpeksyYxTArOtxqmhuv9on-YssEzA
 - Drug indications added by users (mainly from the default set of DailyMed indications proposed)

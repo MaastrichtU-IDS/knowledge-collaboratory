@@ -209,7 +209,7 @@ export default function BrowseNanopub() {
     }
 
     let filterNpIndexBlock = ''
-    if (Object.keys(state.filterPerResource).length > 0) {
+    if (state.filterPerResource && Object.keys(state.filterPerResource).length > 0) {
       if (state.filterPerResource.uri === "https://w3id.org/biolink/infores/knowledge-collaboratory") {
         // Only claims published with the collaboratory tools
         provBlocks.push(`?np_assertion prov:wasQuotedFrom ?wasQuotedFrom .`)

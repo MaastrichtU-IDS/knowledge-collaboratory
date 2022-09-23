@@ -924,7 +924,7 @@ description = "Python client for Nanopub"
 category = "main"
 optional = false
 python-versions = ">=3.6"
-develop = true
+develop = false
 
 [package.dependencies]
 click = ">=7.1.2"
@@ -937,8 +937,10 @@ yatiml = "*"
 dev = ["coveralls", "flake8", "flaky", "pytest", "pytest-cov", "recommonmark", "sphinx", "sphinx_rtd_theme"]
 
 [package.source]
-type = "directory"
-url = "../opt/nanopub"
+type = "git"
+url = "https://github.com/vemonet/nanopub.git"
+reference = "dev-vemonet"
+resolved_reference = "05e409b86fc3f3d66a5eeacd1735d331968bbf11"
 
 [[package]]
 name = "numpy"
@@ -2217,7 +2219,7 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9,<3.10"
-content-hash = "1f08e64921423b9bc9ea55c48f63928d9af80621e4e7f37d7e79f3762635f13b"
+content-hash = "cec20f9fd735b1bb6c93aee325a4eca382278d4592ef91326bff0315b3d7408a"
 
 [metadata.files]
 alabaster = [

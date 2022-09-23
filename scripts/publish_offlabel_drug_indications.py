@@ -175,7 +175,7 @@ print(f'🛎️  {str(len(np_list))} drug indications has been processed')
 np_index = np_client.create_nanopub_index(
     np_list,
     title="Off-label drug indications dataset",
-    description="""A dataset of 327 off-label drug indications found in PubMed articles. With additional information on the context of the indications, such as the target group age range (adult/children), or if the target group has a specific phenotype.
+    description="""A dataset of 324 off-label drug indications found in PubMed articles. With additional information on the context of the indications, such as the target group age range (adult/children), or if the target group has a specific phenotype.
 Drugs are identified by their DrugBank IDs, and conditions are identified by their MONDO, EFO, or HPO IDs.
 Curated by Ricardo de Miranda Azevedo. See https://github.com/MaastrichtU-IDS/off-label-drug-indications-dataset for more details.""",
     see_also="https://github.com/MaastrichtU-IDS/off-label-drug-indications-dataset",
