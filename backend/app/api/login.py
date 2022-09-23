@@ -2,10 +2,10 @@ from pathlib import Path
 
 import requests
 from authlib.integrations.starlette_client import OAuth, OAuthError
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends
 from fastapi.security import OpenIdConnect
 from starlette.requests import Request
-from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse
+from starlette.responses import HTMLResponse, RedirectResponse
 
 from app import models
 from app.config import settings
@@ -53,57 +53,6 @@ router = APIRouter()
 # https://blog.authlib.org/2020/fastapi-google-login
 # https://github.com/authlib/demo-oauth-client/blob/master/fastapi-google-login/app.py
 # Load client id and secret from env: https://docs.authlib.org/en/latest/client/starlette.html
-
-
-@router.post(
-    "/upload-keys",
-    description="""Login with ORCID, and upload and store your authentications keys used to publish Nanopublication on our server""",
-    response_description="Operation result",
-    response_model={},
-)
-async def store_keyfile(
-    publicKey: UploadFile = File(...),
-    privateKey: UploadFile = File(...),
-    current_user: models.User = Depends(get_current_user),
-):
-
-    if not current_user or "id" not in current_user.keys():
-        raise HTTPException(
-            status_code=403,
-            detail=f"You need to login to upload the authentication keys bound to your ORCID",
-        )
-
-    user_dir = f"{settings.KEYSTORE_PATH}/{current_user['sub']}"
-    # Create user directory if does not exist
-    Path(user_dir).mkdir(parents=True, exist_ok=True)
-
-    pubkey_path = f"{user_dir}/id_rsa.pub"
-    with open(pubkey_path, "w") as f:
-        pubkey = await publicKey.read()
-        f.write(pubkey.decode("utf-8"))
-
-    privkey_path = f"{user_dir}/id_rsa"
-    with open(privkey_path, "w") as f:
-        privkey = await privateKey.read()
-        f.write(privkey.decode("utf-8"))
-
-    username = ""
-    if current_user["given_name"] or current_user["family_name"]:
-        username = current_user["given_name"] + " " + current_user["family_name"]
-        username = username.strip()
-    elif current_user["name"]:
-        username = current_user["name"]
-
-    profile_yaml = f"""orcid_id: {current_user['id']}
-name: {username}
-public_key: {pubkey_path}
-private_key: {privkey_path}
-introduction_nanopub_uri:
-"""
-    with open(f"{user_dir}/profile.yml", "w") as f:
-        f.write(profile_yaml)
-
-    return JSONResponse({"message": "Nanopub key stored for " + current_user["id"]})
 
 
 @router.get("/logout")

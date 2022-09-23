@@ -4,7 +4,7 @@ import shutil
 from pathlib import Path
 from typing import Dict, List, Union
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Response
+from fastapi import APIRouter, Body, Depends, HTTPException, Response, File, UploadFile
 from fastapi.encoders import jsonable_encoder
 from nanopub import NanopubClient, NanopubConfig
 from rdflib import Graph, Literal, Namespace, URIRef
@@ -311,7 +311,7 @@ async def generate_keyfile(current_user: User = Depends(get_current_user)):
     pubkey_path = f"{user_dir}/id_rsa.pub"
     privkey_path = f"{user_dir}/id_rsa"
 
-    if pubkey_path.exists() or privkey_path.exists():
+    if Path(pubkey_path).exists() or Path(privkey_path).exists():
         raise HTTPException(
             status_code=500,
             detail=f"A key pair already exist for user {current_user['id']}",
@@ -338,39 +338,91 @@ introduction_nanopub_uri:
 
     client = get_client(current_user["sub"])
     np_intro = client.create_nanopub_intro()
-    # np_intro = client.sign(np_intro)
-    np_intro = client.publish(np_intro)
-    # print(np_intro.signed_file)
+    np_intro = client.sign(np_intro)
+    # np_intro = client.publish(np_intro)
+    print(np_intro.signed_file)
 
     return JSONResponse({"message": "Nanopub key generated for " + current_user["id"]})
 
 
 
-@router.delete(
-    "/delete-keys",
-    description="""Delete the Nanopub keys stored on our server associated to your ORCID""",
+@router.post(
+    "/upload-keys",
+    description="""Login with ORCID, and upload and store your authentications keys used to publish Nanopublication on our server""",
     response_description="Operation result",
     response_model={},
 )
-async def delete_keyfile(current_user: User = Depends(get_current_user)):
+async def store_keyfile(
+    publicKey: UploadFile = File(...),
+    privateKey: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+):
 
     if not current_user or "id" not in current_user.keys():
         raise HTTPException(
             status_code=403,
-            detail=f"You need to login to delete the keys associated with your ORCID",
+            detail=f"You need to login to upload the authentication keys bound to your ORCID",
         )
 
-    keyfile_folder = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}")
+    user_dir = f"{settings.KEYSTORE_PATH}/{current_user['sub']}"
+    # Create user directory if does not exist
+    Path(user_dir).mkdir(parents=True, exist_ok=True)
 
-    if keyfile_folder.exists():
-        shutil.rmtree(keyfile_folder)
+    pubkey_path = f"{user_dir}/id_rsa.pub"
+    with open(pubkey_path, "w") as f:
+        pubkey = await publicKey.read()
+        f.write(pubkey.decode("utf-8"))
 
-    return JSONResponse(
-        {
-            "message": "The Nanopub keyfile has been properly deleted from our servers for the ORCID user "
-            + current_user["id"]
-        }
-    )
+    privkey_path = f"{user_dir}/id_rsa"
+    with open(privkey_path, "w") as f:
+        privkey = await privateKey.read()
+        f.write(privkey.decode("utf-8"))
+
+    username = ""
+    if current_user["given_name"] or current_user["family_name"]:
+        username = current_user["given_name"] + " " + current_user["family_name"]
+        username = username.strip()
+    elif current_user["name"]:
+        username = current_user["name"]
+
+    profile_yaml = f"""orcid_id: {current_user['id']}
+name: {username}
+public_key: {pubkey_path}
+private_key: {privkey_path}
+introduction_nanopub_uri:
+"""
+    with open(f"{user_dir}/profile.yml", "w") as f:
+        f.write(profile_yaml)
+
+    return JSONResponse({"message": "Nanopub key stored for " + current_user["id"]})
+
+
+
+# @router.delete(
+#     "/delete-keys",
+#     description="""Delete the Nanopub keys stored on our server associated to your ORCID""",
+#     response_description="Operation result",
+#     response_model={},
+# )
+# async def delete_keyfile(current_user: User = Depends(get_current_user)):
+
+#     if not current_user or "id" not in current_user.keys():
+#         raise HTTPException(
+#             status_code=403,
+#             detail=f"You need to login to delete the keys associated with your ORCID",
+#         )
+
+#     keyfile_folder = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}")
+
+#     if keyfile_folder.exists():
+#         shutil.rmtree(keyfile_folder)
+
+#     return JSONResponse(
+#         {
+#             "message": "The Nanopub keyfile has been properly deleted from our servers for the ORCID user "
+#             + current_user["id"]
+#         }
+#     )
 
 
 # import zipfile

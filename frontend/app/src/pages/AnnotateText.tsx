@@ -6,6 +6,7 @@ import { Typography, Popper, ClickAwayListener, Paper, Container, Box, CircularP
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import DownloadJsonldIcon from '@mui/icons-material/Description';
 import AddIcon from '@mui/icons-material/AddBox';
+import GenerateKeyIcon from '@mui/icons-material/VpnKey';
 import UploadIcon from '@mui/icons-material/FileUpload';
 import RemoveIcon from '@mui/icons-material/Delete';
 import ExtractIcon from '@mui/icons-material/AutoFixHigh';
@@ -163,6 +164,37 @@ export default function AnnotateText() {
             Authorization: `Bearer ${access_token}`,
             "Content-Type": "multipart/form-data",
             "type": "formData"
+          }
+        }
+      )
+      .then(res => {
+        updateState({
+          open: true,
+        })
+      })
+      .catch(error => {
+        updateState({
+          open: false,
+          errorMessage: 'Error while uploading keys, please retry. And feel free to create an issue on our GitHub repository if the issue persists.'
+        })
+        console.log('Error while uploading keys', error)
+      })
+      .finally(() => {
+        window.location.reload();
+      })
+  }
+
+  const handleGenerateKeys  = (event: any) => {
+    event.preventDefault();
+
+    const access_token = user['access_token']
+    axios.get(
+        settings.apiUrl + '/generate-keys',
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+            // "Content-Type": "multipart/form-data",
+            // "type": "formData"
           }
         }
       )
@@ -1120,18 +1152,37 @@ export default function AnnotateText() {
           } */}
           { user.id && user.keyfiles_loaded &&
             <Typography>
-              ✅ Your authentication keys are successfully loaded, you can start publishing Nanopublications
+              ✅ Your keys have been loaded successfully, you can start publishing Nanopublications
             </Typography>
           }
 
           { user.id && !user.keyfiles_loaded &&
             <>
+              <Typography style={{marginBottom: theme.spacing(1)}}>
+                🔑 Before publishing nanopubs, you need to first generate a private/public key pair,
+                and then publish an introduction nanopub to link this key pair to your ORCID.<br/>
+                We can automate this process for you, upon clicking the button above we will
+                generate a key pair, and publish a nanopublication to link it to your ORCID:
+              </Typography>
+              {/* <div style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap', marginBottom: theme.spacing(2)}}> */}
+              <div style={{width: '100%', textAlign: 'center', marginBottom: theme.spacing(4)}}>
+                <Button
+                  onClick={handleGenerateKeys}
+                  id={"addProp:"}
+                  variant="contained"
+                  className={classes.saveButton}
+                  startIcon={<GenerateKeyIcon />}
+                  style={{textTransform: 'none'}}
+                  color="secondary" >
+                    Generate the keys, and link them to my ORCID on the Nanopublication network
+                </Button>
+              </div>
               <Typography>
-                🔑 You need to upload the authentication keys linked to your ORCID to publish Nanopublications (public and private encryption keys).
-                If you have not yet created your authentication keys, or linked them to your ORCID, then follow the instructions to complete your profile with the <a href='https://github.com/peta-pico/nanobench/blob/master/INSTALL.md' target="_blank" rel="noopener noreferrer">Nanobench tool</a>.
+                📤️ Or, if you already have registered a key pair with your ORCID
+                in the nanopublication network, you can upload these keys directly:
               </Typography>
               <form encType="multipart/form-data" action="" onSubmit={handleUploadKeys}
-                  style={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>
+                  style={{display: 'flex', alignItems: 'center', textAlign: 'center', width: '100%'}}>
                 <Typography style={{marginTop: theme.spacing(1)}}>
                   Select the <b>Public</b> key:&nbsp;&nbsp;
                   <input type="file" id="publicKey" />
