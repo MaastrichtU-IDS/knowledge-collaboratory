@@ -131,9 +131,9 @@ async def publish_assertion(
         prov.add((NP_URI.assertion, PROV.hadPrimarySource, URIRef(source)))
 
     publication = client.create_nanopub(
-        assertion_rdf=g,
-        provenance_rdf=prov,
-        pubinfo_rdf=pubinfo,
+        assertion=g,
+        provenance=prov,
+        pubinfo=pubinfo,
         nanopub_config=NanopubConfig(
             add_prov_generated_time=True,
             add_pubinfo_generated_time=True,
