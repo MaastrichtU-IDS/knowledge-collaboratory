@@ -1,5 +1,5 @@
 
-export interface Entity {
+export interface EntityInterface {
   id: string;
   uri: string;
   label: string;
@@ -7,13 +7,25 @@ export interface Entity {
   curie?: string;
 }
 
+class Entity implements EntityInterface {
+  id: string;
+  uri: string;
+  label: string;
+  display_label: string;
+  curie?: string;
+
+  constructor(id:string) {
+    // super(id);
+    this.id = id
+  }
+}
 
 export const createEntity = (
-    target: string, 
-    context: any, 
+    target: string,
+    context: any,
     title: any = null,
   ): Entity => {
-  
+
   return {
     id: 'id', uri: 'uri',
     label: 'label',

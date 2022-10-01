@@ -809,10 +809,12 @@ export default function AnnotateText() {
                   value={state.tagSelected}
                   options={state.tagSelected.curies}
                   // getOptionLabel={(option: any) => `${option.label}${option.altLabel ? `, ${option.altLabel}` : ''} (${option.curie})`}
-                  onChange={(event: any, newInputValue: any) => {
+                  onChange={async (event: any, newInputValue: any) => {
+                    console.log('autocomplete entity newInputValue', newInputValue);
                     const entitiesList: any = state.entitiesList
                     const tagSelected = state.tagSelected
                     const entityIndex = entitiesList.findIndex((ent: any) => ent.index === tagSelected.index)
+
                     if (newInputValue && (typeof newInputValue === 'object' || checkIfUri(newInputValue))) {
                       if (newInputValue.curie) {
                         entitiesList[entityIndex].id_curie = newInputValue.curie
@@ -830,6 +832,24 @@ export default function AnnotateText() {
                         tagSelected.id_uri = newInputValue
                       }
                       updateState({tagSelected: tagSelected, entitiesList: entitiesList})
+                    }
+
+                    // TODO: if newInputValue is str len() > 3: search in SRI API
+                    // and update the "curies" options from the result for the autocomplete
+                    if (newInputValue && typeof newInputValue === 'string' && newInputValue.length > 3) {
+                      const entityCuries = await getEntityCuries(newInputValue)
+                      if (entityCuries && Object.keys(entityCuries).length > 0) {
+                        tagSelected.curies = []
+                        Object.keys(entityCuries).map((curie: any) => {
+                          const addEnt: any = {
+                            'curie': curie,
+                            'label': entityCuries[curie][0],
+                            'altLabel': entityCuries[curie][1],
+                          }
+                          tagSelected.curies.push(addEnt)
+                        })
+                        updateState({tagSelected: tagSelected})
+                      }
                     }
                   }}
                   style={{marginBottom: theme.spacing(2)}}
