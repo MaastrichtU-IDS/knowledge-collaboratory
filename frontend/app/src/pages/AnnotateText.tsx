@@ -97,6 +97,7 @@ export default function AnnotateText() {
     templateSelected: 'RDF reified statements',
     extractClicked: false,
     entitiesList: [],
+    externalEntities: [],
     relationsList: [],
     tagSelected: tagSelected,
     statements: [{'s': '', 'p': '', 'o': '', 'props': [], shex: ''}],
@@ -834,9 +835,9 @@ export default function AnnotateText() {
                       updateState({tagSelected: tagSelected, entitiesList: entitiesList})
                     }
 
-                    // TODO: if newInputValue is str len() > 3: search in SRI API
+                    // If newInputValue is str len() > 2: we search in SRI API
                     // and update the "curies" options from the result for the autocomplete
-                    if (newInputValue && typeof newInputValue === 'string' && newInputValue.length > 3) {
+                    if (newInputValue && typeof newInputValue === 'string' && newInputValue.length > 2) {
                       const entityCuries = await getEntityCuries(newInputValue)
                       if (entityCuries && Object.keys(entityCuries).length > 0) {
                         tagSelected.curies = []
@@ -934,8 +935,40 @@ export default function AnnotateText() {
           </Typography>
           <Card className={classes.paperPadding} >
             <Taggy text={state.inputText} spans={state.entitiesList}
-              ents={ents} onClick={clickTag} onHighlight={highlightCallback}  />
+              ents={ents} onClick={clickTag} onHighlight={highlightCallback} />
           </Card>
+
+          {/* TODO: add button to add external entities not in the text */}
+          {/* <Button
+            onClick={() => {
+              const externalEntities: any = state.externalEntities;
+              externalEntities.push({
+                index: state.externalEntities.length,
+                text: 'New entity ' + state.externalEntities.length,
+                token: 'New entity ' + state.externalEntities.length,
+                type: "NamedEntity",
+                start: 0,
+                end: `New entity ${state.externalEntities.length.toString()}`.length,
+                curies: [], id_curie: "", id_label: "", id_uri: "",
+                props: []
+              });
+              updateState({externalEntities: externalEntities})
+            }}
+            variant="contained"
+            className={classes.saveButton}
+            startIcon={<AddIcon />}
+            style={{textTransform: 'none', marginTop: theme.spacing(1)}}
+            color="inherit" >
+              Add an external entity
+          </Button>
+
+          { state.externalEntities.map((ent: any, index: number) => {
+            return <Taggy text={ent.text} spans={state.externalEntities}
+              ents={ents} onClick={clickTag} onHighlight={highlightCallback}
+            />
+            // <Typography key={'extent:' + index}>{ent.label}</Typography>
+          })} */}
+
         </>
       }
 

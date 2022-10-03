@@ -338,8 +338,8 @@ introduction_nanopub_uri:
 
     client = get_client(current_user["sub"])
     np_intro = client.create_nanopub_intro()
-    np_intro = client.sign(np_intro)
-    # np_intro = client.publish(np_intro)
+    # np_intro = client.sign(np_intro)
+    np_intro = client.publish(np_intro)
     print(np_intro.signed_file)
 
     return JSONResponse({"message": "Nanopub key generated for " + current_user["id"]})
