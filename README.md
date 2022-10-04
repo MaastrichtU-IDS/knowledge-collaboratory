@@ -4,6 +4,12 @@
 
 Services to query the Nanopublications network using Translator standards to retrieve the Knowledge Collaboratory graph, a collection of drug indications annotated using preferred identifiers (usually from MONDO, CHEBI, DrugBank, etc).
 
+A website to enable users to easily annotate, publish and browse biomedical claims from natural language to a structured format recognized by the Translator. To publish new claims the users login with their ORCID, and submit the sentence they want to annotate, optionally providing an additional link to specify the provenance of this statement. 
+
+The model for annotating drug indications claims built for the LitCoin competition is used to automatically extract potential entities and relations. The SRI NameResolution API is then used to retrieve standard identifiers for each entities. And the BioLink model is used to define the relations between entities.
+
+The extracted entities and relations are then displayed to the users on the website, and users can change the automatically generated claim to better reflect the emitted statement before publishing it to the Nanopublication network.
+
 Backend built with [FastAPI](https://fastapi.tiangolo.com/), and [RDFLib](https://github.com/RDFLib/rdflib).
 
 Frontend built with [React](https://reactjs.org) and [Material UI](https://mui.com/)
