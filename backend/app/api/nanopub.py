@@ -120,7 +120,7 @@ async def publish_assertion(
     if quoted_from:
         prov.add((NP_URI.assertion, PROV.wasQuotedFrom, Literal(quoted_from)))
     if add_biolink_version:
-        pubinfo.add(
+        prov.add(
             (
                 URIRef("https://w3id.org/biolink/vocab/"),
                 PAV.version,
