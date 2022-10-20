@@ -242,10 +242,16 @@ async def publish_last_signed(
         )
 
     np_conf = get_np_config(current_user["sub"])
-    np = Nanopub(conf=np_conf, rdf=signed_path)
+    try:
+        np = Nanopub(conf=np_conf, rdf=signed_path)
 
-    np.publish()
-    os.remove(signed_path)
+        np.publish()
+        os.remove(signed_path)
+    except Exception as e:
+        HTTPException(
+            status_code=400,
+            detail=f"Error when publishing the nanopub: {e}",
+        )
 
     return Response(content=np.rdf.serialize(format='trig'), media_type="application/trig")
 
