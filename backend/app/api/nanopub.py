@@ -6,8 +6,8 @@ from typing import Dict, List, Union
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Response, File, UploadFile
 from fastapi.encoders import jsonable_encoder
-from nanopub import NanopubClient, NanopubConfig
-from rdflib import Graph, Literal, Namespace, URIRef
+from nanopub import load_profile, Nanopub, NanopubClient, NanopubConf, Profile, NanopubIntroduction
+from rdflib import Graph, Literal, Namespace, URIRef, ConjunctiveGraph
 from rdflib.namespace import DCTERMS, PROV
 from starlette.responses import JSONResponse
 
@@ -24,10 +24,9 @@ NPX = Namespace("http://purl.org/nanopub/x/")
 NP_URI = Namespace("http://purl.org/nanopub/temp/mynanopub#")
 
 
-def get_client(user_id: str) -> NanopubClient:
-    return NanopubClient(
-        profile_path=f"{settings.KEYSTORE_PATH}/{user_id}/profile.yml",
-        sign_explicit_private_key=True,
+def get_np_config(user_id: str) -> NanopubConf:
+    return NanopubConf(
+        profile=load_profile(f"{settings.KEYSTORE_PATH}/{user_id}/profile.yml"),
     )
 
 
@@ -66,8 +65,6 @@ async def publish_assertion(
             status_code=403,
             detail=f"You need to login with ORCID to publish a Nanopublication",
         )
-
-    client = get_client(current_user["sub"])
 
     keyfile_path = f"{settings.KEYSTORE_PATH}/{current_user['sub']}/id_rsa"
     if not os.path.isfile(keyfile_path):
@@ -115,12 +112,20 @@ async def publish_assertion(
     g.parse(data=nanopub_rdf, format="json-ld")
 
     # Pubinfo time and creator are added by the nanopub lib
-    pubinfo = Graph()
-    prov = Graph()
+    np_conf = get_np_config(current_user["sub"])
+    np_conf.add_prov_generated_time=True,
+    np_conf.add_pubinfo_generated_time=True,
+    np_conf.attribute_assertion_to_profile=True,
+    np_conf.attribute_publication_to_profile=True,
+    np = Nanopub(
+        assertion=g,
+        conf=np_conf,
+    )
+
     if quoted_from:
-        prov.add((NP_URI.assertion, PROV.wasQuotedFrom, Literal(quoted_from)))
+        np.provenance.add((np.assertion.identifier, PROV.wasQuotedFrom, Literal(quoted_from)))
     if add_biolink_version:
-        prov.add(
+        np.provenance.add(
             (
                 URIRef("https://w3id.org/biolink/vocab/"),
                 PAV.version,
@@ -128,37 +133,17 @@ async def publish_assertion(
             )
         )
     if source:
-        prov.add((NP_URI.assertion, PROV.hadPrimarySource, URIRef(source)))
+        np.provenance.add((np.assertion.identifier, PROV.hadPrimarySource, URIRef(source)))
 
-    publication = client.create_nanopub(
-        assertion=g,
-        provenance=prov,
-        pubinfo=pubinfo,
-        nanopub_config=NanopubConfig(
-            add_prov_generated_time=True,
-            add_pubinfo_generated_time=True,
-            attribute_assertion_to_profile=True,
-            attribute_publication_to_profile=True,
-        ),
-    )
-    publication = client.sign(publication)
-
-    signed_path = (
-        f"{settings.KEYSTORE_PATH}/{current_user['sub']}/signed.publication.trig"
-    )
-    shutil.move(publication.signed_file, signed_path)
-    publication.signed_file = signed_path
-
-    signed_trig = ""
-    with open(signed_path, "r") as f:
-        signed_trig = f.read()
+    np.sign()
 
     if publish:
-        client.publish_signed(signed_path)
-        # os.remove(signed_path)
-        # publication.signed_file = None
+        np.publish()
+    else:
+        signed_path = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}/signed.nanopub.trig")
+        np.store(signed_path)
 
-    return Response(content=signed_trig, media_type="application/trig")
+    return Response(content=np.rdf.serialize(format='trig'), media_type="application/trig")
 
 
 NANOPUB_EXAMPLE = """@prefix : <https://w3id.org/collaboratory/> .
@@ -203,8 +188,6 @@ NANOPUB_EXAMPLE = """@prefix : <https://w3id.org/collaboratory/> .
 async def publish_nanopub(
     nanopub_rdf: str = Body(..., example=NANOPUB_EXAMPLE),
     publish: bool = False,
-    # Query( None, description=self.example_query)
-    # nanopub_rdf: str = Body(..., example=json.dumps(NANOPUB_EXAMPLE, indent=2)),
     current_user: User = Depends(get_current_user),
 ):
     if not current_user or "id" not in current_user.keys():
@@ -220,31 +203,18 @@ async def publish_nanopub(
             detail=f"You need to first store a Nanopub key with the /authentication-key call",
         )
 
-    nanopub_path = f"{settings.KEYSTORE_PATH}/{current_user['sub']}/publication.trig"
-    with open(nanopub_path, "w") as f:
-        f.write(nanopub_rdf)
+    g = ConjunctiveGraph()
+    g.parse(data=nanopub_rdf, format='trig')
 
-    sign_cmd = f"java -jar /opt/nanopub.jar sign {nanopub_path} -k {keyfile_path}"
-    print(sign_cmd)
-    os.system(sign_cmd)
-
-    signed_path = (
-        f"{settings.KEYSTORE_PATH}/{current_user['sub']}/signed.publication.trig"
-    )
+    np_conf = get_np_config(current_user["sub"])
+    np = Nanopub(conf=np_conf, rdf=g)
 
     if publish:
-        publish_cmd = (
-            f"java -jar /opt/nanopub.jar publish {signed_path} -k {keyfile_path}"
-        )
-        os.system(publish_cmd)
+        np.publish()
+    else:
+        np.sign()
 
-    with open(signed_path, "r") as f:
-        signed_trig = f.read()
-        return Response(content=signed_trig, media_type="application/trig")
-
-    # return JSONResponse({
-    #     'message': 'Nanopublication published with ' + current_user['id']
-    # })
+    return Response(content=np.rdf.serialize(format='trig'), media_type="application/trig")
 
 
 @router.post(
@@ -263,11 +233,7 @@ async def publish_last_signed(
             detail=f"You need to login with ORCID to publish a Nanopublication",
         )
 
-    client = get_client(current_user["sub"])
-
-    signed_path = (
-        f"{settings.KEYSTORE_PATH}/{current_user['sub']}/signed.publication.trig"
-    )
+    signed_path = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}/signed.nanopub.trig")
 
     if not os.path.isfile(signed_path):
         raise HTTPException(
@@ -275,22 +241,13 @@ async def publish_last_signed(
             detail=f"You need to first sign a Nanopub with the /assertion or /nanopub call",
         )
 
-    signed_trig = ""
-    with open(signed_path, "r") as f:
-        signed_trig = f.read()
+    np_conf = get_np_config(current_user["sub"])
+    np = Nanopub(conf=np_conf, rdf=signed_path)
 
-    client.publish_signed(signed_path)
+    np.publish()
     os.remove(signed_path)
 
-    return Response(content=signed_trig, media_type="application/trig")
-
-    # publish_cmd = f'java -jar /opt/nanopub.jar publish {signed_path} -k {keyfile_path}'
-    # os.system(publish_cmd)
-
-    # with open(signed_path, 'r') as f:
-    #     signed_trig = f.read()
-    #     return Response(content=signed_trig, media_type="application/trig")
-
+    return Response(content=np.rdf.serialize(format='trig'), media_type="application/trig")
 
 
 @router.get(
@@ -319,7 +276,6 @@ async def generate_keyfile(current_user: User = Depends(get_current_user)):
 
     # Create user directory if does not exist
     Path(user_dir).mkdir(parents=True, exist_ok=True)
-
     username = ""
     if current_user["given_name"] or current_user["family_name"]:
         username = current_user["given_name"] + " " + current_user["family_name"]
@@ -327,23 +283,25 @@ async def generate_keyfile(current_user: User = Depends(get_current_user)):
     elif current_user["name"]:
         username = current_user["name"]
 
-    profile_yaml = f"""orcid_id: {current_user['id']}
-name: {username}
-public_key: {pubkey_path}
-private_key: {privkey_path}
-introduction_nanopub_uri:
-"""
-    with open(f"{user_dir}/profile.yml", "w") as f:
-        f.write(profile_yaml)
+    try:
+        p = Profile(
+            name=username,
+            orcid_id=current_user['id'],
+        )
+        p.store_profile(user_dir)
 
-    client = get_client(current_user["sub"])
-    np_intro = client.create_nanopub_intro()
-    # np_intro = client.sign(np_intro)
-    np_intro = client.publish(np_intro)
-    print(np_intro.signed_file)
+        np_intro = NanopubIntroduction(
+            conf=NanopubConf(profile=p),
+            host=f"https://{settings.VIRTUAL_HOST}"
+        )
+        np_intro.publish()
 
-    return JSONResponse({"message": "Nanopub key generated for " + current_user["id"]})
-
+        return JSONResponse({"message": f"Nanopub keys generated for {current_user['id']} and introduction nanopub published at {np_intro.source_uri}"})
+    except Exception as e:
+        return HTTPException(
+            status_code=500,
+            detail=f"An error occured when generating a keypair: {e}",
+        )
 
 
 @router.post(

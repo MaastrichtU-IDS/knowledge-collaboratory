@@ -506,8 +506,8 @@ export default function AnnotateText() {
         })
         .catch(error => {
           updateState({
-            nanopubPublished: true,
-            errorMessage: 'Error publishing the Nanopublication.'
+            nanopubPublished: false,
+            errorMessage: 'Error publishing the Nanopublication: ' + error
           })
           console.log(error)
         })
