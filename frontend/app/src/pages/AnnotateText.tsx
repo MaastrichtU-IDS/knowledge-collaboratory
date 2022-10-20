@@ -1077,11 +1077,11 @@ export default function AnnotateText() {
                 variant="contained"
                 className={classes.saveButton}
                 startIcon={<AddIcon />}
-                style={{marginLeft: theme.spacing(5), marginRight: theme.spacing(4), textTransform: 'none'}}
+                style={{marginLeft: theme.spacing(5), marginRight: theme.spacing(4), marginBottom: theme.spacing(1), textTransform: 'none'}}
                 color="inherit" >
                   Add a property to this statement
               </Button>
-              <Typography>
+              {/* <Typography>
                 Validate statement against:
               </Typography>
               <AutocompleteEntity
@@ -1103,7 +1103,7 @@ export default function AnnotateText() {
                   }
                 }}
                 style={{width: '400px', marginLeft: theme.spacing(2)}}
-              />
+              /> */}
             </div>
             }
           </Box>
@@ -1139,7 +1139,7 @@ export default function AnnotateText() {
           <FormControl className={classes.settingsForm}>
             {/* Button to download the JSON-LD */}
             <div style={{width: '100%', textAlign: 'center'}}>
-              <Button
+              {/* <Button
                 onClick={shexValidation}
                 variant="contained"
                 className={classes.saveButton}
@@ -1148,7 +1148,7 @@ export default function AnnotateText() {
                 disabled={state.entitiesList.length < 1}
                 color="warning" >
                   Validate with ShEx
-              </Button>
+              </Button> */}
               <Button
                 onClick={handleDownloadRDF}
                 variant="contained"
