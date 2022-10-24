@@ -20,10 +20,11 @@ reasoner-validator = "^2.2.14"
 rdflib = "^6.1.1"
 SPARQLWrapper = "^1.8.5"
 PyShEx = "^0.8.1"
+pyshacl= "^0.20.0"
 transformers = "^4.17.0"
 spacy = {extras = ["cuda110"], version = "^3.2.3"}
 spacy-transformers = "^1.1.5"
-nanopub = {git = "https://github.com/vemonet/nanopub.git", rev = "dev-vemonet"}
+nanopub = {git = "https://github.com/vemonet/nanopub.git", rev = "sign-in-python"}
 # To load from local path for development
 # nanopub = {path = "/opt/nanopub", develop = true}
 # nanopub = {path = "../../nanopub", develop = true}
