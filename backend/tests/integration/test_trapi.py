@@ -2,12 +2,13 @@ import json
 import os
 
 from fastapi.testclient import TestClient
-from reasoner_validator import validate
+# from reasoner_validator import validate
 
 from app.config import settings
 
 # from src.api import start_api
 from app.main import app
+from tests.conftest import validator
 
 # # os.chdir('../..')
 # # Create and start Flask from openapi.yml before running tests
@@ -24,7 +25,7 @@ client = TestClient(app)
 
 def test_post_trapi():
     """Test Translator ReasonerAPI query POST operation to get predictions"""
-    print(f"Testing for TRAPI version {settings.TRAPI_VERSION_TEST} and BioLink {settings.BIOLINK_VERSION} 🏷️")
+    print(f"Testing for TRAPI version {settings.TRAPI_VERSION_TEST} 🏷️")
     url = "/query"
 
     for trapi_filename in os.listdir("tests/queries"):
@@ -39,11 +40,11 @@ def test_post_trapi():
             edges = response.json()["message"]["knowledge_graph"]["edges"].items()
             # print(response)
             # print(trapi_filename)
+            validator.check_compliance_of_trapi_response(message=response.json()["message"])
+            validator_resp = validator.get_messages()
+            print(validator_resp)
             assert (
-                validate(
-                    response.json()["message"], "Message", settings.TRAPI_VERSION_TEST
-                )
-                == None
+                len(validator_resp["errors"]) == 0
             )
             if trapi_filename.endswith("limit3.json"):
                 assert len(edges) == 3
@@ -79,8 +80,14 @@ def test_trapi_empty_response():
     )
 
     print(response.json())
+    # assert (
+    #     validate(response.json()["message"], "Message", settings.TRAPI_VERSION_TEST)
+    #     == None
+    # )
+    validator.check_compliance_of_trapi_response(message=response.json()["message"])
+    validator_resp = validator.get_messages()
+    print(validator_resp)
     assert (
-        validate(response.json()["message"], "Message", settings.TRAPI_VERSION_TEST)
-        == None
+        len(validator_resp["errors"]) == 0
     )
     assert len(response.json()["message"]["results"]) == 0
