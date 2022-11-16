@@ -12,7 +12,7 @@ class Settings(BaseSettings):
 
     VIRTUAL_HOST: str = None
 
-    BIOLINK_VERSION: str = "2.3.0"
+    BIOLINK_VERSION: str = "3.1.0"
     TRAPI_VERSION: str = "1.3.0"
     TRAPI_VERSION_TEST: str = "1.3.0"
 
