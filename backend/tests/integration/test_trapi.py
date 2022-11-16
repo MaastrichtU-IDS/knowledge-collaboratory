@@ -29,6 +29,7 @@ def test_post_trapi():
 
     for trapi_filename in os.listdir("tests/queries"):
         with open("tests/queries/" + trapi_filename, "r") as f:
+            print(f"☑️ Testing {trapi_filename}")
             reasoner_query = f.read()
             response = client.post(
                 url, data=reasoner_query, headers={"Content-Type": "application/json"}

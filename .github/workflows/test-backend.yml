@@ -44,4 +44,4 @@ jobs:
       run: |
         cd backend
         # ./tests-start.sh
-        poetry run pytest --cov=app --cov-report=term-missing tests/integration
+        poetry run pytest -s --cov=app --cov-report=term-missing tests/integration
