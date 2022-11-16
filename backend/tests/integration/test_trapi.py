@@ -8,7 +8,7 @@ from app.config import settings
 
 # from src.api import start_api
 from app.main import app
-# from tests.conftest import validator
+from tests.conftest import validator
 
 
 client = TestClient(app)
@@ -32,12 +32,12 @@ def test_post_trapi():
             # print(response)
             # print(trapi_filename)
 
-            # validator.check_compliance_of_trapi_response(message=response.json()["message"])
-            # validator_resp = validator.get_messages()
-            # print(validator_resp)
-            # assert (
-            #     len(validator_resp["errors"]) == 0
-            # )
+            validator.check_compliance_of_trapi_response(message=response.json()["message"])
+            validator_resp = validator.get_messages()
+            print(validator_resp["warnings"])
+            assert (
+                len(validator_resp["errors"]) == 0
+            )
             if trapi_filename.endswith("limit3.json"):
                 assert len(edges) == 3
             elif trapi_filename.endswith("limit1.json"):
@@ -72,14 +72,10 @@ def test_trapi_empty_response():
     )
 
     print(response.json())
-    # assert (
-    #     validate(response.json()["message"], "Message", settings.TRAPI_VERSION_TEST)
-    #     == None
-    # )
-    # validator.check_compliance_of_trapi_response(message=response.json()["message"])
-    # validator_resp = validator.get_messages()
-    # print(validator_resp)
-    # assert (
-    #     len(validator_resp["errors"]) == 0
-    # )
+    validator.check_compliance_of_trapi_response(message=response.json()["message"])
+    validator_resp = validator.get_messages()
+    print(validator_resp["warnings"])
+    assert (
+        len(validator_resp["errors"]) == 0
+    )
     assert len(response.json()["message"]["results"]) == 0
