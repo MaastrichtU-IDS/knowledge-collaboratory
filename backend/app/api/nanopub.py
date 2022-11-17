@@ -124,16 +124,24 @@ async def publish_assertion(
 
     if quoted_from:
         np.provenance.add((np.assertion.identifier, PROV.wasQuotedFrom, Literal(quoted_from)))
+    if source:
+        np.provenance.add((np.assertion.identifier, PROV.hadPrimarySource, URIRef(source)))
+
     if add_biolink_version:
-        np.provenance.add(
+        np.pubinfo.add(
+            (
+                np.metadata.np_uri,
+                DCTERMS.conformsTo,
+                URIRef("https://w3id.org/biolink/vocab/"),
+            )
+        )
+        np.pubinfo.add(
             (
                 URIRef("https://w3id.org/biolink/vocab/"),
                 PAV.version,
                 Literal(settings.BIOLINK_VERSION),
             )
         )
-    if source:
-        np.provenance.add((np.assertion.identifier, PROV.hadPrimarySource, URIRef(source)))
 
     np.sign()
 

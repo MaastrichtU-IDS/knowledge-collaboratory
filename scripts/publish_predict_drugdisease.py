@@ -85,11 +85,19 @@ for index, row in data.iterrows():
     assertion.add( (association_uri, BIOLINK['publications'], knowledge_source_uri) )
 
     pubinfo = Graph()
+
     pubinfo.add( (
         URIRef('https://w3id.org/biolink/vocab/'),
         URIRef('http://purl.org/pav/version'),
         Literal('2.3.0')
     ) )
+    pubinfo.add(
+        (
+            NP[''],
+            DCTERMS.conformsTo,
+            URIRef("https://w3id.org/biolink/vocab/"),
+        )
+    )
 
     # Add provenance infos
     prov = Graph()

@@ -113,6 +113,13 @@ for index, row in df.iterrows():
         URIRef('http://purl.org/pav/version'),
         Literal('2.3.0')
     ) )
+    pubinfo.add(
+        (
+            NP[''],
+            DCTERMS.conformsTo,
+            URIRef("https://w3id.org/biolink/vocab/"),
+        )
+    )
 
     # Add provenance infos
     prov = Graph()
