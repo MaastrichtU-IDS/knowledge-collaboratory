@@ -16,7 +16,10 @@ gunicorn = "^20.0.4"
 Authlib = "^0.15.4"
 itsdangerous = "^2.0.1"
 reasoner-pydantic = "^2.2.3"
-reasoner-validator = "^3.1.5"
+# TODO: we can remove kgx once freaking poetry finally manage to find 3.1.5
+# It cant find it right now even if it's clearly on pypi.....  come on just run a freaking query to check for this, devs are so bad
+reasoner-validator = "^3.1.4"
+kgx = "^1.6.0"
 rdflib = "^6.1.1"
 SPARQLWrapper = "^1.8.5"
 PyShEx = "^0.8.1"
@@ -34,7 +37,8 @@ nanopub = {git = "https://github.com/vemonet/nanopub.git", rev = "sign-in-python
 mypy = "=0.770"
 # black = "^22.3.0"
 black = "^21.12b0"
-click = "=8.0.2"
+# click = "=8.0.2"
+click = "^8.0.2"
 # Pin click dependency to fix version conflict between reasoner-validator and black
 isort = "^5.0.6"
 autoflake = "^1.3.1"
