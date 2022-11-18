@@ -32,13 +32,12 @@ def test_post_trapi():
             # print(response)
             # print(trapi_filename)
 
-            # We can't run validation because ChemicalSubstance does not exist anymore
-            # validator.check_compliance_of_trapi_response(message=response.json()["message"])
-            # validator_resp = validator.get_messages()
-            # print(validator_resp["warnings"])
-            # assert (
-            #     len(validator_resp["errors"]) == 0
-            # )
+            validator.check_compliance_of_trapi_response(message=response.json()["message"])
+            validator_resp = validator.get_messages()
+            print(validator_resp["warnings"])
+            assert (
+                len(validator_resp["errors"]) == 0
+            )
             if trapi_filename.endswith("limit3.json"):
                 assert len(edges) == 3
             elif trapi_filename.endswith("limit1.json"):
@@ -72,11 +71,11 @@ def test_trapi_empty_response():
         headers={"Content-Type": "application/json"},
     )
 
-    # print(response.json())
-    # validator.check_compliance_of_trapi_response(message=response.json()["message"])
-    # validator_resp = validator.get_messages()
-    # print(validator_resp["warnings"])
-    # assert (
-    #     len(validator_resp["errors"]) == 0
-    # )
+    print(response.json())
+    validator.check_compliance_of_trapi_response(message=response.json()["message"])
+    validator_resp = validator.get_messages()
+    print(validator_resp["warnings"])
+    assert (
+        len(validator_resp["errors"]) == 0
+    )
     assert len(response.json()["message"]["results"]) == 0

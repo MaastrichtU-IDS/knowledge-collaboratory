@@ -10,7 +10,7 @@
             },
             "nodes": {
                 "n0": {
-                    "categories": ["biolink:Drug", "biolink:ChemicalSubstance"],
+                    "categories": ["biolink:Drug", "biolink:ChemicalEntity"],
                     "ids": ["DRUGBANK:DB00394", "CHEBI:75725"]
                 },
                 "n1": {
