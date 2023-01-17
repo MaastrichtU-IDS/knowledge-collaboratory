@@ -1,6 +1,5 @@
 import json
 import os
-import shutil
 from pathlib import Path
 from typing import Dict, List, Union
 
@@ -26,7 +25,14 @@ NP_URI = Namespace("http://purl.org/nanopub/temp/mynanopub#")
 
 shacl_g = Graph()
 shacl_g.parse(
-    "https://raw.githubusercontent.com/vemonet/biolink-model/add-shacl-gen/biolink-model.shacl.ttl",
+    "app/biolink-model.shacl.ttl",
+    # "https://raw.githubusercontent.com/vemonet/biolink-model/add-shacl-gen/biolink-model.shacl.ttl",
+    format="ttl"
+)
+
+biolink_g = Graph()
+biolink_g.parse(
+    "https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.owl.ttl",
     format="ttl"
 )
 
@@ -129,6 +135,7 @@ async def publish_assertion(
 
     g.parse(data=nanopub_rdf, format="json-ld")
 
+    # conforms, _, results_text = pyshacl.validate(g, shacl_graph=shacl_g, ont_graph=biolink_g)
     conforms, _, results_text = pyshacl.validate(g, shacl_graph=shacl_g)
     if results_text:
         results_text = results_text.replace("Constraint Violation in", "\nConstraint Violation in")

@@ -318,6 +318,9 @@ export default function AnnotateText() {
           "rdf:subject": {'@id': getPropValue(stmt.s)},
           "rdf:predicate": {'@id': getPropValue(stmt.p)},
           "rdf:object": {'@id': getPropValue(stmt.o)},
+          // "rdf:subject": {'@id': stmt.s.id_curie},
+          // "rdf:predicate": {'@id': stmt.p.curie},
+          // "rdf:object": {'@id': stmt.o.id_curie},
           "biolink:id": `collaboratory:${stmt.s.id_curie}-${stmt.p.curie}-${stmt.o.id_curie}`,
           "biolink:aggregator_knowledge_source": {'@id': 'infores:knowledge-collaboratory'},
         }
@@ -366,7 +369,7 @@ export default function AnnotateText() {
       if (entity.id_uri && entity.type) {
         const entityJsonld = {
           '@id': entity.id_uri,
-          '@type': BIOLINK + entity.type,
+          '@type': `biolink:${entity.type}`,
           'biolink:id': entity.id_curie,
           'biolink:category': `biolink:${entity.type}`,
           'rdfs:label': entity.text,
