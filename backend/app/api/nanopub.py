@@ -80,6 +80,7 @@ async def publish_assertion(
     publish: bool = False,
     quoted_from: str = None,
     add_biolink_version: bool = True,
+    shacl_validation: bool = True,
     source: str = None,
 ) -> Response:
     nanopub_rdf = jsonable_encoder(nanopub_rdf)
@@ -135,17 +136,18 @@ async def publish_assertion(
 
     g.parse(data=nanopub_rdf, format="json-ld")
 
-    # conforms, _, results_text = pyshacl.validate(g, shacl_graph=shacl_g, ont_graph=biolink_g)
-    conforms, _, results_text = pyshacl.validate(g, shacl_graph=shacl_g)
-    if results_text:
-        results_text = results_text.replace("Constraint Violation in", "\nConstraint Violation in")
-    # conforms, _, results_text = pyshacl.validate(g, shacl_graph=shacl_g, inference="rdfs")
+    if shacl_validation:
+        # conforms, _, results_text = pyshacl.validate(g, shacl_graph=shacl_g, ont_graph=biolink_g)
+        conforms, _, results_text = pyshacl.validate(g, shacl_graph=shacl_g)
+        if results_text:
+            results_text = results_text.replace("Constraint Violation in", "\nConstraint Violation in")
+        # conforms, _, results_text = pyshacl.validate(g, shacl_graph=shacl_g, inference="rdfs")
 
-    if conforms is False:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Error validating the assertion with the BioLink SHACL shape:\n{results_text}",
-        )
+        if conforms is False:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Error validating the assertion with the BioLink SHACL shape:\n{results_text}",
+            )
 
     # Pubinfo time and creator are added by the nanopub lib
     np_conf = get_np_config(current_user["sub"])

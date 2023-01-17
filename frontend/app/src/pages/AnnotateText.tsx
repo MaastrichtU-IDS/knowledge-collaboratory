@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { useLocation } from "react-router-dom";
 import { useTheme } from '@mui/material/styles';
 import { makeStyles, withStyles } from '@mui/styles';
-import { Typography, Popper, ClickAwayListener, Paper, Container, Box, CircularProgress, Tooltip, IconButton, Autocomplete, Button, Card, FormControl, TextField, Snackbar, Grid, Select, MenuItem, InputLabel } from "@mui/material";
+import { Typography, Popper, ClickAwayListener, Paper, Checkbox, FormControlLabel, Container, Box, CircularProgress, Tooltip, IconButton, Autocomplete, Button, Card, FormControl, TextField, Snackbar, Grid, Select, MenuItem, InputLabel } from "@mui/material";
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import DownloadJsonldIcon from '@mui/icons-material/Description';
 import AddIcon from '@mui/icons-material/AddBox';
@@ -27,6 +27,7 @@ import AutocompleteEntity from '../components/AutocompleteEntity';
 import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/github-dark-dimmed.css';
 import hljsDefineTurtle from '../components/highlightjs-turtle';
+import { triggerAsyncId } from 'async_hooks';
 // import { gridColumnsSelector } from '@mui/x-data-grid';
 hljs.registerLanguage("turtle", hljsDefineTurtle)
 
@@ -94,6 +95,7 @@ export default function AnnotateText() {
     inputText: '',
     inputSource: '',
     editInputText: '',
+    shaclValidate: true,
     templateSelected: 'RDF reified statements',
     extractClicked: false,
     entitiesList: [],
@@ -453,6 +455,9 @@ export default function AnnotateText() {
   //   // console.log();
   // }
 
+  const handleShaclValidate  = (event: React.ChangeEvent<HTMLInputElement>) => {
+    updateState({shaclValidate: event.target.checked})
+  };
 
   const generateNanopub  = (event: React.FormEvent, publish: boolean = false) => {
     event.preventDefault();
@@ -465,6 +470,7 @@ export default function AnnotateText() {
       // if (state.inputSource) {
       //   requestParams['source'] = state.inputSource
       // }
+      requestParams['shacl_validation'] = state.shaclValidate
       if (state.inputText) {
         requestParams['quoted_from'] = state.inputText
       }
@@ -1187,6 +1193,12 @@ export default function AnnotateText() {
                 color="info" >
                   Generate Nanopublication
               </Button>
+              <FormControlLabel
+                control={
+                  <Checkbox checked={state.shaclValidate} onChange={handleShaclValidate} id='shacl-validate' />
+                }
+                label="Validate with BioLink SHACL shapes"
+              />
               { state.nanopubGenerated &&
                 <Button
                   onClick={publishSignedNanopub}

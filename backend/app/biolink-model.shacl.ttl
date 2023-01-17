@@ -539,19 +539,20 @@ biolink:Association a sh:NodeShape ;
             sh:order 10 ;
             sh:path biolink:timepoint ],
         [
-            sh:or (
-                [ sh:class biolink:NamedThing ; ]
-                [ sh:class biolink:ChemicalEntity ; ]
-                [ sh:class biolink:DiseaseOrPhenotypicFeature ; ]
-                [ sh:class biolink:Disease ; ]
-                [ sh:class biolink:GeneOrGeneProduct ; ]
-                [ sh:class biolink:SequenceVariant ; ]
-                [ sh:class biolink:Cohort ; ]
-                [ sh:class biolink:StudyPopulation ; ]
-                [ sh:class biolink:PopulationOfIndividualOrganisms ; ]
-                [ sh:class biolink:OrganismTaxon ; ]
-            );
             # sh:class biolink:NamedThing ;
+            # sh:or (
+            #     [ sh:class biolink:NamedThing ; ]
+            #     [ sh:class biolink:ChemicalEntity ; ]
+            #     [ sh:class biolink:DiseaseOrPhenotypicFeature ; ]
+            #     [ sh:class biolink:Disease ; ]
+            #     [ sh:class biolink:GeneOrGeneProduct ; ]
+            #     [ sh:class biolink:SequenceVariant ; ]
+            #     [ sh:class biolink:Cohort ; ]
+            #     [ sh:class biolink:StudyPopulation ; ]
+            #     [ sh:class biolink:PopulationOfIndividualOrganisms ; ]
+            #     [ sh:class biolink:OrganismTaxon ; ]
+            # );
+            sh:node biolink:NamedThing ;
             sh:description "connects an association to the subject of the association. For example, in a gene-to-phenotype association, the gene is subject and phenotype is object." ;
             sh:maxCount 1 ;
             sh:minCount 1 ;
@@ -584,19 +585,20 @@ In an RDF database, nodes will typically have an rdf:type triples. This can be t
             sh:order 15 ;
             sh:path biolink:iri ],
         [
-            sh:or (
-                [ sh:class biolink:NamedThing ; ]
-                [ sh:class biolink:ChemicalEntity ; ]
-                [ sh:class biolink:DiseaseOrPhenotypicFeature ; ]
-                [ sh:class biolink:Disease ; ]
-                [ sh:class biolink:GeneOrGeneProduct ; ]
-                [ sh:class biolink:SequenceVariant ; ]
-                [ sh:class biolink:Cohort ; ]
-                [ sh:class biolink:StudyPopulation ; ]
-                [ sh:class biolink:PopulationOfIndividualOrganisms ; ]
-                [ sh:class biolink:OrganismTaxon ; ]
-            );
             # sh:class biolink:NamedThing ;
+            # sh:or (
+            #     [ sh:class biolink:NamedThing ; ]
+            #     [ sh:class biolink:ChemicalEntity ; ]
+            #     [ sh:class biolink:DiseaseOrPhenotypicFeature ; ]
+            #     [ sh:class biolink:Disease ; ]
+            #     [ sh:class biolink:GeneOrGeneProduct ; ]
+            #     [ sh:class biolink:SequenceVariant ; ]
+            #     [ sh:class biolink:Cohort ; ]
+            #     [ sh:class biolink:StudyPopulation ; ]
+            #     [ sh:class biolink:PopulationOfIndividualOrganisms ; ]
+            #     [ sh:class biolink:OrganismTaxon ; ]
+            # );
+            sh:node biolink:NamedThing ;
             sh:description "connects an association to the object of the association. For example, in a gene-to-phenotype association, the gene is subject and phenotype is object." ;
             sh:maxCount 1 ;
             sh:minCount 1 ;
