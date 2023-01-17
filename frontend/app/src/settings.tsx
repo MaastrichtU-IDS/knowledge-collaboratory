@@ -7,7 +7,7 @@ export const settings = {
   // TODO: not working, changes made in: https://github.com/MaastrichtU-IDS/knowledge-collaboratory/commit/713df9952f72a2b0c0666adb376a627df862be29
   // frontendUrl: Constants.manifest.extra.frontendUrl || 'http://localhost:19006',
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:19006',
-  
+
   apiUrl: process.env.API_URL || 'http://localhost',
   docsUrl: ((process.env.API_URL) ? process.env.API_URL + '/docs' : null) || 'http://localhost/docs',
   nanopubGrlcUrl: process.env.GRLC_URL || "https://grlc.np.dumontierlab.com/api/local/local",
@@ -37,6 +37,8 @@ export const genericContext = {
   'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
   'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
   'biolink': 'https://w3id.org/biolink/vocab/',
+  'infores': 'https://w3id.org/biolink/infores/',
+  'dct': 'http://purl.org/dc/terms/',
 }
 
 // https://purl.org/np/RAuN1kyW1BD9754LCUVWozDOhkrUaLUyb5LTu0HcsulIE

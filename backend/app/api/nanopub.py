@@ -4,6 +4,7 @@ import shutil
 from pathlib import Path
 from typing import Dict, List, Union
 
+import pyshacl
 from fastapi import APIRouter, Body, Depends, HTTPException, Response, File, UploadFile
 from fastapi.encoders import jsonable_encoder
 from nanopub import load_profile, Nanopub, NanopubClient, NanopubConf, Profile, NanopubIntroduction
@@ -23,6 +24,11 @@ NP = Namespace("http://www.nanopub.org/nschema#")
 NPX = Namespace("http://purl.org/nanopub/x/")
 NP_URI = Namespace("http://purl.org/nanopub/temp/mynanopub#")
 
+shacl_g = Graph()
+shacl_g.parse(
+    "https://raw.githubusercontent.com/vemonet/biolink-model/add-shacl-gen/biolink-model.shacl.ttl",
+    format="ttl"
+)
 
 def get_np_config(user_id: str) -> NanopubConf:
     return NanopubConf(
@@ -30,18 +36,30 @@ def get_np_config(user_id: str) -> NanopubConf:
     )
 
 
-ASSERTION_EXAMPLE = [
-    {
-        "@context": "https://schema.org",
-        "@type": "Dataset",
-        "name": "ECJ case law text similarity analysis",
-        "description": "results from a study to analyse how closely the textual similarity of ECJ cases resembles the citation network of the cases.",
-        "version": "v2.0",
-        "url": "https://doi.org/10.5281/zenodo.4228652",
-        "license": "https://www.gnu.org/licenses/agpl-3.0.txt",
-    }
-]
-
+ASSERTION_EXAMPLE = {
+    "@context": {
+        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "dct": "http://purl.org/dc/terms/",
+        "biolink": "https://w3id.org/biolink/vocab/"
+    },
+    "@type": "biolink:Drug",
+    "biolink:category": "biolink:Drug",
+    "biolink:id": "drugbank:DB00001",
+    "rdfs:label": "Lepirudin",
+    "dct:description": "Lepirudin is a protein-based direct thrombin inhibitor."
+}
+# ASSERTION_EXAMPLE = [
+#     {
+#         "@context": "https://schema.org",
+#         "@type": "Dataset",
+#         "name": "ECJ case law text similarity analysis",
+#         "description": "results from a study to analyse how closely the textual similarity of ECJ cases resembles the citation network of the cases.",
+#         "version": "v2.0",
+#         "url": "https://doi.org/10.5281/zenodo.4228652",
+#         "license": "https://www.gnu.org/licenses/agpl-3.0.txt",
+#     }
+# ]
 
 @router.post(
     "/assertion",
@@ -110,6 +128,17 @@ async def publish_assertion(
     g.bind("mesh", Namespace("http://id.nlm.nih.gov/mesh/"))
 
     g.parse(data=nanopub_rdf, format="json-ld")
+
+    conforms, _, results_text = pyshacl.validate(g, shacl_graph=shacl_g)
+    if results_text:
+        results_text = results_text.replace("Constraint Violation in", "\nConstraint Violation in")
+    # conforms, _, results_text = pyshacl.validate(g, shacl_graph=shacl_g, inference="rdfs")
+
+    if conforms is False:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Error validating the assertion with the BioLink SHACL shape:\n{results_text}",
+        )
 
     # Pubinfo time and creator are added by the nanopub lib
     np_conf = get_np_config(current_user["sub"])

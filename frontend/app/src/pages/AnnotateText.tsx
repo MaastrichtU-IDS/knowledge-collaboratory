@@ -303,21 +303,33 @@ export default function AnnotateText() {
     const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 
     if (state.templateSelected === 'RDF reified statements') {
+      stmtJsonld.push({
+        '@id': 'https://w3id.org/biolink/infores/knowledge-collaboratory',
+        '@type': 'biolink:InformationResource',
+        'biolink:category': 'biolink:InformationResource',
+        'biolink:id': 'infores:knowledge-collaboratory',
+      })
       state.statements.map((stmt: any, index: number) => {
         console.log("Iterating state.statements for generateRDF", stmt)
         // Generate spo statement
         const reifiedStmt: any = {
-          // '@id': 'https://w3id.org/collaboratory/association/' + index,
-          // [`@type`]: `${rdf}Statement`,
-          [`@type`]: `${BIOLINK}Association`,
-          [BIOLINK + 'category']: {'@id': `${BIOLINK}Association`},
-          [`${rdf}subject`]: {'@id': getPropValue(stmt.s)},
-          [`${rdf}predicate`]: {'@id': getPropValue(stmt.p)},
-          [`${rdf}object`]: {'@id': getPropValue(stmt.o)},
-          [`${BIOLINK}aggregator_knowledge_source`]: {'@id': 'https://w3id.org/biolink/infores/knowledge-collaboratory'},
+          [`@type`]: "biolink:Association",
+          'biolink:category': "biolink:Association",
+          "rdf:subject": {'@id': getPropValue(stmt.s)},
+          "rdf:predicate": {'@id': getPropValue(stmt.p)},
+          "rdf:object": {'@id': getPropValue(stmt.o)},
+          "biolink:id": `collaboratory:${stmt.s.id_curie}-${stmt.p.curie}-${stmt.o.id_curie}`,
+          "biolink:aggregator_knowledge_source": {'@id': 'infores:knowledge-collaboratory'},
         }
         if (state.inputSource) {
           reifiedStmt[BIOLINK +'publications'] = {'@id': state.inputSource}
+          stmtJsonld.push({
+            '@id': state.inputSource,
+            '@type': 'biolink:Publication',
+            'biolink:category': 'biolink:Publication',
+            'biolink:id': state.inputSource,
+            'dct:type': 'dctypes',
+          })
         }
         // Add props to the statement
         if (stmt.props) {
@@ -355,8 +367,9 @@ export default function AnnotateText() {
         const entityJsonld = {
           '@id': entity.id_uri,
           '@type': BIOLINK + entity.type,
-          [BIOLINK + 'category']: {'@id': BIOLINK + entity.type},
-          [RDFS + 'label']: entity.text,
+          'biolink:id': entity.id_curie,
+          'biolink:category': `biolink:${entity.type}`,
+          'rdfs:label': entity.text,
         }
         // Generate the props of the entity
         if (entity.props) {
@@ -406,36 +419,36 @@ export default function AnnotateText() {
     document.body.removeChild(element);
   }
 
-
-  const shexValidation  = (event: React.FormEvent) => {
-    // Trigger JSON-LD file download
-    event.preventDefault();
-    const stmtJsonld = generateRDF()
-    state.statements.map((stmt: any, stmtIndex: number) => {
-      console.log(`Validate statement ${stmt.s} with shape ${stmt.shex}`)
-      const shapemap = `<${stmt.s}>@<${stmt.shex}>`
-      axios.post(
-        `${settings.apiUrl}/validation/shex`,
-        stmtJsonld,
-        {
-          params: {
-            shape_start: `${BIOLINK}Association`,
-            focus_types: `${BIOLINK}Association`,
-            shape_url: 'https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.shex'
-          }
-        }
-      )
-      .then(res => {
-        console.log(res)
-        updateState({shexResults: res.data})
-      })
-      .catch(error => {
-        console.log(error)
-      })
-    })
-    // var element = document.createElement('a');
-    // console.log();
-  }
+  // TODO: REMOVE
+  // const shexValidation  = (event: React.FormEvent) => {
+  //   // Trigger JSON-LD file download
+  //   event.preventDefault();
+  //   const stmtJsonld = generateRDF()
+  //   state.statements.map((stmt: any, stmtIndex: number) => {
+  //     console.log(`Validate statement ${stmt.s} with shape ${stmt.shex}`)
+  //     const shapemap = `<${stmt.s}>@<${stmt.shex}>`
+  //     axios.post(
+  //       `${settings.apiUrl}/validation/shex`,
+  //       stmtJsonld,
+  //       {
+  //         params: {
+  //           shape_start: `${BIOLINK}Association`,
+  //           focus_types: `${BIOLINK}Association`,
+  //           shape_url: 'https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.shex'
+  //         }
+  //       }
+  //     )
+  //     .then(res => {
+  //       console.log(res)
+  //       updateState({shexResults: res.data})
+  //     })
+  //     .catch(error => {
+  //       console.log(error)
+  //     })
+  //   })
+  //   // var element = document.createElement('a');
+  //   // console.log();
+  // }
 
 
   const generateNanopub  = (event: React.FormEvent, publish: boolean = false) => {
@@ -471,11 +484,11 @@ export default function AnnotateText() {
         })
         .catch(error => {
           updateState({
-            errorMessage: 'Error generating the Nanopublication.',
+            errorMessage: `Error generating the Nanopublication:\n${error.response.data.detail}`,
             nanopubGenerated: false,
             nanopubPublished: false,
           })
-          console.log(error)
+          console.log(error.response.data.detail)
         })
         .finally(() => {
           hljs.highlightAll();
@@ -768,7 +781,9 @@ export default function AnnotateText() {
           // @ts-ignore
           sx={{ display: state.errorMessage.length > 0 }}
         >
-          ⚠️&nbsp;&nbsp;{state.errorMessage}
+          <pre style={{whiteSpace: "pre-wrap"}}>
+            ⚠️&nbsp;&nbsp;{state.errorMessage}
+          </pre>
         </Paper>
       }
 

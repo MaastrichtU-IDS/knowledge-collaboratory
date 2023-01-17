@@ -16,8 +16,7 @@ gunicorn = "^20.0.4"
 Authlib = "^0.15.4"
 itsdangerous = "^2.0.1"
 reasoner-pydantic = "^2.2.3"
-# TODO: we can remove kgx once freaking poetry finally manage to find 3.1.5
-# It cant find it right now even if it's clearly on pypi.....  come on just run a freaking query to check for this, devs are so bad
+# TODO: we can remove kgx once poetry finally manage to find 3.1.5
 reasoner-validator = "^3.1.4"
 kgx = "^1.6.0"
 rdflib = "^6.1.1"
