@@ -6,7 +6,7 @@
     "ios": "expo start --ios",
     "dev": "API_URL=http://localhost:8000 NODE_OPTIONS=--openssl-legacy-provider expo web",
     "eject": "expo eject",
-    "build": "NODE_OPTIONS=--openssl-legacy-provider expo build:web",
+    "build": "expo build:web",
     "serve": "serve -s web-build",
     "start": "npm run build && npm run serve",
     "dev-prod": "expo web",
