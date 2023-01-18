@@ -785,17 +785,6 @@ export default function AnnotateText() {
           <CircularProgress style={{textAlign: 'center'}} />
         </Box>
       }
-      { state.errorMessage &&
-        <Paper elevation={4}
-          style={{backgroundColor: "#e57373", padding: theme.spacing(2), marginBottom:theme.spacing(3)}}
-          // @ts-ignore
-          sx={{ display: state.errorMessage.length > 0 }}
-        >
-          <pre style={{whiteSpace: "pre-wrap"}}>
-            ⚠️&nbsp;&nbsp;{state.errorMessage}
-          </pre>
-        </Paper>
-      }
 
       <Popper open={open} anchorEl={anchorEl}>
         <ClickAwayListener onClickAway={handleClickAway}>
@@ -1224,6 +1213,18 @@ export default function AnnotateText() {
       { state.nanopubPublished &&
         <Paper elevation={4} style={{backgroundColor: '#81c784', padding: theme.spacing(2), marginBottom:theme.spacing(3), marginTop:theme.spacing(3)}}>
           ✅&nbsp;&nbsp;Nanopublication successfully published
+        </Paper>
+      }
+
+      { state.errorMessage &&
+        <Paper elevation={4}
+          style={{backgroundColor: "#e57373", padding: theme.spacing(2), marginBottom:theme.spacing(3)}}
+          // @ts-ignore
+          sx={{ display: state.errorMessage.length > 0 }}
+        >
+          <pre style={{whiteSpace: "pre-wrap"}}>
+            ⚠️&nbsp;&nbsp;{state.errorMessage}
+          </pre>
         </Paper>
       }
 
