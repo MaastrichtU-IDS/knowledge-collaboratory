@@ -36,6 +36,7 @@ class Settings(BaseSettings):
     ORCID_CLIENT_ID: Optional[str]
     ORCID_CLIENT_SECRET: Optional[str]
     BACKEND_URL: str = "http://localhost"
+    # BACKEND_URL: str = "http://localhost:8000"
 
     API_PATH: str = ""
     SECRET_KEY: str = secrets.token_urlsafe(32)

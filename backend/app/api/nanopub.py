@@ -25,8 +25,8 @@ NP_URI = Namespace("http://purl.org/nanopub/temp/mynanopub#")
 
 shacl_g = Graph()
 shacl_g.parse(
-    "app/biolink-model.shacl.ttl",
-    # "https://raw.githubusercontent.com/vemonet/biolink-model/add-shacl-gen/biolink-model.shacl.ttl",
+    # "app/biolink-model.shacl.ttl",
+    "https://raw.githubusercontent.com/vemonet/biolink-model/add-shacl-gen/biolink-model.shacl.ttl",
     format="ttl"
 )
 
@@ -137,8 +137,11 @@ async def publish_assertion(
     g.parse(data=nanopub_rdf, format="json-ld")
 
     if shacl_validation:
-        # conforms, _, results_text = pyshacl.validate(g, shacl_graph=shacl_g, ont_graph=biolink_g)
-        conforms, _, results_text = pyshacl.validate(g, shacl_graph=shacl_g)
+        print("PYSHACL")
+        print(pyshacl.__version__)
+        # TODO: fix constraints on subclasses https://github.dev/RDFLib/pySHACL/blob/d218a01d1ef76385943bfc47e6bbfe16d8c3f57c/pyshacl/shapes_graph.py#L102
+        conforms, _, results_text = pyshacl.validate(g, shacl_graph=shacl_g, ont_graph=biolink_g)
+        # conforms, _, results_text = pyshacl.validate(g, shacl_graph=shacl_g)
         if results_text:
             results_text = results_text.replace("Constraint Violation in", "\nConstraint Violation in")
         # conforms, _, results_text = pyshacl.validate(g, shacl_graph=shacl_g, inference="rdfs")

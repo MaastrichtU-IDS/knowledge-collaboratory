@@ -37,13 +37,13 @@ RUN FRONTEND_URL=$FRONTEND_URL API_URL=$API_URL yarn build
 FROM node:16-alpine AS runner
 
 ENV NODE_ENV production
-ENV API_URL=http://localhost
+ENV API_URL=http://localhost:8000
 WORKDIR /app
 
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nodejs -u 1001
 
-COPY server.ts package.json yarn.lock ./ 
+COPY server.ts package.json yarn.lock ./
 RUN chown -R nodejs:nodejs /app
 
 COPY --from=deps --chown=nodejs:nodejs /app/node_modules ./node_modules

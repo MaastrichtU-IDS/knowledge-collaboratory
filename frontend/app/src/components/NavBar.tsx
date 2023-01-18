@@ -47,7 +47,7 @@ import UserContext from '../UserContext'
 //     display: 'flex',
 //   },
 // }))
-  
+
 export default function NavBar() {
   const theme = useTheme();
   // const auth = useAuth();
@@ -145,7 +145,7 @@ export default function NavBar() {
         // https://stackoverflow.com/questions/25686484/what-is-intent-of-id-token-expiry-time-in-openid-connect
         // If the token is expired, it should make another auth request, except this time with prompt=none in the URL parameter
         // Getting an error with prompt if not login
-        
+
         // localStorage.setItem("fairEnoughSettings", JSON.stringify(user));
         // window.location.reload();
       })
@@ -169,7 +169,7 @@ export default function NavBar() {
       // console.log('access_token before setUser')
       // console.log(configState)
       // setUser({
-      //   username: username, 
+      //   username: username,
       //   access_token: configState['access_token'],
       //   id: configState['id'],
       // })
@@ -241,8 +241,8 @@ export default function NavBar() {
 
         {/* <UserContext.Consumer>
           {({ user }) => (
-            { user.username && 
-              <Button variant='contained' onClick={showUserInfo} color='secondary' size='small' 
+            { user.username &&
+              <Button variant='contained' onClick={showUserInfo} color='secondary' size='small'
                   style={{textTransform: 'none'}}>
                 🐧 {user.username}
               </Button>
@@ -250,14 +250,14 @@ export default function NavBar() {
           )}
           </UserContext.Consumer> */}
 
-          { user.username && 
-              <Button variant='contained' onClick={showUserInfo} color='secondary' size='small' 
+          { user.username &&
+              <Button variant='contained' onClick={showUserInfo} color='secondary' size='small'
                   style={{textTransform: 'none'}}>
                 🐧 {user.username}
               </Button>
           }
 
-          { !user.username && 
+          { !user.username &&
             // <Button variant='contained' color='secondary' size='small' component="span" style={{textTransform: 'none'}}>
             //   🔓️  LOGIN with ORCID
             <OAuth2Login
@@ -303,7 +303,7 @@ export default function NavBar() {
           {/* </Tooltip> */}
 
         {/* <Tooltip title='Login with ORCID'>
-          <Button href="http://localhost/rest/login" style={{color: '#fff'}} >
+          <Button href="http://localhost:8000/rest/login" style={{color: '#fff'}} >
             <LoginIcon />
           </Button>
         </Tooltip> */}

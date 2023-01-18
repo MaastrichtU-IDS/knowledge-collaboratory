@@ -4,7 +4,7 @@
   "scripts": {
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "dev": "API_URL=http://localhost NODE_OPTIONS=--openssl-legacy-provider expo web",
+    "dev": "API_URL=http://localhost:8000 NODE_OPTIONS=--openssl-legacy-provider expo web",
     "eject": "expo eject",
     "build": "NODE_OPTIONS=--openssl-legacy-provider expo build:web",
     "serve": "serve -s web-build",

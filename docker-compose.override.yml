@@ -3,7 +3,7 @@ services:
 
   backend:
     ports:
-      - "80:80"
+      - "8000:80"
     command: /start-reload.sh
     volumes:
       - ./backend:/app

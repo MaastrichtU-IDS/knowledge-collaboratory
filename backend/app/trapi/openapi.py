@@ -130,7 +130,7 @@ This service is supported by the [NIH NCATS Biomedical Data Translator project](
                     if not settings.VIRTUAL_HOST in server["url"]:
                         servers_list.append(server)
             else:
-                servers_list = unordered_servers_list
+                servers_list = []
 
             openapi_schema["servers"] = servers_list
 
