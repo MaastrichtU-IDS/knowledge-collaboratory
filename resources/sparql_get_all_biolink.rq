@@ -32,7 +32,7 @@ WHERE {
       ?association biolink:description ?description .
     }
     OPTIONAL {
-      ?association biolink:has_population_context [
+      ?association biolink:has_population_context|biolink:population_context_qualifier [
         rdfs:label ?has_population_context ;
         biolink:has_phenotype ?populationHasPhenotype ;
       ] .
@@ -56,4 +56,4 @@ WHERE {
   FILTER NOT EXISTS { ?creator npx:retracts ?np_uri }
   BIND(STRBEFORE(STR(?association), "#") AS ?asso )
   # FILTER(CONTAINS(STR(?publications), "dailymed"))
-} 
+}

@@ -461,6 +461,7 @@ export default function AnnotateText() {
 
   const generateNanopub  = (event: React.FormEvent, publish: boolean = false) => {
     event.preventDefault();
+    updateState({ errorMessage: "", published_nanopub: "" })
     const stmtJsonld: any = generateRDF()
     if (!user.error) {
       console.log('Publishing!', publish, stmtJsonld)

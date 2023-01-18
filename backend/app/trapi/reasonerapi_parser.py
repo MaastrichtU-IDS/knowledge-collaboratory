@@ -46,7 +46,7 @@ WHERE {
       ?association biolink:description ?description .
     }
     OPTIONAL {
-      ?association biolink:has_population_context [
+      ?association biolink:has_population_context|biolink:population_context_qualifier [
         rdfs:label ?has_population_context ;
         biolink:has_phenotype ?population_has_phenotype ;
       ] .
@@ -558,7 +558,7 @@ def reasonerapi_to_sparql(reasoner_query):
         if "has_population_context" in edge_result:
             knowledge_graph["edges"][edge_uri]["attributes"].append(
                 {
-                    "attribute_type_id": "biolink:has_population_context",
+                    "attribute_type_id": "biolink:population_context_qualifier",
                     "value": resolve_uri_with_context(
                         edge_result["has_population_context"]["value"]
                     ),

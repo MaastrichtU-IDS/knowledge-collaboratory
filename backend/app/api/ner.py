@@ -94,10 +94,13 @@ async def get_entities_relations(
         i = i + 1
         # Get preferred CURIEs for the entities label for the NameResolution API
         number_of_results = 10
-        name_res = requests.post(
-            f"https://name-resolution-sri.renci.org/lookup?string={ent.text}&offset=0&limit={number_of_results}"
-        ).json()
-        entity["curies"] = []
+        try:
+            name_res = requests.post(
+                f"https://name-resolution-sri.renci.org/lookup?string={ent.text}&offset=0&limit={number_of_results}"
+            ).json()
+            entity["curies"] = []
+        except Exception as e:
+            raise Exception(f"Error querying the SRI NameResolution API https://name-resolution-sri.renci.org: {e}")
         if len(name_res.keys()) > 0:
             # entity['curies'] = name_res
             for curie, labels in name_res.items():
