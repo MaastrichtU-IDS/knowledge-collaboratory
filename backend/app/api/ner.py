@@ -4,7 +4,7 @@ import numpy as np
 import requests
 import spacy
 import torch
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, HTTPException
 from fastapi.responses import JSONResponse
 
 # from fastapi.encoders import jsonable_encoder
@@ -96,11 +96,16 @@ async def get_entities_relations(
         number_of_results = 10
         try:
             name_res = requests.post(
-                f"https://name-resolution-sri.renci.org/lookup?string={ent.text}&offset=0&limit={number_of_results}"
+                f"https://name-resolution-sri.renci.org/lookup?string={ent.text}&offset=0&limit={number_of_results}",
+                timeout=120
             ).json()
             entity["curies"] = []
         except Exception as e:
-            raise Exception(f"Error querying the SRI NameResolution API https://name-resolution-sri.renci.org: {e}")
+            # raise Exception(f"the SRI NameResolution API is down https://name-resolution-sri.renci.org: {e}")
+            raise HTTPException(
+                status_code=400,
+                detail=f"the SRI NameResolution API is down (https://name-resolution-sri.renci.org)",
+            )
         if len(name_res.keys()) > 0:
             # entity['curies'] = name_res
             for curie, labels in name_res.items():

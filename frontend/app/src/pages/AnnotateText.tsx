@@ -262,10 +262,10 @@ export default function AnnotateText() {
       .catch(error => {
         updateState({
           loading: false,
-          errorMessage: 'Error while extracting entities from the text, please retry. And feel free to create an issue on our GitHub repository if the issue persists.',
+          errorMessage: `Error while extracting entities from the text because ${error.response.data.detail}.\nPlease retry later, and feel free to create an issue on our GitHub repository if the issue persists.`,
           extractClicked: true,
         })
-        console.log('Error while extracting entities', error)
+        // console.log('Error while extracting entities', error)
       })
       // .finally(() => {
       //   hljs.highlightAll();

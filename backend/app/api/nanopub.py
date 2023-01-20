@@ -137,8 +137,6 @@ async def publish_assertion(
     g.parse(data=nanopub_rdf, format="json-ld")
 
     if shacl_validation:
-        print("PYSHACL")
-        print(pyshacl.__version__)
         # TODO: fix constraints on subclasses https://github.dev/RDFLib/pySHACL/blob/d218a01d1ef76385943bfc47e6bbfe16d8c3f57c/pyshacl/shapes_graph.py#L102
         conforms, _, results_text = pyshacl.validate(g, shacl_graph=shacl_g, ont_graph=biolink_g)
         # conforms, _, results_text = pyshacl.validate(g, shacl_graph=shacl_g)
