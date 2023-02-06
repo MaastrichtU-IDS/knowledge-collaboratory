@@ -62,6 +62,7 @@ pipeline {
                 }
             }
             steps {
+                checkout scm
                 configFileProvider([
                     configFile(fileId: 'frontend-build-prepare.sh', targetLocation: 'frontend-build-prepare.sh')
                 ]){
