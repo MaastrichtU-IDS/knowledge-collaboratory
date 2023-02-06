@@ -80,7 +80,6 @@ pipeline {
             }
             agent { label 'translator && ci && deploy'}
             steps {
-                checkout scm
                 configFileProvider([
                     configFile(fileId: 'collaboratory-backend-ci-values.yaml', targetLocation: 'values-ncats.yaml'),
                     configFile(fileId: 'backend-prepare.sh', targetLocation: 'prepare.sh')
