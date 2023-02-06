@@ -65,7 +65,7 @@ pipeline {
                 configFileProvider([
                     configFile(fileId: 'frontend-build-prepare.sh', targetLocation: 'frontend-build-prepare.sh')
                 ]){
-                    dir("./frontend") {
+                    dir(".") {
                         script {
                             sh '''
                             /bin/bash frontend-build-prepare.sh
