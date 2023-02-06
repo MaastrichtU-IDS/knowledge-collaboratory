@@ -67,16 +67,12 @@ pipeline {
                 ]){
                     dir(".") {
                         script {
-                            script {
-                                sh '''
-                                /bin/bash frontend-build-prepare.sh
-                                '''
-                                docker.build("${env.DOCKER_REPO_NAME}", "--build-arg API_URL=${API_URL} --build-arg ORCID_CLIENT_ID=${ORCID_CLIENT_ID} --build-arg ORCID_CLIENT_SECRET=${ORCID_CLIENT_SECRET} --build-arg FRONTEND_URL=${FRONTEND_URL} --no-cache ./frontend")
-                                sh '''
-                                docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) 853771734544.dkr.ecr.us-east-1.amazonaws.com
-                                '''
-                                docker.image(env.DOCKER_REPO_NAME).push("${BUILD_VERSION}")
-                            }    
+                            sh '''
+                            /bin/bash frontend-build-prepare.sh
+                            docker.build("${env.DOCKER_REPO_NAME}", "--build-arg API_URL=${API_URL} --build-arg ORCID_CLIENT_ID=${ORCID_CLIENT_ID} --build-arg ORCID_CLIENT_SECRET=${ORCID_CLIENT_SECRET} --build-arg FRONTEND_URL=${FRONTEND_URL} --no-cache ./frontend")
+                            docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) 853771734544.dkr.ecr.us-east-1.amazonaws.com
+                            '''
+                            docker.image(env.DOCKER_REPO_NAME).push("${BUILD_VERSION}")
                         }   
                     }    
                 }
