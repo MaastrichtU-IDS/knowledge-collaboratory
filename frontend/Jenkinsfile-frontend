@@ -5,7 +5,7 @@ pipeline {
         disableConcurrentBuilds()
     }
     agent {
-        node { label 'translator && aws && build && kc' }
+        node { label 'translator && aws && build' }
     }
     parameters {
         string(name: 'BUILD_VERSION', defaultValue: '', description: 'The build version to deploy (optional)')
@@ -15,7 +15,7 @@ pipeline {
         pollSCM('H/5 * * * *')
     }
     environment {
-        DOCKER_REPO_NAME = "853771734544.dkr.ecr.us-east-1.amazonaws.com/translator-cdskp-collaboratory-frontend"
+        DOCKER_REPO_NAME = "translator-cdskp-collaboratory-frontend"
         KUBERNETES_CLUSTER_NAME = "translator-eks-ci-blue-cluster"
     }
     stages {
@@ -70,10 +70,9 @@ pipeline {
                 ]) {    
                     script {
                         docker.build("${env.DOCKER_REPO_NAME}", "--build-arg API_URL=${API_URL} --build-arg ORCID_CLIENT_ID=${ORCID_CLIENT_ID} --build-arg ORCID_CLIENT_SECRET=${ORCID_CLIENT_SECRET} --build-arg OAUTH_REDIRECT_FRONTEND=${OAUTH_REDIRECT_FRONTEND} --no-cache ./frontend")
-                        sh '''
-                        docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) 853771734544.dkr.ecr.us-east-1.amazonaws.com
-                        '''
-                        docker.image(env.DOCKER_REPO_NAME).push("${BUILD_VERSION}")
+                        docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:aws-ifx-deploy') {
+                            docker.image(env.DOCKER_REPO_NAME).push("${BUILD_VERSION}")
+                        }  
                     }
                 }
             }
@@ -85,26 +84,21 @@ pipeline {
                     triggeredBy 'UserIdCause'
                 }
             }
-            agent { label 'translator && ci && deploy'}
             steps {
-                configFileProvider([
-                    configFile(fileId: 'collaboratory-frontend-ci-values.yaml', targetLocation: 'values-ncats.yaml'),
-                    configFile(fileId: 'frontend-prepare.sh', targetLocation: 'prepare.sh')
-                ]){
-                    script {
-                        sh '''
-                        aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
-                        /bin/bash prepare.sh
-                        cd translator-ops/ops/cdskp/knowledge-collaboratory/knowledge-collaboratory-frontend/
-                        /bin/bash deploy.sh
-                        '''
-                    }
+                sshagent (credentials: ['labshare-svc']) {
+                   sh 'git clone git@github.com:Sphinx-Automation/translator-ops.git'
                 }
-            }
-            post {
-                always {
-                    echo " Clean up the workspace in deploy node!"
-                    cleanWs()
+                dir('translator-ops/ops/cdskp/knowledge-collaboratory/knowledge-collaboratory-frontend/') {
+                    configFileProvider([
+                        configFile(fileId: 'collaboratory-frontend-ci-values.yaml', targetLocation: 'values-ncats.yaml')
+                    ]){
+                        withAWS(credentials:'aws-ifx-deploy') {
+                            sh '''
+                            aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                            /bin/bash deploy.sh
+                            '''
+                        }
+                    }
                 }
             }
         }
@@ -129,10 +123,9 @@ pipeline {
                 ]) {    
                     script {
                         docker.build("${env.DOCKER_REPO_NAME}", "--build-arg API_URL=${API_URL} --build-arg ORCID_CLIENT_ID=${ORCID_CLIENT_ID} --build-arg ORCID_CLIENT_SECRET=${ORCID_CLIENT_SECRET} --build-arg OAUTH_REDIRECT_FRONTEND=${OAUTH_REDIRECT_FRONTEND} --no-cache ./frontend")
-                        sh '''
-                        docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) 853771734544.dkr.ecr.us-east-1.amazonaws.com
-                        '''
-                        docker.image(env.DOCKER_REPO_NAME).push("${BUILD_VERSION}-TEST") 
+                        docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:aws-ifx-deploy') {
+                            docker.image(env.DOCKER_REPO_NAME).push("${BUILD_VERSION}-TEST")
+                        }  
                     }
                 }
             }
@@ -158,10 +151,9 @@ pipeline {
                 ]) {    
                     script {
                         docker.build("${env.DOCKER_REPO_NAME}", "--build-arg API_URL=${API_URL} --build-arg ORCID_CLIENT_ID=${ORCID_CLIENT_ID} --build-arg ORCID_CLIENT_SECRET=${ORCID_CLIENT_SECRET} --build-arg OAUTH_REDIRECT_FRONTEND=${OAUTH_REDIRECT_FRONTEND} --no-cache ./frontend")
-                        sh '''
-                        docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) 853771734544.dkr.ecr.us-east-1.amazonaws.com
-                        '''
-                        docker.image(env.DOCKER_REPO_NAME).push("${BUILD_VERSION}-PROD")
+                        docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:aws-ifx-deploy') {
+                            docker.image(env.DOCKER_REPO_NAME).push("${BUILD_VERSION}-PROD")
+                        }  
                     }
                 }
             }
