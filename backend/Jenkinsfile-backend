@@ -5,7 +5,7 @@ pipeline {
         disableConcurrentBuilds()
     }
     agent {
-        node { label 'translator && aws && build' }
+        node { label 'translator && aws && build && kc' }
     }
     parameters {
         string(name: 'BUILD_VERSION', defaultValue: '', description: 'The build version to deploy (optional)')
@@ -15,7 +15,7 @@ pipeline {
         pollSCM('H/5 * * * *')
     }
     environment {
-        DOCKER_REPO_NAME = "translator-cdskp-collaboratory-backend"
+        DOCKER_REPO_NAME = "853771734544.dkr.ecr.us-east-1.amazonaws.com/translator-cdskp-collaboratory-backend"
         KUBERNETES_CLUSTER_NAME = "translator-eks-ci-blue-cluster"
     }
     stages {
@@ -64,9 +64,10 @@ pipeline {
             steps {
                 script {
                     docker.build(env.DOCKER_REPO_NAME, "--no-cache ./backend")
-                    docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:aws-ifx-deploy') {
-                        docker.image(env.DOCKER_REPO_NAME).push("${BUILD_VERSION}")
-                    }
+                    sh '''
+                    docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) 853771734544.dkr.ecr.us-east-1.amazonaws.com
+                    '''
+                    docker.image(env.DOCKER_REPO_NAME).push("${BUILD_VERSION}")
                 }
             }
         }
@@ -77,21 +78,26 @@ pipeline {
                     triggeredBy 'UserIdCause'
                 }
             }
+            agent { label 'translator && ci && deploy'}
             steps {
-                sshagent (credentials: ['labshare-svc']) {
-                   sh 'git clone git@github.com:Sphinx-Automation/translator-ops.git'
-                }
-                dir('translator-ops/ops/cdskp/knowledge-collaboratory/knowledge-collaboratory-backend/') {
-                    configFileProvider([
-                        configFile(fileId: 'collaboratory-backend-ci-values.yaml', targetLocation: 'values-ncats.yaml')
-                    ]){
-                        withAWS(credentials:'aws-ifx-deploy') {
-                            sh '''
-                            aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
-                            /bin/bash deploy.sh
-                            '''
-                        }
+                configFileProvider([
+                    configFile(fileId: 'collaboratory-backend-ci-values.yaml', targetLocation: 'values-ncats.yaml'),
+                    configFile(fileId: 'backend-prepare.sh', targetLocation: 'prepare.sh')
+                ]){
+                    script {
+                        sh '''
+                        aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                        /bin/bash prepare.sh
+                        cd translator-ops/ops/cdskp/knowledge-collaboratory/knowledge-collaboratory-backend/ 
+                        /bin/bash deploy.sh
+                        '''
                     }
+                }
+            }
+            post {
+                always {
+                    echo " Clean up the workspace in deploy node!"
+                    cleanWs()
                 }
             }
         }
