@@ -103,6 +103,12 @@ pipeline {
                     }
                 }
             }
+            post {
+                always {
+                    echo " Clean up the workspace in deploy node!"
+                    cleanWs()
+                }
+            }
         }
         stage('Build Docker TEST') {
             when {
@@ -155,6 +161,12 @@ pipeline {
                         '''
                         docker.image(env.DOCKER_REPO_NAME).push("${BUILD_VERSION}-PROD")
                     }
+                }
+            }
+            post {
+                always {
+                    echo " Clean up the workspace in deploy node!"
+                    cleanWs()
                 }
             }
         }
