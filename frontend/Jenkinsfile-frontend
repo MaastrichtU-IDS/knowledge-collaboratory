@@ -127,7 +127,7 @@ pipeline {
                 dir("./frontend") {
                     script {
                         sh '''
-                        docker build --no-cache -f ./Dockerfile --build-arg API_URL=${TEST_API_URL} --build-arg ORCID_CLIENT_ID=${ORCID_CLIENT_ID} --build-arg ORCID_CLIENT_SECRET=${ORCID_CLIENT_SECRET} --build-arg FRONTEND_URL=${TEST_FRONTEND_URL} -t 853771734544.dkr.ecr.us-east-1.amazonaws.com/translator-cdskp-collaboratory-frontend .
+                        docker build --no-cache -f ./Dockerfile --build-arg API_URL=${TEST_API_URL} --build-arg ORCID_CLIENT_ID=${ORCID_CLIENT_ID} --build-arg ORCID_CLIENT_SECRET=${ORCID_CLIENT_SECRET} --build-arg FRONTEND_URL=${TEST_FRONTEND_URL} -t ${DOCKER_REPO_NAME} .
                         '''
                         sh '''
                         docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) 853771734544.dkr.ecr.us-east-1.amazonaws.com
@@ -154,7 +154,7 @@ pipeline {
                 dir("./frontend") {
                     script {
                         sh '''
-                        docker build --no-cache -f ./Dockerfile --build-arg API_URL=${PROD_API_URL} --build-arg ORCID_CLIENT_ID=${ORCID_CLIENT_ID} --build-arg ORCID_CLIENT_SECRET=${ORCID_CLIENT_SECRET} --build-arg FRONTEND_URL=${PROD_FRONTEND_URL} -t 853771734544.dkr.ecr.us-east-1.amazonaws.com/translator-cdskp-collaboratory-frontend .
+                        docker build --no-cache -f ./Dockerfile --build-arg API_URL=${PROD_API_URL} --build-arg ORCID_CLIENT_ID=${ORCID_CLIENT_ID} --build-arg ORCID_CLIENT_SECRET=${ORCID_CLIENT_SECRET} --build-arg FRONTEND_URL=${PROD_FRONTEND_URL} -t ${DOCKER_REPO_NAME} .
                         '''
                         sh '''
                         docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) 853771734544.dkr.ecr.us-east-1.amazonaws.com
