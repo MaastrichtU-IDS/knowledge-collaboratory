@@ -8,7 +8,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, Response, File, Upl
 from fastapi.encoders import jsonable_encoder
 from nanopub import load_profile, Nanopub, NanopubClient, NanopubConf, Profile, NanopubIntroduction
 from rdflib import Graph, Literal, Namespace, URIRef, ConjunctiveGraph
-from rdflib.namespace import DCTERMS, PROV
+from rdflib.namespace import DCTERMS, PROV, RDFS
 from starlette.responses import JSONResponse
 
 from app.api.login import get_current_user
@@ -78,7 +78,6 @@ async def publish_assertion(
     nanopub_rdf: Union[Dict, List] = Body(..., example=ASSERTION_EXAMPLE),
     current_user: User = Depends(get_current_user),
     publish: bool = False,
-    quoted_from: str = None,
     add_biolink_version: bool = True,
     shacl_validation: bool = True,
     source: str = None,
@@ -108,6 +107,10 @@ async def publish_assertion(
     # RDFLib JSON-LD has issue with encoding: https://github.com/RDFLib/rdflib/issues/1416
     # nanopub_rdf = jsonld.expand(nanopub_rdf)
     # nanopub_rdf = json.dumps(nanopub_rdf, ensure_ascii=False).encode("utf-8")
+
+    annotations_rdf = nanopub_rdf["@annotations"]
+
+    del nanopub_rdf["@annotations"]
     nanopub_rdf = json.dumps(nanopub_rdf)
 
     g = Graph()
@@ -161,8 +164,8 @@ async def publish_assertion(
         conf=np_conf,
     )
 
-    if quoted_from:
-        np.provenance.add((np.assertion.identifier, PROV.wasQuotedFrom, Literal(quoted_from)))
+    if annotations_rdf:
+        np.provenance.parse(data=annotations_rdf, format="json-ld")
     if source:
         np.provenance.add((np.assertion.identifier, PROV.hadPrimarySource, URIRef(source)))
 

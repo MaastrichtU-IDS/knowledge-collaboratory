@@ -302,6 +302,7 @@ export default function AnnotateText() {
 
   const generateRDF  = () => {
     const stmtJsonld: any = []
+    const taoAnnotations: any = []
     const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 
     if (state.templateSelected === 'RDF reified statements') {
@@ -333,7 +334,6 @@ export default function AnnotateText() {
             '@type': 'biolink:Publication',
             'biolink:category': 'biolink:Publication',
             'biolink:id': state.inputSource,
-            'dct:type': 'dctypes',
           })
         }
         // Add props to the statement
@@ -366,8 +366,20 @@ export default function AnnotateText() {
       })
     }
 
+    const sourceUri = (state.inputSource) ? state.inputSource : "http://purl.org/nanopub/temp/np#source"
+    const taoDoc: any = {
+      "@id": sourceUri,
+      "@type": "tao:document_text",
+      "tao:has_value": state.inputText,
+    }
+    if (state.inputSource) {
+      taoDoc["rdfs:seeAlso"] = {"@id": state.inputSource}
+    }
+    taoAnnotations.push(taoDoc)
+
     // Generate triples for the entities
     state.entitiesList.map((entity: any) => {
+      console.log(entity)
       if (entity.id_uri && entity.type) {
         const entityJsonld = {
           '@id': entity.id_uri,
@@ -376,6 +388,14 @@ export default function AnnotateText() {
           'biolink:category': `biolink:${entity.type}`,
           'rdfs:label': entity.text,
         }
+        taoAnnotations.push({
+          "@type": "tao:text_span",
+          "tao:begins_at": entity.start,
+          "tao:ends_at": entity.end,
+          "tao:has_value": entity.text,
+          "tao:denotes": {"@id": entity.id_uri},
+          "tao:part_of": {"@id": sourceUri},
+        })
         // Generate the props of the entity
         if (entity.props) {
           entity.props.map((prop: any, pindex: number) => {
@@ -398,8 +418,15 @@ export default function AnnotateText() {
       }
     })
     return {
+      '@context': genericContext,
       '@graph': stmtJsonld,
-      '@context': genericContext
+      '@annotations': {
+        '@context': {
+          "tao": "http://pubannotation.org/ontology/tao.owl#",
+          "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        },
+        '@graph': taoAnnotations,
+      }
     }
   }
 
@@ -409,7 +436,7 @@ export default function AnnotateText() {
     event.preventDefault();
     // var element = document.createElement('a');
     const stmtJsonld: any = generateRDF()
-    console.log(rdfToRdf(stmtJsonld))
+    // console.log(rdfToRdf(stmtJsonld))
     rdfToRdf(stmtJsonld)
       .then((formattedRdf) => {
         console.log(formattedRdf);
@@ -614,7 +641,7 @@ export default function AnnotateText() {
     setAnchorEl(anchorEl ? null : event.currentTarget);
     setOpen((prev) => !prev);
     // tag['id'] = tag['type']
-    console.log('clickTag', tag)
+    // console.log('clickTag', tag)
     updateState({tagSelected: tag})
   }
 
@@ -680,7 +707,7 @@ export default function AnnotateText() {
 
   const addToStatements = (property: string, newInputValue: any, index: any, pindex: any = null) => {
     const stmts: any = state.statements
-    console.log('newInputValue', newInputValue)
+    // console.log('newInputValue', newInputValue)
     if (newInputValue) {
       if (pindex == null) {
         if (typeof newInputValue === 'object' || checkIfUri(newInputValue)) {
@@ -825,7 +852,7 @@ export default function AnnotateText() {
                   options={state.tagSelected.curies}
                   // getOptionLabel={(option: any) => `${option.label}${option.altLabel ? `, ${option.altLabel}` : ''} (${option.curie})`}
                   onChange={async (event: any, newInputValue: any) => {
-                    console.log('autocomplete entity newInputValue', newInputValue);
+                    // console.log('autocomplete entity newInputValue', newInputValue);
                     const entitiesList: any = state.entitiesList
                     const tagSelected = state.tagSelected
                     const entityIndex = entitiesList.findIndex((ent: any) => ent.index === tagSelected.index)
