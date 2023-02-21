@@ -46,10 +46,10 @@ dependencies = [
     "spacy-transformers >=1.1.5",
     "nanopub >=2.0.0",
     # "nanopub@git+https://github.com/vemonet/nanopub.git#sign-in-python",
-    "PyShEx >=0.8.1",
-    # "pyshacl >=0.20.0",
-    "pyshacl@git+https://github.com/vemonet/pySHACL.git@fix-subclassof-node-constraints",
+    "pyshacl >=0.20.0",
+    # "pyshacl@git+https://github.com/vemonet/pySHACL.git@fix-subclassof-node-constraints",
     # "pyshacl@{root:uri}/pySHACL",
+    "PyShEx >=0.8.1",
 ]
 
 [project.optional-dependencies]

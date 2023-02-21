@@ -25,8 +25,8 @@ NP_URI = Namespace("http://purl.org/nanopub/temp/mynanopub#")
 
 shacl_g = Graph()
 shacl_g.parse(
-    # "app/biolink-model.shacl.ttl",
-    "https://raw.githubusercontent.com/vemonet/biolink-model/add-shacl-gen/biolink-model.shacl.ttl",
+    "app/biolink-model.shacl.ttl",
+    # "https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.shacl.ttl",
     format="ttl"
 )
 
