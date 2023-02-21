@@ -344,7 +344,7 @@ async def generate_keyfile(current_user: User = Depends(get_current_user)):
             name=username,
             orcid_id=current_user['id'],
         )
-        p.store_profile(user_dir)
+        p.store(Path(user_dir))
 
         np_intro = NanopubIntroduction(
             conf=NanopubConf(profile=p),
