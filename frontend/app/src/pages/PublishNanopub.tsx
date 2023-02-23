@@ -97,7 +97,7 @@ export default function PublishNanopub() {
   const classes = useStyles();
 
   // useLocation hook to get URL params
-  let location = useLocation();  
+  let location = useLocation();
   const [state, setState] = React.useState({
     open: false,
     dialogOpen: false,
@@ -126,14 +126,14 @@ export default function PublishNanopub() {
     stateRef.current = {...stateRef.current, ...update};
     setState(stateRef.current);
   }, [setState]);
-  
+
   // Original form and output:
   // Questions: https://github.com/kodymoodley/fair-metadata-generator/blob/main/questions.csv
   // Full output: https://github.com/kodymoodley/fair-metadata-html-page-generator/blob/main/testdata/inputdata/test.jsonld
 
   React.useEffect(() => {
     // Get the edit URL param if provided, and download ontology if @context changed
-    // Ontology is stored in state.ontology_jsonld 
+    // Ontology is stored in state.ontology_jsonld
     // and passed to renderObjectForm to resolve classes and properties
     const params = new URLSearchParams(location.search + location.hash);
     let jsonld_uri_provided = params.get('edit');
@@ -146,7 +146,7 @@ export default function PublishNanopub() {
       console.log('ontology url', onto_url);
       downloadOntology(onto_url)
     }
-    
+
     if (jsonld_uri_provided) {
       axios.get(jsonld_uri_provided)
         .then(res => {
@@ -156,15 +156,15 @@ export default function PublishNanopub() {
           })
           // downloadOntology(res.data['@context'])
         })
-    } 
+    }
     // else {
     //   downloadOntology(state.np_jsonld['@context'])
     // }
-    
+
   }, [state.np_jsonld])
 
   const downloadOntology  = (contextUrl: string) => {
-    // Download the ontology JSON-LD 
+    // Download the ontology JSON-LD
     if (!contextUrl) {
       // Handle when no @context provided, use schema.org by default
       contextUrl = 'https://schema.org/'
@@ -172,7 +172,7 @@ export default function PublishNanopub() {
       console.log('No @context provided, using schema.org by default');
     }
     if (contextUrl.startsWith('https://schema.org') || contextUrl.startsWith('https://schema.org')) {
-      // Schema.org does not enable content-negociation 
+      // Schema.org does not enable content-negociation
       contextUrl = 'https://schema.org/version/latest/schemaorg-current-https.jsonld'
     }
     if (contextUrl.startsWith('http://')) {
@@ -263,15 +263,15 @@ export default function PublishNanopub() {
 
     const access_token = user['access_token']
     axios.post(
-        settings.apiUrl + '/upload-keys', 
-        formData, 
-        { 
-          headers: { 
+        settings.apiUrl + '/upload-keys',
+        formData,
+        {
+          headers: {
             Authorization: `Bearer ${access_token}`,
             "Content-Type": "multipart/form-data",
             "type": "formData"
           }
-        } 
+        }
       )
       .then(res => {
         updateState({
@@ -295,9 +295,9 @@ export default function PublishNanopub() {
     if (!user.error) {
       const access_token = user['access_token']
       axios.post(
-          settings.apiUrl + '/assertion', 
-          state.np_jsonld, 
-          { headers: { Authorization: `Bearer ${access_token}` }} 
+          settings.apiUrl + '/assertion',
+          state.np_jsonld,
+          { headers: { Authorization: `Bearer ${access_token}` }}
         )
         .then(res => {
           updateState({
@@ -362,19 +362,19 @@ export default function PublishNanopub() {
             🔒️ You need to login with ORCID to publish Nanopublications
           </Typography>
         }
-        { user.id && user.keyfiles_loaded && 
+        { user.id && user.keyfiles_loaded &&
           <Typography>
             ✅ Your authentication keys are successfully loaded, you can start publishing Nanopublications
           </Typography>
         }
 
-        { user.id && !user.keyfiles_loaded && 
+        { user.id && !user.keyfiles_loaded &&
           <>
             <Card className={classes.paperPadding} >
               <Typography>
                 🔑 You need to upload the authentication keys bound to your ORCID to publish Nanopublications (public and private encryption keys):
               </Typography>
-              <form encType="multipart/form-data" action="" onSubmit={handleUploadKeys} 
+              <form encType="multipart/form-data" action="" onSubmit={handleUploadKeys}
                   style={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>
                 <Typography style={{marginTop: theme.spacing(1)}}>
                   Select the <b>Public</b> key:&nbsp;&nbsp;
@@ -385,9 +385,9 @@ export default function PublishNanopub() {
                   <input type="file" id="privateKey" />
                 </Typography>
 
-                <Button type="submit" 
-                  variant="contained" 
-                  className={classes.saveButton} 
+                <Button type="submit"
+                  variant="contained"
+                  className={classes.saveButton}
                   startIcon={<UploadIcon />}
                   style={{textTransform: 'none', marginTop: theme.spacing(1)}}
                   color="secondary" >
@@ -420,14 +420,14 @@ export default function PublishNanopub() {
 
         {/* Display the JSON-LD file uploader (if no ?edit= URL param provided) */}
         {!state.jsonld_uri_provided &&
-          <JsonldUploader renderObject={state.np_jsonld} 
+          <JsonldUploader renderObject={state.np_jsonld}
             onChange={(np_jsonld: any) => {updateState({np_jsonld})}} />
         }
       </Card>
 
-      {/* <CsvUploader 
+      {/* <CsvUploader
         csvwColumnsArray={state.csvwColumnsArray}
-        onChange={(csvwColumnsArray: any) => {updateState({csvwColumnsArray})}} 
+        onChange={(csvwColumnsArray: any) => {updateState({csvwColumnsArray})}}
       /> */}
 
       <Snackbar open={state.ontoload_error_open} onClose={closeOntoloadError} autoHideDuration={10000}>
@@ -457,9 +457,9 @@ export default function PublishNanopub() {
 
           {/* Button to download the JSON-LD */}
           <div style={{width: '100%', textAlign: 'center'}}>
-            <Button type="submit" 
-              variant="contained" 
-              className={classes.saveButton} 
+            <Button type="submit"
+              variant="contained"
+              className={classes.saveButton}
               startIcon={<PublishIcon />}
               disabled={!user.id}
               color="secondary" >

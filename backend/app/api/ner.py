@@ -6,8 +6,6 @@ import spacy
 import torch
 from fastapi import APIRouter, Body, HTTPException
 from fastapi.responses import JSONResponse
-
-# from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from transformers import BertForSequenceClassification, BertTokenizer
 

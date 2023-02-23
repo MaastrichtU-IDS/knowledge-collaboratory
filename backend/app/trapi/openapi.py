@@ -1,6 +1,7 @@
+import time
 from typing import Any, Dict, Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 
@@ -85,6 +86,16 @@ class TRAPI(FastAPI):
             allow_methods=["*"],
             allow_headers=["*"],
         )
+
+        @self.middleware("http")
+        async def add_process_time_header(request: Request, call_next):
+            start_time = time.time()
+            response = await call_next(request)
+            process_time = time.time() - start_time
+            response.headers["X-Process-Time"] = str(process_time)
+            return response
+
+
 
     def openapi(self) -> Dict[str, Any]:
         """Build custom OpenAPI schema."""

@@ -95,6 +95,8 @@ export default function AnnotateText() {
     inputText: '',
     inputSource: '',
     editInputText: '',
+    // extractionModel: 'openai',
+    extractionModel: 'litcoin',
     shaclValidate: true,
     templateSelected: 'RDF reified statements',
     extractClicked: false,
@@ -148,6 +150,22 @@ export default function AnnotateText() {
     }
 
   }, [])
+
+
+  const extractionModels = {
+    "litcoin": "LitCoin NER",
+    "openai": "OpenAI GPT (experimental)",
+    // "drug.DrugMechanism": "OntoGPT drug.DrugMechanism",
+    // "ctd.ChemicalToDiseaseDocument": "OntoGPT ctd.ChemicalToDiseaseDocument",
+    // "drug.DrugMechanism": "OntoGPT drug.DrugMechanism",
+    // "biological_process.BiologicalProcess": "OntoGPT biological_process.BiologicalProcess",
+    // "gocam.GoCamAnnotations": "OntoGPT gocam.GoCamAnnotations",
+    // "treatment.DiseaseTreatmentSummary": "OntoGPT treatment.DiseaseTreatmentSummary",
+    // "reaction.ReactionDocument": "OntoGPT reaction.ReactionDocument",
+  }
+  const handleSelectExtractModel = (event: React.ChangeEvent<HTMLInputElement>) => {
+    updateState({extractionModel: event.target.value})
+  };
 
 
   const handleUploadKeys  = (event: React.FormEvent<HTMLFormElement>) => {
@@ -218,6 +236,97 @@ export default function AnnotateText() {
       })
   }
 
+  const extractOntogpt  = () => {
+    axios.post(
+      settings.apiUrl + "/openai-extract",
+      {'text': state.editInputText},
+      // null,
+      // {'params': {'text': state.editInputText, "datamodel": state.extractionModel}}
+    )
+    .then(async res => {
+      console.log("extracted_object", res.data)
+      const entities: any = []
+      const statements: any = []
+      await Promise.all(
+        res.data["entities"].map(async (extractedEntity: any, index: number) => {
+          const label = extractedEntity["label"]
+          const start = state.inputText.indexOf(label)
+          const end = state.inputText.indexOf(label) + label.length
+          const ent: any = {
+            index: `${entities.length}:${start}:${end}:${label}`,
+            text: label,
+            token: label,
+            type: extractedEntity["type"],
+            start: start,
+            end: end,
+          }
+          // const entityCuries: any = getEntityCuriesSync(label)
+          const entityCuries: any = await getEntityCuries(label)
+          ent['curies'] = []
+          if (entityCuries && Object.keys(entityCuries).length > 0) {
+            Object.keys(entityCuries).map((curie: any) => {
+              const addEnt: any = {
+                'curie': curie,
+                'label': entityCuries[curie][0],
+                'altLabel': entityCuries[curie][1],
+              }
+              ent['curies'].push(addEnt)
+              // console.log("ARNAQUE", ent)
+            })
+            ent['id_curie'] = ent['curies'][0]["curie"]
+            ent['id_label'] = ent['curies'][0]["label"]
+            ent['id_uri'] = curieToUri(ent['id_curie'])
+          }
+          entities.push(ent)
+        })
+      )
+
+      try {
+        res.data["associations"].map((asso: any, index: number) => {
+          // console.log(asso)
+          const pred = asso["predicate"].replaceAll(" ", "_")
+          const stmt: any = {
+            p: {
+              id: BIOLINK + pred, curie: "biolink:" + pred, label: pred
+            }
+          }
+          entities.map( (ent: any, index:number) => {
+            if (asso["subject"] == ent["text"]) {
+              stmt["s"] = ent
+            }
+            if (asso["object"] == ent["text"]) {
+              stmt["o"] = ent
+            }
+          })
+          // o: { index: "chorea:1:57:63", text: "chorea", type: "DiseaseOrPhenotypicFeature", … }
+          // p: { id: "https://w3id.org/biolink/vocab/treats", curie: "biolink:treats", label: "treats" }
+          // s: { index: "Tetrabenazine:0:0:13", text: "Tetrabenazine", type: "ChemicalEntity", … }
+          statements.push(stmt)
+        })
+      } catch (err) {
+        console.log(`Error extracting statements: ${err}`)
+      }
+      console.log("UPDATE STATE!", statements)
+      updateState({
+        loading: false,
+        entitiesList: entities,
+        statements: statements,
+        extractClicked: true,
+      })
+    })
+    .catch(error => {
+      console.log('Error while extracting entities', error)
+      let errMsg = `Error while extracting entities from the text.\nPlease retry later, and feel free to create an issue on our GitHub repository if the issue persists.`
+      if (error.response) {
+        errMsg = `Error while extracting entities from the text because ${error.response.data.detail}.\nPlease retry later, and feel free to create an issue on our GitHub repository if the issue persists.`
+      }
+      updateState({
+        loading: false,
+        errorMessage: errMsg,
+        extractClicked: true,
+      })
+    })
+  }
 
   const handleExtract  = (event: React.FormEvent) => {
     event.preventDefault();
@@ -241,35 +350,43 @@ export default function AnnotateText() {
       //   errorMessage: "Input text is too large for the machine learning model, try submitting less than 1000 characters"
       // })
     }
-    axios.post(
-        settings.apiUrl + '/get-entities-relations',
-        {'text': state.editInputText},
-        {'params': {'extract_relations': extract_relations}}
-      )
-      .then(res => {
-        updateState({
-          loading: false,
-          entitiesList: res.data.entities,
-          extractClicked: true,
-        })
-        if (res.data.statements) {
+    if (state.extractionModel == "litcoin") {
+      axios.post(
+          settings.apiUrl + '/get-entities-relations',
+          {'text': state.editInputText},
+          {'params': {'extract_relations': extract_relations}}
+        )
+        .then(res => {
           updateState({
-            relationsList: res.data.relations,
-            statements: res.data.statements
+            loading: false,
+            entitiesList: res.data.entities,
+            extractClicked: true,
           })
-        }
-      })
-      .catch(error => {
-        updateState({
-          loading: false,
-          errorMessage: `Error while extracting entities from the text because ${error.response.data.detail}.\nPlease retry later, and feel free to create an issue on our GitHub repository if the issue persists.`,
-          extractClicked: true,
+          if (res.data.statements) {
+            updateState({
+              relationsList: res.data.relations,
+              statements: res.data.statements
+            })
+          }
+          console.log("ENTITIES, STATEMENTS RETURNED")
+          console.log(res.data.entities)
+          console.log(res.data.statements)
         })
-        // console.log('Error while extracting entities', error)
-      })
-      // .finally(() => {
-      //   hljs.highlightAll();
-      // })
+        .catch(error => {
+          updateState({
+            loading: false,
+            errorMessage: `Error while extracting entities from the text because ${error.response.data.detail}.\nPlease retry later, and feel free to create an issue on our GitHub repository if the issue persists.`,
+            extractClicked: true,
+          })
+          // console.log('Error while extracting entities', error)
+        })
+        // .finally(() => {
+        //   hljs.highlightAll();
+        // })
+    } else {
+      // Extract using OntoGPT
+      extractOntogpt()
+    }
   }
 
   const getPropValue  = (prop: any) => {
@@ -645,6 +762,30 @@ export default function AnnotateText() {
     updateState({tagSelected: tag})
   }
 
+  const getEntityCuriesSync = (text: string) => {
+    axios.post(
+      'https://name-resolution-sri.renci.org/lookup',
+      {},
+      {
+        'params': {
+          'string': text,
+          'offset': 0,
+          'limit': 30,
+        }
+      }
+    )
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      console.log(error)
+      return null
+    })
+    .finally(() => {
+      return null
+    })
+  }
+
   const getEntityCuries = async (text: string) => {
     const data = await axios.post(
       'https://name-resolution-sri.renci.org/lookup',
@@ -784,6 +925,26 @@ export default function AnnotateText() {
             }}
             InputLabelProps={{ required: false }}
           />
+
+          {/* <InputLabel id="extract-model-select-label" >
+            Extract entities using model
+          </InputLabel> */}
+          <Typography style={{marginBottom: theme.spacing(1)}}>
+            Extract entities using model:
+          </Typography>
+          <Select
+            labelId="extract-model-select-label"
+            id="extract-model-select"
+            value={state.extractionModel}
+            // label="Extract entities using model"
+            // placeholder="Extract entities using model"
+            style={{ backgroundColor: '#ffffff', marginBottom: theme.spacing(1)}}
+            onChange={handleSelectExtractModel}
+          >
+            { Object.keys(extractionModels).map((model: any, key: number) => (
+              <MenuItem key={key} value={model}>{extractionModels[model]}</MenuItem>
+            ))}
+          </Select>
 
           <div style={{width: '100%', textAlign: 'center', marginBottom: theme.spacing(2)}}>
             <Button type="submit"

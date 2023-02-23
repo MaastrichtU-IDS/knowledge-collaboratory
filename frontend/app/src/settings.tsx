@@ -12,7 +12,7 @@ export const settings = {
   docsUrl: ((process.env.API_URL) ? process.env.API_URL + '/docs' : null) || 'http://localhost:8000/docs',
   nanopubGrlcUrl: process.env.GRLC_URL || "https://grlc.np.dumontierlab.com/api/local/local",
   nanopubSparqlUrl: "https://virtuoso.nps.petapico.org/sparql",
-  // https://virtuoso.np.dumontierlab.137.120.31.101.nip.io/sparql
+  ontogptUrl: process.env.ONTOGPT_URL || 'http://localhost:8001/extract',
 }
 
 

@@ -8,6 +8,7 @@ services:
     volumes:
       - ./backend:/app
       - ../nanopub:/opt/nanopub
+      # - ../ontogpt:/opt/ontogpt
     environment:
       - FRONTEND_URL=http://localhost:19006
       - INSTALL_DEV=true

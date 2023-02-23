@@ -1,4 +1,5 @@
 import secrets
+import logging
 from typing import List, Optional, Union
 
 from pydantic import BaseSettings, validator
@@ -16,6 +17,9 @@ class Settings(BaseSettings):
     # BIOLINK_VERSION: str = "3.0.3"
     TRAPI_VERSION: str = "1.3.0"
     TRAPI_VERSION_TEST: str = "1.3.0"
+
+    OPENAI_APIKEY: str = ""
+    BIOPORTAL_APIKEY: str = ""
 
     # Those defaults are used by GitHub Actions for testing
     # The settings used by Docker deployment are in the .env file
@@ -71,6 +75,15 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+
+# Configure logger
+logger = logging.getLogger()
+logger.setLevel(level=logging.INFO)
+console_handler = logging.StreamHandler()
+formatter = logging.Formatter("%(asctime)s %(levelname)s: [%(module)s:%(funcName)s] %(message)s")
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
 
 
 biolink_context = {
