@@ -295,7 +295,6 @@ def get_metakg_from_nanopubs():
 
 def get_np_users():
     pubkeys = {}
-    # shex_shape = requests.get(shape_url).text
     headers = {"Accept": "application/json"}
     res = requests.get(
         f"{settings.NANOPUB_GRLC_URL}/get_all_users", headers=headers

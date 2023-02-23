@@ -1,38 +1,5 @@
 import React from "react";
 
-// https://github.com/biolink/biolink-model/blob/master/biolink-model.shexj
-export const biolinkShex = {
-  "type": "Schema",
-  "@context": [
-    "http://www.w3.org/ns/shex.jsonld",
-    {
-      "@base": "https://w3id.org/biolink/vocab/"
-    }
-  ],
-  "shapes": [
-    {
-      "type": "ShapeOr",
-      "id": "https://w3id.org/biolink/vocab/Association",
-      "label": "Association",
-    },
-    {
-      "type": "Shape",
-      "id": "https://w3id.org/biolink/vocab/ChemicalToDiseaseOrPhenotypicFeatureAssociation",
-      "label": "Chemical To Disease Or Phenotypic Feature Association",
-    },
-    {
-      "type": "Shape",
-      "id": "https://w3id.org/biolink/vocab/DiseaseToPhenotypicFeatureAssociation",
-      "label": "Disease To Phenotypic Feature Association",
-    },
-    {
-      "type": "Shape",
-      "id": "https://w3id.org/biolink/vocab/ChemicalToChemicalAssociation",
-      "label": "Chemical To Chemical Association",
-    },
-  ]
-}
-
 const BIOLINK = 'https://w3id.org/biolink/vocab/'
 // const IDO = 'https://identifiers.org/'
 // const RDFS = 'http://www.w3.org/2000/01/rdf-schema#'
@@ -51,6 +18,8 @@ export const ents = [
   {type: 'Disease', label: 'Disease', id: BIOLINK + 'Disease', curie: 'biolink:Disease',
   color: {r: 47, g: 187, b: 171}}, // Blue green
   {type: 'GeneOrGeneProduct', label: 'Gene or Gene Product', id: BIOLINK + 'GeneOrGeneProduct', curie: 'biolink:GeneOrGeneProduct',
+    color: {r: 218, g: 112, b: 214}}, // Purple
+  {type: 'GeneProduct', label: 'Gene Product', id: BIOLINK + 'GeneProduct', curie: 'biolink:GeneProduct',
     color: {r: 218, g: 112, b: 214}}, // Purple
   {type: 'SequenceVariant', label: 'Sequence Variant', id: BIOLINK + 'SequenceVariant', curie: 'biolink:SequenceVariant',
     color: {r: 166, g: 226, b: 45}}, // Light green

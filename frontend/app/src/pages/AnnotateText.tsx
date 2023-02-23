@@ -4,7 +4,6 @@ import { useTheme } from '@mui/material/styles';
 import { makeStyles, withStyles } from '@mui/styles';
 import { Typography, Popper, ClickAwayListener, Paper, Checkbox, FormControlLabel, Container, Box, CircularProgress, Tooltip, IconButton, Autocomplete, Button, Card, FormControl, TextField, Snackbar, Grid, Select, MenuItem, InputLabel } from "@mui/material";
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
-import DownloadJsonldIcon from '@mui/icons-material/Description';
 import AddIcon from '@mui/icons-material/AddBox';
 import GenerateKeyIcon from '@mui/icons-material/VpnKey';
 import UploadIcon from '@mui/icons-material/FileUpload';
@@ -13,13 +12,12 @@ import ExtractIcon from '@mui/icons-material/AutoFixHigh';
 import GenerateIcon from '@mui/icons-material/FactCheck';
 import PublishIcon from '@mui/icons-material/Backup';
 import DownloadIcon from '@mui/icons-material/Download';
-import ShexIcon from '@mui/icons-material/TaskAlt';
 import axios from 'axios';
 // @ts-ignore
 import Taggy from 'react-taggy'
 
 import { settings, genericContext, samples } from '../settings';
-import { context, propertiesList, predicatesList, sentenceToAnnotate, biolinkShex, ents } from '../components/biolinkModel';
+import { context, propertiesList, predicatesList, sentenceToAnnotate, ents } from '../components/biolinkModel';
 import { rdfToRdf } from '../utils';
 import UserContext from '../UserContext'
 import AutocompleteEntity from '../components/AutocompleteEntity';
@@ -104,7 +102,7 @@ export default function AnnotateText() {
     externalEntities: [],
     relationsList: [],
     tagSelected: tagSelected,
-    statements: [{'s': '', 'p': '', 'o': '', 'props': [], shex: ''}],
+    statements: [{'s': '', 'p': '', 'o': '', 'props': []}],
     predicatesList: predicatesList,
     propertiesList: propertiesList,
     loading: false,
@@ -568,37 +566,6 @@ export default function AnnotateText() {
     document.body.removeChild(element);
   }
 
-  // TODO: REMOVE
-  // const shexValidation  = (event: React.FormEvent) => {
-  //   // Trigger JSON-LD file download
-  //   event.preventDefault();
-  //   const stmtJsonld = generateRDF()
-  //   state.statements.map((stmt: any, stmtIndex: number) => {
-  //     console.log(`Validate statement ${stmt.s} with shape ${stmt.shex}`)
-  //     const shapemap = `<${stmt.s}>@<${stmt.shex}>`
-  //     axios.post(
-  //       `${settings.apiUrl}/validation/shex`,
-  //       stmtJsonld,
-  //       {
-  //         params: {
-  //           shape_start: `${BIOLINK}Association`,
-  //           focus_types: `${BIOLINK}Association`,
-  //           shape_url: 'https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.shex'
-  //         }
-  //       }
-  //     )
-  //     .then(res => {
-  //       console.log(res)
-  //       updateState({shexResults: res.data})
-  //     })
-  //     .catch(error => {
-  //       console.log(error)
-  //     })
-  //   })
-  //   // var element = document.createElement('a');
-  //   // console.log();
-  // }
-
   const handleShaclValidate  = (event: React.ChangeEvent<HTMLInputElement>) => {
     updateState({shaclValidate: event.target.checked})
   };
@@ -694,8 +661,7 @@ export default function AnnotateText() {
   const addStatement  = (event: React.FormEvent) => {
     event.preventDefault();
     const stmts: any = state.statements
-    stmts.push({'s': '', 'p': '', 'o': '', 'props': [],
-      'shex': {id: `${BIOLINK}Association`, label: 'Association', type: 'ShapeOr'}})
+    stmts.push({'s': '', 'p': '', 'o': '', 'props': []})
     updateState({statements: stmts})
   }
   const addProperty = (event: React.FormEvent)=> {
@@ -1283,29 +1249,6 @@ export default function AnnotateText() {
                 color="inherit" >
                   Add a property to this statement
               </Button>
-              {/* <Typography>
-                Validate statement against:
-              </Typography>
-              <AutocompleteEntity
-                label="ShEx shape"
-                id={'shex:' + index}
-                value={state.statements[index].shex}
-                freesolo={undefined}
-                options={biolinkShex.shapes}
-                getOptionLabel={(option: any) => `${option.label} (${option.id})`}
-                onChange={(event: any, newInputValue: any) => {
-                  const stmts: any = state.statements
-                  if (newInputValue) {
-                    if (newInputValue.id) {
-                      stmts[index]['shex'] = newInputValue.id as string
-                    } else {
-                      stmts[index]['shex'] = newInputValue as string
-                    }
-                    updateState({statements: stmts})
-                  }
-                }}
-                style={{width: '400px', marginLeft: theme.spacing(2)}}
-              /> */}
             </div>
             }
           </Box>
@@ -1341,16 +1284,6 @@ export default function AnnotateText() {
           <FormControl className={classes.settingsForm}>
             {/* Button to download the JSON-LD */}
             <div style={{width: '100%', textAlign: 'center'}}>
-              {/* <Button
-                onClick={shexValidation}
-                variant="contained"
-                className={classes.saveButton}
-                startIcon={<ShexIcon />}
-                style={{marginRight: theme.spacing(2)}}
-                disabled={state.entitiesList.length < 1}
-                color="warning" >
-                  Validate with ShEx
-              </Button> */}
               <Button
                 onClick={handleDownloadRDF}
                 variant="contained"
