@@ -238,6 +238,10 @@ export default function AnnotateText() {
     axios.post(
       settings.apiUrl + "/openai-extract",
       {'text': state.editInputText},
+      {
+        headers: { Authorization: `Bearer ${user['access_token']}` },
+        // params: requestParams
+      }
       // null,
       // {'params': {'text': state.editInputText, "datamodel": state.extractionModel}}
     )
@@ -245,20 +249,24 @@ export default function AnnotateText() {
       console.log("extracted_object", res.data)
       const entities: any = []
       const statements: any = []
+      // Prepare entities extracted, and retrieve their potential CURIEs with the SRI NameResolution API
       await Promise.all(
         res.data["entities"].map(async (extractedEntity: any, index: number) => {
           const label = extractedEntity["label"]
-          const start = state.inputText.indexOf(label)
-          const end = state.inputText.indexOf(label) + label.length
+          const type = extractedEntity["type"].split(" ").map((word: any) => word.charAt(0).toUpperCase() + word.slice(1)).join('');
+          console.log("LOWEER", state.editInputText.toLowerCase())
+          console.log("label", label.toLowerCase())
+          const start = state.editInputText.toLowerCase().indexOf(label.toLowerCase())
+          console.log("start", start)
+          const end = start + label.length
           const ent: any = {
             index: `${entities.length}:${start}:${end}:${label}`,
             text: label,
             token: label,
-            type: extractedEntity["type"],
+            type: type,
             start: start,
             end: end,
           }
-          // const entityCuries: any = getEntityCuriesSync(label)
           const entityCuries: any = await getEntityCuries(label)
           ent['curies'] = []
           if (entityCuries && Object.keys(entityCuries).length > 0) {
@@ -280,6 +288,7 @@ export default function AnnotateText() {
       )
 
       try {
+        // Prepare statements extracted
         res.data["associations"].map((asso: any, index: number) => {
           // console.log(asso)
           const pred = asso["predicate"].replaceAll(" ", "_")
@@ -304,7 +313,7 @@ export default function AnnotateText() {
       } catch (err) {
         console.log(`Error extracting statements: ${err}`)
       }
-      console.log("UPDATE STATE!", statements)
+      console.log("UPDATE STATE!", entities)
       updateState({
         loading: false,
         entitiesList: entities,
@@ -728,30 +737,6 @@ export default function AnnotateText() {
     updateState({tagSelected: tag})
   }
 
-  const getEntityCuriesSync = (text: string) => {
-    axios.post(
-      'https://name-resolution-sri.renci.org/lookup',
-      {},
-      {
-        'params': {
-          'string': text,
-          'offset': 0,
-          'limit': 30,
-        }
-      }
-    )
-    .then(res => {
-      return res.data
-    })
-    .catch(error => {
-      console.log(error)
-      return null
-    })
-    .finally(() => {
-      return null
-    })
-  }
-
   const getEntityCuries = async (text: string) => {
     const data = await axios.post(
       'https://name-resolution-sri.renci.org/lookup',
@@ -912,11 +897,17 @@ export default function AnnotateText() {
             ))}
           </Select>
 
+          { !user.id && state.extractionModel == "openai" &&
+            <Typography style={{marginTop: theme.spacing(2), marginBottom: theme.spacing(1), textAlign: "center"}}>
+              🔒️ You need to login with your ORCID to use OpenAI models
+            </Typography>
+          }
           <div style={{width: '100%', textAlign: 'center', marginBottom: theme.spacing(2)}}>
             <Button type="submit"
               variant="contained"
               className={classes.saveButton}
               startIcon={<ExtractIcon />}
+              disabled={!user.id && state.extractionModel == "openai"}
               color="secondary" >
                 Extract entities
             </Button>

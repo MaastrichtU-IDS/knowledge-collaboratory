@@ -2,18 +2,20 @@ from time import sleep
 
 import openai
 import yaml
-from fastapi import APIRouter, Body, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from transformers import BertForSequenceClassification, BertTokenizer
 
 from app.config import settings, logger
+from app.api.login import get_current_user
+from app.models import User
 
 router = APIRouter()
 
 
 class NerInput(BaseModel):
-    text: str = "Amantadine hydrochloride capsules are indicated in the treatment of idiopathic Parkinson’s disease (Paralysis Agitans), postencephalitic parkinsonism and symptomatic parkinsonism which may follow injury to the nervous system by carbon monoxide intoxication."
+    text: str = "Divalproex sodium delayed-release capsules are indicated as monotherapy and adjunctive therapy in the treatment of adult patients and pediatric patients down to the age of 10 years with complex partial seizures that occur either in isolation or in association with other types of seizures."
 
 
 openai.api_key = settings.OPENAI_APIKEY
@@ -29,15 +31,22 @@ NUM_RETRIES = 3
     response_model={},
 )
 async def get_entities_relations_openai(
-    input: NerInput = Body(...)
+    input: NerInput = Body(...),
+    current_user: User = Depends(get_current_user),
 ):
+    if not current_user or "id" not in current_user.keys():
+        raise HTTPException(
+            status_code=403,
+            detail=f"You need to login with ORCID to publish a Nanopublication",
+        )
+
     prompt = """
 From the text below, extract the entities, classify them and extract associations between those entities
-Entities to extract should be of one of those types: ChemicalEntity, Disease, Gene, GeneProduct, Taxon
+Entities to extract should be of one of those types: "Chemical Entity", "Disease", "Gene", "Gene Product", "Organism Taxon"
 
 Return the results as a YAML object with the following fields:
 - entities: <the list of entities in the text, each entity is an object with the fields: label, type of the entity>
-- associations: <the list of associations between entities in the text, each association is an object with the fields: "subject" for the subject entity, "predicate" for the relation (e.g. treats, affects, interacts_with, causes, supported_by), "object" for the object entity>
+- associations: <the list of associations between entities in the text, each association is an object with the fields: "subject" for the subject entity, "predicate" for the relation (e.g. treats, affects, interacts with, causes, caused by, has evidence), "object" for the object entity>
 
 Text:
 \""""

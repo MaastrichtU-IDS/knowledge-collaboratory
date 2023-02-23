@@ -12,7 +12,7 @@ const getAutocompleteLabel = (option: any, displayProp: string = "") => {
   if (displayProp) {
     return option[displayProp]
   }
-  
+
   if (option.id_label && option.id_curie) {
     return option.id_label + " (" + option.id_curie + ")"
   }
@@ -45,6 +45,7 @@ const checkIfUri = (text: string) => {
 }
 
 const checkIfEntity = (entity: any) => {
+  if (!entity) return false
   if (entity.id_uri) return checkIfUri(entity.id_uri)
   if (entity.id) return checkIfUri(entity.id)
   return checkIfUri(entity)
@@ -82,8 +83,8 @@ const AutocompleteEntity = ({
       value={value}
       options={options}
       onChange={onChange}
-      onInputChange={onChange} 
-      // Automatically update the state value, but cause issue with default values 
+      onInputChange={onChange}
+      // Automatically update the state value, but cause issue with default values
       // (using label as value instead of the fulle object)
       getOptionLabel={getOptionLabel}
       groupBy={groupBy}
