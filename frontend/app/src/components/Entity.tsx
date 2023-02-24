@@ -1,4 +1,6 @@
 
+// NOT USED (yet)
+
 export interface EntityInterface {
   id: string;
   uri: string;

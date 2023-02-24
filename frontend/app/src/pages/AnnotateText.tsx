@@ -578,7 +578,7 @@ export default function AnnotateText() {
         🏷️ Annotate biomedical text
       </Typography>
       <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
-        This service helps you annotate biomedical text using the <a href='https://biolink.github.io/biolink-model/docs/' target="_blank" rel="noopener noreferrer">BioLink model</a>, and
+        This service uses extraction models to help you annotate biomedical text using the <a href='https://biolink.github.io/biolink-model/docs/' target="_blank" rel="noopener noreferrer">BioLink model</a>, and
         standard identifiers resolved using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator SRI Name Resolution API</a>, such as MONDO and PubChem.
         The annotations are represented with the <a href='https://www.w3.org/RDF' target="_blank" rel="noopener noreferrer">RDF</a> standard, using the <a href='https://vemonet.github.io/tao' target="_blank" rel="noopener noreferrer">TAO ontology</a>,
         also used by the <a href='http://pubannotation.org/' target="_blank" rel="noopener noreferrer">PubAnnotation</a> service.
