@@ -1,34 +1,23 @@
 import React, { useContext } from 'react';
 import { useTheme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
-import { Typography, Popper, ClickAwayListener, Paper, Checkbox, FormControlLabel, Container, Box, CircularProgress, Tooltip, IconButton, Button, Card, FormControl, TextField, Grid } from "@mui/material";
+import { Typography, Popper, ClickAwayListener, Paper, Container, Box, CircularProgress, Tooltip, IconButton, Button, Card, FormControl, TextField, Grid } from "@mui/material";
 import AddIcon from '@mui/icons-material/AddBox';
-import GenerateKeyIcon from '@mui/icons-material/VpnKey';
-import UploadIcon from '@mui/icons-material/FileUpload';
 import RemoveIcon from '@mui/icons-material/Delete';
-import GenerateIcon from '@mui/icons-material/FactCheck';
-import PublishIcon from '@mui/icons-material/Backup';
-import DownloadIcon from '@mui/icons-material/Download';
 import axios from 'axios';
 // @ts-ignore
 import Taggy from 'react-taggy'
 
 import { settings, genericContext } from '../settings';
 import { context, propertiesList, predicatesList, sentenceToAnnotate, ents } from '../components/biolinkModel';
-import { rdfToRdf } from '../utils';
 import UserContext from '../UserContext'
 import AutocompleteEntity from '../components/AutocompleteEntity';
 import DropdownButton from '../components/DropdownButton';
-
-import hljs from 'highlight.js/lib/core';
-import 'highlight.js/styles/github-dark-dimmed.css';
-import hljsDefineTurtle from '../components/highlightjs-turtle';
-hljs.registerLanguage("turtle", hljsDefineTurtle)
+import PublishNanopubButtons from '../components/PublishNanopubButtons';
 
 // Define namespaces for building RDF URIs
 const BIOLINK = 'https://w3id.org/biolink/vocab/'
 const IDO = 'https://identifiers.org/'
-
 
 const curieToUri = (curie: string) => {
   const namespace = curie.substring(0, curie.indexOf(":"))
@@ -89,22 +78,15 @@ export default function AnnotateText() {
     inputSource: '',
     editInputText: '',
     extractionModel: 1, // LitCoin 1, OpenAI 0
-    shaclValidate: true,
     templateSelected: 'RDF reified statements',
     extractClicked: false,
     entitiesList: [],
-    externalEntities: [],
-    relationsList: [],
+    // externalEntities: [],
     tagSelected: tagSelected,
     statements: [{'s': '', 'p': '', 'o': '', 'props': []}],
-    predicatesList: predicatesList,
-    propertiesList: propertiesList,
     loading: false,
-    open: false,
     nanopubGenerated: false,
     nanopubPublished: false,
-    dialogOpen: false,
-    published_nanopub: '',
     errorMessage: '',
   });
   const stateRef = React.useRef(state);
@@ -149,70 +131,6 @@ export default function AnnotateText() {
   // "gocam.GoCamAnnotations": "OntoGPT gocam.GoCamAnnotations",
   // "treatment.DiseaseTreatmentSummary": "OntoGPT treatment.DiseaseTreatmentSummary",
   // "reaction.ReactionDocument": "OntoGPT reaction.ReactionDocument",
-
-  const handleUploadKeys  = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData();
-    // @ts-ignore
-    formData.append("publicKey", event.currentTarget.elements.publicKey.files[0]);
-    // @ts-ignore
-    formData.append("privateKey", event.currentTarget.elements.privateKey.files[0]);
-    axios.post(
-        settings.apiUrl + '/upload-keys',
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${user["access_token"]}`,
-            "Content-Type": "multipart/form-data",
-            "type": "formData"
-          }
-        }
-      )
-      .then(res => {
-        updateState({
-          open: true,
-        })
-      })
-      .catch(error => {
-        updateState({
-          open: false,
-          errorMessage: 'Error while uploading keys, please retry. And feel free to create an issue on our GitHub repository if the issue persists.'
-        })
-        console.log('Error while uploading keys', error)
-      })
-      .finally(() => {
-        window.location.reload();
-      })
-  }
-
-  const handleGenerateKeys  = (event: any) => {
-    event.preventDefault();
-
-    const access_token = user['access_token']
-    axios.get(
-        settings.apiUrl + '/generate-keys',
-        {
-          headers: {
-            Authorization: `Bearer ${access_token}`,
-          }
-        }
-      )
-      .then(res => {
-        updateState({
-          open: true,
-        })
-      })
-      .catch(error => {
-        updateState({
-          open: false,
-          errorMessage: 'Error while uploading keys, please retry. And feel free to create an issue on our GitHub repository if the issue persists.'
-        })
-        console.log('Error while uploading keys', error)
-      })
-      .finally(() => {
-        window.location.reload();
-      })
-  }
 
   const extractOpenAI  = () => {
     axios.post(
@@ -349,7 +267,6 @@ export default function AnnotateText() {
           })
           if (res.data.statements) {
             updateState({
-              relationsList: res.data.relations,
               statements: res.data.statements
             })
           }
@@ -380,18 +297,15 @@ export default function AnnotateText() {
   const checkIfUri = (text: string) => {
     return /^https?:\/\/[-_\/#:\?=\+%\.0-9a-zA-Z]+$/i.test(text)
   }
-  const getUri  = (prop: any) => {
-    if (prop['id_uri']) {
-      return prop.id_uri
-    }
-    if (prop['id']) {
-      return prop.id
-    }
-    // if (prop['text']) {
-    //   return prop.text
-    // }
-    return prop
-  }
+  // const getUri  = (prop: any) => {
+  //   if (prop['id_uri']) {
+  //     return prop.id_uri
+  //   }
+  //   if (prop['id']) {
+  //     return prop.id
+  //   }
+  //   return prop
+  // }
 
   const generateRDF  = () => {
     const stmtJsonld: any = []
@@ -521,107 +435,6 @@ export default function AnnotateText() {
     }
   }
 
-
-  const handleDownloadRDF  = (event: React.FormEvent) => {
-    // Trigger JSON-LD file download
-    event.preventDefault();
-    const stmtJsonld: any = generateRDF()
-    rdfToRdf(stmtJsonld)
-      .then((formattedRdf) => {
-        console.log(formattedRdf);
-      })
-    var element = document.createElement('a');
-    element.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(stmtJsonld, null, 4)));
-    element.setAttribute('download', 'annotation.json');
-    element.style.display = 'none';
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-  }
-
-  const handleShaclValidate  = (event: React.ChangeEvent<HTMLInputElement>) => {
-    updateState({shaclValidate: event.target.checked})
-  };
-
-  const generateNanopub  = (event: React.FormEvent, publish: boolean = false) => {
-    event.preventDefault();
-    updateState({ errorMessage: "", published_nanopub: "" })
-    const stmtJsonld: any = generateRDF()
-    if (!user.error) {
-      // console.log('Publishing!', publish, stmtJsonld)
-      const requestParams: any = {
-        publish: publish
-      }
-      requestParams['shacl_validation'] = state.shaclValidate
-      if (state.inputSource) {
-        requestParams['source'] = state.inputSource
-      }
-      const access_token = user['access_token']
-      axios.post(
-          `${settings.apiUrl}/assertion`,
-          stmtJsonld,
-          {
-            headers: { Authorization: `Bearer ${access_token}` },
-            params: requestParams
-          }
-        )
-        .then(res => {
-          updateState({
-            open: true,
-            nanopubGenerated: true,
-            nanopubPublished: false,
-            published_nanopub: res.data
-          })
-        })
-        .catch(error => {
-          updateState({
-            errorMessage: `Error generating the Nanopublication:\n${error.response.data.detail}`,
-            nanopubGenerated: false,
-            nanopubPublished: false,
-          })
-          console.log(error.response.data.detail)
-        })
-        .finally(() => {
-          hljs.highlightAll();
-        })
-    } else {
-      console.log('You need to be logged in with ORCID to publish a Nanopublication')
-    }
-  }
-
-  const publishSignedNanopub  = (event: React.FormEvent) => {
-    event.preventDefault();
-    if (!user.error) {
-      const access_token = user['access_token']
-      axios.post(
-          `${settings.apiUrl}/publish-last-signed`,
-          null,
-          {
-            headers: { Authorization: `Bearer ${access_token}` },
-            // params: requestParams
-          }
-        )
-        .then(res => {
-          updateState({
-            open: true,
-            nanopubPublished: true,
-            published_nanopub: res.data
-          })
-        })
-        .catch(error => {
-          updateState({
-            nanopubPublished: false,
-            errorMessage: 'Error publishing the Nanopublication: ' + error
-          })
-          console.log(error)
-        })
-        .finally(() => {
-          hljs.highlightAll();
-        })
-    } else {
-      console.log('You need to be logged in with ORCID to publish a Nanopublication')
-    }
-  }
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     updateState({ [event.target.id]: event.target.value})
@@ -942,7 +755,7 @@ export default function AnnotateText() {
                         label="Property"
                         id={'tag:prop:p:'+pindex}
                         value={state.tagSelected.props[pindex].p}
-                        options={state.propertiesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
+                        options={propertiesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
                         onChange={(event: any, newInputValue: any) => {
                           // if (newInputValue && newInputValue != tagSelected.type) {
                           if (typeof newInputValue === 'object' || checkIfUri(newInputValue)) {
@@ -1077,7 +890,7 @@ export default function AnnotateText() {
                   label="Predicate"
                   id={'p:'+index}
                   value={state.statements[index].p}
-                  options={state.predicatesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
+                  options={predicatesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
                   onChange={(event: any, newInputValue: any) => {
                     addToStatements('p', newInputValue, index)
                   }}
@@ -1115,7 +928,7 @@ export default function AnnotateText() {
                     id={'prop:' + index + ':p:'+pindex}
                     // @ts-ignore
                     value={state.statements[index].props[pindex].p}
-                    options={state.propertiesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
+                    options={propertiesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
                     onChange={(event: any, newInputValue: any) => {
                       addToStatements('p', newInputValue, index, pindex)
                     }}
@@ -1173,139 +986,15 @@ export default function AnnotateText() {
       </>}
 
       { state.extractClicked &&
-        <form>
-          <FormControl className={classes.settingsForm}>
-            {/* Button to download the JSON-LD */}
-            <div style={{width: '100%', textAlign: 'center'}}>
-              <Button
-                onClick={handleDownloadRDF}
-                variant="contained"
-                className={classes.saveButton}
-                startIcon={<DownloadIcon />}
-                style={{marginRight: theme.spacing(2)}}
-                disabled={state.entitiesList.length < 1}
-                color="secondary" >
-                  Download RDF
-              </Button>
-              <Button
-                onClick={(event) => generateNanopub(event, false)}
-                variant="contained"
-                className={classes.saveButton}
-                startIcon={<GenerateIcon />}
-                disabled={!user.id}
-                style={{marginRight: theme.spacing(2)}}
-                color="info" >
-                  Generate Nanopublication
-              </Button>
-              <FormControlLabel
-                control={
-                  <Checkbox checked={state.shaclValidate} onChange={handleShaclValidate} id='shacl-validate' />
-                }
-                label="Validate with BioLink SHACL shapes"
-              />
-              { state.nanopubGenerated &&
-                <Button
-                  onClick={publishSignedNanopub}
-                  variant="contained"
-                  className={classes.saveButton}
-                  startIcon={<PublishIcon />}
-                  disabled={!state.nanopubGenerated}
-                  color="error" >
-                    Publish Nanopublication
-                </Button>
-              }
-              { !user.id &&
-                <Typography style={{marginTop: theme.spacing(2)}}>
-                  🔒️ You need to login with your ORCID to generate Nanopublications
-                </Typography>
-              }
-            </div>
-          </FormControl>
-        </form>
-      }
-
-      { state.nanopubPublished &&
-        <Paper elevation={4} style={{backgroundColor: '#81c784', padding: theme.spacing(2), marginBottom:theme.spacing(3), marginTop:theme.spacing(3)}}>
-          ✅&nbsp;&nbsp;Nanopublication successfully published
-        </Paper>
-      }
-
-      { state.errorMessage &&
-        <Paper elevation={4}
-          style={{backgroundColor: "#e57373", padding: theme.spacing(2), marginBottom:theme.spacing(3)}}
-          // @ts-ignore
-          sx={{ display: state.errorMessage.length > 0 }}
-        >
-          <pre style={{whiteSpace: "pre-wrap"}}>
-            ⚠️&nbsp;&nbsp;{state.errorMessage}
-          </pre>
-        </Paper>
-      }
-
-      { user.id &&
-        <Card className={classes.paperPadding} style={{textAlign: 'center'}}>
-          { user.keyfiles_loaded &&
-            <Typography>
-              ✅ Your keys have been loaded successfully, you can start publishing Nanopublications
-            </Typography>
-          }
-
-          { !user.keyfiles_loaded &&
-            <>
-              <Typography style={{marginBottom: theme.spacing(1)}}>
-                🔑 Before publishing nanopubs, you need to first generate a private/public key pair,
-                and then publish an introduction nanopub to link this key pair to your ORCID.<br/>
-                We can automate this process for you, upon clicking the button above we will
-                generate a key pair, and publish a nanopublication to link it to your ORCID:
-              </Typography>
-              {/* <div style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap', marginBottom: theme.spacing(2)}}> */}
-              <div style={{width: '100%', textAlign: 'center', marginBottom: theme.spacing(4)}}>
-                <Button
-                  onClick={handleGenerateKeys}
-                  id={"addProp:"}
-                  variant="contained"
-                  className={classes.saveButton}
-                  startIcon={<GenerateKeyIcon />}
-                  style={{textTransform: 'none'}}
-                  color="secondary" >
-                    Generate the keys, and link them to my ORCID on the Nanopublication network
-                </Button>
-              </div>
-              <Typography>
-                📤️ Or, if you already have registered a key pair with your ORCID
-                in the nanopublication network, you can upload these keys directly:
-              </Typography>
-              <form encType="multipart/form-data" action="" onSubmit={handleUploadKeys}
-                  style={{display: 'flex', alignItems: 'center', textAlign: 'center', width: '100%'}}>
-                <Typography style={{marginTop: theme.spacing(1)}}>
-                  Select the <b>Public</b> key:&nbsp;&nbsp;
-                  <input type="file" id="publicKey" />
-                </Typography>
-                <Typography style={{marginTop: theme.spacing(1)}}>
-                  Select the <b>Private</b> key:&nbsp;&nbsp;
-                  <input type="file" id="privateKey" />
-                </Typography>
-
-                <Button type="submit"
-                  variant="contained"
-                  className={classes.saveButton}
-                  startIcon={<UploadIcon />}
-                  style={{textTransform: 'none', marginTop: theme.spacing(1)}}
-                  color="secondary" >
-                    Upload your keys
-                </Button>
-              </form>
-            </>
-          }
-        </Card>
-      }
-
-      {state.published_nanopub &&
-        <pre style={{whiteSpace: 'pre-wrap'}}>
-          <code className="language-turtle">
-            {state.published_nanopub}
-          </code>
-        </pre>
+        <PublishNanopubButtons
+          user={user}
+          generateRDF={generateRDF}
+          entitiesList={state.entitiesList}
+          inputSource={state.inputSource}
+          nanopubGenerated={state.nanopubGenerated}
+          nanopubPublished={state.nanopubPublished}
+          errorMessage={state.errorMessage}
+        />
       }
     </Container>
   )
