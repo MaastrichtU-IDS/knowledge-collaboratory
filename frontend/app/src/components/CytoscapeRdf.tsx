@@ -1,10 +1,5 @@
-import React, { useContext } from 'react';
-import { useTheme } from '@mui/material/styles';
-import { makeStyles } from '@mui/styles';
-
-import ReactDOM from "react-dom"
+import React, { useEffect, useRef } from 'react';
 import { Parser } from 'n3';
-import CytoscapeComponent from 'react-cytoscapejs';
 import cytoscape from 'cytoscape';
 
 import fcose from 'cytoscape-fcose';
@@ -15,7 +10,6 @@ import COSEBilkent from 'cytoscape-cose-bilkent';
 // import euler from 'cytoscape-euler';
 
 import { Card, CardContent, CardHeader, IconButton, Typography } from "@mui/material";
-import CloseIcon from '@mui/icons-material/Close';
 import { renderToStaticMarkup, renderToNodeStream, renderToString } from "react-dom/server"
 
 import popper from 'cytoscape-popper';
@@ -29,7 +23,7 @@ cytoscape.use(COSEBilkent);
 // Cytoscape.use(euler) // out of memory
 
 // Install dependencies:
-// yarn add cytoscape cytoscape-cola react-cytoscapejs
+// yarn add cytoscape cytoscape-cola
 
 // Add tooltip? https://www.npmjs.com/package/cytoscape-popper/v/1.0.3
 // Edit graph? https://github.com/iVis-at-Bilkent/cytoscape.js-expand-collapse
@@ -50,7 +44,6 @@ export const rdfToCytoscape = (text: string) => {
   const parser = new Parser({ format: 'application/trig' })
   const cytoscapeElems: any = []
   const graphs: any = {}
-  // console.log(text)
   parser.parse(
     text,
     (error, quad, prefixes) => {
@@ -58,39 +51,39 @@ export const rdfToCytoscape = (text: string) => {
         console.log(error)
         return null
       }
-      if (quad && quad.subject.value && quad.object.value) { 
+      if (quad && quad.subject.value && quad.object.value) {
         // console.log("quad", quad.object.termType)
         // Subject and Object nodes
-        cytoscapeElems.push({ data: { 
-          id: quad.subject.value, 
+        cytoscapeElems.push({ data: {
+          id: quad.subject.value,
           label: quad.subject.value,
           shape: 'ellipse',
           backgroundColor: '#90caf9',
           // parent: 'graph-' + quad.graph.value,
           parent: quad.graph.value,
           valign : "center",
-          fontSize: "30px", 
+          fontSize: "30px",
           fontWeight: "300",
           textColor: '#212121',
           // https://stackoverflow.com/questions/58557196/group-nodes-together-in-cytoscape-js
         } })
         // For literal that are too long without spaces, like public keys
         const cutLongObject = (!quad.object.value.includes(' ') && quad.object.value.length > 100) ? quad.object.value.replace(/(.{60})/g,"$1\n") : quad.object.value
-        cytoscapeElems.push({ data: { 
-          id: quad.object.value, 
+        cytoscapeElems.push({ data: {
+          id: quad.object.value,
           label: cutLongObject,
           shape: (quad.object.termType == 'NamedNode') ? 'ellipse' : 'round-rectangle',
           backgroundColor: (quad.object.termType == 'NamedNode') ? '#90caf9' : '#80cbc4', // blue or green
           textColor: '#000000', // black
           // parent: 'graph-' + quad.graph.value,
           parent: quad.graph.value,
-          valign : "center", 
-          fontSize: "30px", 
+          valign : "center",
+          fontSize: "30px",
           fontWeight: "300",
         } })
         // Add Predicate edge to cytoscape graph
-        cytoscapeElems.push({ data: { 
-          source: quad.subject.value, 
+        cytoscapeElems.push({ data: {
+          source: quad.subject.value,
           target: quad.object.value,
           label: quad.predicate.value,
         } })
@@ -115,15 +108,15 @@ export const rdfToCytoscape = (text: string) => {
             graphTextColor = '#f57f17'
           }
           // Add Graph node at start of cytoscape graph
-          cytoscapeElems.unshift({ data: { 
-            // id: 'graph-' + g, 
-            id: g, 
+          cytoscapeElems.unshift({ data: {
+            // id: 'graph-' + g,
+            id: g,
             label: g,
             shape: 'round-rectangle',
             backgroundColor: graphColor,
             textColor: graphTextColor,
             valign : "top",
-            fontSize: "50px", 
+            fontSize: "50px",
             fontWeight: "700",
           } })
         })
@@ -132,14 +125,14 @@ export const rdfToCytoscape = (text: string) => {
         // Resolve prefixes
         cytoscapeElems.map((elem: any) => {
           if (elem.data.label) {
-            elem.data.label = replacePrefix(elem.data.label, allPrefixes) 
+            elem.data.label = replacePrefix(elem.data.label, allPrefixes)
           }
         })
       }
-      
+
     },
   )
-  
+
   // console.log('cytoscapeElems:', cytoscapeElems)
   return cytoscapeElems
 }
@@ -158,33 +151,32 @@ const displayLink = (urlString: string) => {
 
 // Component to display RDF as a graph with Cytoscape
 // export default function CytoscapeRdfGraph(props: any) {
-export function CytoscapeRdfGraph(props: any) {
-  const rdf = props.rdf;
-  const cytoscapeElems = (props.cytoscapeElems) ? props.cytoscapeElems : rdfToCytoscape(props.rdf);
-  const layout = (props.layout) ? props.layout : defaultLayout['fcose'];
-  console.log('cytoscapeElems', cytoscapeElems);
-  // const layout = (props.layout) ? props.layout : defaultLayout['cose-bilkent'];
+export function CytoscapeRdfGraph({
+  rdf,
+  cytoscapeElems = rdfToCytoscape(rdf),
+  layout = defaultLayout['cose-bilkent'],
+}: any) {
+  const containerRef: any = useRef();
 
-  // TODO: for some reason the nodes/edges are not displayed when the cytoscapeElems are 
-  // generated using rdfToCytoscape() directly at component initialization
-  
-  // const removePopper = () => {
-  //   // e.remove()
-  //   console.log('clickyclick remove')
-  //   const oldEle = document.getElementById("cytoPop");
-  //   if (oldEle) oldEle.remove();
-  // }
+  useEffect(() => {
+    const config = {
+      container: containerRef.current,
+      style: cytoStyles,
+      elements: cytoscapeElems,
+      layout: layout,
+    };
 
-  const cyConfig = (cy: any) => { 
-    // Change edge color when node clicked on
+    const cy = cytoscape(config);
+
+    // Add on click actions to show cards with more details on an object
     cy.$('node').on('tap', function (e: any) {
-      cy.edges().style({ 
-        'line-color': '#263238', 'color': '#263238', 
+      cy.edges().style({
+        'line-color': '#263238', 'color': '#263238',
         'width': 2, 'target-arrow-color': '#263238',
         'font-size': '30px'
       }); // Grey
       var ele = e.target;
-      ele.connectedEdges().style({ 
+      ele.connectedEdges().style({
         'line-color': '#c62828', 'color': '#c62828', // red
         'width': 4, 'target-arrow-color': '#c62828',
         'font-size': '40px',
@@ -198,7 +190,7 @@ export function CytoscapeRdfGraph(props: any) {
       // const elementLabel = (ele.id().startsWith('graph-http')) ? ele.id().replace('graph-http', '') : ele.id()
       ele.popper({
         content: () => {
-          console.log(ele)
+          // console.log(ele)
           let div = document.createElement('div');
           // Replace the start "graph-http" for graphs nodes URIs
           const elementLabel = (ele.id().startsWith('graph-http')) ? ele.id().replace('graph-http', 'http') : ele.id()
@@ -224,99 +216,85 @@ export function CytoscapeRdfGraph(props: any) {
         }
       });
     });
-    // Remove Card when click on the canvas 
+    // Remove Card when click on the canvas
     cy.on('tap', function(event: any){
       if( event.target === cy ){
         // tap on background
         const oldEle = document.getElementById("cytoPop");
         if (oldEle) oldEle.remove();
-      } 
+      }
     });
-    // ele.unselectify() and ele.selectify()
-  }
+
+  }, []);
+
+
+  const cytoStyles = [
+    {
+      selector: 'edge',
+      style: {
+        'label': 'data(label)',
+        'color': '#263238', // Grey
+        'line-color': '#263238',
+        'width': 2,
+        'arrow-scale': 2,
+        'target-arrow-color': '#263238',
+        // 'target-arrow-color': '#ccc',
+        'text-wrap': 'wrap',
+        'font-size': '30px',
+        'text-opacity': 0.9,
+        'target-arrow-shape': 'triangle',
+        // Control multi edge on 2 nodes:
+        'curve-style': 'bezier',
+        'control-point-step-size': 300,
+        // width: 15
+      }
+    },
+    {
+      selector: 'edge:parent',
+      style: {
+        'color': '#c62828', // red
+        'line-color': '#c62828',
+        'width': 2,
+        'arrow-scale': 2,
+        'target-arrow-color': '#c62828',
+        // 'target-arrow-color': '#ccc',
+      }
+    },
+    // {
+    //   selector: 'edge.highlighted',
+    //   style: {
+    //     'color': '#0d47a1', // blue
+    //   }
+    // },
+    {
+      selector: 'node',
+      style: {
+        'label': 'data(label)',
+        'text-wrap': 'wrap',
+        // 'word-break': 'break-all',
+        'overflow-wrap': 'break-word',
+        // 'white-space': 'pre-wrap',
+        "text-max-width": '800px',
+        'font-size': 'data(fontSize)',
+        // 'font-weight': 'data(fontWeight)',
+        "text-valign" : "data(valign)",
+        "text-halign" : "center",
+        "width": 'label',
+        // width: 20,
+        "height": 'label',
+        "padding": '25px',
+        // https://js.cytoscape.org/#style/node-body
+        "shape": 'data(shape)',
+        "backgroundColor": 'data(backgroundColor)',
+        "color": 'data(textColor)',
+        // "color": 'data(color)',
+      }
+    }
+  ]
 
   return(
     <>
-      {cytoscapeElems.length > 0 &&
-        <CytoscapeComponent 
-          elements={cytoscapeElems} 
-          layout={layout}
-          cy={cyConfig}
-          style={{ width: '100%', height: '100%' }} 
-          wheelSensitivity={0.1}
-          // See options: https://github.com/plotly/react-cytoscapejs#viewport-mutability--gesture-toggling
-          showOverlay={true}
-          autoungrabify={false}
-          boxSelectionEnabled={true}
-          // minZoom={1}
-          // maxZoom={1}
-          // autounselectify: true,
-          // infinite={false}
-          stylesheet={[
-            {
-              selector: 'edge',
-              style: {
-                'label': 'data(label)',
-                'color': '#263238', // Grey
-                'line-color': '#263238',
-                'width': 2,
-                'arrow-scale': 2,
-                'target-arrow-color': '#263238',
-                // 'target-arrow-color': '#ccc',
-                'text-wrap': 'wrap',
-                'font-size': '30px',
-                'text-opacity': 0.9,
-                'target-arrow-shape': 'triangle',
-                // Control multi edge on 2 nodes:
-                'curve-style': 'bezier',
-                'control-point-step-size': 300,
-                // width: 15
-              }
-            },
-            {
-              selector: 'edge:parent',
-              style: {
-                'color': '#c62828', // red
-                'line-color': '#c62828',
-                'width': 2,
-                'arrow-scale': 2,
-                'target-arrow-color': '#c62828',
-                // 'target-arrow-color': '#ccc',
-              }
-            },
-            // {
-            //   selector: 'edge.highlighted',
-            //   style: {
-            //     'color': '#0d47a1', // blue
-            //   }
-            // },
-            {
-              selector: 'node',
-              style: {
-                'label': 'data(label)',
-                'text-wrap': 'wrap',
-                // 'word-break': 'break-all',
-                'overflow-wrap': 'break-word',
-                // 'white-space': 'pre-wrap',
-                "text-max-width": '800px',
-                'font-size': 'data(fontSize)',
-                // 'font-weight': 'data(fontWeight)',
-                "text-valign" : "data(valign)",
-                "text-halign" : "center",
-                "width": 'label',
-                // width: 20,
-                "height": 'label',
-                "padding": '25px',
-                // https://js.cytoscape.org/#style/node-body
-                "shape": 'data(shape)',
-                "backgroundColor": 'data(backgroundColor)',
-                "color": 'data(textColor)',
-                // "color": 'data(color)',
-              }
-            }
-          ]}
-        />
-      }
+      <div ref={containerRef} style={{ height: "100%", width: "100%" }} />
     </>
   )
 }
@@ -327,23 +305,23 @@ export function CytoscapeRdfGraph(props: any) {
 const defaultLayout = {
   'fcose': {
     name: 'fcose',
-    // 'draft', 'default' or 'proof' 
-    // - "draft" only applies spectral layout 
+    // 'draft', 'default' or 'proof'
+    // - "draft" only applies spectral layout
     // - "default" improves the quality with incremental layout (fast cooling rate)
-    // - "proof" improves the quality with incremental layout (slow cooling rate) 
+    // - "proof" improves the quality with incremental layout (slow cooling rate)
     quality: "default",
     // Use random node positions at beginning of layout
     // if this is set to false, then quality option must be "proof"
-    randomize: true, 
+    randomize: true,
     infinite: false,
     // Whether or not to animate the layout
-    animate: false, 
+    animate: false,
     // Duration of animation in ms, if enabled
-    animationDuration: 1000, 
+    animationDuration: 1000,
     // Easing of animation, if enabled
-    animationEasing: undefined, 
+    animationEasing: undefined,
     // Fit the viewport to the repositioned nodes
-    fit: true, 
+    fit: true,
     // Padding around layout
     padding: 30,
     // Whether to include labels in node dimensions. Valid in "proof" quality
@@ -374,7 +352,7 @@ const defaultLayout = {
     // Maximum number of iterations to perform - this is a suggested value and might be adjusted by the algorithm as required
     numIter: 2500,
     // For enabling tiling
-    tile: true,  
+    tile: true,
     // Represents the amount of the vertical space to put between the zero degree members during the tiling operation(can also be a function)
     tilingPaddingVertical: 10,
     // Represents the amount of the horizontal space to put between the zero degree members during the tiling operation(can also be a function)
@@ -386,8 +364,8 @@ const defaultLayout = {
     // Gravity force (constant) for compounds
     gravityCompound: 0.5,
     // Gravity range (constant)
-    gravityRange: 3.8, 
-    // Initial cooling factor for incremental layout  
+    gravityRange: 3.8,
+    // Initial cooling factor for incremental layout
     initialEnergyOnIncremental: 0.3,
     /* constraint options */
     // Fix desired nodes to predefined positions
@@ -466,9 +444,9 @@ const defaultLayout = {
     // Called on `layoutstop`
     stop: function () {
     },
-    // 'draft', 'default' or 'proof" 
-    // - 'draft' fast cooling rate 
-    // - 'default' moderate cooling rate 
+    // 'draft', 'default' or 'proof"
+    // - 'draft' fast cooling rate
+    // - 'default' moderate cooling rate
     // - "proof" slow cooling rate
     quality: 'default',
     // Whether to include labels in node dimensions. Useful for avoiding label overlap
