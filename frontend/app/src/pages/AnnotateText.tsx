@@ -819,7 +819,10 @@ export default function AnnotateText() {
       <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
         This service helps you annotate biomedical text using the <a href='https://biolink.github.io/biolink-model/docs/' target="_blank" rel="noopener noreferrer">BioLink model</a>, and
         standard identifiers resolved using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator SRI Name Resolution API</a>, such as MONDO and PubChem.
-        The annotations are represented using the <a href='https://www.w3.org/RDF' target="_blank" rel="noopener noreferrer">RDF</a> standard. They can be downloaded in the JSON-LD format, or published as Nanopublications.
+        The annotations are represented with the <a href='https://www.w3.org/RDF' target="_blank" rel="noopener noreferrer">RDF</a> standard, using the <a href='https://vemonet.github.io/tao' target="_blank" rel="noopener noreferrer">TAO ontology</a>,
+        also used by the <a href='http://pubannotation.org/' target="_blank" rel="noopener noreferrer">PubAnnotation</a> service.
+        Generated annotations can be downloaded in the <a href='https://json-ld.org' target="_blank" rel="noopener noreferrer">JSON-LD</a> format, or published as <a href='https://nanopub.net' target="_blank" rel="noopener noreferrer">Nanopublications</a> after login with your ORCID.
+
         {/* A machine learning model automatically extracts biomedical entities from the given text, classify them in different types from the <a href='https://biolink.github.io/biolink-model/docs/' target="_blank" rel="noopener noreferrer">BioLink model</a> (chemical, disease, etc), and retrieve potential standard identifiers for those entities using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator Name Resolution API</a>. */}
       </Typography>
       {/* <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
