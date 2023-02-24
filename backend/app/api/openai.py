@@ -68,7 +68,7 @@ Text:
             sleep_time = 4**i
             logger.info(f"Retrying {i} of {NUM_RETRIES} after {sleep_time} seconds...")
             sleep(sleep_time)
-        print(response)
+        logger.debug(response)
 
     openai_resp = yaml.load(response.choices[0].text, Loader=yaml.Loader)
     return openai_resp

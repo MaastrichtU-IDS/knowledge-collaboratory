@@ -8,7 +8,6 @@ import AddIcon from '@mui/icons-material/AddBox';
 import GenerateKeyIcon from '@mui/icons-material/VpnKey';
 import UploadIcon from '@mui/icons-material/FileUpload';
 import RemoveIcon from '@mui/icons-material/Delete';
-import ExtractIcon from '@mui/icons-material/AutoFixHigh';
 import GenerateIcon from '@mui/icons-material/FactCheck';
 import PublishIcon from '@mui/icons-material/Backup';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -21,6 +20,7 @@ import { context, propertiesList, predicatesList, sentenceToAnnotate, ents } fro
 import { rdfToRdf } from '../utils';
 import UserContext from '../UserContext'
 import AutocompleteEntity from '../components/AutocompleteEntity';
+import DropdownButton from '../components/DropdownButton';
 
 import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/github-dark-dimmed.css';
@@ -149,6 +149,10 @@ export default function AnnotateText() {
 
   }, [])
 
+  const extractionOptions = [
+    "Extract entities with OpenAI GPT model",
+    "Extract entities with the LitCoin model",
+  ]
 
   const extractionModels = {
     "litcoin": "LitCoin NER",
@@ -336,7 +340,9 @@ export default function AnnotateText() {
   }
 
   const handleExtract  = (event: React.FormEvent) => {
-    event.preventDefault();
+    if (event) {
+      event.preventDefault();
+    }
     updateState({
       loading: true,
       errorMessage: '',
@@ -877,32 +883,28 @@ export default function AnnotateText() {
             InputLabelProps={{ required: false }}
           />
 
-          {/* <InputLabel id="extract-model-select-label" >
-            Extract entities using model
-          </InputLabel> */}
-          <Typography style={{marginBottom: theme.spacing(1)}}>
-            Extract entities using model:
-          </Typography>
-          <Select
-            labelId="extract-model-select-label"
-            id="extract-model-select"
-            value={state.extractionModel}
-            // label="Extract entities using model"
-            // placeholder="Extract entities using model"
-            style={{ backgroundColor: '#ffffff', marginBottom: theme.spacing(1)}}
-            onChange={handleSelectExtractModel}
-          >
-            { Object.keys(extractionModels).map((model: any, key: number) => (
-              <MenuItem key={key} value={model}>{extractionModels[model]}</MenuItem>
-            ))}
-          </Select>
+          <div style={{width: '100%', textAlign: 'center', marginBottom: theme.spacing(2)}}>
+            <DropdownButton
+              options={extractionOptions}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>, index: number) => {
+                // litcoin: 1, openai: 0
+                let extractModel = "litcoin"
+                if (index == 0) extractModel = "openai"
+                updateState({extractionModel: extractModel})
+              }}
+              onClick={(event: any) => {
+                handleExtract(event)
+              }}
+              loggedIn={user.id}
+            />
+          </div>
 
-          { !user.id && state.extractionModel == "openai" &&
-            <Typography style={{marginTop: theme.spacing(2), marginBottom: theme.spacing(1), textAlign: "center"}}>
+          { !user.id &&
+            <Typography style={{marginBottom: theme.spacing(1), textAlign: "center"}}>
               🔒️ You need to login with your ORCID to use OpenAI models
             </Typography>
           }
-          <div style={{width: '100%', textAlign: 'center', marginBottom: theme.spacing(2)}}>
+          {/* <div style={{width: '100%', textAlign: 'center', marginBottom: theme.spacing(2)}}>
             <Button type="submit"
               variant="contained"
               className={classes.saveButton}
@@ -911,7 +913,7 @@ export default function AnnotateText() {
               color="secondary" >
                 Extract entities
             </Button>
-          </div>
+          </div> */}
           {/* <Snackbar open={state.json_error_open} onClose={closeJsonError} autoHideDuration={10000}>
             <MuiAlert elevation={6} variant="filled" severity="error">
               The JSON-LD provided is not valid ❌️
