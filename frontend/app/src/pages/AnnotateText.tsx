@@ -814,7 +814,7 @@ export default function AnnotateText() {
           </Typography>
           <Card className={classes.paperPadding} >
             <Taggy text={state.inputText} spans={state.entitiesList}
-              ents={ents} onClick={clickTag} onHighlight={highlightCallback} />
+              ents={ents} onClick={clickTag} onMouseOver={clickTag} onHighlight={highlightCallback} />
           </Card>
 
           {/* TODO: add button to add external entities not in the text? */}

@@ -1,7 +1,7 @@
 import React, { createContext, useReducer } from "react";
 import { View } from "react-native";
 import { HashRouter } from "react-router-dom";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 // import { ThemeProvider } from '@mui/styles';
 // import { createTheme } from '@mui/material/styles';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -80,11 +80,12 @@ const App = () => {
         {/* <HashRouter> */}
           <View style={{height: '100%', backgroundColor: '#eceff1'}}>
             <NavBar />
-
-            <Route path="/about" component={About} />
-            <Route path="/annotate" component={AnnotateText} />
-            <Route path="/shape-publisher" component={ShapePublisher} />
-            <Route exact path="/" component={BrowseNanopub} />
+            <Routes>
+              <Route path="/about" element={<About />} />
+              <Route path="/annotate" element={<AnnotateText />} />
+              <Route path="/shape-publisher" element={<ShapePublisher />} />
+              <Route path="/" element={<BrowseNanopub/>} />
+            </Routes>
             <Footer />
           </View>
         {/* </HashRouter> */}

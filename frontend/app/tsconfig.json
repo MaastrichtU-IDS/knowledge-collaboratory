@@ -2,7 +2,11 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "jsx": "react-jsx",
-    "lib": ["dom", "esnext", "es6"],
+    "lib": [
+      "dom",
+      "esnext",
+      "es6"
+    ],
     "moduleResolution": "node",
     "noEmit": true,
     "skipLibCheck": true,
@@ -12,7 +16,10 @@
     "strictNullChecks": true,
     "baseUrl": ".",
     "paths": {
-      "@rjsf/material-ui/*": ["node_modules/@rjsf/material-ui/dist/*"]
+      "@rjsf/material-ui/*": [
+        "node_modules/@rjsf/material-ui/dist/*"
+      ]
     }
-  }
+  },
+  "extends": "expo/tsconfig.base"
 }

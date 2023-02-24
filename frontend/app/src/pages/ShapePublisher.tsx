@@ -2,20 +2,11 @@ import React from 'react';
 import { useLocation } from "react-router-dom";
 import { useTheme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
-import { Typography, Container, Button, Card, FormControl, Snackbar, TextField } from "@mui/material";
-// import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
-// import DownloadJsonldIcon from '@mui/icons-material/Description';
-// import UploadTriplestoreIcon from '@mui/icons-material/Share';
-import axios from 'axios';
-// import { LoggedIn, LoggedOut, Value } from '@solid/react';
-// import * as jsonld from 'jsonld'
-// import {$rdf} from 'rdflib'
-// const jsonld = require('jsonld')
+import { Typography, Container } from "@mui/material";
 
 import ShapeUploader from "../components/ShapeUploader";
 // import CsvUploader from "../../src/components/CsvUploader";
 // import RenderObjectForm from "../../src/components/RenderObjectForm";
-
 import {JsonldForm} from '../components/JsonldForm';
 // import { JsonldEditor, JsonldForm } from 'json-ld-editor-react';
 

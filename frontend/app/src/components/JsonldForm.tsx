@@ -32,6 +32,7 @@ import Form from '@rjsf/fluent-ui';
 
 // Another library, not working "No renderer found"
 // https://jsonforms.io/docs/integrations/react/
+// yarn add @jsonforms/core @jsonforms/material-renderers @jsonforms/react
 // import { JsonForms } from '@jsonforms/react';
 // import { materialCells, materialRenderers } from '@jsonforms/material-renderers';
 
@@ -69,7 +70,7 @@ export const JsonldForm = ({ shape, target }: Props) => {
     stateRef.current = {...stateRef.current, ...update};
     setState(stateRef.current);
   }, [setState]);
-  
+
 
   useEffect(() => {
     // hljs.registerLanguage('json', json);
@@ -154,7 +155,7 @@ export const JsonldForm = ({ shape, target }: Props) => {
       {/* But weird imports v4/v5 for mui not working properly */}
 
       <div style={{marginBottom: '16px'}}>
-        <Form 
+        <Form
           id='jsonld-form'
           schema={state.jsonschema}
           liveValidate
@@ -207,8 +208,8 @@ export const JsonldForm = ({ shape, target }: Props) => {
         <pre style={{whiteSpace: 'pre-wrap', background: '#22272e', border: '0.2em solid #66bb6a'}}>
           <code className="language-json" style={{background: '#22272e', color: '#b0bec5'}}>
             <>
-              {JSON.stringify({ 
-                "@graph": [ {...state.jsonld} ], 
+              {JSON.stringify({
+                "@graph": [ {...state.jsonld} ],
                 '@context': state.prefixes
               }, null, 2)}
             </>
