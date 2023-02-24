@@ -7,9 +7,6 @@ import ApiIcon from '@mui/icons-material/Storage';
 import AssessmentIcon from '@mui/icons-material/Biotech';
 import SearchIcon from '@mui/icons-material/Search';
 import PublishIcon from '@mui/icons-material/Outbox';
-// import AssessmentIcon from '@mui/icons-material/CheckCircle';
-
-import {getUrlHtml} from '../settings'
 
 
 const useStyles = makeStyles((theme: any) => ({
@@ -30,7 +27,7 @@ const useStyles = makeStyles((theme: any) => ({
     marginBottom: theme.spacing(1),
   },
   mainText: {
-    textAlign: 'left', 
+    textAlign: 'left',
     marginBottom: '20px'
     // margin: theme.spacing(4, 0)
   }
@@ -46,7 +43,7 @@ export default function About() {
     project_license: '',
     language_autocomplete: [],
   });
-  // const form_category_dropdown = React.createRef(); 
+  // const form_category_dropdown = React.createRef();
 
   return(
     <Container className='mainContainer'>
@@ -91,7 +88,7 @@ export default function About() {
       </Typography>
 
       <Typography variant="body1" className={classes.mainText}>
-        The Knowledge Collaboratory consists in an OpenAPI service and a user-friendly web UI to query the Nanopublications network, 
+        The Knowledge Collaboratory consists in an OpenAPI service and a user-friendly web UI to query the Nanopublications network,
         store Nanopublication authentication keys, and publish Nanopublications.
       </Typography>
 

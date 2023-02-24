@@ -1,9 +1,7 @@
 import React, { useContext } from 'react';
-import { useLocation } from "react-router-dom";
 import { useTheme } from '@mui/material/styles';
-import { makeStyles, withStyles } from '@mui/styles';
-import { Typography, Popper, ClickAwayListener, Paper, Checkbox, FormControlLabel, Container, Box, CircularProgress, Tooltip, IconButton, Autocomplete, Button, Card, FormControl, TextField, Snackbar, Grid, Select, MenuItem, InputLabel } from "@mui/material";
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import { makeStyles } from '@mui/styles';
+import { Typography, Popper, ClickAwayListener, Paper, Checkbox, FormControlLabel, Container, Box, CircularProgress, Tooltip, IconButton, Button, Card, FormControl, TextField, Grid } from "@mui/material";
 import AddIcon from '@mui/icons-material/AddBox';
 import GenerateKeyIcon from '@mui/icons-material/VpnKey';
 import UploadIcon from '@mui/icons-material/FileUpload';
@@ -15,7 +13,7 @@ import axios from 'axios';
 // @ts-ignore
 import Taggy from 'react-taggy'
 
-import { settings, genericContext, samples } from '../settings';
+import { settings, genericContext } from '../settings';
 import { context, propertiesList, predicatesList, sentenceToAnnotate, ents } from '../components/biolinkModel';
 import { rdfToRdf } from '../utils';
 import UserContext from '../UserContext'
@@ -25,14 +23,11 @@ import DropdownButton from '../components/DropdownButton';
 import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/github-dark-dimmed.css';
 import hljsDefineTurtle from '../components/highlightjs-turtle';
-import { triggerAsyncId } from 'async_hooks';
-// import { gridColumnsSelector } from '@mui/x-data-grid';
 hljs.registerLanguage("turtle", hljsDefineTurtle)
 
 // Define namespaces for building RDF URIs
 const BIOLINK = 'https://w3id.org/biolink/vocab/'
 const IDO = 'https://identifiers.org/'
-const RDFS = 'http://www.w3.org/2000/01/rdf-schema#'
 
 
 const curieToUri = (curie: string) => {
@@ -86,15 +81,14 @@ export default function AnnotateText() {
   const classes = useStyles();
 
   // useLocation hook to get URL params
-  let location = useLocation();
+  // let location = useLocation();
   const tagSelected: any = null
   const [state, setState] = React.useState({
     // inputText: 'Amantadine hydrochloride capsules are indicated in the treatment of idiopathic Parkinson’s disease (Paralysis Agitans), postencephalitic parkinsonism and symptomatic parkinsonism which may follow injury to the nervous system by carbon monoxide intoxication.',
     inputText: '',
     inputSource: '',
     editInputText: '',
-    // Litcoin 1, openai 0
-    extractionModel: 1,
+    extractionModel: 1, // LitCoin 1, OpenAI 0
     shaclValidate: true,
     templateSelected: 'RDF reified statements',
     extractClicked: false,
@@ -106,13 +100,10 @@ export default function AnnotateText() {
     predicatesList: predicatesList,
     propertiesList: propertiesList,
     loading: false,
-    // loadingEntity: false,
     open: false,
     nanopubGenerated: false,
     nanopubPublished: false,
     dialogOpen: false,
-    // np_jsonld: samples['Drug indication with the BioLink model'],
-    // sample_selected: 'Drug indication with the BioLink model',
     published_nanopub: '',
     errorMessage: '',
   });
@@ -123,7 +114,6 @@ export default function AnnotateText() {
     setState(stateRef.current);
   }, [setState]);
 
-
   // Settings for Popper
   const [open, setOpen] = React.useState(false);
   const [anchorEl, setAnchorEl]: any = React.useState(null);
@@ -131,7 +121,6 @@ export default function AnnotateText() {
     setOpen(false);
     setAnchorEl(anchorEl ? null : anchorEl);
   };
-  // const id = open ? 'simple-popper' : undefined;
 
 
   React.useEffect(() => {
@@ -161,7 +150,6 @@ export default function AnnotateText() {
   // "treatment.DiseaseTreatmentSummary": "OntoGPT treatment.DiseaseTreatmentSummary",
   // "reaction.ReactionDocument": "OntoGPT reaction.ReactionDocument",
 
-
   const handleUploadKeys  = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData();
@@ -169,14 +157,12 @@ export default function AnnotateText() {
     formData.append("publicKey", event.currentTarget.elements.publicKey.files[0]);
     // @ts-ignore
     formData.append("privateKey", event.currentTarget.elements.privateKey.files[0]);
-
-    const access_token = user['access_token']
     axios.post(
         settings.apiUrl + '/upload-keys',
         formData,
         {
           headers: {
-            Authorization: `Bearer ${access_token}`,
+            Authorization: `Bearer ${user["access_token"]}`,
             "Content-Type": "multipart/form-data",
             "type": "formData"
           }
@@ -208,8 +194,6 @@ export default function AnnotateText() {
         {
           headers: {
             Authorization: `Bearer ${access_token}`,
-            // "Content-Type": "multipart/form-data",
-            // "type": "formData"
           }
         }
       )
@@ -240,7 +224,7 @@ export default function AnnotateText() {
       }
     )
     .then(async res => {
-      console.log("extracted_object", res.data)
+      console.log("Object extracted by OpenAI", res.data)
       const entities: any = []
       const statements: any = []
       // Prepare entities extracted, and retrieve their potential CURIEs with the SRI NameResolution API
@@ -248,10 +232,7 @@ export default function AnnotateText() {
         res.data["entities"].map(async (extractedEntity: any, index: number) => {
           const label = extractedEntity["label"]
           const type = extractedEntity["type"].split(" ").map((word: any) => word.charAt(0).toUpperCase() + word.slice(1)).join('');
-          console.log("LOWEER", state.editInputText.toLowerCase())
-          console.log("label", label.toLowerCase())
           const start = state.editInputText.toLowerCase().indexOf(label.toLowerCase())
-          console.log("start", start)
           const end = start + label.length
           const ent: any = {
             index: `${entities.length}:${start}:${end}:${label}`,
@@ -271,7 +252,6 @@ export default function AnnotateText() {
                 'altLabel': entityCuries[curie][1],
               }
               ent['curies'].push(addEnt)
-              // console.log("ARNAQUE", ent)
             })
             ent['id_curie'] = ent['curies'][0]["curie"]
             ent['id_label'] = ent['curies'][0]["label"]
@@ -283,8 +263,10 @@ export default function AnnotateText() {
 
       try {
         // Prepare statements extracted
+        // o: { index: "chorea:1:57:63", text: "chorea", type: "DiseaseOrPhenotypicFeature", … }
+        // p: { id: "https://w3id.org/biolink/vocab/treats", curie: "biolink:treats", label: "treats" }
+        // s: { index: "Tetrabenazine:0:0:13", text: "Tetrabenazine", type: "ChemicalEntity", … }
         res.data["associations"].map((asso: any, index: number) => {
-          // console.log(asso)
           const pred = asso["predicate"].replaceAll(" ", "_")
           const stmt: any = {
             p: {
@@ -299,15 +281,12 @@ export default function AnnotateText() {
               stmt["o"] = ent
             }
           })
-          // o: { index: "chorea:1:57:63", text: "chorea", type: "DiseaseOrPhenotypicFeature", … }
-          // p: { id: "https://w3id.org/biolink/vocab/treats", curie: "biolink:treats", label: "treats" }
-          // s: { index: "Tetrabenazine:0:0:13", text: "Tetrabenazine", type: "ChemicalEntity", … }
           statements.push(stmt)
         })
       } catch (err) {
         console.log(`Error extracting statements: ${err}`)
       }
-      console.log("UPDATE STATE!", entities)
+      // console.log("UPDATE STATE extract OpenAI", entities)
       updateState({
         loading: false,
         entitiesList: entities,
@@ -374,9 +353,7 @@ export default function AnnotateText() {
               statements: res.data.statements
             })
           }
-          console.log("ENTITIES, STATEMENTS RETURNED")
-          console.log(res.data.entities)
-          console.log(res.data.statements)
+          // console.log("LITCOIN model returns", res.data)
         })
         .catch(error => {
           updateState({
@@ -384,11 +361,7 @@ export default function AnnotateText() {
             errorMessage: `Error while extracting entities from the text because ${error.response.data.detail}.\nPlease retry later, and feel free to create an issue on our GitHub repository if the issue persists.`,
             extractClicked: true,
           })
-          // console.log('Error while extracting entities', error)
         })
-        // .finally(() => {
-        //   hljs.highlightAll();
-        // })
     }
   }
 
@@ -423,7 +396,6 @@ export default function AnnotateText() {
   const generateRDF  = () => {
     const stmtJsonld: any = []
     const taoAnnotations: any = []
-    const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 
     if (state.templateSelected === 'RDF reified statements') {
       stmtJsonld.push({
@@ -433,7 +405,7 @@ export default function AnnotateText() {
         'biolink:id': 'infores:knowledge-collaboratory',
       })
       state.statements.map((stmt: any, index: number) => {
-        console.log("Iterating state.statements for generateRDF", stmt)
+        // console.log("Iterating state.statements for generateRDF", stmt)
         // Generate spo statement
         const reifiedStmt: any = {
           [`@type`]: "biolink:Association",
@@ -499,7 +471,6 @@ export default function AnnotateText() {
 
     // Generate triples for the entities
     state.entitiesList.map((entity: any) => {
-      console.log(entity)
       if (entity.id_uri && entity.type) {
         const entityJsonld: any = {
           '@id': entity.id_uri,
@@ -554,14 +525,11 @@ export default function AnnotateText() {
   const handleDownloadRDF  = (event: React.FormEvent) => {
     // Trigger JSON-LD file download
     event.preventDefault();
-    // var element = document.createElement('a');
     const stmtJsonld: any = generateRDF()
-    // console.log(rdfToRdf(stmtJsonld))
     rdfToRdf(stmtJsonld)
       .then((formattedRdf) => {
         console.log(formattedRdf);
       })
-
     var element = document.createElement('a');
     element.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(stmtJsonld, null, 4)));
     element.setAttribute('download', 'annotation.json');
@@ -580,16 +548,13 @@ export default function AnnotateText() {
     updateState({ errorMessage: "", published_nanopub: "" })
     const stmtJsonld: any = generateRDF()
     if (!user.error) {
-      console.log('Publishing!', publish, stmtJsonld)
+      // console.log('Publishing!', publish, stmtJsonld)
       const requestParams: any = {
         publish: publish
       }
-      // if (state.inputSource) {
-      //   requestParams['source'] = state.inputSource
-      // }
       requestParams['shacl_validation'] = state.shaclValidate
-      if (state.inputText) {
-        requestParams['quoted_from'] = state.inputText
+      if (state.inputSource) {
+        requestParams['source'] = state.inputSource
       }
       const access_token = user['access_token']
       axios.post(
@@ -662,7 +627,6 @@ export default function AnnotateText() {
     updateState({ [event.target.id]: event.target.value})
   }
 
-
   const addStatement  = (event: React.FormEvent) => {
     event.preventDefault();
     const stmts: any = state.statements
@@ -728,8 +692,6 @@ export default function AnnotateText() {
   const clickTag = (event: any, tag: any, elemIndex: any) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
     setOpen((prev) => !prev);
-    // tag['id'] = tag['type']
-    // console.log('clickTag', tag)
     updateState({tagSelected: tag})
   }
 
@@ -795,7 +757,6 @@ export default function AnnotateText() {
 
   const addToStatements = (property: string, newInputValue: any, index: any, pindex: any = null) => {
     const stmts: any = state.statements
-    // console.log('newInputValue', newInputValue)
     if (newInputValue) {
       if (pindex == null) {
         if (typeof newInputValue === 'object' || checkIfUri(newInputValue)) {
@@ -807,7 +768,6 @@ export default function AnnotateText() {
         }
       }
     }
-    console.log(stmts)
     updateState({statements: stmts})
   }
 
@@ -822,21 +782,10 @@ export default function AnnotateText() {
         The annotations are represented with the <a href='https://www.w3.org/RDF' target="_blank" rel="noopener noreferrer">RDF</a> standard, using the <a href='https://vemonet.github.io/tao' target="_blank" rel="noopener noreferrer">TAO ontology</a>,
         also used by the <a href='http://pubannotation.org/' target="_blank" rel="noopener noreferrer">PubAnnotation</a> service.
         Generated annotations can be downloaded in the <a href='https://json-ld.org' target="_blank" rel="noopener noreferrer">JSON-LD</a> format, or published as <a href='https://nanopub.net' target="_blank" rel="noopener noreferrer">Nanopublications</a> after login with your ORCID.
-
-        {/* A machine learning model automatically extracts biomedical entities from the given text, classify them in different types from the <a href='https://biolink.github.io/biolink-model/docs/' target="_blank" rel="noopener noreferrer">BioLink model</a> (chemical, disease, etc), and retrieve potential standard identifiers for those entities using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator Name Resolution API</a>. */}
       </Typography>
       {/* <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
         🪄 A machine learning model automatically extracts biomedical entities and relations from the given text, classify them in different types from the BioLink model (chemical, disease, etc),
         and retrieve potential identifiers for those entities using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator SRI Name Resolution API</a>.
-      </Typography> */}
-      {/* <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
-        🪄 You can then compose the statements representing the different assertions present in the text using standard identifiers and properties from the BioLink model.
-      </Typography> */}
-      {/* <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
-        🗜️ In the last step you will define the model used to generate the statements, reified associations enable you to attach additional properties to each statement.
-      </Typography> */}
-      {/* <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
-        📥️ Finally you can either download the statements as RDF, or directly publish them in a Nanopublication.
       </Typography> */}
 
       <Typography variant='body1' style={{marginTop: theme.spacing(2), marginBottom: theme.spacing(2)}}>
@@ -845,7 +794,6 @@ export default function AnnotateText() {
 
       <form onSubmit={handleExtract}>
         <FormControl className={classes.settingsForm}>
-
           <TextField
             id='editInputText'
             label='Text to annotate'
@@ -880,9 +828,6 @@ export default function AnnotateText() {
             <DropdownButton
               options={extractionOptions}
               onChange={(event: React.ChangeEvent<HTMLInputElement>, index: number) => {
-                // litcoin: 1, openai: 0
-                // let extractModel = "litcoin"
-                // if (index == 0) extractModel = "openai"
                 updateState({extractionModel: index})
               }}
               onClick={(event: any) => {
@@ -897,17 +842,6 @@ export default function AnnotateText() {
               🔒️ You need to login with your ORCID to use OpenAI models
             </Typography>
           }
-
-          {/* <Snackbar open={state.json_error_open} onClose={closeJsonError} autoHideDuration={10000}>
-            <MuiAlert elevation={6} variant="filled" severity="error">
-              The JSON-LD provided is not valid ❌️
-            </MuiAlert>
-          </Snackbar>
-          <Snackbar open={state.json_loaded_open} onClose={closeJsonLoaded} autoHideDuration={10000}>
-            <MuiAlert elevation={6} variant="filled" severity="info">
-              Your JSON-LD has been loaded. Trying to load the ontology from the URL provided in @context...
-            </MuiAlert>
-          </Snackbar> */}
         </FormControl>
       </form>
 
@@ -1073,7 +1007,6 @@ export default function AnnotateText() {
       </Popper>
 
       { state.extractClicked &&
-      // { state.entitiesList.length > 0 &&
         <>
           <Typography variant='body1' style={{textAlign: 'center', marginBottom: theme.spacing(2)}}>
             💡 You can edit entities by clicking on their tag, or add new entities by highlighting the text corresponding to the entity. Potential identifiers are automatically retrieved for the highlighted text.
@@ -1216,7 +1149,6 @@ export default function AnnotateText() {
             { state.templateSelected !== 'Plain RDF' &&
             <div style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap'}}>
               <Button
-                // onClick={() => addProperty(event, index)}
                 onClick={addProperty}
                 id={"addProp:" + index}
                 variant="contained"
@@ -1239,22 +1171,6 @@ export default function AnnotateText() {
             Add a statement
         </Button>
       </>}
-
-      {/* <Typography variant='body1' style={{marginTop: theme.spacing(3), marginBottom: theme.spacing(2)}}>
-        3. Choose the template used to generate the triples:
-      </Typography>
-      <TextField select
-          value={state.templateSelected}
-          label={"Use the template"}
-          id="collectionSelected"
-          onChange={handleTemplateChange}
-          SelectProps={{ MenuProps: { disableScrollLock: true } }}
-          style={{marginBottom: theme.spacing(3), backgroundColor: 'white'}}
-          variant="outlined">
-        { triplesTemplates.map((template: any, key: number) => (
-          <MenuItem key={template} value={template}>{template}</MenuItem>
-        ))}
-      </TextField> */}
 
       { state.extractClicked &&
         <form>
@@ -1328,18 +1244,13 @@ export default function AnnotateText() {
 
       { user.id &&
         <Card className={classes.paperPadding} style={{textAlign: 'center'}}>
-          {/* { !user.id &&
-            <Typography>
-              🔒️ You need to login with ORCID to publish Nanopublications
-            </Typography>
-          } */}
-          { user.id && user.keyfiles_loaded &&
+          { user.keyfiles_loaded &&
             <Typography>
               ✅ Your keys have been loaded successfully, you can start publishing Nanopublications
             </Typography>
           }
 
-          { user.id && !user.keyfiles_loaded &&
+          { !user.keyfiles_loaded &&
             <>
               <Typography style={{marginBottom: theme.spacing(1)}}>
                 🔑 Before publishing nanopubs, you need to first generate a private/public key pair,

@@ -21,8 +21,8 @@ export default function DropdownButton({
   const [selectedIndex, setSelectedIndex] = React.useState(1);
 
   const handleClick = () => {
-    console.info(`You clicked ${options[selectedIndex]}`);
     onClick()
+    // console.info(`You clicked ${options[selectedIndex]}`);
   };
 
   const handleMenuItemClick = (
@@ -65,6 +65,7 @@ export default function DropdownButton({
         </Button>
       </ButtonGroup>
       <Popper
+        // @ts-ignore
         sx={{
           zIndex: 1,
         }}

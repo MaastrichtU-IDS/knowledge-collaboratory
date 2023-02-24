@@ -5,11 +5,9 @@ import { Typography, Container, Button, Card, CircularProgress, Snackbar, TextFi
 import SearchIcon from '@mui/icons-material/Search';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import HideNanopubs from '@mui/icons-material/UnfoldLess';
 import axios from 'axios';
 
 import { settings } from '../settings';
-// import UserContext from '../UserContext'
 
 import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/github-dark-dimmed.css';
@@ -329,14 +327,12 @@ export default function BrowseNanopub() {
             nanopub_list: nanopub_list,
             loading_nanopubs: false
           })
-          // console.log(nanopub_list);
           Object.keys(nanopub_obj).map((nanopub_url: any) => {
             // Finally iterate over the list of nanopubs to get their RDF content
             axios.get(nanopub_url,
             {
               headers: {
                 "accept": "application/trig",
-                // "accept": "application/json",
               }
             })
               .then(res => {
@@ -350,8 +346,6 @@ export default function BrowseNanopub() {
                 updateState({
                   nanopub_obj: nanopub_obj,
                 })
-                // console.log('nanopub_obj', nanopub_obj)
-                // console.log('nanopubObj', nanopubObj)
               })
               .catch(error => {
                 console.log(error)
@@ -589,12 +583,8 @@ export default function BrowseNanopub() {
               </pre>
             </CardContent>
           </Collapse>
-
         </Card>
       ))}
-
     </Container>
   )
-
-
 }
