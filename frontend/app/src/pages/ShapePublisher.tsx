@@ -81,9 +81,9 @@ export default function ShapePublisher() {
     }
   }))
   const classes = useStyles();
-  
+
   // useLocation hook to get URL params
-  // let location = useLocation();  
+  // let location = useLocation();
   const [state, setState] = React.useState({
     // shapeFile: shapeFile,
     shapeFile: shapeFile,
@@ -106,14 +106,14 @@ export default function ShapePublisher() {
     stateRef.current = {...stateRef.current, ...update};
     setState(stateRef.current);
   }, [setState]);
-  
+
   // Original form and output:
   // Questions: https://github.com/kodymoodley/fair-metadata-generator/blob/main/questions.csv
   // Full output: https://github.com/kodymoodley/fair-metadata-html-page-generator/blob/main/testdata/inputdata/test.jsonld
 
   // React.useEffect(() => {
   //   // Get the edit URL param if provided, and download ontology if @context changed
-  //   // Ontology is stored in state.ontology_jsonld 
+  //   // Ontology is stored in state.ontology_jsonld
   //   // and passed to renderObjectForm to resolve classes and properties
   //   const params = new URLSearchParams(location.search + location.hash);
   //   let jsonld_uri_provided = params.get('edit');
@@ -134,7 +134,7 @@ export default function ShapePublisher() {
   //   } else {
   //     downloadOntology(state.wizard_jsonld['@context'])
   //   }
-    
+
   // }, [state.wizard_jsonld['@context']])
 
 
@@ -144,14 +144,14 @@ export default function ShapePublisher() {
       {/* <Typography variant="h4" style={{textAlign: 'center', marginBottom: theme.spacing(1)}}>
         🧙‍♂️ FAIR Metadata Wizard, a JSON-LD editor 📝
       </Typography> */}
-      
+
       <Typography variant="body1" style={{textAlign: 'center', marginBottom: theme.spacing(1)}}>
         ⚠️ Work in progress, currently available for demo purpose
         {/* Load and edit <a href="https://json-ld.org/" className={classes.link} target="_blank" rel="noopener noreferrer">JSON-LD</a> <a href="https://en.wikipedia.org/wiki/Resource_Description_Framework" className={classes.link} target="_blank" rel="noopener noreferrer">RDF</a> files in a user-friendly web interface, with autocomplete based on the classes and properties of the ontology magically loaded from <code>@context</code> ✨️ */}
       </Typography>
-      
-      <ShapeUploader 
-        renderObject={state.shapeFile} 
+
+      <ShapeUploader
+        renderObject={state.shapeFile}
         shapeTarget={state.shapeTarget}
         onChange={(shapeFile: any, shapeTarget: any) => {
           updateState({shapeFile, shapeTarget})
@@ -160,13 +160,23 @@ export default function ShapePublisher() {
           //   console.log('shapeFile state after clicking upload', state.shapeFile)
           // }, 300);
           // window.location.reload()
-        }} 
+        }}
       />
 
-      <JsonldForm 
+      <JsonldForm
         shape={state.shapeFile}
         target={state.shapeTarget}
       />
+
+      {/* <PublishNanopubButtons
+        user={user}
+        generateRDF={generateRDF}
+        entitiesList={state.entitiesList}
+        inputSource={state.inputSource}
+        nanopubGenerated={state.nanopubGenerated}
+        nanopubPublished={state.nanopubPublished}
+        errorMessage={state.errorMessage}
+      /> */}
 
     </Container>
   )
@@ -330,7 +340,7 @@ const shapeFile = `@prefix : <https://w3id.org/kg-metadata/> .
     a sh:NodeShape ;
     sh:targetClass dcat:Distribution ;
     sh:nodeKind sh:IRI ;
-    
+
     sh:property [
         sh:path dcat:accessURL ;
         sh:name "Access URL" ;

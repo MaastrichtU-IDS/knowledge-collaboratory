@@ -10,18 +10,6 @@ import UploadIcon from '@mui/icons-material/FileUpload';
 import PublishIcon from '@mui/icons-material/Outbox';
 import axios from 'axios';
 
-// const $rdf = require('rdflib')
-// import { LoggedIn, LoggedOut, Value } from '@solid/react';
-// import * as jsonld from 'jsonld'
-// import {$rdf} from 'rdflib'
-// const jsonld = require('jsonld')
-
-// import hljs from 'highlight.js/lib/core';
-// import 'highlight.js/styles/github-dark-dimmed.css';
-// import turtle from 'highlightjs-turtle';
-// var hljsDefineTurtle = require('highlightjs-turtle');
-// hljs.registerLanguage('turtle', turtle);
-
 import JsonldUploader from "../components/JsonldUploader";
 import RenderObjectForm from "../components/RenderObjectForm";
 import { settings, samples } from '../settings';
@@ -32,6 +20,8 @@ import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/github-dark-dimmed.css';
 import hljsDefineTurtle from '../components/highlightjs-turtle';
 hljs.registerLanguage("turtle", hljsDefineTurtle)
+
+// NOT USED ANYMORE! AnnotateText is used instead
 
 export default function PublishNanopub() {
   const theme = useTheme();

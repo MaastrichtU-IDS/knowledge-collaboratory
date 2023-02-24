@@ -243,12 +243,8 @@ export default function AnnotateText() {
     const maxLengthRelExtract = 1000
     if (state.editInputText.length > maxLengthRelExtract) {
       // We don't extract relations if text too long
-      console.log(`⚠️ Text is more than ${maxLengthRelExtract} characters, we will not extract relations (too long)`)
+      console.log(`⚠️ Text is more than ${maxLengthRelExtract} characters, we will not extract relations with the LitCoin model (too long)`)
       extract_relations = false
-      // updateState({
-      //   loading: false,
-      //   errorMessage: "Input text is too large for the machine learning model, try submitting less than 1000 characters"
-      // })
     }
     if (state.extractionModel == 0) {
       extractOpenAI()
@@ -298,15 +294,12 @@ export default function AnnotateText() {
     return /^https?:\/\/[-_\/#:\?=\+%\.0-9a-zA-Z]+$/i.test(text)
   }
   // const getUri  = (prop: any) => {
-  //   if (prop['id_uri']) {
-  //     return prop.id_uri
-  //   }
-  //   if (prop['id']) {
-  //     return prop.id
-  //   }
+  //   if (prop['id_uri']) return prop.id_uri
+  //   if (prop['id']) return prop.id
   //   return prop
   // }
 
+  // Main function to generate JSON-LD RDF from the statements and entities provided through the tool
   const generateRDF  = () => {
     const stmtJsonld: any = []
     const taoAnnotations: any = []
@@ -457,11 +450,6 @@ export default function AnnotateText() {
     stmts[stmtIndex]['props'].push({p: '', o: ''})
     updateState({statements: stmts})
   }
-
-  // const triplesTemplates = ["RDF reified statements", "Plain RDF"]
-  // const handleTemplateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   updateState({templateSelected: event.target.value})
-  // }
 
   const handleRemoveStmt = (index: number) => {
     // TODO: entities that are not anymore relevant are removed when a statement is removed
@@ -683,6 +671,8 @@ export default function AnnotateText() {
                   id="tag:type"
                   value={state.tagSelected.type}
                   options={ents}
+                  groupBy={(option: any) => (option.category ? option.category : null)}
+                  style={{marginBottom: theme.spacing(2)}}
                   onChange={(event: any, newInputValue: any) => {
                     const tagSelected: any = state.tagSelected
                     if (newInputValue && newInputValue != tagSelected.type) {
@@ -693,8 +683,6 @@ export default function AnnotateText() {
                       updateState({tagSelected: tagSelected, entitiesList: entitiesList})
                     }
                   }}
-                  groupBy={(option: any) => (option.category ? option.category : null)}
-                  style={{marginBottom: theme.spacing(2)}}
                 />
                 <AutocompleteEntity
                   label="Entity ID"
@@ -702,6 +690,7 @@ export default function AnnotateText() {
                   value={state.tagSelected}
                   options={state.tagSelected.curies}
                   // getOptionLabel={(option: any) => `${option.label}${option.altLabel ? `, ${option.altLabel}` : ''} (${option.curie})`}
+                  style={{ marginBottom: theme.spacing(2) }}
                   onChange={async (event: any, newInputValue: any) => {
                     // console.log('autocomplete entity newInputValue', newInputValue);
                     const entitiesList: any = state.entitiesList
@@ -745,7 +734,6 @@ export default function AnnotateText() {
                       }
                     }
                   }}
-                  style={{marginBottom: theme.spacing(2)}}
                 />
                 { state.templateSelected !== 'Plain RDF' && state.tagSelected.props &&
                   state.tagSelected.props.map((prop: any, pindex: number) => {
@@ -754,6 +742,7 @@ export default function AnnotateText() {
                       <AutocompleteEntity
                         label="Property"
                         id={'tag:prop:p:'+pindex}
+                        validate="entity"
                         value={state.tagSelected.props[pindex].p}
                         options={propertiesList.sort((a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase()))}
                         onChange={(event: any, newInputValue: any) => {
@@ -767,7 +756,6 @@ export default function AnnotateText() {
                             updateState({entitiesList: entitiesList, tagSelected: tagSelected})
                           }
                         }}
-                        validate="entity"
                       />
                     </Grid>
 
@@ -775,6 +763,7 @@ export default function AnnotateText() {
                       <AutocompleteEntity
                         label="Value"
                         id={'tag:prop:o:'+pindex}
+                        validate="entity"
                         value={state.tagSelected.props[pindex].o}
                         options={state.entitiesList}
                         onChange={(event: any, newInputValue: any) => {
@@ -787,7 +776,6 @@ export default function AnnotateText() {
                             updateState({entitiesList: entitiesList, tagSelected: tagSelected})
                           }
                         }}
-                        validate="entity"
                       />
                     </Grid>
                     <Grid item xs={1}>
@@ -829,7 +817,7 @@ export default function AnnotateText() {
               ents={ents} onClick={clickTag} onHighlight={highlightCallback} />
           </Card>
 
-          {/* TODO: add button to add external entities not in the text */}
+          {/* TODO: add button to add external entities not in the text? */}
           {/* <Button
             onClick={() => {
               const externalEntities: any = state.externalEntities;
@@ -852,12 +840,10 @@ export default function AnnotateText() {
             color="inherit" >
               Add an external entity
           </Button>
-
           { state.externalEntities.map((ent: any, index: number) => {
             return <Taggy text={ent.text} spans={state.externalEntities}
               ents={ents} onClick={clickTag} onHighlight={highlightCallback}
             />
-            // <Typography key={'extent:' + index}>{ent.label}</Typography>
           })} */}
 
         </>
