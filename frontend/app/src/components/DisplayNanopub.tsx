@@ -142,15 +142,19 @@ const DisplayNanopub = ({
 
       {/* Display RDF when expanded */}
       {/* unmountOnExit */}
-      <Collapse in={npDict[np]['expanded']} timeout="auto">
-        <CardContent style={{margin: theme.spacing(0,0), padding: theme.spacing(0,0)}}>
-          <pre style={{whiteSpace: 'pre-wrap', margin: theme.spacing(0,0)}}>
-            <code className="language-turtle">
-              {npDict[np]['rdf']}
-            </code>
-          </pre>
-        </CardContent>
-      </Collapse>
+      { npDict[np] && npDict[np]['rdf'] &&
+        <Collapse in={npDict[np]['expanded']} timeout="auto">
+          <CardContent style={{margin: theme.spacing(0,0), padding: theme.spacing(0,0)}}>
+            <pre style={{whiteSpace: 'pre-wrap', margin: theme.spacing(0,0)}}>
+              <code className="language-turtle">
+                {npDict[np]['rdf']}
+                {/* Adding <a> tags don't work in pre code tags */}
+                {/* {npDict[np]['rdf'].replace(/<(http(s)?:\/\/\S*?)>/gm, '<a href="$1">$1</a>')} */}
+              </code>
+            </pre>
+          </CardContent>
+        </Collapse>
+      }
 
       {/* Display graph when expanded */}
       { npDict[np]['cytoscape'] && npDict[np] &&
@@ -158,8 +162,6 @@ const DisplayNanopub = ({
           <CardContent style={{margin: theme.spacing(0,0), padding: theme.spacing(0,0)}}>
             <Paper elevation={2} className={classes.paperPadding} style={{ height: '80vh', textAlign: 'left' }}>
               <CytoscapeRdfGraph
-                // rdf={npDict[np]['rdf']}
-                // cytoscapeElems={npDict[np]['cytoscape']}
                 cytoscapeElems={npDict[np]['cytoscape']}
               />
             </Paper>
