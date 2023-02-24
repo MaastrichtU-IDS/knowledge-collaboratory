@@ -1,25 +1,22 @@
 import React, { useEffect, useRef } from 'react';
+import { Card, Typography } from "@mui/material";
+import { renderToStaticMarkup } from "react-dom/server"
 import { Parser } from 'n3';
 import cytoscape from 'cytoscape';
-
 import fcose from 'cytoscape-fcose';
 import cola from 'cytoscape-cola';
 import dagre from 'cytoscape-dagre';
 import spread from 'cytoscape-spread';
 import COSEBilkent from 'cytoscape-cose-bilkent';
-// import euler from 'cytoscape-euler';
-
-import { Card, CardContent, CardHeader, IconButton, Typography } from "@mui/material";
-import { renderToStaticMarkup, renderToNodeStream, renderToString } from "react-dom/server"
-
 import popper from 'cytoscape-popper';
-cytoscape.use( popper );
+// import euler from 'cytoscape-euler';
 
 cytoscape.use(fcose)
 cytoscape.use(dagre)
 cytoscape.use(cola)
 spread(cytoscape)
 cytoscape.use(COSEBilkent);
+cytoscape.use( popper );
 // Cytoscape.use(euler) // out of memory
 
 // Install dependencies:

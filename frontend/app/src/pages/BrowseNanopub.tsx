@@ -3,22 +3,11 @@ import { useTheme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 import { Typography, Container, Button, Card, CircularProgress, Snackbar, TextField, Box, InputBase, Paper, IconButton, Stack, Autocomplete, CardContent, CardActions, Collapse } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import axios from 'axios';
 
 import { settings } from '../settings';
-
-import hljs from 'highlight.js/lib/core';
-import 'highlight.js/styles/github-dark-dimmed.css';
-import hljsDefineTurtle from '../components/highlightjs-turtle';
-hljs.registerLanguage("turtle", hljsDefineTurtle)
-
 import {CytoscapeRdfGraph, rdfToCytoscape} from "../components/CytoscapeRdf";
-
-// import { Graph } from "perfect-graph";
-// yarn add perfect-graph@0.0.158 colay@0.0.68 colay-ui@0.0.145 immer@9.0.12 react@^17.0.2 react-dom@^17.0.2
-// yarn add react@^17.0.2 react-dom@^17.0.2
+import DisplayNanopub from '../components/DisplayNanopub';
 
 export default function BrowseNanopub() {
   const theme = useTheme();
@@ -136,8 +125,7 @@ export default function BrowseNanopub() {
     // const params = new URLSearchParams(location.search + location.hash);
     // let searchText = params.get('search');
     // http://grlc.nanopubs.lod.labs.vu.nl/api/local/local/get_all_users
-    // Returns csv with columns: user 	name 	intronp 	date 	pubkey
-
+    // Returns csv with columns: user, name, intronp, date, pubkey
     updateState({
       loading_nanopubs: true
     })
@@ -339,9 +327,7 @@ export default function BrowseNanopub() {
                 nanopub_obj[nanopub_url]['rdf'] = res.data
                 nanopub_obj[nanopub_url]['expanded'] = false
                 nanopub_obj[nanopub_url]['expanded_graph'] = false
-                // TODO: add cytoscape elements list here
                 nanopub_obj[nanopub_url]['cytoscape'] = rdfToCytoscape(nanopub_obj[nanopub_url]['rdf'])
-                // console.log(nanopub_obj[nanopub_url]['cytoscape']);
                 setNanopubObj({...nanopub_obj});
                 updateState({
                   nanopub_obj: nanopub_obj,
@@ -349,9 +335,6 @@ export default function BrowseNanopub() {
               })
               .catch(error => {
                 console.log(error)
-              })
-              .finally(() => {
-                hljs.highlightAll();
               })
           })
         })
@@ -373,19 +356,6 @@ export default function BrowseNanopub() {
   const searchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     updateState({ search: event.target.value })
   }
-  const handleExpandClick = (e: any) => {
-    const expand_nanopub = state.nanopub_obj[e.currentTarget.name]
-    expand_nanopub['expanded'] = !expand_nanopub['expanded']
-    updateState({nanopub_obj: {...state.nanopub_obj, [e.currentTarget.name]: expand_nanopub} });
-    setTimeout(function() {
-      hljs.highlightAll();
-    }, 200);
-  };
-  const handleExpandGraphClick = (e: any) => {
-    const expand_nanopub = state.nanopub_obj[e.currentTarget.name]
-    expand_nanopub['expanded_graph'] = !expand_nanopub['expanded_graph']
-    updateState({nanopub_obj: {...state.nanopub_obj, [e.currentTarget.name]: expand_nanopub} });
-  };
   // const hideAllNanopubs = () => {
   //   Object.keys(state.nanopub_obj).map((np: any) => {
   //     const expand_nanopub = state.nanopub_obj[np]
@@ -400,18 +370,7 @@ export default function BrowseNanopub() {
         🔍️ Browse Nanopublications
       </Typography>
 
-      {/* TODO: try default perfect-graph */}
-      {/* <Graph
-        style={{ width: 600, height: 400 }}
-        nodes={[
-          { id: '1', position: { x: 10, y: 10 } },
-          { id: '2', position: { x: 300, y: 100 } },
-        ]}
-        edges={[{ id: '51', source: '1', target: '2' }]}
-      /> */}
-
       {/* Filtering options */}
-      {/* <Box display="flex" style={{margin: theme.spacing(0, 0)}}> */}
       <Stack direction="row" spacing={2} justifyContent="center" style={{margin: theme.spacing(2, 0 )}}>
         {/* Search box */}
         <form onSubmit={handleSearch}>
@@ -476,14 +435,6 @@ export default function BrowseNanopub() {
               &nbsp;(limit maximum 🔥)
             </>
           } */}
-          {/* <Button onClick={hideAllNanopubs}
-            variant="contained"
-            className={classes.saveButton}
-            startIcon={<HideNanopubs />}
-            style={{textTransform: 'none', margin: theme.spacing(1, 2)}}
-            color="inherit" >
-              Hide all Nanopublications content
-          </Button> */}
         </Typography>
       }
 
@@ -495,95 +446,12 @@ export default function BrowseNanopub() {
 
       {/* Iterate over nanopubs and display them */}
       { Object.keys(state.nanopub_obj).map((np: any, key: number) => (
-        <Card elevation={4} className={classes.paperPadding} key={key}>
-          <CardContent style={{paddingBottom: theme.spacing(1)}}>
-            <Typography variant='h6'>
-              <a href={np} className={classes.link} target="_blank" rel="noopener noreferrer">{np}</a>
-            </Typography>
-            <Typography variant='body2'>
-              Published on the {state.nanopub_obj[np]['date']['value']}
-              { state.users_pubkeys[state.nanopub_obj[np]['pubkey']['value']] &&
-                <>
-                  &nbsp;by <a href={state.users_pubkeys[state.nanopub_obj[np]['pubkey']['value']]['user']['value']}
-                      className={classes.link} target="_blank" rel="noopener noreferrer">
-                    {state.users_pubkeys[state.nanopub_obj[np]['pubkey']['value']]['name']['value']}
-                  </a>
-                </>
-              }
-            </Typography>
-          </CardContent>
-
-          {/* (option: any) => option.name.value} */}
-          <CardActions disableSpacing style={{padding: theme.spacing(0, 1), margin: theme.spacing(0, 0)}}>
-            {state.nanopub_obj[np]['rdf'] &&
-              <IconButton style={{fontSize: '14px'}}
-                onClick={handleExpandClick}
-                name={np}
-                // aria-expanded={state.expanded_files[repo_obj.url]}
-                aria-label="show more"
-              >
-                {!state.nanopub_obj[np]['expanded'] &&
-                  <>
-                    Display the Nanopublication RDF
-                    <ExpandMoreIcon />
-                  </>
-                }
-                {state.nanopub_obj[np]['expanded'] &&
-                  <>
-                    Hide the Nanopublication RDF
-                    <ExpandLessIcon />
-                  </>
-                }
-              </IconButton>
-            }
-            { state.nanopub_obj[np]['cytoscape'] && nanopubObj[np] && nanopubObj[np]['cytoscape'] &&
-              <IconButton style={{fontSize: '14px'}}
-                onClick={handleExpandGraphClick}
-                name={np}
-                // aria-expanded={state.expanded_files[repo_obj.url]}
-                aria-label="show more"
-              >
-                {!state.nanopub_obj[np]['expanded_graph'] &&
-                  <>
-                    Display the Nanopublication graph
-                    <ExpandMoreIcon />
-                  </>
-                }
-                {state.nanopub_obj[np]['expanded_graph'] &&
-                  <>
-                    Hide the Nanopublication graph
-                    <ExpandLessIcon />
-                  </>
-                }
-              </IconButton>
-            }
-          </CardActions>
-
-          { state.nanopub_obj[np]['cytoscape'] && nanopubObj[np] && nanopubObj[np]['cytoscape'] &&
-            <Collapse in={state.nanopub_obj[np]['expanded_graph']} timeout="auto" unmountOnExit>
-              <CardContent style={{margin: theme.spacing(0,0), padding: theme.spacing(0,0)}}>
-                <Paper elevation={2} className={classes.paperPadding} style={{ height: '80vh', textAlign: 'left' }}>
-                  <CytoscapeRdfGraph
-                    // rdf={state.nanopub_obj[np]['rdf']}
-                    // cytoscapeElems={state.nanopub_obj[np]['cytoscape']}
-                    cytoscapeElems={nanopubObj[np]['cytoscape']}
-                  />
-                </Paper>
-              </CardContent>
-            </Collapse>
-          }
-
-          {/* unmountOnExit */}
-          <Collapse in={state.nanopub_obj[np]['expanded']} timeout="auto">
-            <CardContent style={{margin: theme.spacing(0,0), padding: theme.spacing(0,0)}}>
-              <pre style={{whiteSpace: 'pre-wrap', margin: theme.spacing(0,0)}}>
-                <code className="language-turtle">
-                  {state.nanopub_obj[np]['rdf']}
-                </code>
-              </pre>
-            </CardContent>
-          </Collapse>
-        </Card>
+        <DisplayNanopub
+          np={np}
+          npDict={state.nanopub_obj}
+          index={key}
+          usersPubkeys={state.users_pubkeys}
+        />
       ))}
     </Container>
   )
