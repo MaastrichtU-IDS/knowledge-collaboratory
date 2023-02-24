@@ -10,8 +10,6 @@ import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import ExtractIcon from '@mui/icons-material/AutoFixHigh';
 
-// const options = ['Create a merge commit', 'Squash and merge', 'Rebase and merge'];
-
 export default function DropdownButton({
   onChange,
   onClick,
@@ -91,6 +89,7 @@ export default function DropdownButton({
                     <MenuItem
                       key={option}
                       disabled={index === 0 && !loggedIn}
+                      // Disable OpenAI model if not logged in
                       selected={index === selectedIndex}
                       onClick={(event) => handleMenuItemClick(event, index)}
                     >

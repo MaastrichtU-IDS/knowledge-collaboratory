@@ -93,8 +93,8 @@ export default function AnnotateText() {
     inputText: '',
     inputSource: '',
     editInputText: '',
-    // extractionModel: 'openai',
-    extractionModel: 'litcoin',
+    // Litcoin 1, openai 0
+    extractionModel: 1,
     shaclValidate: true,
     templateSelected: 'RDF reified statements',
     extractClicked: false,
@@ -150,24 +150,16 @@ export default function AnnotateText() {
   }, [])
 
   const extractionOptions = [
-    "Extract entities with OpenAI GPT model",
+    "Extract entities with the OpenAI GPT-3 davinci model",
     "Extract entities with the LitCoin model",
   ]
-
-  const extractionModels = {
-    "litcoin": "LitCoin NER",
-    "openai": "OpenAI GPT (experimental)",
-    // "drug.DrugMechanism": "OntoGPT drug.DrugMechanism",
-    // "ctd.ChemicalToDiseaseDocument": "OntoGPT ctd.ChemicalToDiseaseDocument",
-    // "drug.DrugMechanism": "OntoGPT drug.DrugMechanism",
-    // "biological_process.BiologicalProcess": "OntoGPT biological_process.BiologicalProcess",
-    // "gocam.GoCamAnnotations": "OntoGPT gocam.GoCamAnnotations",
-    // "treatment.DiseaseTreatmentSummary": "OntoGPT treatment.DiseaseTreatmentSummary",
-    // "reaction.ReactionDocument": "OntoGPT reaction.ReactionDocument",
-  }
-  const handleSelectExtractModel = (event: React.ChangeEvent<HTMLInputElement>) => {
-    updateState({extractionModel: event.target.value})
-  };
+  // "drug.DrugMechanism": "OntoGPT drug.DrugMechanism",
+  // "ctd.ChemicalToDiseaseDocument": "OntoGPT ctd.ChemicalToDiseaseDocument",
+  // "drug.DrugMechanism": "OntoGPT drug.DrugMechanism",
+  // "biological_process.BiologicalProcess": "OntoGPT biological_process.BiologicalProcess",
+  // "gocam.GoCamAnnotations": "OntoGPT gocam.GoCamAnnotations",
+  // "treatment.DiseaseTreatmentSummary": "OntoGPT treatment.DiseaseTreatmentSummary",
+  // "reaction.ReactionDocument": "OntoGPT reaction.ReactionDocument",
 
 
   const handleUploadKeys  = (event: React.FormEvent<HTMLFormElement>) => {
@@ -238,7 +230,7 @@ export default function AnnotateText() {
       })
   }
 
-  const extractOntogpt  = () => {
+  const extractOpenAI  = () => {
     axios.post(
       settings.apiUrl + "/openai-extract",
       {'text': state.editInputText},
@@ -246,8 +238,6 @@ export default function AnnotateText() {
         headers: { Authorization: `Bearer ${user['access_token']}` },
         // params: requestParams
       }
-      // null,
-      // {'params': {'text': state.editInputText, "datamodel": state.extractionModel}}
     )
     .then(async res => {
       console.log("extracted_object", res.data)
@@ -363,7 +353,10 @@ export default function AnnotateText() {
       //   errorMessage: "Input text is too large for the machine learning model, try submitting less than 1000 characters"
       // })
     }
-    if (state.extractionModel == "litcoin") {
+    if (state.extractionModel == 0) {
+      extractOpenAI()
+    } else {
+      // Extract with Litcoin model
       axios.post(
           settings.apiUrl + '/get-entities-relations',
           {'text': state.editInputText},
@@ -396,9 +389,6 @@ export default function AnnotateText() {
         // .finally(() => {
         //   hljs.highlightAll();
         // })
-    } else {
-      // Extract using OntoGPT
-      extractOntogpt()
     }
   }
 
@@ -511,7 +501,7 @@ export default function AnnotateText() {
     state.entitiesList.map((entity: any) => {
       console.log(entity)
       if (entity.id_uri && entity.type) {
-        const entityJsonld = {
+        const entityJsonld: any = {
           '@id': entity.id_uri,
           '@type': `biolink:${entity.type}`,
           'biolink:id': entity.id_curie,
@@ -888,9 +878,9 @@ export default function AnnotateText() {
               options={extractionOptions}
               onChange={(event: React.ChangeEvent<HTMLInputElement>, index: number) => {
                 // litcoin: 1, openai: 0
-                let extractModel = "litcoin"
-                if (index == 0) extractModel = "openai"
-                updateState({extractionModel: extractModel})
+                // let extractModel = "litcoin"
+                // if (index == 0) extractModel = "openai"
+                updateState({extractionModel: index})
               }}
               onClick={(event: any) => {
                 handleExtract(event)
@@ -904,16 +894,7 @@ export default function AnnotateText() {
               🔒️ You need to login with your ORCID to use OpenAI models
             </Typography>
           }
-          {/* <div style={{width: '100%', textAlign: 'center', marginBottom: theme.spacing(2)}}>
-            <Button type="submit"
-              variant="contained"
-              className={classes.saveButton}
-              startIcon={<ExtractIcon />}
-              disabled={!user.id && state.extractionModel == "openai"}
-              color="secondary" >
-                Extract entities
-            </Button>
-          </div> */}
+
           {/* <Snackbar open={state.json_error_open} onClose={closeJsonError} autoHideDuration={10000}>
             <MuiAlert elevation={6} variant="filled" severity="error">
               The JSON-LD provided is not valid ❌️

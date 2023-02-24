@@ -46,7 +46,7 @@ Entities to extract should be of one of those types: "Chemical Entity", "Disease
 
 Return the results as a YAML object with the following fields:
 - entities: <the list of entities in the text, each entity is an object with the fields: label, type of the entity>
-- associations: <the list of associations between entities in the text, each association is an object with the fields: "subject" for the subject entity, "predicate" for the relation (e.g. treats, affects, interacts with, causes, caused by, has evidence), "object" for the object entity>
+- associations: <the list of associations between entities in the text, each association is an object with the fields: "subject" for the subject entity, "predicate" for the relation (treats, affects, interacts with, causes, caused by, has evidence), "object" for the object entity>
 
 Text:
 \""""
