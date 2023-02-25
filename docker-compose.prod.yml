@@ -17,15 +17,18 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      # context: ./frontend
+      context: ./nextjs-frontend
       args:
         FRONTEND_URL: ${FRONTEND_URL:-https://collaboratory.semanticscience.org}
         API_URL: ${API_URL:-https://api.collaboratory.semanticscience.org}
         ORCID_CLIENT_ID: ${ORCID_CLIENT_ID}
-        ORCID_CLIENT_SECRET: ${ORCID_CLIENT_SECRET}
     restart: unless-stopped
+    ports:
+    - 3000:3000
     environment:
       API_URL: https://api.collaboratory.semanticscience.org
+      FRONTEND_URL: https://collaboratory.semanticscience.org
       VIRTUAL_HOST: collaboratory.semanticscience.org
       LETSENCRYPT_HOST: collaboratory.semanticscience.org
-      VIRTUAL_PORT: 4000
+      VIRTUAL_PORT: 3000

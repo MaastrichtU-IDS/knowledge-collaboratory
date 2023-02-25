@@ -170,6 +170,7 @@ export function CytoscapeRdfGraph({
       showOverlay: true,
     };
 
+    // @ts-ignore
     const cy = cytoscape(config);
 
     // Add on click actions to show cards with more details on an object
@@ -243,12 +244,12 @@ export function CytoscapeRdfGraph({
         'arrow-scale': 2,
         'target-arrow-color': '#263238',
         // 'target-arrow-color': '#ccc',
-        'text-wrap': 'wrap',
+        'text-wrap': 'wrap' as const,
         'font-size': '30px',
         'text-opacity': 0.9,
-        'target-arrow-shape': 'triangle',
+        'target-arrow-shape': 'triangle' as const,
         // Control multi edge on 2 nodes:
-        'curve-style': 'bezier',
+        'curve-style': 'bezier' as const,
         'control-point-step-size': 300,
         // width: 15
       }
@@ -274,22 +275,23 @@ export function CytoscapeRdfGraph({
       selector: 'node',
       style: {
         'label': 'data(label)',
-        'text-wrap': 'wrap',
+        'text-wrap': 'wrap' as const,
         // 'word-break': 'break-all',
         'overflow-wrap': 'break-word',
         // 'white-space': 'pre-wrap',
         "text-max-width": '800px',
         'font-size': 'data(fontSize)',
         // 'font-weight': 'data(fontWeight)',
-        "text-valign" : "data(valign)",
-        "text-halign" : "center",
+        // @ts-ignore
+        "text-valign" : "data(valign)" as const,
+        "text-halign" : "center" as const,
         "width": 'label',
         // width: 20,
         "height": 'label',
         "padding": '25px',
         // https://js.cytoscape.org/#style/node-body
         "shape": 'data(shape)',
-        "backgroundColor": 'data(backgroundColor)',
+        "background-color": 'data(backgroundColor)',
         "color": 'data(textColor)',
         // "color": 'data(color)',
       }

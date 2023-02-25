@@ -1,5 +1,7 @@
 {
-    "presets": ["next/babel", "babel-preset-expo"],
-    // presets: ['@expo/next-adapter/babel'],
-    "plugins": []
+    "presets": ["babel-preset-expo"],
+    // presets: ["next/babel", "@expo/next-adapter/babel"],
+    "plugins": [
+        // ["@babel/plugin-proposal-private-methods", { "loose": true }]
+    ]
 }

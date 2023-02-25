@@ -1,30 +1,19 @@
 "use client";
-
 import React, { useReducer } from "react";
 import { View } from "react-native";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Container } from "@mui/material";
 
 import './globals.css'
-import NavBar from "../components/NavBar";
-import Footer from "../components/Footer";
-import UserContext from "../components/UserContext";
-
-// export const metadata = {
-//   title: 'Knowledge Collaboratory',
-//   description: 'Browse and publish RDF Nanopublications with the Knowledge Collaboratory.',
-// }
+import NavBar from "../layout/NavBar";
+import Footer from "../layout/Footer";
+import UserContext from "../utils/UserContext";
 
 
 // Change theme color and typography here
 const theme = createTheme({
   palette: {
-    // primary: { light: '#63a4ff', main: blue[700], dark: '#004ba0' }, // blue
-    primary: { light: '#6ec6ff', main: '#2196f3', dark: '#0069c0' }, // lighter blue
-    // secondary: { light: '#4caf50', main: '#087f23', dark: '#00600f' }, // green
-    secondary: { light: '#76d275', main: '#43a047', dark: '#00701a' }, // lighter green
-    // primary: { light: blue[50], main: blue[600], dark: blue[900] },
-    // secondary: { light: '#ffcc80', main: '#ffa726', dark: '#c88719' }, // Orange
+    primary: { light: '#6ec6ff', main: '#2196f3', dark: '#0069c0' }, // blue
+    secondary: { light: '#76d275', main: '#43a047', dark: '#00701a' }, // green
     // default: { light: '#fafafa', main: '#eceff1', dark: grey[600] }
     // success: { light: '#ffe0b2', main: '#a5d6a7', dark: '#00600f' }, // green
     // info: { light: '#b3e5fc', main: '#81d4fa', dark: '#00600f' }, // blue

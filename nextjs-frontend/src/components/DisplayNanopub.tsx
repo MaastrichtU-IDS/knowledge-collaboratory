@@ -7,7 +7,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/github-dark-dimmed.css';
-import hljsDefineTurtle from './highlightjs-turtle';
+import hljsDefineTurtle from '../utils/highlightjs-turtle';
 hljs.registerLanguage("turtle", hljsDefineTurtle)
 
 import {CytoscapeRdfGraph, rdfToCytoscape} from "../components/CytoscapeRdf";

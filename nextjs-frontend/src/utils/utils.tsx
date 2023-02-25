@@ -4,23 +4,6 @@ const $rdf = require('rdflib')
 import { genericContext } from './settings';
 
 
-export const getUrlHtml = (urlString: string) => {
-  const theme = useTheme();
-  if(/^(?:node[0-9]+)|((https?|ftp):.*)$/.test(urlString)) {
-    // Process URIs
-    return <a href={urlString}  target="_blank" rel="noopener noreferrer"
-        style={{color: theme.palette.primary.main,
-          textDecoration: 'none',
-          // '&:hover': {
-          //   color: theme.palette.primary.light,
-          //   textDecoration: 'none',}
-          }}>{urlString}</a>
-  } else {
-    return urlString
-  }
-}
-
-
 export const rdfToRdf = (data: any, output: string = 'text/turtle', input: string = 'application/ld+json') => {
   // Convert RDF to JSON-LD using rdflib
   // let rdf_format = 'application/rdf+xml';

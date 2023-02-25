@@ -17,23 +17,6 @@ export const settings = {
 }
 
 
-export const getUrlHtml = (urlString: string) => {
-  const theme = useTheme();
-  if(/^(?:node[0-9]+)|((https?|ftp):.*)$/.test(urlString)) {
-    // Process URIs
-    return <a href={urlString}  target="_blank" rel="noopener noreferrer"
-        style={{color: theme.palette.primary.main,
-          textDecoration: 'none',
-          // '&:hover': {
-          //   color: theme.palette.primary.light,
-          //   textDecoration: 'none',}
-          }}>{urlString}</a>
-  } else {
-    return urlString
-  }
-}
-
-
 export const genericContext = {
   'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
   'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',

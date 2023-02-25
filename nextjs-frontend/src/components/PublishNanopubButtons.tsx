@@ -9,14 +9,14 @@ import PublishIcon from '@mui/icons-material/Backup';
 import GenerateKeyIcon from '@mui/icons-material/VpnKey';
 import UploadIcon from '@mui/icons-material/FileUpload';
 
-import { settings, genericContext } from './settings';
-import { rdfToRdf } from './utils';
+import { settings, genericContext } from '../utils/settings';
+import { rdfToRdf } from '../utils/utils';
 import { FormSettings } from './StyledComponents';
 
 
 import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/github-dark-dimmed.css';
-import hljsDefineTurtle from './highlightjs-turtle';
+import hljsDefineTurtle from '../utils/highlightjs-turtle';
 hljs.registerLanguage("turtle", hljsDefineTurtle)
 
 

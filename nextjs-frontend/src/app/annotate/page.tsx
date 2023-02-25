@@ -5,12 +5,12 @@ import { Typography, Popper, ClickAwayListener, Paper, Container, Box, CircularP
 import AddIcon from '@mui/icons-material/AddBox';
 import RemoveIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
-// @ts-ignore
-import Taggy from 'react-taggy'
+// import Taggy from 'react-taggy';
+import Taggy from '../../components/ReactTaggy';
 
-import { settings, genericContext } from '../../components/settings';
-import { context, propertiesList, predicatesList, sentenceToAnnotate, ents } from '../../components/biolinkModel';
-import UserContext from '../../components/UserContext'
+import { settings, genericContext } from '../../utils/settings';
+import { context, propertiesList, predicatesList, sentenceToAnnotate, ents } from '../../utils/biolinkModel';
+import UserContext from '../../utils/UserContext'
 import PublishNanopubButtons from '../../components/PublishNanopubButtons';
 import { FormSettings } from '../../components/StyledComponents';
 import AutocompleteEntity from './AutocompleteEntity';

@@ -16,15 +16,11 @@ import ShapePublisherIcon from '@mui/icons-material/DynamicForm';
 import AnnotateIcon from '@mui/icons-material/LocalOffer';
 import axios from 'axios';
 
-// import iconImage from '../../public/icon.png';
-import OrcidIcon from '../../public/orcid_logo.svg';
-import ApiIcon from '../../public/openapi_logo.svg';
-
-import { getUrlHtml, settings } from './settings';
+import { settings } from '../utils/settings';
 // import { useAuth } from 'oidc-react';
 // @ts-ignore
 import OAuth2Login from 'react-simple-oauth2-login';
-import UserContext from './UserContext'
+import UserContext from '../utils/UserContext'
 
 
 export default function NavBar() {
@@ -247,7 +243,7 @@ export default function NavBar() {
               <ClickAwayListener onClickAway={handleClickAway}>
                 <Paper elevation={4} style={{padding: theme.spacing(2, 2), textAlign: 'left'}}>
                   <Typography style={{marginBottom: theme.spacing(1)}}>
-                    Logged in with ORCID: {getUrlHtml(user.id)}
+                    Logged in with ORCID: {<a href={user.id}  target="_blank" rel="noopener noreferrer">{user.id}</a>}
                   </Typography>
                   <Typography style={{marginBottom: theme.spacing(1)}}>
                     Username: {user.username}

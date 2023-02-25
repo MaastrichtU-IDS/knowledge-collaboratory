@@ -1719,6 +1719,13 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.6.tgz#cee20bd55e68a1720bdab363ecf0c821ded4cd45"
   integrity sha512-50/17A98tWUfQ176raKiOGXuYpLyyVMkxxG6oylzL3BPOlA6ADGdK7EYunSa4I064xerltq9TGXs8HmOk5E+vw==
 
+"@rdfjs/types@*":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@rdfjs/types/-/types-1.1.0.tgz#098f180b7cccb03bb416c7b4d03baaa9d480e36b"
+  integrity sha512-5zm8bN2/CC634dTcn/0AhTRLaQRjXDZs3QfcAsQKNturHT7XVWcKy/8p3P5gXl+YkZTAmy7T5M/LyiT/jbkENw==
+  dependencies:
+    "@types/node" "*"
+
 "@react-native-community/cli-clean@^10.1.1":
   version "10.1.1"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-clean/-/cli-clean-10.1.1.tgz#4c73ce93a63a24d70c0089d4025daac8184ff504"
@@ -2000,6 +2007,40 @@
   dependencies:
     tslib "^2.4.0"
 
+"@types/cytoscape-dagre@^2.3.0":
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/@types/cytoscape-dagre/-/cytoscape-dagre-2.3.0.tgz#e9193f710f47472bed9c80430ca0d6cb98cf1620"
+  integrity sha512-1WwDnCcdySVwhxhHWHxRFlWoz7InlXlA9O9gQjtBkk1Sf7hW0+uaRxS6nr1TLBSPZRX0QNpYGvGqh13NuFEDaA==
+  dependencies:
+    "@types/cytoscape" "*"
+
+"@types/cytoscape-euler@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@types/cytoscape-euler/-/cytoscape-euler-1.2.0.tgz#cf242b3a477330dc840c09b4f21500f601c04d16"
+  integrity sha512-vFpbhRUim6Yz5qoypO14xth76peaXcLxmiampUW8642PZgp/1d+fxGbHYGxFyzHIqaSudtxxQIfi4MlvZMcYrA==
+  dependencies:
+    "@types/cytoscape" "*"
+
+"@types/cytoscape-fcose@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@types/cytoscape-fcose/-/cytoscape-fcose-2.1.1.tgz#bed08827f0852f3703c4605355811b8844037250"
+  integrity sha512-Ok7T6P3+cpADsJUwNuAlNoLLLaltQWmC3AZdQdPwgvQ+0z7oVejTUI0Ykjs112u4PvCXYX9ZiFA08QKpzMTWKw==
+  dependencies:
+    "@types/cytoscape" "*"
+
+"@types/cytoscape-popper@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/cytoscape-popper/-/cytoscape-popper-2.0.0.tgz#66c02a6d8a918b7de255228ad11c947b8b2e6dd3"
+  integrity sha512-dJnE6UDPne7tqOKoB27V/QJeflDZ6RxFH7wws3l5rnknsgFpaw4UHqIAI4waEQuqkRsA+Wht8bl3Gp5izHikqA==
+  dependencies:
+    "@popperjs/core" "^2.0.0"
+    "@types/cytoscape" "*"
+
+"@types/cytoscape@*", "@types/cytoscape@^3.19.9":
+  version "3.19.9"
+  resolved "https://registry.yarnpkg.com/@types/cytoscape/-/cytoscape-3.19.9.tgz#d697971d4a33eacc6ae7a7a158035b5c60c064a2"
+  integrity sha512-oqCx0ZGiBO0UESbjgq052vjDAy2X53lZpMrWqiweMpvVwKw/2IiYDdzPFK6+f4tMfdv9YKEM9raO5bAZc3UYBg==
+
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0":
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/@types/istanbul-lib-coverage/-/istanbul-lib-coverage-2.0.4.tgz#8467d4b3c087805d63580480890791277ce35c44"
@@ -2028,6 +2069,14 @@
   version "0.0.29"
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==
+
+"@types/n3@^1.10.4":
+  version "1.10.4"
+  resolved "https://registry.yarnpkg.com/@types/n3/-/n3-1.10.4.tgz#fd23d15fd7e47cf6d199d1f44ac5d6930cc50905"
+  integrity sha512-FfRTwcbXcScVHuAjIASveRWL6Fi6fPALl1Ge8tMESYLqU7R42LJvtdBpUi+f9YK0oQPqIN+zFFgMDFJfLMx0bg==
+  dependencies:
+    "@types/node" "*"
+    rdf-js "^4.0.2"
 
 "@types/node@*", "@types/node@18.14.1":
   version "18.14.1"
@@ -4961,7 +5010,7 @@ json5@^0.5.1:
   resolved "https://registry.yarnpkg.com/json5/-/json5-0.5.1.tgz#1eade7acc012034ad84e2396767ead9fa5495821"
   integrity sha512-4xrs1aW+6N5DalkqSVA8fxh458CXvR99WU8WLKmq4v8eWAL86Xo3BVqyd3SkA9wEVjCMqyvvRRkshAdOnBp5rw==
 
-json5@^1.0.1:
+json5@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/json5/-/json5-1.0.2.tgz#63d98d60f21b313b77c4d6da18bfa69d80e1d593"
   integrity sha512-g1MWMLBiz8FKi1e4w0UyVL3w+iJceWAFBAaBnnGKOpNa5f8TLktkbre1+s6oICydWAm+HRUGTmI+//xv2hvXYA==
@@ -6288,6 +6337,13 @@ rdf-canonize@^3.0.0:
   dependencies:
     setimmediate "^1.0.5"
 
+rdf-js@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/rdf-js/-/rdf-js-4.0.2.tgz#f01510528bbfc6e004012b71a8a533896c4c4c10"
+  integrity sha512-ApvlFa/WsQh8LpPK/6hctQwG06Z9ztQQGWVtrcrf9L6+sejHNXLPOqL+w7q3hF+iL0C4sv3AX1PUtGkLNzyZ0Q==
+  dependencies:
+    "@rdfjs/types" "*"
+
 rdflib@^2.2.27:
   version "2.2.27"
   resolved "https://registry.yarnpkg.com/rdflib/-/rdflib-2.2.27.tgz#a2a059b46c7bdad5782c26cfd0b2759010146d8d"
@@ -6446,8 +6502,9 @@ react-simple-oauth2-login@^0.5.1:
   resolved "https://registry.yarnpkg.com/react-simple-oauth2-login/-/react-simple-oauth2-login-0.5.4.tgz#5d9b254fbc83484bd994f463c1f9e3643f0c639b"
   integrity sha512-BkVpgGVFGpZEDK6lr1ao+hJXuPvK56aSA0t8jKST0Q+Aya504bSLXNk9A0eU8XaF2GeQqW9n/M0aWNkezvS4Pg==
 
-"react-taggy@file:../../../../../../opt/react-taggy":
+"react-taggy@https://github.com/vemonet/react-taggy#add-onclick-callback":
   version "0.1.12"
+  resolved "https://github.com/vemonet/react-taggy#628a318e653f4bd4709a2163c6b929c52855352a"
   dependencies:
     babel-runtime "^6.11.6"
 
@@ -7264,12 +7321,12 @@ tr46@~0.0.3:
   integrity sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==
 
 tsconfig-paths@^3.14.1:
-  version "3.14.1"
-  resolved "https://registry.yarnpkg.com/tsconfig-paths/-/tsconfig-paths-3.14.1.tgz#ba0734599e8ea36c862798e920bcf163277b137a"
-  integrity sha512-fxDhWnFSLt3VuTwtvJt5fpwxBHg5AdKWMsgcPOOIilyjymcYVZoCQF8fvFRezCNfblEXmi+PcM1eYHeOAgXCOQ==
+  version "3.14.2"
+  resolved "https://registry.yarnpkg.com/tsconfig-paths/-/tsconfig-paths-3.14.2.tgz#6e32f1f79412decd261f92d633a9dc1cfa99f088"
+  integrity sha512-o/9iXgCYc5L/JxCHPe3Hvh8Q/2xm5Z+p18PESBU6Ff33695QnCHBEjcytY2q19ua7Mbl/DavtBOLq+oG0RCL+g==
   dependencies:
     "@types/json5" "^0.0.29"
-    json5 "^1.0.1"
+    json5 "^1.0.2"
     minimist "^1.2.6"
     strip-bom "^3.0.0"
 
