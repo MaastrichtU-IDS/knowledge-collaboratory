@@ -1,11 +1,9 @@
 "use client";
 import React from 'react';
 import { useTheme } from '@mui/material/styles';
-// import { makeStyles } from '@mui/styles';
 import { Container, Typography } from '@mui/material';
 
 function Copyright() {
-  // const classes = useStyles();
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
@@ -19,33 +17,7 @@ function Copyright() {
 }
 
 export default function Footer() {
-  // const classes = useStyles();
   const theme = useTheme()
-
-  // const useStyles = makeStyles((theme) => ({
-  //   darkLink: {
-  //     textDecoration: 'none',
-  //     color: 'inherit',
-  //     '&:hover': {
-  //       color: theme.palette.primary.light,
-  //       textDecoration: 'none',
-  //     },
-  //   },
-  //   whiteLink: {
-  //     textDecoration: 'none',
-  //     color: 'inherit',
-  //     '&:hover': {
-  //       color: theme.palette.primary.dark,
-  //       textDecoration: 'none',
-  //     },
-  //   },
-  //   footer: {
-  //     padding: theme.spacing(2),
-  //     marginTop: 'auto',
-  //     color: 'white',
-  //     backgroundColor: theme.palette.primary.main,
-  //   },
-  // }));
 
   // Set state in functional style:
   // const [state, setState] = React.useState({search: '', name: 'Vincent'});

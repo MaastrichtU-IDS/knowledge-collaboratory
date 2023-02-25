@@ -2,7 +2,6 @@
 import Image from 'next/image'
 import React, { useContext } from 'react';
 import { useTheme } from '@mui/material/styles';
-// import { makeStyles } from '@mui/styles';
 import { Typography, Container, Button, Card, CircularProgress, Snackbar, TextField, Box, InputBase, Paper, IconButton, Stack, Autocomplete, CardContent, CardActions, Collapse } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import axios from 'axios';

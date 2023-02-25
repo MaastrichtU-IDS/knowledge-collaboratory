@@ -13,6 +13,7 @@ export const settings = {
   nanopubGrlcUrl: process.env.GRLC_URL || "https://grlc.np.dumontierlab.com/api/local/local",
   nanopubSparqlUrl: "https://virtuoso.nps.petapico.org/sparql",
   ontogptUrl: process.env.ONTOGPT_URL || 'http://localhost:8001/extract',
+  orcidClientId: "APP-TEANCMSUOPYZOGJ3",
 }
 
 

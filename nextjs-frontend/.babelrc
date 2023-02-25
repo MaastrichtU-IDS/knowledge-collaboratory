@@ -1,4 +1,5 @@
 {
     "presets": ["next/babel", "babel-preset-expo"],
+    // presets: ['@expo/next-adapter/babel'],
     "plugins": []
 }

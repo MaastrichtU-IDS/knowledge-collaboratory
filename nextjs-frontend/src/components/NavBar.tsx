@@ -3,7 +3,6 @@ import React, { useContext } from "react";
 import Link from 'next/link';
 import Image from 'next/image';
 import { useTheme } from '@mui/material/styles';
-// import { makeStyles } from '@mui/styles';
 import { AppBar, Toolbar, Button, Tooltip, Icon, IconButton, Box, ButtonBase } from '@mui/material';
 import { Popper, ClickAwayListener, Typography, Paper, Checkbox, FormControlLabel, FormHelperText } from "@mui/material";
 import GitHubIcon from '@mui/icons-material/GitHub';
@@ -27,47 +26,10 @@ import { getUrlHtml, settings } from './settings';
 import OAuth2Login from 'react-simple-oauth2-login';
 import UserContext from './UserContext'
 
-// const theme = useTheme();
-
-// const useStyles = makeStyles(() => ({
-//   menuButton: {
-//     // color: theme.palette.common.white
-//     color: '#fff'
-//   },
-//   linkButton: {
-//     textTransform: 'none',
-//     textDecoration: 'none',
-//     color: '#fff'
-//   },
-//   linkLogo: {
-//     // Seems to fit the 48px navbar height...
-//     // height: '48px',
-//     alignItems: 'center',
-//     display: 'flex',
-//   },
-// }))
 
 export default function NavBar() {
   const theme = useTheme();
   // const auth = useAuth();
-
-  // const useStyles = makeStyles(() => ({
-  //   menuButton: {
-  //     color: theme.palette.common.white
-  //     // color: '#fff'
-  //   },
-  //   linkButton: {
-  //     textTransform: 'none',
-  //     textDecoration: 'none',
-  //     color: '#fff'
-  //   },
-  //   loginButton: {
-  //     padding: '0px',
-  //     border: '0',
-  //     backgroundColor: 'inherit',
-  //   },
-  // }))
-  // const classes = useStyles();
 
   const { user, setUser }: any = useContext(UserContext)
 
@@ -263,20 +225,16 @@ export default function NavBar() {
           }
 
           { !user || !user.username &&
-            // <Button variant='contained' color='secondary' size='small' component="span" style={{textTransform: 'none'}}>
-            //   🔓️  LOGIN with ORCID
             <OAuth2Login
-              // style={{padding: '0px', border: '0', color: theme.palette.secondary.main, textTransform: 'none', textDecoration: 'none', display: 'none'}}
-              style={{textTransform: 'none', textDecoration: 'none', padding: '0px', border: '0', backgroundColor: 'inherit'}}
+              className="loginButton"
               authorizationUrl="https://orcid.org/oauth/authorize"
               // authorizationUrl="https://orcid.org/.well-known/openid-configuration"
               responseType="token"
-              clientId="APP-TEANCMSUOPYZOGJ3"
+              clientId={settings.orcidClientId}
               // clientId={process.env.ORCID_CLIENT_ID}
               redirectUri={settings.frontendUrl}
               scope="/authenticate"
               onSuccess={onSuccess}
-              // hidden={true}
               onFailure={onFailure}>
                 <Button variant='contained' color='secondary' component="span" size='small' style={{textTransform: 'none'}}>
                   Login with ORCID

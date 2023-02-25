@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { useTheme } from "@mui/material/styles";
-// import { makeStyles } from "@mui/styles";
 import { Typography, Card, Paper, IconButton, CardContent, CardActions, Collapse } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -22,27 +21,6 @@ const DisplayNanopub = ({
 }: any) => {
 
   const theme = useTheme();
-  // const useStyles = makeStyles(() => ({
-  //   input: {
-  //     background: "white",
-  //     fontSize: "11px",
-  //     fontFamily: "monospace",
-  //   },
-  //   paperPadding: {
-  //     padding: theme.spacing(1, 1),
-  //     margin: theme.spacing(1, 0),
-  //   },
-  //   link: {
-  //     color: theme.palette.primary.dark,
-  //     textDecoration: 'none',
-  //     // color: 'inherit',
-  //     '&:hover': {
-  //       color: theme.palette.primary.main,
-  //       textDecoration: 'none',
-  //     },
-  //   },
-  // }));
-  // const classes = useStyles();
 
   const [state, setState] = React.useState({
     npDict: npDict,

@@ -66,7 +66,7 @@ export default function RootLayout({
       <body>
         <ThemeProvider theme={theme}>
           <UserContext.Provider value={{ user, setUser }}>
-            <View style={{height: '100%', backgroundColor: '#eceff1'}}>
+            <View style={{minHeight: '100vh', height: '100%', backgroundColor: '#eceff1'}}>
               <NavBar />
               {children}
               <Footer />
