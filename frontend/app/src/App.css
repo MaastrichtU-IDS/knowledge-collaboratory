@@ -17,7 +17,7 @@ fieldset#root {
 /* https://mui.com/guides/migration-v4/ */
 
 .flexGrow {
-  flex-grow: 1; 
+  flex-grow: 1;
 }
 
 .mainContainer {
