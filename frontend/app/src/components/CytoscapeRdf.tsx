@@ -161,6 +161,11 @@ export function CytoscapeRdfGraph({
       style: cytoStyles,
       elements: cytoscapeElems,
       layout: layout,
+      boxSelectionEnabled: true,
+      autounselectify: true,
+      autoungrabify: false,
+      wheelSensitivity: 0.1,
+      showOverlay: true,
     };
 
     const cy = cytoscape(config);

@@ -73,6 +73,7 @@ export default function AnnotateText() {
   // let location = useLocation();
   const tagSelected: any = null
   const [state, setState] = React.useState({
+    pubAnnotationProjects: [],
     // inputText: 'Amantadine hydrochloride capsules are indicated in the treatment of idiopathic Parkinson’s disease (Paralysis Agitans), postencephalitic parkinsonism and symptomatic parkinsonism which may follow injury to the nervous system by carbon monoxide intoxication.',
     inputText: '',
     inputSource: '',
@@ -117,6 +118,25 @@ export default function AnnotateText() {
         inputSource: randomSentence.url,
       })
     }
+
+    // Get projects: http://pubannotation.org/projects.json
+    // Check a doc to annotate: http://pubannotation.org/projects/CyanoBase/docs/sourcedb/PubMed/sourceid/10903511
+    // All docs for a sourcedb: http://pubannotation.org/projects/CyanoBase/docs/sourcedb/PubMed.json?page=2
+    // All docs for a project: https://pubannotation.org/projects/CyanoBase/docs.json
+    // Need to be paginated
+    // In our annotations we want to record:
+    // - source pubmed URL
+    // - pubannotation URL (tao:part_of?)
+    // - maybe the project in which this annotation is done?
+    // The user can select one of the proposed PubAnnotation projects
+    // We query the SPARQL endpoint to get the list of annotations done for this project
+    // Count the number of annotations already published, divide this number by 10 (per page),
+    // go to the right page and take the next annotation
+
+    // Later: the user can see the completion of the different projects (call /projects.json)
+    // Questions:
+    // Is it possible to increase the amount of rows per page? From the default 10
+    // Is it possible to easily get the total count of documents in a project?
 
   }, [])
 
