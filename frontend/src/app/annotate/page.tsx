@@ -5,8 +5,6 @@ import { Typography, Popper, ClickAwayListener, Paper, Container, Box, CircularP
 import AddIcon from '@mui/icons-material/AddBox';
 import RemoveIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
-// import Taggy from 'react-taggy';
-import Taggy from '../../components/ReactTaggy';
 
 import { settings, genericContext } from '../../utils/settings';
 import { context, propertiesList, predicatesList, sentenceToAnnotate, ents } from '../../utils/biolinkModel';
@@ -15,6 +13,8 @@ import PublishNanopubButtons from '../../components/PublishNanopubButtons';
 import { FormSettings } from '../../components/StyledComponents';
 import AutocompleteEntity from './AutocompleteEntity';
 import DropdownButton from './DropdownButton';
+import Taggy from '../../components/ReactTaggy';
+import PubAnnotationProjects from '../../components/PubAnnotationProjects';
 
 // Define namespaces for building RDF URIs
 const BIOLINK = 'https://w3id.org/biolink/vocab/'
@@ -41,6 +41,7 @@ export default function AnnotateText() {
     // inputText: 'Amantadine hydrochloride capsules are indicated in the treatment of idiopathic Parkinson’s disease (Paralysis Agitans), postencephalitic parkinsonism and symptomatic parkinsonism which may follow injury to the nervous system by carbon monoxide intoxication.',
     inputText: '',
     inputSource: '',
+    inputDocument: '',
     editInputText: '',
     extractionModel: 1, // LitCoin 1, OpenAI 0
     templateSelected: 'RDF reified statements',
@@ -349,9 +350,9 @@ export default function AnnotateText() {
       })
     }
 
-    const sourceUri = (state.inputSource) ? state.inputSource : "http://purl.org/nanopub/temp/np#source"
+    const docUri = (state.inputDocument) ? state.inputDocument : "http://purl.org/nanopub/temp/np#document"
     const taoDoc: any = {
-      "@id": sourceUri,
+      "@id": docUri,
       "@type": "tao:document_text",
       "tao:has_value": state.inputText,
     }
@@ -376,7 +377,7 @@ export default function AnnotateText() {
           "tao:ends_at": entity.end,
           "tao:has_value": entity.text,
           "tao:denotes": {"@id": entity.id_uri},
-          "tao:part_of": {"@id": sourceUri},
+          "tao:part_of": {"@id": docUri},
         })
         // Generate the props of the entity
         if (entity.props) {
@@ -573,6 +574,18 @@ export default function AnnotateText() {
         and retrieve potential identifiers for those entities using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator SRI Name Resolution API</a>.
       </Typography> */}
 
+      <PubAnnotationProjects
+        onClick={ (document: any) => {
+          console.log("document Selected !!", document)
+          updateState({
+            inputText: document.text,
+            editInputText: document.text,
+            inputSource: document.source_url,
+            inputDocument: document.target,
+          })
+        }}
+      />
+
       <Typography variant='body1' style={{marginTop: theme.spacing(2), marginBottom: theme.spacing(2)}}>
         1. Provide a short text/claim to annotate (e.g. a drug indication):
       </Typography>
@@ -589,25 +602,37 @@ export default function AnnotateText() {
             variant="outlined"
             onChange={handleTextChange}
             size='small'
-            InputProps={{
-              className: "input"
-            }}
+            InputProps={{ className: "input" }}
             InputLabelProps={{ required: false }}
           />
 
-          <TextField
-            id='inputSource'
-            label='Source URL (optional)'
-            placeholder='Source URL (optional)'
-            value={state.inputSource}
-            variant="outlined"
-            onChange={handleTextChange}
-            size='small'
-            InputProps={{
-              className: "input"
-            }}
-            InputLabelProps={{ required: false }}
-          />
+          <Box sx={{ display: 'flex', justifyContent: "center", width: '100%' }}>
+            <TextField
+              id='inputSource'
+              label='Source URL (optional)'
+              placeholder='Source URL (optional)'
+              value={state.inputSource}
+              variant="outlined"
+              onChange={handleTextChange}
+              size='small'
+              style={{width: '100%', marginRight: theme.spacing(2)}}
+              InputProps={{ className: "input" }}
+              InputLabelProps={{ required: false }}
+            />
+            <TextField
+              id='inputDocument'
+              label='Annotation document URL (optional)'
+              placeholder='Annotation document URL (optional)'
+              value={state.inputDocument}
+              variant="outlined"
+              onChange={handleTextChange}
+              size='small'
+              style={{width: '100%'}}
+              InputProps={{ className: "input" }}
+              InputLabelProps={{ required: false }}
+            />
+          </Box>
+
 
           <div style={{width: '100%', textAlign: 'center', marginBottom: theme.spacing(2)}}>
             <DropdownButton
