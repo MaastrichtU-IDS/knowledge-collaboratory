@@ -306,7 +306,7 @@ export default function BrowseNanopub() {
       <Stack direction="row" spacing={2} justifyContent="center" style={{margin: theme.spacing(2, 0 )}}>
         {/* Search box */}
         <form onSubmit={handleSearch}>
-          <Paper style={{padding: theme.spacing(1), display: 'flex', alignItems: 'center', width: '35ch'}}>
+          <Paper className='searchPaper'>
             <InputBase
               style={{marginLeft: theme.spacing(1), fontSize: '13px', flex: 1,}}
               inputProps={{ 'aria-label': 'search input' }}

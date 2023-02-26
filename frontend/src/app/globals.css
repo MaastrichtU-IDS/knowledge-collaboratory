@@ -14,6 +14,10 @@
   margin-bottom: 20px;
 }
 
+body {
+  margin: 0px;
+}
+
 mark {
   cursor: pointer;
 }
@@ -54,22 +58,28 @@ a:hover {
   padding: 16px;
   margin: 16px;
 }
+.searchPaper {
+  padding: 8px;
+  display: 'flex';
+  align-items: 'center';
+  width: 35ch;
+}
 
 .button {
-  text-transform: 'none';
+  text-transform: none;
   /* margin: 16px; */
 }
 .linkButton {
-  text-transform: 'none';
-  text-decoration: 'none';
+  text-transform: none;
+  text-decoration: none;
   color: #fff;
 }
 .MuiButton-root.MuiButton-contained {
   text-transform: none;
 }
 .loginButton {
-  text-transform: 'none';
-  text-decoration: 'none';
+  text-transform: none;
+  text-decoration: none;
   padding: 0px;
   border: 0;
   background-color: 'inherit';

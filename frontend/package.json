@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 4000",
+    "turbo": "next dev -p 4000 --turbo --show-all",
     "build": "next build",
     "export": "next export",
     "start": "next start -p 4000",
