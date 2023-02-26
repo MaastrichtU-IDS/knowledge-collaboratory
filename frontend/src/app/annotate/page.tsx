@@ -42,6 +42,7 @@ export default function AnnotateText() {
     inputText: '',
     inputSource: '',
     inputDocument: '',
+    inputProject: '',
     editInputText: '',
     extractionModel: 1, // LitCoin 1, OpenAI 0
     templateSelected: 'RDF reified statements',
@@ -359,6 +360,9 @@ export default function AnnotateText() {
     if (state.inputSource) {
       taoDoc["rdfs:seeAlso"] = {"@id": state.inputSource}
     }
+    if (state.inputProject) {
+      taoDoc["tao:part_of"] = {"@id": state.inputProject}
+    }
     taoAnnotations.push(taoDoc)
 
     // Generate triples for the entities
@@ -576,12 +580,12 @@ export default function AnnotateText() {
 
       <PubAnnotationProjects
         onClick={ (document: any) => {
-          console.log("document Selected !!", document)
           updateState({
             inputText: document.text,
             editInputText: document.text,
             inputSource: document.source_url,
             inputDocument: document.target,
+            inputProject: document.project,
           })
         }}
       />

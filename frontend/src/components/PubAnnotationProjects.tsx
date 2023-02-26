@@ -93,6 +93,7 @@ const PubAnnotationProjects = ({
       //   .catch(error => {
       //     console.log(error)
       //   })
+    res.data['project'] = `https://pubannotation.org/projects/${state.projectSelected.name}`
     onClick(res.data)
     return res.data
   }
