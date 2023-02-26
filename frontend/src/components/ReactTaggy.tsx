@@ -45,14 +45,15 @@ const Taggy = ({
 
     const highlightCallback = (e: any, spanText: string, i: number) => {
         // Start and end are relative to the current element, not the whole text
-        // @ts-ignore
-        const start = window.getSelection().anchorOffset
-        // @ts-ignore
-        const end = window.getSelection().focusOffset
-        const text = spanText.substring(start, end)
-        onHighlight(e, text, i, start, end)
+        const start = window.getSelection()!.anchorOffset
+        const end = window.getSelection()!.focusOffset
+        const highlightedText = spanText.substring(start, end)
+        onHighlight(
+            e, highlightedText, i,
+            text.indexOf(spanText) + start,
+            text.indexOf(spanText) + end
+        )
     }
-
 
     // Initialize an empty array that will hold the text and entities
     let jsx: any = []

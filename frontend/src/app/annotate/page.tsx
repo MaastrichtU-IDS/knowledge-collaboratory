@@ -518,8 +518,7 @@ export default function AnnotateText() {
         text: text,
         token: text,
         type: "NamedEntity",
-        start: state.inputText.indexOf(text),
-        end: state.inputText.indexOf(text) + text.length,
+        start: start, end: end,
         curies: curies, id_curie: "", id_label: "", id_uri: "",
         props: []
       }
