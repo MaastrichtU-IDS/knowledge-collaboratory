@@ -1,0 +1,174 @@
+pipeline {
+    options {
+        timestamps()
+        skipDefaultCheckout()
+        disableConcurrentBuilds()
+    }
+    agent {
+        node { label 'translator && aws && build && kc' }
+    }
+    parameters {
+        string(name: 'BUILD_VERSION', defaultValue: '', description: 'The build version to deploy (optional)')
+        string(name: 'AWS_REGION', defaultValue: 'us-east-1', description: 'AWS Region to deploy')
+    }
+    triggers {
+        pollSCM('H/5 * * * *')
+    }
+    environment {
+        DOCKER_REPO_NAME = "853771734544.dkr.ecr.us-east-1.amazonaws.com/translator-cdskp-collaboratory-frontend"
+        KUBERNETES_CLUSTER_NAME = "translator-eks-ci-blue-cluster"
+    }
+    stages {
+        stage('Checkout source code') {
+            steps {
+                cleanWs()
+                checkout scm
+            }
+        }
+        stage('Build Version'){
+            when {
+                allOf {
+                    expression {
+                        return !params.BUILD_VERSION
+                    }
+                    anyOf {
+                        changeset "frontend/**"
+                        triggeredBy 'UserIdCause'
+                    }
+                }
+            }
+            steps{
+                script {
+                    BUILD_VERSION_GENERATED = VersionNumber(
+                        versionNumberString: 'v${BUILD_YEAR, XX}.${BUILD_MONTH, XX}${BUILD_DAY, XX}.${BUILDS_TODAY}',
+                        projectStartDate:    '1970-01-01',
+                        skipFailedBuilds:    true)
+                    currentBuild.displayName = BUILD_VERSION_GENERATED
+                    env.BUILD_VERSION = BUILD_VERSION_GENERATED
+                    env.BUILD = 'true'
+                }
+            }
+        }
+        stage('Build Docker') {
+            when {
+                allOf {
+                    expression {
+                        return !params.BUILD_VERSION
+                    }
+                    anyOf {
+                        changeset "frontend/**"
+                        triggeredBy 'UserIdCause'
+                    }
+                }
+            }
+            steps {
+                configFileProvider([
+                    configFile(fileId: 'frontend-build-prepare.sh', targetLocation: 'frontend/frontend-build-prepare.sh')
+                ]){
+                   dir("./frontend") {    
+                        script {
+                            sh '''
+                            /bin/bash frontend-build-prepare.sh
+                            docker build --no-cache -f ./Dockerfile --build-arg API_URL=${API_URL} --build-arg ORCID_CLIENT_ID=${ORCID_CLIENT_ID} --build-arg ORCID_CLIENT_SECRET=${ORCID_CLIENT_SECRET} --build-arg FRONTEND_URL=${FRONTEND_URL} -t ${DOCKER_REPO_NAME} .
+                            '''
+                            sh '''
+                            docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) 853771734544.dkr.ecr.us-east-1.amazonaws.com
+                            '''
+                            docker.image(env.DOCKER_REPO_NAME).push("${BUILD_VERSION}") 
+                        }
+                    }    
+                }
+            }
+        }
+        stage('Deploy to AWS EKS Blue') {
+            when {
+                anyOf {
+                    changeset "frontend/**"
+                    triggeredBy 'UserIdCause'
+                }
+            }
+            agent { label 'translator && ci && deploy'}
+            steps {
+                configFileProvider([
+                    configFile(fileId: 'collaboratory-frontend-ci-values.yaml', targetLocation: 'values-ncats.yaml'),
+                    configFile(fileId: 'frontend-prepare.sh', targetLocation: 'prepare.sh')
+                ]){
+                    script {
+                        sh '''
+                        aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                        /bin/bash prepare.sh
+                        cd translator-ops/ops/cdskp/knowledge-collaboratory/knowledge-collaboratory-frontend/
+                        /bin/bash deploy.sh
+                        '''
+                    }
+                }
+            }
+            post {
+                always {
+                    echo " Clean up the workspace in deploy node!"
+                    cleanWs()
+                }
+            }
+        }
+        stage('Build Docker TEST') {
+            when {
+                allOf {
+                    expression {
+                        return !params.BUILD_VERSION
+                    }
+                    anyOf {
+                        changeset "frontend/**"
+                        triggeredBy 'UserIdCause'
+                    }
+                }
+            }
+            steps {  
+                checkout scm
+                dir("./frontend") {
+                    script {
+                        sh '''
+                        docker build --no-cache -f ./Dockerfile --build-arg API_URL=${TEST_API_URL} --build-arg ORCID_CLIENT_ID=${ORCID_CLIENT_ID} --build-arg ORCID_CLIENT_SECRET=${ORCID_CLIENT_SECRET} --build-arg FRONTEND_URL=${TEST_FRONTEND_URL} -t ${DOCKER_REPO_NAME} .
+                        '''
+                        sh '''
+                        docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) 853771734544.dkr.ecr.us-east-1.amazonaws.com
+                        '''
+                        docker.image(env.DOCKER_REPO_NAME).push("${BUILD_VERSION}-TEST")
+                    }     
+                }
+            }
+        }
+        stage('Build Docker PROD') {
+            when {
+                allOf {
+                    expression {
+                        return !params.BUILD_VERSION
+                    }
+                    anyOf {
+                        changeset "frontend/**"
+                        triggeredBy 'UserIdCause'
+                    }
+                }
+            }
+            steps {  
+                checkout scm 
+                dir("./frontend") {
+                    script {
+                        sh '''
+                        docker build --no-cache -f ./Dockerfile --build-arg API_URL=${PROD_API_URL} --build-arg ORCID_CLIENT_ID=${ORCID_CLIENT_ID} --build-arg ORCID_CLIENT_SECRET=${ORCID_CLIENT_SECRET} --build-arg FRONTEND_URL=${PROD_FRONTEND_URL} -t ${DOCKER_REPO_NAME} .
+                        '''
+                        sh '''
+                        docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) 853771734544.dkr.ecr.us-east-1.amazonaws.com
+                        '''
+                        docker.image(env.DOCKER_REPO_NAME).push("${BUILD_VERSION}-PROD")
+                    }
+                }
+            }
+            post {
+                always {
+                    echo " Clean up the workspace in deploy node!"
+                    cleanWs()
+                }
+            }
+        }
+    }
+}

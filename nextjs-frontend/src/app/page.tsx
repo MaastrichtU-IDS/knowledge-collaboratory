@@ -308,7 +308,7 @@ export default function BrowseNanopub() {
         <form onSubmit={handleSearch}>
           <Paper style={{padding: theme.spacing(1), display: 'flex', alignItems: 'center', width: '35ch'}}>
             <InputBase
-              style={{marginLeft: theme.spacing(1), fontSize: '16px', flex: 1,}}
+              style={{marginLeft: theme.spacing(1), fontSize: '13px', flex: 1,}}
               inputProps={{ 'aria-label': 'search input' }}
               placeholder={"🔍️ Search text/URI in Nanopublications"}
               onChange={searchChange}

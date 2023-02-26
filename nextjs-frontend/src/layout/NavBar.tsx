@@ -227,7 +227,6 @@ export default function NavBar() {
               // authorizationUrl="https://orcid.org/.well-known/openid-configuration"
               responseType="token"
               clientId={settings.orcidClientId}
-              // clientId={process.env.ORCID_CLIENT_ID}
               redirectUri={settings.frontendUrl}
               scope="/authenticate"
               onSuccess={onSuccess}

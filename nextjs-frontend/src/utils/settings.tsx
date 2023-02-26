@@ -1,19 +1,12 @@
-import React from "react";
-import { useTheme } from '@mui/material/styles';
-// import Constants from 'expo-constants';
-
 
 export const settings = {
-  // TODO: not working, changes made in: https://github.com/MaastrichtU-IDS/knowledge-collaboratory/commit/713df9952f72a2b0c0666adb376a627df862be29
-  // frontendUrl: Constants.manifest.extra.frontendUrl || 'http://localhost:19006',
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
-
   apiUrl: process.env.API_URL || 'http://localhost:8000',
   docsUrl: ((process.env.API_URL) ? process.env.API_URL + '/docs' : null) || 'http://localhost:8000/docs',
   nanopubGrlcUrl: process.env.GRLC_URL || "https://grlc.np.dumontierlab.com/api/local/local",
-  nanopubSparqlUrl: "https://virtuoso.nps.petapico.org/sparql",
   ontogptUrl: process.env.ONTOGPT_URL || 'http://localhost:8001/extract',
-  orcidClientId: "APP-TEANCMSUOPYZOGJ3",
+  nanopubSparqlUrl: "https://virtuoso.nps.petapico.org/sparql",
+  orcidClientId: process.env.ORCID_CLIENT_ID || "APP-TEANCMSUOPYZOGJ3",
 }
 
 

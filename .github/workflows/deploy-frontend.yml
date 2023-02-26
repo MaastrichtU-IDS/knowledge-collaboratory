@@ -1,5 +1,4 @@
 name: Deploy frontend to GitHub Pages
-# Not used anymore because we deploy it on NodeJS to fix react routing
 on:
   workflow_dispatch:
   # push:
@@ -10,33 +9,45 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
       with:
-        node-version: 12
+        node-version: 18
 
     - name: Install dependencies and build
       env:
         API_URL: "https://api.collaboratory.semanticscience.org"
-        ORCID_CLIENT_ID: ""
-        ORCID_CLIENT_SECRET: ""
-        FRONTEND_URL: ""
+        FRONTEND_URL: "https://maastrichtu-ids.github.io/knowledge-collaboratory"
       run: |
-        git config --global user.email "vincent.emonet@gmail.com"
-        git config --global user.name "Vincent Emonet"
-        cd frontend/app
+        cd nextjs-frontend
         yarn install
         yarn build
+        yarn export
 
-    - name: Deploy on GitHub
-      uses: JamesIves/github-pages-deploy-action@3.7.1
-      with:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        BRANCH: gh-pages
-        FOLDER: frontend/app/web-build
-        CLEAN: true
+    # - name: Deploy on GitHub
+    #   uses: JamesIves/github-pages-deploy-action@3.7.1
+    #   with:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #     BRANCH: gh-pages
+    #     FOLDER: frontend/app/web-build
+    #     CLEAN: true
 
     # - name: Deploy on GitHub
     #   run: yarn deploy
+
+    # Docs: https://github.com/peaceiris/actions-gh-pages
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        # Build output to publish to the `gh-pages` branch:
+        publish_dir: ./docs
+        # The following lines assign commit authorship to the official
+        # GH-Actions bot for deploys to `gh-pages` branch
+        # The GH actions bot is used by default if you didn't specify the two fields.
+        user_name: github-actions[bot]
+        user_email: 41898282+github-actions[bot]@users.noreply.github.com
