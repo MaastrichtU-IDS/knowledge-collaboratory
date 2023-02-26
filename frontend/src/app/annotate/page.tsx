@@ -590,9 +590,9 @@ export default function AnnotateText() {
         }}
       />
 
-      <Typography variant='body1' style={{marginTop: theme.spacing(2), marginBottom: theme.spacing(2)}}>
+      {/* <Typography variant='body1' style={{marginTop: theme.spacing(2), marginBottom: theme.spacing(2)}}>
         1. Provide a short text/claim to annotate (e.g. a drug indication):
-      </Typography>
+      </Typography> */}
 
       <form onSubmit={handleExtract}>
         <FormSettings>

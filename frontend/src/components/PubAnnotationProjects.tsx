@@ -3,6 +3,7 @@ import React, {useEffect} from "react";
 import { useTheme } from "@mui/material/styles";
 import { Autocomplete, TextField, Button, Stack, Box } from "@mui/material";
 import axios from 'axios';
+import { settings } from "@/utils/settings";
 
 
 const PubAnnotationProjects = ({
@@ -17,7 +18,7 @@ const PubAnnotationProjects = ({
     projects: [],
     projectSelected: {
       author: "", created_at: "", license: "",
-      maintainer: "", name: "", updated_at: "",
+      maintainer: "", name: "", updated_at: "", url: "",
     },
     loadedDocs: [],
     loadDoc: {url: "", sourcedb: "", sourceid: ""},
@@ -36,7 +37,7 @@ const PubAnnotationProjects = ({
 
 
   useEffect(() => {
-    axios.get("http://pubannotation.org/projects.json",
+    axios.get("https://pubannotation.org/projects.json",
       {
         headers: {
           "accept": "application/json",
@@ -54,46 +55,52 @@ const PubAnnotationProjects = ({
   }, []);
 
   const onChange = (event: any, newInputValue: any) => {
-    if (newInputValue) {
-      console.log("PROJECT AUTOCOMPLETE", newInputValue)
+    console.log("newInputValue", newInputValue)
+    if (newInputValue && newInputValue.name) {
+      newInputValue["url"] = `https://pubannotation.org/projects/${newInputValue.name}`
       updateState({projectSelected: newInputValue})
     }
   }
 
-  const onClickLoad = () => {
-    console.log("onClickLoad", state.projectSelected.name)
-    axios.get(`https://pubannotation.org/projects/${state.projectSelected.name}/docs.json`,
+  const getAlreadyPublishedQuery = `prefix np: <http://www.nanopub.org/nschema#>
+    prefix npa: <http://purl.org/nanopub/admin/>
+    prefix npx: <http://purl.org/nanopub/x/>
+    prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+    prefix dct: <http://purl.org/dc/terms/>
+    prefix biolink: <https://w3id.org/biolink/vocab/>
+    prefix tao: <http://pubannotation.org/ontology/tao.owl#>
+
+    SELECT (count(DISTINCT ?s) AS ?count) WHERE {
+      ?s tao:part_of <${state.projectSelected.url}>
+  }`
+
+  const onClickLoad = async () => {
+    // TODO: get the number of annotations already done for this project
+    // And fetch the annotation for this number + 1 (get the right page by /10)
+    const alreadyPublished = await axios.get(`${settings.nanopubSparqlUrl}?query=${encodeURIComponent(getAlreadyPublishedQuery)}`)
+    console.log("alreadyPublished", alreadyPublished)
+    const countPublished = parseInt(alreadyPublished.data.results.bindings[0].count.value)
+    // const countPublished = 0
+    const page = (countPublished == 0) ? 1 : countPublished / 10
+    const numberInPage = (countPublished == 0) ? 0 : countPublished % 10
+
+    axios.get(`${state.projectSelected.url}/docs.json?page=${page}`,
       {
         headers: {
           "accept": "application/json",
         }
       })
         .then(res => {
-          getDocToAnnotate(res.data)
+          getDocToAnnotate(res.data[numberInPage])
         })
         .catch(error => {
           console.log(error)
         })
   }
 
-  const getDocToAnnotate = async (loadedDocs: any) => {
-    // TODO: get the number of annotations already done for this project
-    // And fetch the annotation for this number + 1 (get the right page by /10)
-    const annotateDoc = loadedDocs[0]
-    const res = await axios.get(`${annotateDoc.url}.json`)
-      // {
-      //   headers: {
-      //     "accept": "application/json",
-      //   }
-      // })
-      //   .then(res => {
-      //     console.log(res.data)
-      //     return res.data
-      //   })
-      //   .catch(error => {
-      //     console.log(error)
-      //   })
-    res.data['project'] = `https://pubannotation.org/projects/${state.projectSelected.name}`
+  const getDocToAnnotate = async (annotateDoc: any) => {
+    const res = await axios.get(`${annotateDoc.url.replace("http://", "https://")}.json`)
+    res.data['project'] = state.projectSelected.url
     onClick(res.data)
     return res.data
   }
@@ -102,7 +109,7 @@ const PubAnnotationProjects = ({
 
   return (
     // <Stack direction="row" spacing={2} style={{width: 'auto'}}>
-    <Box sx={{ display: 'flex', justifyContent: "center", width: '100%', marginTop: theme.spacing(2) }}>
+    <Box sx={{ display: 'flex', justifyContent: "center", width: '100%', marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }}>
       <Autocomplete
         key={id}
         id={id}
