@@ -17,6 +17,7 @@ import { shacl2jsonschema } from './shacl2jsonschema'
 // Can't find module for mui v5
 
 import Form from '@rjsf/fluent-ui';
+import validator from "@rjsf/validator-ajv8";
 // Works! But look like Microsoft UI, and subshapes not distinguishable from parent
 
 // import Form from '@rjsf/material-ui';
@@ -159,6 +160,7 @@ export const JsonldForm = ({ shape, target }: Props) => {
           id='jsonld-form'
           schema={state.jsonschema}
           liveValidate
+          validator={validator}
           onChange={(event: any) => {
             console.log("changed", event)
             // updateState({
