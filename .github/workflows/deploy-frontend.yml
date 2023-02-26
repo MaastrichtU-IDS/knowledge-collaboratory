@@ -23,7 +23,7 @@ jobs:
         API_URL: "https://api.collaboratory.semanticscience.org"
         FRONTEND_URL: "https://maastrichtu-ids.github.io/knowledge-collaboratory"
       run: |
-        cd nextjs-frontend
+        cd frontend
         yarn install
         yarn build
         yarn export

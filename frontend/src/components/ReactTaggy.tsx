@@ -1,17 +1,24 @@
 import React from 'react'
 
+interface Span {
+    token: string;
+    type: string;
+    start: number;
+    end: number;
+}
+
 // Define functional component. Destructure the props.
 const Taggy = ({
     text = '',
     spans = [],
     ents = [],
-    onClick = (event, tag, elemIndex) => {},
-    onMouseOver = (event, tag, elemIndex) => {},
-    onHighlight = (event, text, spanIndex, start, end) => {},
-}) => {
+    onClick = (event: any, tag: Span, elemIndex: number) => {},
+    onMouseOver = (event: any, tag: Span, elemIndex: number) => {},
+    onHighlight = (event: Span, text: string, spanIndex: number, start: number, end: number) => {},
+}: any) => {
 
     // Find the correct color of the given entity type. If the given entity is not found, set the color to grey.
-    const findRed = (type) => {
+    const findRed = (type: string) => {
         for (let e = 0; e < ents.length; e++) {
             if (ents[e].type === type) {
                 return ents[e].color.r
@@ -19,7 +26,7 @@ const Taggy = ({
         }
         return 220
     }
-    const findGreen = (type) => {
+    const findGreen = (type: string) => {
         for (let e = 0; e < ents.length; e++) {
             if (ents[e].type === type) {
                 return ents[e].color.g
@@ -27,7 +34,7 @@ const Taggy = ({
         }
         return 220
     }
-    const findBlue = (type) => {
+    const findBlue = (type: string) => {
         for (let e = 0; e < ents.length; e++) {
             if (ents[e].type === type) {
                 return ents[e].color.b
@@ -36,9 +43,11 @@ const Taggy = ({
         return 220
     }
 
-    const highlightCallback = (e, spanText, i) => {
+    const highlightCallback = (e: any, spanText: string, i: number) => {
         // Start and end are relative to the current element, not the whole text
+        // @ts-ignore
         const start = window.getSelection().anchorOffset
+        // @ts-ignore
         const end = window.getSelection().focusOffset
         const text = spanText.substring(start, end)
         onHighlight(e, text, i, start, end)
@@ -46,19 +55,19 @@ const Taggy = ({
 
 
     // Initialize an empty array that will hold the text and entities
-    let jsx = []
+    let jsx: any = []
 
     // Make sure spans are ordered by they start index
-    spans.sort((a,b) => (a.start > b.start) ? 1 : ((b.start > a.start) ? -1 : 0))
+    spans.sort((a: any, b: any) => (a.start > b.start) ? 1 : ((b.start > a.start) ? -1 : 0))
 
     // METHOD 1 - STRING
     if (typeof text === 'string') {
         // Initialize an empty array. The contents of 'elements' will eventually get pushed to the 'jsx' array, and will be converted to jsx markup in the process.
-        let elements = []
+        let elements: any = []
         // Keep track of location in the string of text
         let offset = 0
         // Loop through the spans, using the span data to construct the 'elements' array
-        spans.forEach((span) => {
+        spans.forEach((span: Span) => {
             // Create a string of text that does not contain any entities
             const fragment = text.slice(offset, span.start)
             // Create an entity
@@ -73,7 +82,7 @@ const Taggy = ({
         // After pushing all of the entities to the 'elements' array, push the remaining text to the 'elements' array. Elements should now consist of strings and objects/entities.
         elements.push(text.slice(offset, text.length))
         // Filter out unnecessary spaces
-        elements = elements.filter(val => val !== ' ')
+        elements = elements.filter((val: any) => val !== ' ')
         // Loop through elements array looking for multi-word entities.
         for (let e = 0; e < elements.length; e++) {
             // Check if we've stopped at an entity
@@ -93,9 +102,9 @@ const Taggy = ({
             }
         }
         // Filter out the consecutive entities that were marked as duplicates
-        elements = elements.filter(val => !!val)
+        elements = elements.filter((val: any) => !!val)
         // Loop through our 'elements' array. Push strings directly to the 'jsx' array. Convert entity objects to jsx markup, then push to the 'jsx' array.
-        elements.forEach((t, i) => {
+        elements.forEach((t: Span, i: number) => {
             if (typeof t === 'string') {
                 jsx.push(<span
                     onMouseUp={(e) => {highlightCallback(e, t, i)}}
@@ -253,7 +262,7 @@ const Taggy = ({
     // Return the markup
     return (
         <div style={{display: 'inline-block'}}>
-            {jsx.map((j, i) => (
+            {jsx.map((j: string, i: number) => (
                 <span key={i}>{j}</span>
             ))}
         </div>

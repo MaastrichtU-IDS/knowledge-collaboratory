@@ -1,45 +1,48 @@
-# Server for React app
-
-This ExpressJS server serves a React app to fix issues where React router is not enough to handle multi-pages app.
-
-So we don't need to use the ugly HashRouter.
-
-https://stackoverflow.com/questions/27928372/react-router-urls-dont-work-when-refreshing-or-writing-manually
-
 ## Development
 
-Install
+Install dependencies:
 
 ```bash
 yarn
 ```
 
-Build the React app and start the express server on http://localhost:4000
+First, run the development server:
+
+```bash
+yarn dev
+```
+
+Open [http://localhost:4000](http://localhost:4000) with your browser to see the result. The page auto-updates as you edit the file.
+
+## Production deployment
+
+Build:
+
+```bash
+yarn build
+```
+
+Start server:
 
 ```bash
 yarn start
 ```
 
-## Production
-
-The react website is built first, the bundle is placed in the server `public` folder, and the React app is served from this folder in production on http://localhost:4000
+To generate static pages use:
 
 ```bash
-yarn build
-yarn serve
+yarn export
 ```
 
-## Deploy with Docker
+> ⚠️ Not supported yet for NextJS 13 new `app` layout that we are using, cf. their [roadmap](https://beta.nextjs.org/docs/app-directory-roadmap#supported-and-planned-features) to check if it has been implemented
 
-Build:
+## Learn More
 
-```bash
-docker build -t knowledge-collaboratory-server .
-```
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-Run:
+To learn more about Next.js, take a look at the following resources:
 
-```bash
-docker run -it -p 4000:4000 knowledge-collaboratory-server
-```
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!

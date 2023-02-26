@@ -17,8 +17,7 @@ services:
 
   # frontend:
   #   build:
-  #     # context: ./frontend
-  #     context: ./nextjs-frontend
+  #     context: ./frontend
   #     args:
   #       FRONTEND_URL: ${FRONTEND_URL:-https://collaboratory.semanticscience.org}
   #       API_URL: ${API_URL:-https://api.collaboratory.semanticscience.org}
