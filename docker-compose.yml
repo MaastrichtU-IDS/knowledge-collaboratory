@@ -25,7 +25,4 @@ services:
   #   ports:
   #   - 4000:4000
   #   environment:
-  #     API_URL: https://api.collaboratory.semanticscience.org
-  #     VIRTUAL_HOST: collaboratory.semanticscience.org
-  #     LETSENCRYPT_HOST: collaboratory.semanticscience.org
-  #     VIRTUAL_PORT: 4000
+  #     NEXT_PUBLIC_API_URL: https://api.collaboratory.semanticscience.org

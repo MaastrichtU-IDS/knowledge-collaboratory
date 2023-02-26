@@ -24,9 +24,9 @@ services:
         ORCID_CLIENT_ID: ${ORCID_CLIENT_ID}
     restart: unless-stopped
     environment:
-      API_URL: ${API_URL:-https://api.collaboratory.semanticscience.org}
-      FRONTEND_URL: ${FRONTEND_URL:-https://collaboratory.semanticscience.org}
-      ORCID_CLIENT_ID: ${ORCID_CLIENT_ID}
+      # NEXT_PUBLIC_API_URL: ${API_URL:-https://api.collaboratory.semanticscience.org}
+      # NEXT_PUBLIC_FRONTEND_URL: ${FRONTEND_URL:-https://collaboratory.semanticscience.org}
+      # ORCID_CLIENT_ID: ${ORCID_CLIENT_ID}
       VIRTUAL_HOST: collaboratory.semanticscience.org
       LETSENCRYPT_HOST: collaboratory.semanticscience.org
       VIRTUAL_PORT: 4000
