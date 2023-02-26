@@ -151,7 +151,7 @@ const PubAnnotationProjects = ({
       </Box>
       { state.countPublished >= 0 &&
         <Typography variant="body1" style={{textAlign: 'center', marginBottom: theme.spacing(2)}}>
-          📝 {state.countPublished} documents have been annotated in this projects
+          📝 {state.countPublished} documents have been annotated in this project
         </Typography>
       }
     </>
