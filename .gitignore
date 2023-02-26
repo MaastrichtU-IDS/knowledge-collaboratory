@@ -5,8 +5,6 @@ docker-stack.yml
 .expo
 node_modules
 
-/frontend/public
-
 .env
 data
 .venv
