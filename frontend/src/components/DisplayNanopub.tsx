@@ -12,7 +12,7 @@ import hljsDefineTurtle from '../utils/highlightjs-turtle';
 hljs.registerLanguage("turtle", hljsDefineTurtle)
 
 import {CytoscapeRdfGraph, rdfToCytoscape} from "../components/CytoscapeRdf";
-import { CytoscapeRdf } from "cytoscape-rdf";
+// import { CytoscapeRdf } from "cytoscape-rdf";
 // import "cytoscape-rdf";
 
 const DisplayNanopub = ({
@@ -148,13 +148,13 @@ const DisplayNanopub = ({
         <Collapse in={state.npDict[np]['expanded_graph']} timeout="auto" unmountOnExit>
           <CardContent style={{margin: theme.spacing(0,0), padding: theme.spacing(0,0)}}>
             <Paper elevation={2} style={{ height: '80vh', textAlign: 'left', padding: theme.spacing(1, 1), margin: theme.spacing(1, 0) }}>
-              {/* <CytoscapeRdfGraph
+              <CytoscapeRdfGraph
                 cytoscapeElems={state.npDict[np]['cytoscape']}
-              /> */}
+              />
               {/* <cytoscape-rdf
                 elements={state.npDict[np]['cytoscape']}
               /> */}
-              <cytoscape-rdf url={np + ".trig"} />
+              {/* <cytoscape-rdf url={np + ".trig"} /> */}
             </Paper>
           </CardContent>
         </Collapse>
