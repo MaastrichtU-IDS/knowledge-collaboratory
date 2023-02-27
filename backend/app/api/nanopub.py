@@ -298,7 +298,7 @@ async def publish_last_signed(
         np.publish()
         os.remove(signed_path)
     except Exception as e:
-        HTTPException(
+        raise HTTPException(
             status_code=400,
             detail=f"Error when publishing the nanopub: {e}",
         )
