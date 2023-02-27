@@ -55,7 +55,7 @@
     "@types/cytoscape-popper": "^2.0.0",
     "@types/n3": "^1.10.4",
     "@types/node": "18.14.1",
-    "@types/react": "18.2.0",
+    "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
     "babel-preset-expo": "^9.3.0",
     "eslint": "8.34.0",
