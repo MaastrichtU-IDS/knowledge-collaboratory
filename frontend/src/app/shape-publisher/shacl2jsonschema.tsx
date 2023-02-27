@@ -1,3 +1,5 @@
+"use client";
+
 import { Store, DataFactory } from 'n3';
 
 

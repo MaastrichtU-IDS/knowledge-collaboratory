@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect } from 'react';
 
 import { Parser, Store } from 'n3';

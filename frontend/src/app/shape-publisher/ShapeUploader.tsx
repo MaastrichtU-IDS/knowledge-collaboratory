@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { useTheme } from '@mui/material/styles';
 import { IconButton, Typography, Button, FormControl, TextField, Card, CardContent, CardHeader, Collapse, Snackbar,  List, ListItem, ListItemAvatar, Avatar, ListItemText } from "@mui/material";
