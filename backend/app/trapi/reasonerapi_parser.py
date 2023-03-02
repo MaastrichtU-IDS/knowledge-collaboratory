@@ -91,6 +91,8 @@ WHERE {
       rdf:subject ?subject ;
       rdf:predicate ?predicate_category ;
       rdf:object ?object .
+    FILTER (datatype(?subject_category) = xsd:string)
+    FILTER (datatype(?object_category) = xsd:string)
     #{
     #  ?subject a ?subject_category .
     #  ?object a ?object_category .
@@ -133,6 +135,8 @@ WHERE {
         rdf:object ?node .
     }
     ?node biolink:category ?node_category .
+    FILTER (datatype(?node_category) = xsd:string)
+
     VALUES (?namespace ?separator) {
       ("//identifiers.org/" "/")
       ("//purl.obolibrary.org/obo/" "_")
@@ -259,9 +263,10 @@ def get_metakg_from_nanopubs():
     sparql = SPARQLWrapper(settings.NANOPUB_SPARQL_URL)
     sparql.setReturnFormat(JSON)
     sparql.setQuery(get_metakg_edges_query)
-    # print(get_metakg_edges_query)
     sparqlwrapper_results = sparql.query().convert()
     sparql_results = sparqlwrapper_results["results"]["bindings"]
+    # print(get_metakg_edges_query)
+    # print(sparql_results)
     edges_array = []
     for result in sparql_results:
         edges_array.append(
@@ -276,7 +281,7 @@ def get_metakg_from_nanopubs():
             }
         )
 
-    print(get_metakg_prefixes_query)
+    # print(get_metakg_prefixes_query)
     sparql.setQuery(get_metakg_prefixes_query)
     sparqlwrapper_results = sparql.query().convert()
     prefixes_results = sparqlwrapper_results["results"]["bindings"]
