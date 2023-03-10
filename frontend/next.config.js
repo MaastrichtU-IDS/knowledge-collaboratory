@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 const { withExpo } = require('@expo/next-adapter');
+const withImages = require('next-images')
 
-const nextConfig = withExpo({
+const nextConfig = withExpo(withImages({
+  projectRoot: __dirname,
   experimental: {
     appDir: true,
   },
@@ -9,6 +11,6 @@ const nextConfig = withExpo({
     config.experiments.topLevelAwait = true
     return config;
   },
-})
+}))
 
 module.exports = nextConfig
