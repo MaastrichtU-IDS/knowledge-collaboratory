@@ -30,7 +30,7 @@ ENV NODE_ENV production
 
 
 # COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
-COPY . .
+COPY --chown=nextjs:nodejs . .
 
 RUN yarn
 
