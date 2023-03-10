@@ -27,7 +27,7 @@ ARG API_URL
 ENV NEXT_PUBLIC_FRONTEND_URL=$FRONTEND_URL
 ENV NEXT_PUBLIC_API_URL=$API_URL
 ENV NEXT_TELEMETRY_DISABLED 1
-ENV NODE_ENV production
+# ENV NODE_ENV production
 
 
 # COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
