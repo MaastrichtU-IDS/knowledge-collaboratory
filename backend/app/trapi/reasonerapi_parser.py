@@ -490,7 +490,7 @@ def reasonerapi_to_sparql(reasoner_query):
             "object": resolve_uri_with_context(edge_result["object"]["value"]),
             "attributes": [
                 {
-                    "attribute_type_id": "biolink:aggregator_knowledge_source",
+                    "attribute_type_id": "biolink:primary_knowledge_source",
                     "value": "infores:knowledge-collaboratory",
                     "value_type_id": "biolink:InformationResource",
                     "attribute_source": "infores:knowledge-collaboratory",

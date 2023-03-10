@@ -23,6 +23,14 @@ engine = "text-davinci-003"
 # engine = "code-davinci-002"
 NUM_RETRIES = 3
 
+default_prompt = """From the text below, extract the entities, classify them and extract associations between those entities
+Entities to extract should be of one of those types: "Chemical Entity", "Disease", "Gene", "Gene Product", "Organism Taxon"
+
+Return the results as a YAML object with the following fields:
+- entities: <the list of entities in the text, each entity is an object with the fields: label, type of the entity>
+- associations: <the list of associations between entities in the text, each association is an object with the fields: "subject" for the subject entity, "predicate" for the relation (treats, affects, interacts with, causes, caused by, has evidence), "object" for the object entity>
+"""
+
 @router.post(
     "/openai-extract",
     name="Extract entities and relations from text using OpenAI models",
@@ -32,21 +40,16 @@ NUM_RETRIES = 3
 )
 async def get_entities_relations_openai(
     input: NerInput = Body(...),
-    current_user: User = Depends(get_current_user),
+    prompt: str = default_prompt,
+    # current_user: User = Depends(get_current_user),
 ):
-    if not current_user or "id" not in current_user.keys():
-        raise HTTPException(
-            status_code=403,
-            detail=f"You need to login with ORCID to publish a Nanopublication",
-        )
+    # if not current_user or "id" not in current_user.keys():
+    #     raise HTTPException(
+    #         status_code=403,
+    #         detail=f"You need to login with ORCID to publish a Nanopublication",
+    #     )
 
-    prompt = """
-From the text below, extract the entities, classify them and extract associations between those entities
-Entities to extract should be of one of those types: "Chemical Entity", "Disease", "Gene", "Gene Product", "Organism Taxon"
-
-Return the results as a YAML object with the following fields:
-- entities: <the list of entities in the text, each entity is an object with the fields: label, type of the entity>
-- associations: <the list of associations between entities in the text, each association is an object with the fields: "subject" for the subject entity, "predicate" for the relation (treats, affects, interacts with, causes, caused by, has evidence), "object" for the object entity>
+    prompt = f"""{prompt}
 
 Text:
 \""""
@@ -58,7 +61,7 @@ Text:
         try:
             response = openai.Completion.create(
                 engine=engine,
-                prompt=prompt + input.text + "\"",
+                prompt=prompt + input.text + '"',
                 max_tokens=3000,
             )
         except Exception as e:

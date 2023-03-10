@@ -4,7 +4,7 @@
 
 Services to query the Nanopublications network using Translator standards to retrieve the Knowledge Collaboratory graph, a collection of drug indications annotated using preferred identifiers (usually from MONDO, CHEBI, DrugBank, etc).
 
-A website to enable users to easily annotate, publish and browse biomedical claims from natural language to a structured format recognized by the Translator. To publish new claims the users login with their ORCID, and submit the sentence they want to annotate, optionally providing an additional link to specify the provenance of this statement. 
+A website to enable users to easily annotate, publish and browse biomedical claims from natural language to a structured format recognized by the Translator. To publish new claims the users login with their ORCID, and submit the sentence they want to annotate, optionally providing an additional link to specify the provenance of this statement.
 
 The model for annotating drug indications claims built for the LitCoin competition is used to automatically extract potential entities and relations. The SRI NameResolution API is then used to retrieve standard identifiers for each entities. And the BioLink model is used to define the relations between entities.
 
@@ -22,7 +22,7 @@ Frontend built with [React](https://reactjs.org) and [Material UI](https://mui.c
 * [Poetry](https://python-poetry.org/) for backend development
 * [Node.js](https://nodejs.org/en/) (with `npm`) and [`yarn`](https://yarnpkg.com/) if you need to do frontend development
 
-## 🚀 Production deployment 
+## 🚀 Production deployment
 
 Checkout the `docker-compose.prod.yml` file for more details about the deployment.
 
@@ -34,7 +34,7 @@ ORCID_CLIENT_SECRET=XXXX
 FRONTEND_URL=https://collaboratory.semanticscience.org
 ```
 
-2. Deploy the app with production config: 
+2. Deploy the app with production config:
 
 ```bash
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
@@ -63,7 +63,7 @@ unzip "*.zip"
 rm *.zip
 ```
 
-3. Clone and install the custom `react-taggy` library in `/opt` 
+3. Clone and install the custom `react-taggy` library in `/opt`
 
 ```bash
 cd /opt
@@ -106,7 +106,7 @@ docker-compose build --no-cache
 
 2 sets of tests are available: `integration` tests to test local changes, and `production` tests to test the API deployed in production
 
-You can run the tests in docker when the backend is already running: 
+You can run the tests in docker when the backend is already running:
 
 ```bash
 docker-compose exec backend poetry run pytest tests/integration -s

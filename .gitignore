@@ -5,6 +5,11 @@ docker-stack.yml
 .expo
 node_modules
 
+.yarn/
+.pnp*.[cm]js
+.yarnrc.yml
+pnpm-lock.yaml
+
 .env
 data
 .venv
@@ -12,6 +17,10 @@ data
 __pycache__
 .pytest_cache
 *.egg-info
+.mypy_cache
+.coverage
+htmlcov
+
 
 pySHACL/
 ontogpt/
