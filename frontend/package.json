@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 4000",
+    "dev:prod": "NEXT_PUBLIC_API_URL=https://api.collaboratory.semanticscience.org next dev -p 4000",
     "turbo": "next dev -p 4000 --turbo --show-all",
     "build": "next build",
     "export": "next export",
@@ -31,7 +32,6 @@
     "cytoscape-popper": "^2.0.0",
     "cytoscape-rdf": "^0.0.4",
     "cytoscape-spread": "^3.0.0",
-    "expo": "^46.0.0",
     "highlight.js": "^11.2.0",
     "n3": "^1.16.3",
     "next": "^13.2.1",
@@ -48,7 +48,6 @@
   "devDependencies": {
     "@babel/core": "^7.21.0",
     "@babel/preset-env": "^7.20.2",
-    "@expo/next-adapter": "^5.0.2",
     "@types/cytoscape": "^3.19.9",
     "@types/cytoscape-dagre": "^2.3.0",
     "@types/cytoscape-euler": "^1.2.0",
@@ -58,7 +57,6 @@
     "@types/node": "18.14.1",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
-    "babel-preset-expo": "^9.3.0",
     "eslint": "^8.34.0",
     "eslint-config-next": "^13.2.1",
     "prop-types": "^15.8.1",

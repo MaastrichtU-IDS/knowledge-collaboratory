@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useReducer } from "react";
-import { View } from "react-native";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import './globals.css'
@@ -56,13 +55,11 @@ export default function RootLayout({
       <body>
         <ThemeProvider theme={theme}>
           <UserContext.Provider value={{ user, setUser }}>
-            <View style={{minHeight: '100vh', height: '100%', backgroundColor: '#eceff1'}}>
-            {/* <div style={{minHeight: '100vh', height: '100%', backgroundColor: '#eceff1'}}> */}
+            <div className="mainView">
               <NavBar />
               {children}
               <Footer />
-            {/* </div> */}
-            </View>
+            </div>
           </UserContext.Provider>
         </ThemeProvider>
       </body>
