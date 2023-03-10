@@ -34,14 +34,12 @@
     "cytoscape-spread": "^3.0.0",
     "highlight.js": "^11.2.0",
     "n3": "^1.16.3",
-    "next": "^13.2.1",
+    "next": "13.2.1",
     "next-images": "^1.8.4",
     "rdflib": "^2.2.27",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-native-web": "^0.18.12",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-router-dom": "^6.8.1",
-    "react-router-native": "^6.8.1",
     "react-simple-oauth2-login": "^0.5.1"
   },
   "devDependencies": {

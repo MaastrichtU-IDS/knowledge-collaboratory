@@ -15,12 +15,14 @@
 FROM node:18-alpine AS runner
 WORKDIR /app
 RUN apk add --no-cache libc6-compat git
-# RUN corepack enable && \
-#     corepack prepare yarn@stable --activate
+
 # RUN addgroup --system --gid 1001 nodejs
 # RUN adduser --system --uid 1001 nextjs
 # RUN chown -R nextjs:nodejs /app
 # USER nextjs
+
+# RUN corepack enable && \
+#     corepack prepare yarn@stable --activate
 
 ARG ORCID_CLIENT_ID
 ARG FRONTEND_URL
@@ -34,15 +36,14 @@ ENV NEXT_TELEMETRY_DISABLED 1
 # COPY --chown=nextjs:nodejs . .
 COPY . .
 
-# RUN yarn
+RUN yarn
+RUN yarn build
 
-# RUN yarn build
-
-RUN pnpm install
-RUN pnpm build
+# RUN npm install
+# RUN npm run build
 
 EXPOSE 4000
 ENV PORT 4000
 
-# CMD ["yarn", "start"]
-CMD ["pnpm", "start"]
+CMD ["yarn", "start"]
+# CMD ["npm", "run", "start"]

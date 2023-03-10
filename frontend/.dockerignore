@@ -1,9 +1,15 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# Create issue with next build and yarn 3
+yarn.lock
+
 # dependencies
 /node_modules
 /.pnp
 .pnp.js
+.yarn
+.next
+.yarnrc.yml
 
 # testing
 /coverage

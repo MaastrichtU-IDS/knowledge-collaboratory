@@ -11,15 +11,14 @@ import GenerateKeyIcon from '@mui/icons-material/VpnKey';
 import UploadIcon from '@mui/icons-material/FileUpload';
 
 import { settings, genericContext } from '../utils/settings';
-import { rdfToRdf } from '../utils/utils';
 import { FormSettings } from './StyledComponents';
-
 
 import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/github-dark-dimmed.css';
 import hljsDefineTurtle from '../utils/highlightjs-turtle';
 hljs.registerLanguage("turtle", hljsDefineTurtle)
 
+// import { rdfToRdf } from '../utils/utils';
 
 const PublishNanopubButtons = ({
   user,
@@ -56,10 +55,10 @@ const PublishNanopubButtons = ({
     // Trigger JSON-LD file download
     event.preventDefault();
     const stmtJsonld: any = generateRDF()
-    rdfToRdf(stmtJsonld)
-      .then((formattedRdf: any) => {
-        console.log(formattedRdf);
-      })
+    // rdfToRdf(stmtJsonld)
+    //   .then((formattedRdf: any) => {
+    //     console.log(formattedRdf);
+    //   })
     var element = document.createElement('a');
     element.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(stmtJsonld, null, 4)));
     element.setAttribute('download', 'annotation.json');
