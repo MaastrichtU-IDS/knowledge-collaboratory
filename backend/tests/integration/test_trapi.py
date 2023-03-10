@@ -30,11 +30,13 @@ def test_post_trapi():
             # print(response.json)
             edges = response.json()["message"]["knowledge_graph"]["edges"].items()
             # print(response)
-            # print(trapi_filename)
+            print(trapi_filename)
 
             validator.check_compliance_of_trapi_response(response.json())
             validator_resp = validator.get_messages()
             print(validator_resp["warnings"])
+            print("REASONER VALIDATOR ERRORS")
+            print(validator_resp["errors"])
             assert (
                 len(validator_resp["errors"]) == 0
             )
@@ -75,6 +77,8 @@ def test_trapi_empty_response():
     validator.check_compliance_of_trapi_response(response.json())
     validator_resp = validator.get_messages()
     print(validator_resp["warnings"])
+    print("REASONER VALIDATOR ERRORS")
+    print(validator_resp["errors"])
     assert (
         len(validator_resp["errors"]) == 0
     )

@@ -16,7 +16,7 @@ PREFIX np: <http://www.nanopub.org/nschema#>
 PREFIX npx: <http://purl.org/nanopub/x/>
 PREFIX npa: <http://purl.org/nanopub/admin/>
 SELECT DISTINCT ?association ?subject ?predicate ?object ?subject_category ?object_category
-    ?primary_knowledge_source ?relation ?provided_by ?publications
+    ?primary_knowledge_source ?provided_by ?publications
     ?label ?description ?population_has_phenotype ?has_population_context
 WHERE {
   graph ?np_assertion {
@@ -29,9 +29,6 @@ WHERE {
       rdf:object ?object .
     OPTIONAL {
       ?association biolink:primary_knowledge_source ?primary_knowledge_source .
-    }
-    OPTIONAL {
-      ?association biolink:relation ?relation .
     }
     OPTIONAL {
       ?association biolink:provided_by ?provided_by .
@@ -514,14 +511,14 @@ def reasonerapi_to_sparql(reasoner_query):
         #   'relation', 'publications', 'knowledge_source', 'label', 'provided_by',
         #   'description', 'has_population_context', 'population_has_phenotype'
         # ]
-        if "relation" in edge_result:
-            # knowledge_graph['edges'][edge_uri]['relation'] = resolve_uri_with_context(edge_result['relation']['value'])
-            knowledge_graph["edges"][edge_uri]["attributes"].append(
-                {
-                    "attribute_type_id": "biolink:relation",
-                    "value": resolve_uri_with_context(edge_result["relation"]["value"]),
-                }
-            )
+        # if "relation" in edge_result:
+        #     # knowledge_graph['edges'][edge_uri]['relation'] = resolve_uri_with_context(edge_result['relation']['value'])
+        #     knowledge_graph["edges"][edge_uri]["attributes"].append(
+        #         {
+        #             "attribute_type_id": "biolink:relation",
+        #             "value": resolve_uri_with_context(edge_result["relation"]["value"]),
+        #         }
+        #     )
         if "publications" in edge_result:
             knowledge_graph["edges"][edge_uri]["attributes"].append(
                 {
