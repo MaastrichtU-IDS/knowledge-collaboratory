@@ -14,6 +14,7 @@
 # FROM base AS runner
 FROM node:18-alpine AS runner
 WORKDIR /app
+RUN apk add --no-cache libc6-compat git
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 RUN chown -R nextjs:nodejs /app
@@ -27,7 +28,6 @@ ENV NEXT_PUBLIC_API_URL=$API_URL
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV NODE_ENV production
 
-RUN apk add --no-cache libc6-compat git
 
 # COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY . .
