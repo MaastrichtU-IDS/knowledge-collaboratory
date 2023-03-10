@@ -32,7 +32,7 @@ def test_post_trapi():
             # print(response)
             # print(trapi_filename)
 
-            validator.check_compliance_of_trapi_response(message=response.json()["message"])
+            validator.check_compliance_of_trapi_response(response.json())
             validator_resp = validator.get_messages()
             print(validator_resp["warnings"])
             assert (
@@ -72,7 +72,7 @@ def test_trapi_empty_response():
     )
 
     print(response.json())
-    validator.check_compliance_of_trapi_response(message=response.json()["message"])
+    validator.check_compliance_of_trapi_response(response.json())
     validator_resp = validator.get_messages()
     print(validator_resp["warnings"])
     assert (
