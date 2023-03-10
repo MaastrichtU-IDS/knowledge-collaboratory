@@ -2,7 +2,6 @@
 const withImages = require('next-images')
 
 const nextConfig = withImages({
-  projectRoot: __dirname,
   experimental: {
     appDir: true,
   },

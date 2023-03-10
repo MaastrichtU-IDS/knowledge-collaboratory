@@ -4,7 +4,7 @@ import React, {useEffect} from "react";
 import { useTheme } from "@mui/material/styles";
 import { Autocomplete, TextField, Button, Typography, Box } from "@mui/material";
 import axios from 'axios';
-import { settings } from "@/utils/settings";
+import { settings } from "../utils/settings";
 
 
 const PubAnnotationProjects = ({
