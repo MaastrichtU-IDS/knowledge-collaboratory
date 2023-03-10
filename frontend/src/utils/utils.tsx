@@ -5,6 +5,7 @@
 // // const $rdf = require('rdflib')
 // import { genericContext } from './settings';
 
+export const dummy = "dummy"
 
 // export const rdfToRdf = (data: any, output: string = 'text/turtle', input: string = 'application/ld+json') => {
 //   // Convert RDF to JSON-LD using rdflib
