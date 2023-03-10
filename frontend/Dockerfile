@@ -15,7 +15,8 @@
 FROM node:18-alpine AS runner
 WORKDIR /app
 RUN apk add --no-cache libc6-compat git
-
+RUN corepack enable && \
+    corepack prepare yarn@stable --activate
 # RUN addgroup --system --gid 1001 nodejs
 # RUN adduser --system --uid 1001 nextjs
 # RUN chown -R nextjs:nodejs /app
@@ -28,7 +29,6 @@ ENV NEXT_PUBLIC_FRONTEND_URL=$FRONTEND_URL
 ENV NEXT_PUBLIC_API_URL=$API_URL
 ENV NEXT_TELEMETRY_DISABLED 1
 # ENV NODE_ENV production
-
 
 # COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
 # COPY --chown=nextjs:nodejs . .
