@@ -15,11 +15,12 @@
 FROM node:18-alpine AS runner
 WORKDIR /app
 RUN apk add --no-cache libc6-compat git
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-RUN chown -R nextjs:nodejs /app
 
-USER nextjs
+# RUN addgroup --system --gid 1001 nodejs
+# RUN adduser --system --uid 1001 nextjs
+# RUN chown -R nextjs:nodejs /app
+# USER nextjs
+
 ARG ORCID_CLIENT_ID
 ARG FRONTEND_URL
 ARG API_URL
@@ -30,7 +31,8 @@ ENV NODE_ENV production
 
 
 # COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
-COPY --chown=nextjs:nodejs . .
+# COPY --chown=nextjs:nodejs . .
+COPY . .
 
 RUN yarn
 
