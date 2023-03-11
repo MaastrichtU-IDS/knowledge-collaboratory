@@ -7,20 +7,17 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from transformers import BertForSequenceClassification, BertTokenizer
 
-from app.config import settings, logger
 from app.api.login import get_current_user
+from app.config import logger, settings
 from app.models import User
 
-router = APIRouter()
-
-
-class NerInput(BaseModel):
-    text: str = "Divalproex sodium delayed-release capsules are indicated as monotherapy and adjunctive therapy in the treatment of adult patients and pediatric patients down to the age of 10 years with complex partial seizures that occur either in isolation or in association with other types of seizures."
-
-
-openai.api_key = settings.OPENAI_APIKEY
-engine = "text-davinci-003"
-# engine = "code-davinci-002"
+# Check available engines at https://platform.openai.com/docs/models/overview
+default_engine = "gpt-3.5-turbo"
+engine_list = [
+    "gpt-3.5-turbo",
+    "text-davinci-003",
+    "code-davinci-002"
+]
 NUM_RETRIES = 3
 
 default_prompt = """From the text below, extract the entities, classify them and extract associations between those entities
@@ -30,6 +27,14 @@ Return the results as a YAML object with the following fields:
 - entities: <the list of entities in the text, each entity is an object with the fields: label, type of the entity>
 - associations: <the list of associations between entities in the text, each association is an object with the fields: "subject" for the subject entity, "predicate" for the relation (treats, affects, interacts with, causes, caused by, has evidence), "object" for the object entity>
 """
+
+openai.api_key = settings.OPENAI_APIKEY
+router = APIRouter()
+
+
+class NerInput(BaseModel):
+    text: str = "Divalproex sodium delayed-release capsules are indicated as monotherapy and adjunctive therapy in the treatment of adult patients and pediatric patients down to the age of 10 years with complex partial seizures that occur either in isolation or in association with other types of seizures."
+
 
 @router.post(
     "/openai-extract",
@@ -41,6 +46,7 @@ Return the results as a YAML object with the following fields:
 async def get_entities_relations_openai(
     input: NerInput = Body(...),
     prompt: str = default_prompt,
+    engine: str = default_engine,
     # current_user: User = Depends(get_current_user),
 ):
     # if not current_user or "id" not in current_user.keys():
@@ -48,6 +54,11 @@ async def get_entities_relations_openai(
     #         status_code=403,
     #         detail=f"You need to login with ORCID to publish a Nanopublication",
     #     )
+    if engine not in engine_list:
+        raise HTTPException(
+            status_code=400,
+            detail=f"The provided engine {engine} does not exist, please use on of {' ,'.join(engine_list)}",
+        )
 
     prompt = f"""{prompt}
 
