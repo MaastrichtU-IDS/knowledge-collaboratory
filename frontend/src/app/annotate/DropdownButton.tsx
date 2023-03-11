@@ -91,7 +91,7 @@ export default function DropdownButton({
                   {options.map((option: any, index: any) => (
                     <MenuItem
                       key={option}
-                      disabled={index === 0 && !loggedIn}
+                      // disabled={index === 0 && !loggedIn}
                       // Disable OpenAI model if not logged in
                       selected={index === selectedIndex}
                       onClick={(event) => handleMenuItemClick(event, index)}

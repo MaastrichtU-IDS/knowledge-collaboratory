@@ -29,6 +29,12 @@ const curieToUri = (curie: string) => {
   return IDO + curie
 }
 
+const defaultPrompt = `From the text below, extract the entities, classify them and extract associations between those entities
+Entities to extract should be of one of those types: "Chemical Entity", "Disease", "Gene", "Gene Product", "Organism Taxon"
+
+Return the results as a YAML object with the following fields:
+- entities: <the list of entities in the text, each entity is an object with the fields: label, type of the entity>
+- associations: <the list of associations between entities in the text, each association is an object with the fields: "subject" for the subject entity, "predicate" for the relation (treats, affects, interacts with, causes, caused by, has evidence), "object" for the object entity>`
 
 export default function AnnotateText() {
   const theme = useTheme();
@@ -45,6 +51,7 @@ export default function AnnotateText() {
     inputDocument: '',
     inputProject: '',
     editInputText: '',
+    editPrompt: defaultPrompt,
     extractionModel: 1, // LitCoin 1, OpenAI 0
     templateSelected: 'RDF reified statements',
     extractClicked: false,
@@ -125,7 +132,7 @@ export default function AnnotateText() {
       {'text': state.editInputText},
       {
         headers: { Authorization: `Bearer ${user['access_token']}` },
-        // params: requestParams
+        'params': {'prompt': state.editPrompt}
       }
     )
     .then(async res => {
@@ -651,11 +658,27 @@ export default function AnnotateText() {
             />
           </div>
 
-          { !user.id &&
+          {/* { !user.id &&
             <Typography style={{marginBottom: theme.spacing(1), textAlign: "center"}}>
               🔒️ You need to login with your ORCID to use OpenAI models
             </Typography>
+          } */}
+          { state.extractionModel == 0 &&
+            <TextField
+              id='editPrompt'
+              label='Prompt to use'
+              placeholder='Prompt to use'
+              value={state.editPrompt}
+              required
+              multiline
+              variant="outlined"
+              onChange={handleTextChange}
+              size='small'
+              InputProps={{ className: "input" }}
+              InputLabelProps={{ required: false }}
+            />
           }
+
         </FormSettings>
       </form>
 
