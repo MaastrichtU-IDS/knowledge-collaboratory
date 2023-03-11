@@ -1,0 +1,38 @@
+{
+  "name": "astro-app",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/image": "^0.16.0",
+    "@astrojs/react": "^2.1.0",
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@mui/icons-material": "^5.11.11",
+    "@mui/material": "^5.11.12",
+    "astro": "^2.1.0",
+    "is-core-module": "^2.11.0",
+    "prop-types": "^15.8.1",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-is": "^18.2.0",
+    "vscode-oniguruma": "^1.7.0"
+  },
+  "devDependencies": {
+    "@types/cytoscape": "^3.19.9",
+    "@types/cytoscape-dagre": "^2.3.0",
+    "@types/cytoscape-euler": "^1.2.0",
+    "@types/cytoscape-fcose": "^2.1.1",
+    "@types/cytoscape-popper": "^2.0.0",
+    "@types/n3": "^1.10.4",
+    "@types/node": "18.14.1",
+    "@types/react": "^18.0.21",
+    "@types/react-dom": "^18.0.6"
+  }
+}
