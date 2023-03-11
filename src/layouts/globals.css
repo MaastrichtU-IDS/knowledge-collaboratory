@@ -28,6 +28,13 @@ body {
   margin: 0px;
 }
 
+footer {
+  padding: 16px;
+  margin-top: auto;
+  color: 'white';
+  background-color: #2196f3;
+}
+
 mark {
   cursor: pointer;
 }
@@ -92,7 +99,8 @@ a:hover {
   text-decoration: none;
   padding: 0px;
   border: 0;
-  background-color: 'inherit';
+  background-color: #43a047;
+  color: #43a047;
   color: 'inherit';
   border-radius: 8px;
 }

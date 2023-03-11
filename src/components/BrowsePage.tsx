@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useContext } from 'react';
+import React from 'react';
 import { useTheme } from '@mui/material/styles';
 import { Typography, Container, CircularProgress, TextField, Box, InputBase, Paper, IconButton, Stack, Autocomplete } from "@mui/material";
 import axios from 'axios';
@@ -12,7 +10,6 @@ import Icon from './Icon';
 
 export default function BrowseNanopub() {
   const theme = useTheme();
-  // const { user }: any = useContext(UserContext)
 
   const resourceTypesList: any = [
     {label: 'PREDICT reference dataset', uri: 'http://purl.org/np/RAWWaT9M_Nd8cVm_-amJErz60Ak__tkS6ROi2P-swdmMw'},

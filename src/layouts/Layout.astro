@@ -5,7 +5,6 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import NavBar from "./NavBar";
 import Footer from "./Footer";
-// import UserContext from "../utils/UserContext";
 
 const theme = createTheme({
   palette: {
@@ -53,16 +52,15 @@ const { title } = Astro.props;
 		<!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" /> -->
 
 	</head>
+
 	<body>
 		<ThemeProvider client:load theme={theme}>
-			<!-- <UserContext.Provider value={{ user, setUser }}> -->
-			  <div class="mainView">
-          <NavBar client:only />
-          <slot />
-          <Footer client:only />
-			  </div>
-			<!-- </UserContext.Provider> -->
-		  </ThemeProvider>
+			<div class="mainView">
+				<NavBar client:only />
+				<slot />
+				<Footer client:only />
+			</div>
+		</ThemeProvider>
 	</body>
 </html>
 
