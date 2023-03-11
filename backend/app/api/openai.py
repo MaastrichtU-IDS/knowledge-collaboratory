@@ -39,7 +39,7 @@ class NerInput(BaseModel):
 @router.post(
     "/openai-extract",
     name="Extract entities and relations from text using OpenAI models",
-    description="""Get biomedical entities and relations from text""",
+    description=f"""Extract entities and relations from text using OpenAI models, engines available are {' ,'.join(engine_list)}""",
     response_description="Entities and relations extracted from the given text",
     response_model={},
 )
