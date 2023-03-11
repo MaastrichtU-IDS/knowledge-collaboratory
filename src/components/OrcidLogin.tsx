@@ -66,8 +66,6 @@ const OrcidLogin = ({
     localStorage.clear();
     userProfile.set({})
     handleClickAway()
-    // updateState({open: false})
-    // window.location.reload();
   }
 
   const getCurrentUser = (configState: any) => {
@@ -82,8 +80,8 @@ const OrcidLogin = ({
         let current_user = res.data
         // console.log('Current user:', current_user)
         current_user['access_token'] = configState['access_token']
-        // setUser(current_user)
         if (!current_user.error) {
+          // The token stored might not be valid anymore
           current_user['access_token'] = configState['access_token']
           if (current_user['given_name'] || current_user['family_name']) {
             current_user['username'] = current_user['given_name'] + ' ' + current_user['family_name']
@@ -94,7 +92,6 @@ const OrcidLogin = ({
           }
           userProfile.set(current_user)
           localStorage.setItem("knowledgeCollaboratorySettings", JSON.stringify(current_user));
-          console.log("SETTING USER", $userProfile)
         }
         // https://stackoverflow.com/questions/25686484/what-is-intent-of-id-token-expiry-time-in-openid-connect
         // If the token is expired, it should make another auth request, except this time with prompt=none in the URL parameter
@@ -117,21 +114,10 @@ const OrcidLogin = ({
           console.log('Error', error.message);
         }
       })
-      // Also possible and lighter on the Auth API: just check the cookie
-      // const username = configState['given_name'] + ' ' + configState['family_name']
-      // updateState({ currentUsername: username, accessToken: configState['access_token'], loggedIn: true})
-      // console.log('access_token before setUser')
-      // console.log(configState)
-      // setUser({
-      //   username: username,
-      //   access_token: configState['access_token'],
-      //   id: configState['id'],
-      // })
   }
 
   React.useEffect(() => {
     const localStorageConfig: any = localStorage.getItem("knowledgeCollaboratorySettings");
-    // console.log(localStorageConfig)
     let configState: any = JSON.parse(localStorageConfig);
     if (configState && configState['access_token']) {
       getCurrentUser(configState)
@@ -142,29 +128,30 @@ const OrcidLogin = ({
 
   return (
     <>
-      { $userProfile && $userProfile.username &&
-          <Button variant='contained' onClick={showUserInfo} color='secondary' size='small'
-              style={{textTransform: 'none'}}>
-            🐧 {$userProfile.username}
-          </Button>
-      }
-
       { !$userProfile || !$userProfile.username &&
         <OAuth2Login
-          className="loginButton"
+          className="greenButton"
           authorizationUrl="https://orcid.org/oauth/authorize"
           // authorizationUrl="https://orcid.org/.well-known/openid-configuration"
           responseType="token"
           clientId={settings.orcidClientId}
           redirectUri={settings.frontendUrl}
           scope="/authenticate"
+          expiresIn={604800} // 7 days
           onSuccess={onSuccess}
           onFailure={onFailure}>
-            <Button variant='contained' className="loginButton" color='secondary' component="span" size='small' style={{textTransform: 'none'}}>
+            <Button variant='contained' className="greenButton" component="span" size='small' style={{textTransform: 'none'}}>
               Login with ORCID
               {/* <Image src="/orcid_logo.svg" alt="ORCID" width={20} height={20} style={{marginLeft: theme.spacing(1)}} /> */}
             </Button>
         </OAuth2Login>
+      }
+
+      { $userProfile && $userProfile.username &&
+          <Button variant='contained' onClick={showUserInfo} className="greenButton" size='small'
+              style={{textTransform: 'none'}}>
+            🐧 {$userProfile.username}
+          </Button>
       }
 
       { $userProfile && $userProfile.username &&

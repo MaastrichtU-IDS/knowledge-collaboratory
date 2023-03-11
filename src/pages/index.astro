@@ -1,13 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Card from '../components/Card.astro';
-import BrowseNanopub from '../components/BrowsePage';
-// import BrowseNanopub from '../components/BrowsePage';
+import PageBrowse from '../app/PageBrowse';
 ---
 
 
 <Layout title="Welcome to Astro.">
-	<BrowseNanopub client:only />
+	<PageBrowse client:only='react' />
 </Layout>
 
 <!-- <Layout title="Welcome to Astro.">
@@ -42,7 +40,7 @@ import BrowseNanopub from '../components/BrowsePage';
 	</main>
 </Layout> -->
 
-<style>
+<!-- <style>
 	main {
 		margin: auto;
 		padding: 1.5rem;
@@ -85,4 +83,4 @@ import BrowseNanopub from '../components/BrowsePage';
 		gap: 1rem;
 		padding: 0;
 	}
-</style>
+</style> -->

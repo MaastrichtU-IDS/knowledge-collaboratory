@@ -1,20 +1,13 @@
 
 export const settings = {
-  // frontendUrl: process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:4000',
-  // apiUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
-  // docsUrl: ((process.env.NEXT_PUBLIC_API_URL) ? process.env.NEXT_PUBLIC_API_URL + '/docs' : null) || 'http://localhost:8000/docs',
-  // nanopubGrlcUrl: process.env.GRLC_URL || "https://grlc.np.dumontierlab.com/api/local/local",
-  // ontogptUrl: process.env.ONTOGPT_URL || 'http://localhost:8001/extract',
-  // nanopubSparqlUrl: "https://virtuoso.nps.petapico.org/sparql",
-  // orcidClientId: process.env.ORCID_CLIENT_ID || "APP-TEANCMSUOPYZOGJ3",
-  frontendUrl: 'http://localhost:3000',
-  apiUrl: 'https://api.collaboratory.semanticscience.org',
-  // apiUrl: 'http://localhost:8000',
-  docsUrl: 'https://api.collaboratory.semanticscience.org/docs',
+  frontendUrl: import.meta.env.PUBLIC_FRONTEND_URL || 'http://localhost:3000',
+  apiUrl: import.meta.env.PUBLIC_API_URL || 'https://api.collaboratory.semanticscience.org',
+  docsUrl: ((import.meta.env.PUBLIC_API_URL) ? import.meta.env.PUBLIC_API_URL + '/docs' : null) || 'https://api.collaboratory.semanticscience.org/docs',
   nanopubGrlcUrl: "https://grlc.np.dumontierlab.com/api/local/local",
   ontogptUrl: 'http://localhost:8001/extract',
   nanopubSparqlUrl: "https://virtuoso.nps.petapico.org/sparql",
-  orcidClientId: "APP-TEANCMSUOPYZOGJ3",
+  orcidClientId: import.meta.env.ORCID_CLIENT_ID || "APP-TEANCMSUOPYZOGJ3",
+  base: "/knowledge-collaboratory"
 }
 
 

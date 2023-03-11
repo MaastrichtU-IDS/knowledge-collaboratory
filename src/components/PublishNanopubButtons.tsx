@@ -227,7 +227,7 @@ const PublishNanopubButtons = ({
             <Button
               onClick={handleDownloadRDF}
               variant="contained"
-              className="button"
+              className="greenButton"
               startIcon={<Icon id="download" />}
               style={{marginRight: theme.spacing(2)}}
               disabled={entitiesList.length < 1}
@@ -257,7 +257,7 @@ const PublishNanopubButtons = ({
                 className="button"
                 startIcon={<Icon id="backup" />}
                 disabled={!state.nanopubGenerated}
-                color="error" >
+                color="warning" >
                   Publish Nanopublication
               </Button>
             }

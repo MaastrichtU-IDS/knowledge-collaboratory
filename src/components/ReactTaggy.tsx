@@ -139,6 +139,7 @@ const Taggy = ({
                     >
                         {t.token}
                         <span
+                            onMouseOver={(e) => onMouseOver(e, t, i)}
                             style={{
                                 boxSizing: 'border-box',
                                 fontSize: '0.6em',
@@ -236,6 +237,7 @@ const Taggy = ({
                     >
                         {t.token}
                         <span
+                            onMouseOver={(e) => onMouseOver(e, t, i)}
                             style={{
                                 boxSizing: 'border-box',
                                 fontSize: '0.6em',

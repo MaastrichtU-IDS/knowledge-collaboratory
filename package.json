@@ -4,6 +4,8 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
+    "dev:fix": "astro dev --host 127.0.0.1",
+    "dev:local": "PUBLIC_API_URL=http://localhost:8000 astro dev",
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",

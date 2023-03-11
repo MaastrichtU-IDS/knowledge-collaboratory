@@ -2,12 +2,24 @@
 @import url("https://fonts.googleapis.com/css?family=Open+Sans");
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0");
 
+/* Check colors at https://docusaurus.io/fr/docs/styling-layout#styling-your-site-with-infima */
+:root {
+  --main-color-light: #6ec6ff;
+  --main-color: #2196f3;
+  --main-color-dark: #0069c0;
+  --secondary-color-light: #76d275;
+  --secondary-color: #43a047;
+  --secondary-color-dark: #00701a;
+  --white: #ffffff;
+}
+
 .flexGrow {
   flex-grow: 1;
 }
 .mainView {
   min-height: 100vh;
   height: 100%;
+  width: 100%;
   background-color: #eceff1;
   display: flex;
   flex-basis: auto;
@@ -32,7 +44,7 @@ footer {
   padding: 16px;
   margin-top: auto;
   color: 'white';
-  background-color: #2196f3;
+  background-color: var(--main-color);
 }
 
 mark {
@@ -82,6 +94,14 @@ a:hover {
   width: 35ch;
 }
 
+/* Get the right filter at https://codepen.io/sosuke/pen/Pjoqqp */
+.whiteSvgIcon {
+  filter: invert(100%) sepia(0%) saturate(7500%) hue-rotate(345deg) brightness(104%) contrast(107%);
+}
+.whiteSvgIcon:hover {
+  filter: invert(91%) sepia(1%) saturate(798%) hue-rotate(7deg) brightness(76%) contrast(82%);
+}
+
 .button {
   text-transform: none;
   /* margin: 16px; */
@@ -94,15 +114,26 @@ a:hover {
 .MuiButton-root.MuiButton-contained {
   text-transform: none;
 }
-.loginButton {
+.MuiButton-root.greenButton {
+  background-color: var(--secondary-color);
+}
+.MuiButton-root.greenButton:hover {
+  background-color: var(--secondary-color-dark);
+}
+.MuiButton-root.MuiButton-contained.greenButton:not(:last-of-type) {
+  border-right: 1px solid var(--secondary-color-dark);
+}
+.greenButton {
   text-transform: none;
   text-decoration: none;
   padding: 0px;
   border: 0;
-  background-color: #43a047;
-  color: #43a047;
   color: 'inherit';
   border-radius: 8px;
+}
+
+.MuiFormLabel-root.MuiInputLabel-root {
+  z-index: 100;
 }
 
 .input {

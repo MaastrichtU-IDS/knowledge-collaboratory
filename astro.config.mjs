@@ -5,8 +5,9 @@ import image from "@astrojs/image";
 
 // https://astro.build/config
 export default defineConfig({
-  // site: 'https://maastrichtu-ids.github.io',
-  // base: '/knowledge-collaboratory',
+  site: 'https://maastrichtu-ids.github.io',
+  base: '/knowledge-collaboratory',
+  trailingSlash: 'ignore',
   integrations: [
     react(),
     image(),

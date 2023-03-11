@@ -4,11 +4,11 @@ import { Typography, Container, CircularProgress, TextField, Box, InputBase, Pap
 import axios from 'axios';
 
 import { settings } from '../utils/settings';
-import { CytoscapeRdfGraph, rdfToCytoscape } from "./CytoscapeRdf";
-import DisplayNanopub from './DisplayNanopub';
-import Icon from './Icon';
+import { CytoscapeRdfGraph, rdfToCytoscape } from "../components/CytoscapeRdf";
+import DisplayNanopub from '../components/DisplayNanopub';
+import Icon from '../components/Icon';
 
-export default function BrowseNanopub() {
+export default function PageBrowse() {
   const theme = useTheme();
 
   const resourceTypesList: any = [
