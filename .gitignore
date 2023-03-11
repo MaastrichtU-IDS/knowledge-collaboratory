@@ -5,8 +5,6 @@
 pnpm-lock.yaml
 yarn.lock
 
-package-lock.json
-
 # build output
 dist/
 
@@ -26,7 +24,7 @@ pnpm-debug.log*
 .env
 .env.production
 
-.vscode
+.vscode/
 
 # macOS-specific files
 .DS_Store
