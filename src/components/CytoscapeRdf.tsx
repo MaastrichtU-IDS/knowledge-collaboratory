@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useEffect, useRef } from 'react';
 import { Card, Typography } from "@mui/material";
 import { renderToStaticMarkup } from "react-dom/server"

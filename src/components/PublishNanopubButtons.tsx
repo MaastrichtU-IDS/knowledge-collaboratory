@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import axios from 'axios';
 import { useTheme } from '@mui/material/styles';

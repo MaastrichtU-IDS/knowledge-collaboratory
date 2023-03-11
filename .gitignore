@@ -1,9 +1,9 @@
 # yarn v3 files
 .yarn/
 .pnp*.[cm]js
-.yarnrc.yml
 pnpm-lock.yaml
 yarn.lock
+# .yarnrc.yml
 
 # build output
 dist/

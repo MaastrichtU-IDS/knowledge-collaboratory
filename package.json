@@ -7,6 +7,7 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "vscode": "yarn dlx @yarnpkg/sdks vscode",
     "astro": "astro"
   },
   "dependencies": {
@@ -15,15 +16,12 @@
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
     "@fluentui/react": "^8.68.0",
-    "@mui/icons-material": "^5.0.3",
-    "@mui/lab": "^5.0.0-alpha.50",
     "@mui/material": "^5.11.10",
     "@nanostores/react": "^0.4.1",
     "@rjsf/core": "^4.2.0",
     "@rjsf/fluent-ui": "^4.2.0",
     "astro": "^2.1.0",
     "axios": "^1.3.4",
-    "axios-retry": "^3.4.0",
     "cytoscape": "^3.23.0",
     "cytoscape-cola": "^2.5.0",
     "cytoscape-cose-bilkent": "^4.1.0",
