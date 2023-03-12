@@ -228,7 +228,7 @@ const PublishNanopubButtons = ({
               onClick={handleDownloadRDF}
               variant="contained"
               color='success'
-              startIcon={<Icon id="download" />}
+              startIcon={<Icon name="download" />}
               style={{marginRight: theme.spacing(2)}}
               disabled={entitiesList.length < 1}
             >
@@ -238,7 +238,7 @@ const PublishNanopubButtons = ({
               onClick={(event) => generateNanopub(event, false)}
               variant="contained"
               className="button"
-              startIcon={<Icon id="fact_check" />}
+              startIcon={<Icon name="fact_check" />}
               disabled={!user.id}
               style={{marginRight: theme.spacing(2)}}
               color="info" >
@@ -255,7 +255,7 @@ const PublishNanopubButtons = ({
                 onClick={publishSignedNanopub}
                 variant="contained"
                 className="button"
-                startIcon={<Icon id="backup" />}
+                startIcon={<Icon name="backup" />}
                 disabled={!state.nanopubGenerated}
                 color="warning" >
                   Publish Nanopublication
@@ -311,7 +311,7 @@ const PublishNanopubButtons = ({
                   id={"addProp:"}
                   variant="contained"
                   className="button"
-                  startIcon={<Icon id="vpn_key" />}
+                  startIcon={<Icon name="vpn_key" />}
                   style={{textTransform: 'none'}}
                   color="secondary" >
                     Generate the keys, and link them to my ORCID on the Nanopublication network
@@ -335,7 +335,7 @@ const PublishNanopubButtons = ({
                 <Button type="submit"
                   variant="contained"
                   className="button"
-                  startIcon={<Icon id="file_upload" />}
+                  startIcon={<Icon name="file_upload" />}
                   style={{textTransform: 'none', marginTop: theme.spacing(1)}}
                   color="secondary" >
                     Upload your keys

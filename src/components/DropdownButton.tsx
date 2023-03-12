@@ -52,7 +52,7 @@ export default function DropdownButton({
   return (
     <React.Fragment>
       <ButtonGroup variant="contained" color='success' style={{width: "fit-content"}} ref={anchorRef} aria-label="split button">
-        <Button type="submit" startIcon={<Icon id='auto_fix_high' />} onClick={handleClick}>{options[selectedIndex]}</Button>
+        <Button type="submit" startIcon={<Icon name='auto_fix_high' />} onClick={handleClick}>{options[selectedIndex]}</Button>
         <Button
           size="small"
           aria-controls={open ? 'split-button-menu' : undefined}
@@ -61,7 +61,7 @@ export default function DropdownButton({
           aria-haspopup="menu"
           onClick={handleToggle}
         >
-          <Icon id='arrow_drop_down' />
+          <Icon name='arrow_drop_down' />
         </Button>
       </ButtonGroup>
       <Popper

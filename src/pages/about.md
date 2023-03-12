@@ -1,19 +1,17 @@
 ---
 title: About the Knowledge Collaboratory
 layout: ../layouts/MarkdownLayout.astro
-# import: ../layouts/globals.css';
-# https://docs.astro.build/en/guides/markdown-content/#configuring-markdown-and-mdx
 ---
 
 ## ℹ️ About
 
 The Knowledge Collaboratory is a web service to help annotate biomedical text, query and publish [Nanopublications](https://nanopub.net/) for the [NIH NCATS Biomedical Data Translator project](https://ncats.nih.gov/translator). It provide the following functionalities:
 
-🔎 **Browse Nanopublications** through the web UI, or query them using the **Translator Reasoner API (TRAPI)** specifications.
+🔎 **Browse Nanopublications** through the web UI, or query them using the [Translator Reasoner API (TRAPI) specifications](https://github.com/NCATSTranslator/ReasonerAPI).
 
 ✒️ **Annotate biomedical text** and publish the annotations as nanopublications after login with your [ORCID](https://orcid.org/).
 
-It is developed by the [Institute of Data Science](https://www.maastrichtuniversity.nl/research/institute-data-science) at Maastricht University.
+This service is developed by the [Institute of Data Science](https://www.maastrichtuniversity.nl/research/institute-data-science) at Maastricht University in collaboration with the NCATS Translator project.
 
 ## ⚙️ How it works
 

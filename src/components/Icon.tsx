@@ -1,10 +1,10 @@
 
 const Icon = ({
-  id,
+  id: name,
 }: any) => {
   return (
     <span className="material-symbols-outlined">
-      {id}
+      {name}
     </span>
   )
 }

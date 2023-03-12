@@ -90,13 +90,13 @@ const DisplayNanopub = ({
             {!state.npDict[np]['expanded'] &&
               <>
                 Display the Nanopublication RDF
-                <Icon id="expand_more" />
+                <Icon name="expand_more" />
               </>
             }
             {state.npDict[np]['expanded'] &&
               <>
                 Hide the Nanopublication RDF
-                <Icon id="expand_less" />
+                <Icon name="expand_less" />
               </>
             }
           </IconButton>
@@ -111,13 +111,13 @@ const DisplayNanopub = ({
             {!state.npDict[np]['expanded_graph'] &&
               <>
                 Display the Nanopublication graph
-                <Icon id="expand_more" />
+                <Icon name="expand_more" />
               </>
             }
             {state.npDict[np]['expanded_graph'] &&
               <>
                 Hide the Nanopublication graph
-                <Icon id="expand_less" />
+                <Icon name="expand_less" />
               </>
             }
           </IconButton>

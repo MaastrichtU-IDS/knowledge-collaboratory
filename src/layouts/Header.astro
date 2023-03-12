@@ -2,7 +2,7 @@
 import {settings} from '../utils/settings'
 import OrcidLogin from '../components/OrcidLogin'
 
-import Icon from '../components/Icon';
+import Icon from '../components/Icon.astro';
 
 interface MenuLink {
   text?: string;
@@ -79,7 +79,7 @@ const {
         leftLinks.map(({ text, href, tooltip, icon }) => (
           <li title={tooltip}>
             <a href={href}>
-              <Icon id={icon} />
+              <Icon name={icon} />
               <span>{text}</span>
             </a>
           </li>
@@ -100,7 +100,7 @@ const {
           <li title={tooltip}>
             <a href={href}>
               { icon &&
-                <Icon id={icon} />
+                <Icon name={icon} />
               }
               { img &&
                 <img
@@ -126,7 +126,7 @@ const {
   <div>
     <div class="toggleMenu">
       <button type="button" aria-label="Toggle menu">
-        <Icon id='menu' class="menuIcon" />
+        <Icon name='menu' class="menuIcon" />
       </button>
     </div>
   </div>

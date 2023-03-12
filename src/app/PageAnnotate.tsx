@@ -714,7 +714,7 @@ export default function PageAnnotate() {
                   <Tooltip title={<Typography style={{textAlign: 'center'}}>Delete the entity</Typography>}>
                     <IconButton onClick={() => handleRemoveEntity(state.tagSelected.index)}
                       style={{marginLeft: theme.spacing(1), alignContent: 'right'}} color="default">
-                        <Icon id="delete" />
+                        <Icon name="delete" />
                     </IconButton>
                   </Tooltip>
                 </Typography>
@@ -833,7 +833,7 @@ export default function PageAnnotate() {
                     <Grid item xs={1}>
                       <Tooltip title={<Typography style={{textAlign: 'center'}}>Delete the statement</Typography>}>
                         <IconButton onClick={() => handleRemoveEntityProp(state.tagSelected, pindex)} color="default">
-                            <Icon id="delete" />
+                            <Icon name="delete" />
                         </IconButton>
                       </Tooltip>
                     </Grid>
@@ -847,7 +847,7 @@ export default function PageAnnotate() {
                     id={"addProp:"}
                     variant="contained"
                     className="button"
-                    startIcon={<Icon id="add_box" />}
+                    startIcon={<Icon name="add_box" />}
                     style={{marginLeft: theme.spacing(5), marginRight: theme.spacing(4), textTransform: 'none'}}
                     color="inherit" >
                       Add a property to this entity
@@ -887,7 +887,7 @@ export default function PageAnnotate() {
             }}
             variant="contained"
             className="button"
-            startIcon={<Icon id="add_box" />}
+            startIcon={<Icon name="add_box" />}
             style={{textTransform: 'none', marginTop: theme.spacing(1)}}
             color="inherit" >
               Add an external entity
@@ -952,7 +952,7 @@ export default function PageAnnotate() {
               <Grid item xs={1}>
                 <Tooltip title={<Typography style={{textAlign: 'center'}}>Delete the statement</Typography>}>
                   <IconButton onClick={() => handleRemoveStmt(index)} color="default">
-                      <Icon id="delete" />
+                      <Icon name="delete" />
                   </IconButton>
                 </Tooltip>
               </Grid>
@@ -990,7 +990,7 @@ export default function PageAnnotate() {
                 <Grid item xs={1}>
                   <Tooltip title={<Typography style={{textAlign: 'center'}}>Delete the statement</Typography>}>
                     <IconButton onClick={() => handleRemoveProp(index, pindex)} color="default">
-                        <Icon id="delete" />
+                        <Icon name="delete" />
                     </IconButton>
                   </Tooltip>
                 </Grid>
@@ -1004,7 +1004,7 @@ export default function PageAnnotate() {
                 id={"addProp:" + index}
                 variant="contained"
                 className="button"
-                startIcon={<Icon id="add_box" />}
+                startIcon={<Icon name="add_box" />}
                 style={{marginLeft: theme.spacing(5), marginRight: theme.spacing(4), marginBottom: theme.spacing(1), textTransform: 'none'}}
                 color="inherit" >
                   Add a property to this statement
@@ -1016,7 +1016,7 @@ export default function PageAnnotate() {
         <Button onClick={addStatement}
           variant="contained"
           className="button"
-          startIcon={<Icon id="add_box" />}
+          startIcon={<Icon name="add_box" />}
           style={{textTransform: 'none', marginTop: theme.spacing(1)}}
           color="info" >
             Add a statement

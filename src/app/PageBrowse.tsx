@@ -315,7 +315,7 @@ export default function PageBrowse() {
               size="small"
             />
             <IconButton aria-label="search button" onClick={handleSearch}>
-              <Icon id='search' />
+              <Icon name='search' />
             </IconButton>
           </Paper>
         </form>

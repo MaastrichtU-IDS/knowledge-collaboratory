@@ -59,10 +59,10 @@ export default function ShapeUploader({ renderObject, shapeTarget, onChange }: a
             >
               Import&nbsp;
               {!state.show_info_card &&
-                <Icon id="expand_more" />
+                <Icon name="expand_more" />
               }
               {state.show_info_card &&
-                <Icon id="expand_less" />
+                <Icon name="expand_less" />
               }
             </IconButton>
           }
@@ -119,7 +119,7 @@ export default function ShapeUploader({ renderObject, shapeTarget, onChange }: a
                   <Button type="submit"
                     variant="contained"
                     className="button"
-                    startIcon={<Icon id="cloud_upload" />}
+                    startIcon={<Icon name="cloud_upload" />}
                     style={{ textTransform: 'none'}}
                     color="primary" >
                       Use this shape

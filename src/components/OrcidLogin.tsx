@@ -81,7 +81,6 @@ const OrcidLogin = ({
         // console.log('Current user:', current_user)
         current_user['access_token'] = configState['access_token']
         if (!current_user.error) {
-          // The token stored might not be valid anymore
           current_user['access_token'] = configState['access_token']
           if (current_user['given_name'] || current_user['family_name']) {
             current_user['username'] = current_user['given_name'] + ' ' + current_user['family_name']
@@ -92,6 +91,9 @@ const OrcidLogin = ({
           }
           userProfile.set(current_user)
           localStorage.setItem("knowledgeCollaboratorySettings", JSON.stringify(current_user));
+        } else {
+          // The token stored might not be valid anymore, deleting it to avoid spamming the API
+          localStorage.removeItem("knowledgeCollaboratorySettings")
         }
         // https://stackoverflow.com/questions/25686484/what-is-intent-of-id-token-expiry-time-in-openid-connect
         // If the token is expired, it should make another auth request, except this time with prompt=none in the URL parameter
@@ -165,7 +167,7 @@ const OrcidLogin = ({
               <Typography style={{marginBottom: theme.spacing(1)}}>
                 Username: {$userProfile.username}
               </Typography>
-              <Button onClick={logout} variant='contained' color='inherit' size='small' startIcon={<Icon id="logout" />}>
+              <Button onClick={logout} variant='contained' color='inherit' size='small' startIcon={<Icon name="logout" />}>
                 Logout
               </Button>
             </Paper>
