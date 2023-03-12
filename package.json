@@ -1,13 +1,12 @@
 {
-  "name": "astro-app",
+  "name": "knowledge-collaboratory",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "dev:fix": "astro dev --host 127.0.0.1",
     "dev:local": "PUBLIC_API_URL=http://localhost:8000 astro dev",
-    "start": "astro dev",
     "build": "astro build",
+    "build:gh": "PUBLIC_BASE_URL=/knowledge-collaboratory astro build",
     "preview": "astro preview",
     "vscode": "yarn dlx @yarnpkg/sdks vscode",
     "astro": "astro"
@@ -15,9 +14,11 @@
   "dependencies": {
     "@astrojs/image": "^0.16.0",
     "@astrojs/react": "^2.1.0",
+    "@astrojs/tailwind": "^3.1.0",
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
     "@fluentui/react": "^8.68.0",
+    "@fontsource/roboto": "^4.5.8",
     "@mui/material": "^5.11.10",
     "@nanostores/react": "^0.4.1",
     "@rjsf/core": "^4.2.0",
@@ -40,9 +41,11 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-is": "^18.2.0",
-    "react-simple-oauth2-login": "^0.5.1"
+    "react-simple-oauth2-login": "^0.5.1",
+    "tailwindcss": "^3.0.24"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.9",
     "@types/cytoscape": "^3.19.9",
     "@types/cytoscape-dagre": "^2.3.0",
     "@types/cytoscape-euler": "^1.2.0",

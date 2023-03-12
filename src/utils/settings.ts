@@ -7,7 +7,7 @@ export const settings = {
   ontogptUrl: 'http://localhost:8001/extract',
   nanopubSparqlUrl: "https://virtuoso.nps.petapico.org/sparql",
   orcidClientId: import.meta.env.ORCID_CLIENT_ID || "APP-TEANCMSUOPYZOGJ3",
-  base: "/knowledge-collaboratory"
+  basePath: import.meta.env.PUBLIC_BASE_URL || "",
 }
 
 

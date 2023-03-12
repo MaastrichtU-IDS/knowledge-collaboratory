@@ -51,11 +51,10 @@ export default function DropdownButton({
 
   return (
     <React.Fragment>
-      <ButtonGroup variant="contained" className='greenButton' style={{width: "fit-content"}} ref={anchorRef} aria-label="split button">
-        <Button className='greenButton' type="submit" startIcon={<Icon id='auto_fix_high' />} onClick={handleClick}>{options[selectedIndex]}</Button>
+      <ButtonGroup variant="contained" color='success' style={{width: "fit-content"}} ref={anchorRef} aria-label="split button">
+        <Button type="submit" startIcon={<Icon id='auto_fix_high' />} onClick={handleClick}>{options[selectedIndex]}</Button>
         <Button
           size="small"
-          className='greenButton'
           aria-controls={open ? 'split-button-menu' : undefined}
           aria-expanded={open ? 'true' : undefined}
           aria-label="select merge strategy"

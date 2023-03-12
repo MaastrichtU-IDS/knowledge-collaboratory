@@ -696,9 +696,10 @@ export default function PageAnnotate() {
         </Box>
       }
 
-      <Popper open={open} anchorEl={anchorEl}>
+      {/* Card showing an entity when clicked on */}
+      <Popper open={open} anchorEl={anchorEl} style={{zIndex: '1000'}}>
         <ClickAwayListener onClickAway={handleClickAway}>
-          <Paper elevation={4} style={{minWidth: theme.spacing(100), padding: theme.spacing(2, 2), textAlign: 'left', zIndex: '9000'}}>
+          <Card elevation={4} style={{opacity: 1, minWidth: theme.spacing(100), padding: theme.spacing(2, 2), textAlign: 'left', zIndex: '9000'}}>
             { state.tagSelected &&
               <>
                 <Typography variant='h5' style={{textAlign: 'center', marginBottom: theme.spacing(3)}}>
@@ -847,7 +848,7 @@ export default function PageAnnotate() {
                 </div>
               </>
             }
-          </Paper>
+          </Card>
         </ClickAwayListener>
       </Popper>
 

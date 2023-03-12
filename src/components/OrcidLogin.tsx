@@ -130,7 +130,6 @@ const OrcidLogin = ({
     <>
       { !$userProfile || !$userProfile.username &&
         <OAuth2Login
-          className="greenButton"
           authorizationUrl="https://orcid.org/oauth/authorize"
           // authorizationUrl="https://orcid.org/.well-known/openid-configuration"
           responseType="token"
@@ -139,16 +138,18 @@ const OrcidLogin = ({
           scope="/authenticate"
           expiresIn={604800} // 7 days
           onSuccess={onSuccess}
-          onFailure={onFailure}>
-            <Button variant='contained' className="greenButton" component="span" size='small' style={{textTransform: 'none'}}>
+          onFailure={onFailure}
+          className="loginButton"
+        >
+            <Button variant='contained' color='success' component="span" size='small' style={{textTransform: 'none'}}>
               Login with ORCID
-              {/* <Image src="/orcid_logo.svg" alt="ORCID" width={20} height={20} style={{marginLeft: theme.spacing(1)}} /> */}
+              <img src={`${settings.basePath}/orcid_logo.svg`} alt="ORCID" width={20} height={20} style={{marginLeft: theme.spacing(1)}} />
             </Button>
         </OAuth2Login>
       }
 
       { $userProfile && $userProfile.username &&
-          <Button variant='contained' onClick={showUserInfo} className="greenButton" size='small'
+          <Button variant='contained' onClick={showUserInfo} color='success' size='small'
               style={{textTransform: 'none'}}>
             🐧 {$userProfile.username}
           </Button>
@@ -164,7 +165,7 @@ const OrcidLogin = ({
               <Typography style={{marginBottom: theme.spacing(1)}}>
                 Username: {$userProfile.username}
               </Typography>
-              <Button onClick={logout} variant='contained' size='small' startIcon={<Icon id="logout" />}>
+              <Button onClick={logout} variant='contained' color='inherit' size='small' startIcon={<Icon id="logout" />}>
                 Logout
               </Button>
             </Paper>

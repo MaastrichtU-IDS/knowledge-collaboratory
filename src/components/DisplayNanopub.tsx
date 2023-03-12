@@ -59,11 +59,11 @@ const DisplayNanopub = ({
     <Card elevation={4} style={{padding: theme.spacing(1, 1), margin: theme.spacing(1, 0)}} key={index}>
       <CardContent style={{paddingBottom: theme.spacing(1)}}>
         {/* General infos about the nanopub */}
-        <Typography variant='h6'>
+        <Typography variant='body1' style={{fontSize: "18px"}}>
           <a href={np} target="_blank" rel="noopener noreferrer">{np}</a>
           {/* <a href={np} className={classes.link} target="_blank" rel="noopener noreferrer">{np}</a> */}
         </Typography>
-        <Typography variant='body2'>
+        <Typography variant='body2' >
           Published on the {state.npDict[np]['date']['value']}
           { usersPubkeys[state.npDict[np]['pubkey']['value']] &&
             <>

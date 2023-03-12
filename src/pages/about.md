@@ -1,6 +1,8 @@
 ---
 title: About the Knowledge Collaboratory
 layout: ../layouts/MarkdownLayout.astro
+# import: ../layouts/globals.css';
+# https://docs.astro.build/en/guides/markdown-content/#configuring-markdown-and-mdx
 ---
 
 ## ℹ️ About
@@ -11,7 +13,9 @@ The Knowledge Collaboratory is a web service to help annotate biomedical text, q
 
 ✒️ **Annotate biomedical text** and publish the annotations as nanopublications after login with your [ORCID](https://orcid.org/).
 
-Developed and hosted by the [Institute of Data Science](https://www.maastrichtuniversity.nl/research/institute-data-science) at Maastricht University.
+It is developed by the [Institute of Data Science](https://www.maastrichtuniversity.nl/research/institute-data-science) at Maastricht University.
+
+<!-- <br/> -->
 
 ## ⚙️ How it works
 

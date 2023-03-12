@@ -1,0 +1,22 @@
+
+/* Check colors at https://docusaurus.io/fr/docs/styling-layout#styling-your-site-with-infima */
+:root {
+  --main-color-light: #6ec6ff;
+  --main-color: #2196f3;
+  --main-color-dark: #0069c0;
+  --secondary-color-light: #76d275;
+  --secondary-color: #43a047;
+  --secondary-color-dark: #00701a;
+  --white: #ffffff;
+}
+
+/* *, ::before, ::after {
+	box-sizing: border-box;
+} */
+
+blockquote, dl, dd, h1, h2, h3, h4, h5, h6, hr, figure, p, pre {
+  margin: inherit;
+}
+h2 {
+  margin-bottom: 30px;
+}

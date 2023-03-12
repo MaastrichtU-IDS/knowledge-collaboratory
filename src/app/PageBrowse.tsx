@@ -303,12 +303,13 @@ export default function PageBrowse() {
       <Stack direction="row" spacing={2} justifyContent="center" style={{margin: theme.spacing(2, 0 )}}>
         {/* Search box */}
         <form onSubmit={handleSearch}>
-          <Paper className='searchPaper'>
+          <Paper style={{display: 'flex', minWidth: '40ch'}}>
             <InputBase
-              style={{marginLeft: theme.spacing(1), fontSize: '13px', flex: 1,}}
+              style={{marginLeft: theme.spacing(1), flex: 1,}}
               inputProps={{ 'aria-label': 'search input' }}
               placeholder={"🔍️ Search text/URI in Nanopublications"}
               onChange={searchChange}
+              size="small"
             />
             <IconButton aria-label="search button" onClick={handleSearch}>
               <Icon id='search' />
@@ -319,21 +320,23 @@ export default function PageBrowse() {
         <Autocomplete
           id="filter-user"
           options={state.users_list}
+          size="small"
           // options={state.users_list.sort((a: any, b: any) => -b.firstLetter.localeCompare(a.firstLetter))}
           getOptionLabel={(option: any) => option.name.value}
-          sx={{ width: 250 }}
+          // sx={{ width: 250 }}
           renderInput={(params) => <TextField {...params} label={"👤 Filter per user (" + state.users_list.length + " users)"} />}
           onChange={(event, newInputValue: any) => {
             updateState({
               filter_user: newInputValue
             })
           }}
-          style={{ backgroundColor: '#ffffff' }}
+          style={{ backgroundColor: '#ffffff', minWidth: '30ch' }}
         />
 
         <Autocomplete
           id="filter-resource"
           options={resourceTypesList}
+          size="small"
           // options={state.users_list.sort((a: any, b: any) => -b.firstLetter.localeCompare(a.firstLetter))}
           getOptionLabel={(option: any) => option.label}
           sx={{ width: 250 }}
@@ -343,28 +346,24 @@ export default function PageBrowse() {
               filterPerResource: newInputValue
             })
           }}
-          style={{ backgroundColor: '#ffffff' }}
+          style={{ backgroundColor: '#ffffff', minWidth: '32ch' }}
         />
 
         <TextField
           id="results-count"
           value={state.results_count}
           onChange={(e: any) => {updateState({results_count: e.target.value})}}
-          label="Max number of results"
+          label="Number of results"
           type="number"
           variant="outlined"
           style={{ backgroundColor: '#ffffff' }}
+          size="small"
         />
       </Stack>
 
       { !state.loading_nanopubs &&
-        <Typography>
+        <Typography variant='body2'>
           🗃️ {Object.keys(state.nanopub_obj).length} nanopublications found
-          {/* { state.results_count == Object.keys(state.nanopub_obj).length &&
-            <>
-              &nbsp;(limit maximum 🔥)
-            </>
-          } */}
         </Typography>
       }
 

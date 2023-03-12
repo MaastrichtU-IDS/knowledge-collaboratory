@@ -1,17 +1,28 @@
-/* PERSONAL CONFIG */
-@import url("https://fonts.googleapis.com/css?family=Open+Sans");
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0");
+
+/* Not really using TailwindCSS at the moment, creating too many conflicts with existing styles */
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
 
 /* Check colors at https://docusaurus.io/fr/docs/styling-layout#styling-your-site-with-infima */
 :root {
-  --main-color-light: #6ec6ff;
-  --main-color: #2196f3;
-  --main-color-dark: #0069c0;
-  --secondary-color-light: #76d275;
-  --secondary-color: #43a047;
-  --secondary-color-dark: #00701a;
-  --white: #ffffff;
+  --color-primary-light: #6ec6ff;
+  --color-primary: #2196f3;
+  --color-primary-dark: #0069c0;
+  --color-secondary-light: #76d275;
+  --color-secondary: #43a047;
+  --color-secondary-dark: #00701a;
+  --color-accent: #43a047;
 }
+
+/* *, ::before, ::after {
+	box-sizing: border-box;
+} */
+
+/* blockquote, dl, dd, h1, h2, h3, h4, h5, h6, hr, figure, p, pre {
+  margin: inherit;
+} */
 
 .flexGrow {
   flex-grow: 1;
@@ -37,14 +48,18 @@
 }
 
 body {
+  font-family: "Roboto", sans-serif;
   margin: 0px;
 }
+/* input {
+  font-size: 13px !important;
+} */
 
 footer {
   padding: 16px;
   margin-top: auto;
   color: 'white';
-  background-color: var(--main-color);
+  background-color: var(--color-primary);
 }
 
 mark {
@@ -87,12 +102,6 @@ a:hover {
   padding: 16px;
   margin: 16px;
 }
-.searchPaper {
-  padding: 8px;
-  display: 'flex';
-  align-items: 'center';
-  width: 35ch;
-}
 
 /* Get the right filter at https://codepen.io/sosuke/pen/Pjoqqp */
 .whiteSvgIcon {
@@ -114,16 +123,7 @@ a:hover {
 .MuiButton-root.MuiButton-contained {
   text-transform: none;
 }
-.MuiButton-root.greenButton {
-  background-color: var(--secondary-color);
-}
-.MuiButton-root.greenButton:hover {
-  background-color: var(--secondary-color-dark);
-}
-.MuiButton-root.MuiButton-contained.greenButton:not(:last-of-type) {
-  border-right: 1px solid var(--secondary-color-dark);
-}
-.greenButton {
+.loginButton {
   text-transform: none;
   text-decoration: none;
   padding: 0px;
@@ -138,17 +138,8 @@ a:hover {
 
 .input {
   background: #fff;
-  font-size: "11px";
-  /* font-family: "monospace"; */
 }
 
-/* CSS used by the official lib to display Nanopubs */
-.nanopub { margin: 0 0 30px 0; padding: 0px 10px 10px 10px; border-radius: 10px; border: solid; border-width: 1px; }
-.nanopub-prefixes { margin-top: 10px; }
-.nanopub-head { background: #e8e8e8; padding: 10px; margin-top: 10px; border-radius: 10px; }
-.nanopub-assertion { background: #99ccff; padding: 10px; margin-top: 10px; border-radius: 10px; }
-.nanopub-provenance { background: #f3a08c; padding: 10px; margin-top: 10px; border-radius: 10px; }
-.nanopub-pubinfo { background: #ffff66; padding: 10px; margin-top: 10px; border-radius: 10px; }
 
 
 /* @import url("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"); */
