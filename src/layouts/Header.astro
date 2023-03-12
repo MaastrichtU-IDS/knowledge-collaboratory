@@ -79,7 +79,9 @@ const {
         leftLinks.map(({ text, href, tooltip, icon }) => (
           <li title={tooltip}>
             <a href={href}>
-              <Icon name={icon} />
+              { icon &&
+                <Icon name={icon} />
+              }
               <span>{text}</span>
             </a>
           </li>

@@ -1,6 +1,5 @@
 import React from "react";
 import axios from 'axios';
-import { useTheme } from '@mui/material/styles';
 import { Typography, Paper, Checkbox, FormControlLabel, Button, Card } from "@mui/material";
 
 
@@ -25,7 +24,6 @@ const PublishNanopubButtons = ({
   errorMessage,
   ...args
 }: any) => {
-  const theme = useTheme();
 
   const [state, setState] = React.useState({
     shaclValidate: true,
@@ -229,7 +227,7 @@ const PublishNanopubButtons = ({
               variant="contained"
               color='success'
               startIcon={<Icon name="download" />}
-              style={{marginRight: theme.spacing(2)}}
+              style={{marginRight: '16px'}}
               disabled={entitiesList.length < 1}
             >
                 Download RDF
@@ -240,7 +238,7 @@ const PublishNanopubButtons = ({
               className="button"
               startIcon={<Icon name="fact_check" />}
               disabled={!user.id}
-              style={{marginRight: theme.spacing(2)}}
+              style={{marginRight: '16px'}}
               color="info" >
                 Generate Nanopublication
             </Button>
@@ -262,7 +260,7 @@ const PublishNanopubButtons = ({
               </Button>
             }
             { !user.id &&
-              <Typography style={{marginTop: theme.spacing(2)}}>
+              <Typography style={{marginTop: '16px'}}>
                 🔒️ You need to login with your ORCID to generate Nanopublications
               </Typography>
             }
@@ -271,14 +269,14 @@ const PublishNanopubButtons = ({
       </form>
 
       { state.nanopubPublished &&
-        <Paper elevation={4} style={{backgroundColor: '#81c784', padding: theme.spacing(2), marginBottom:theme.spacing(3), marginTop:theme.spacing(3)}}>
+        <Paper elevation={4} style={{backgroundColor: '#81c784', padding: '16px', marginBottom:'24px', marginTop:'24px'}}>
           ✅&nbsp;&nbsp;Nanopublication successfully published
         </Paper>
       }
 
       { state.errorMessage &&
         <Paper elevation={4}
-          style={{backgroundColor: "#e57373", padding: theme.spacing(1), marginTop: theme.spacing(3), marginBottom: theme.spacing(3)}}
+          style={{backgroundColor: "#e57373", padding: '8px', marginTop: '24px', marginBottom: '24px'}}
           // @ts-ignore
           sx={{ display: state.errorMessage.length > 0 }}
         >
@@ -298,14 +296,14 @@ const PublishNanopubButtons = ({
 
           { !user.keyfiles_loaded &&
             <>
-              <Typography style={{marginBottom: theme.spacing(1)}}>
+              <Typography style={{marginBottom: '8px'}}>
                 🔑 Before publishing nanopubs, you need to first generate a private/public key pair,
                 and then publish an introduction nanopub to link this key pair to your ORCID.<br/>
                 We can automate this process for you, upon clicking the button above we will
                 generate a key pair, and publish a nanopublication to link it to your ORCID:
               </Typography>
-              {/* <div style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap', marginBottom: theme.spacing(2)}}> */}
-              <div style={{width: '100%', textAlign: 'center', marginBottom: theme.spacing(4)}}>
+              {/* <div style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap', marginBottom: '16px'}}> */}
+              <div style={{width: '100%', textAlign: 'center', marginBottom: '32px'}}>
                 <Button
                   onClick={handleGenerateKeys}
                   id={"addProp:"}
@@ -323,11 +321,11 @@ const PublishNanopubButtons = ({
               </Typography>
               <form encType="multipart/form-data" action="" onSubmit={handleUploadKeys}
                   style={{display: 'flex', alignItems: 'center', textAlign: 'center', width: '100%'}}>
-                <Typography style={{marginTop: theme.spacing(1)}}>
+                <Typography style={{marginTop: '8px'}}>
                   Select the <b>Public</b> key:&nbsp;&nbsp;
                   <input type="file" id="publicKey" />
                 </Typography>
-                <Typography style={{marginTop: theme.spacing(1)}}>
+                <Typography style={{marginTop: '8px'}}>
                   Select the <b>Private</b> key:&nbsp;&nbsp;
                   <input type="file" id="privateKey" />
                 </Typography>
@@ -336,7 +334,7 @@ const PublishNanopubButtons = ({
                   variant="contained"
                   className="button"
                   startIcon={<Icon name="file_upload" />}
-                  style={{textTransform: 'none', marginTop: theme.spacing(1)}}
+                  style={{textTransform: 'none', marginTop: '8px'}}
                   color="secondary" >
                     Upload your keys
                 </Button>

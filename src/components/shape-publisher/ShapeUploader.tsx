@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTheme } from '@mui/material/styles';
 import { IconButton, Typography, Button, FormControl, TextField, Card, CardContent, CardHeader, Collapse, Snackbar,  List, ListItem, ListItemAvatar, Avatar, ListItemText } from "@mui/material";
 // QuestionAnswer
 import MuiAlert from '@mui/material/Alert';
@@ -8,7 +7,6 @@ import { FormSettings } from '../StyledComponents';
 import Icon  from '../Icon';
 
 export default function ShapeUploader({ renderObject, shapeTarget, onChange }: any) {
-  const theme = useTheme();
 
   const [state, setState] = React.useState({
     show_info_card: false,
@@ -47,7 +45,7 @@ export default function ShapeUploader({ renderObject, shapeTarget, onChange }: a
   };
 
   return(
-    <Card style={{margin: theme.spacing(4,0)}}>
+    <Card style={{margin: '32px 0px'}}>
         <CardHeader
           style={{ textAlign: 'center'}}
           action={

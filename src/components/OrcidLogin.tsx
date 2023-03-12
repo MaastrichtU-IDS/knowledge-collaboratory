@@ -2,7 +2,6 @@ import React, { useContext } from "react";
 // import Link from 'next/link';
 // import Image from 'next/image';
 // import { Image } from '@astrojs/image/components';
-import { useTheme } from '@mui/material/styles';
 import { AppBar, Toolbar, Button, Tooltip, Icon as MuiIcon, IconButton, Box, ButtonBase } from '@mui/material';
 import { Popper, ClickAwayListener, Typography, Paper, Checkbox, FormControlLabel, FormHelperText } from "@mui/material";
 import { useStore } from '@nanostores/react';
@@ -25,8 +24,7 @@ const OrcidLogin = ({
   ...args
 }: any) => {
 
-  const theme = useTheme();
-  // const auth = useAuth();
+    // const auth = useAuth();
 
   const $userProfile = useStore(userProfile);
 
@@ -145,7 +143,7 @@ const OrcidLogin = ({
         >
             <Button variant='contained' color='success' component="span" size='small' style={{textTransform: 'none', fontSize: "12px"}}>
               Login with ORCID
-              <img src={`${settings.basePath}/orcid_logo.svg`} alt="ORCID" width={20} height={20} style={{marginLeft: theme.spacing(1)}} />
+              <img src={`${settings.basePath}/orcid_logo.svg`} alt="ORCID" width={20} height={20} style={{marginLeft: '8px'}} />
             </Button>
         </OAuth2Login>
       }
@@ -160,11 +158,11 @@ const OrcidLogin = ({
       { $userProfile && $userProfile.username &&
         <Popper open={open} anchorEl={anchorEl}>
           <ClickAwayListener onClickAway={handleClickAway}>
-            <Paper elevation={4} style={{padding: theme.spacing(2, 2), textAlign: 'left'}}>
-              <Typography style={{marginBottom: theme.spacing(1)}}>
+            <Paper elevation={4} style={{padding: '16px 16px', textAlign: 'left'}}>
+              <Typography style={{marginBottom: '8px'}}>
                 Logged in with ORCID: {<a href={$userProfile.id}  target="_blank" rel="noopener noreferrer">{$userProfile.id}</a>}
               </Typography>
-              <Typography style={{marginBottom: theme.spacing(1)}}>
+              <Typography style={{marginBottom: '8px'}}>
                 Username: {$userProfile.username}
               </Typography>
               <Button onClick={logout} variant='contained' color='inherit' size='small' startIcon={<Icon name="logout" />}>

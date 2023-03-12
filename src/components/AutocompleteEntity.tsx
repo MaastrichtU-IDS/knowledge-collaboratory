@@ -63,8 +63,7 @@ const AutocompleteEntity = ({
   ...args
 }: any) => {
 
-  // const theme = useTheme();
-
+  //
   return (
     <Autocomplete
       key={id}

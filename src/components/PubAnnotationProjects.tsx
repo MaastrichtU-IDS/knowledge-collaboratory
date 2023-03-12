@@ -12,8 +12,7 @@ const PubAnnotationProjects = ({
   // groupBy=(option: any) => (option.type ? option.type : null),
   ...args
 }: any) => {
-  const theme = useTheme();
-  const [state, setState] = React.useState({
+    const [state, setState] = React.useState({
     projects: [],
     projectSelected: {
       author: "", created_at: "", license: "",
@@ -107,7 +106,7 @@ const PubAnnotationProjects = ({
 
   return (
     <>
-      <Box sx={{ display: 'flex', justifyContent: "center", width: '100%', marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }}>
+      <Box sx={{ display: 'flex', justifyContent: "center", width: '100%', marginTop: '16px', marginBottom: '16px' }}>
         <Autocomplete
           key={id}
           id={id}
@@ -122,7 +121,7 @@ const PubAnnotationProjects = ({
             return option.name
           }}
           // groupBy={groupBy}
-          style={{width: '60%', marginRight: theme.spacing(2)}}
+          style={{width: '60%', marginRight: '16px'}}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -149,7 +148,7 @@ const PubAnnotationProjects = ({
         </Button>
       </Box>
       { state.countPublished >= 0 &&
-        <Typography variant="body1" style={{textAlign: 'center', marginBottom: theme.spacing(2)}}>
+        <Typography variant="body1" style={{textAlign: 'center', marginBottom: '16px'}}>
           📝 {state.countPublished} documents have been annotated for the <a href={state.projectSelected.url} target="_blank" rel="noopener noreferrer">{state.projectSelected.name}</a> PubAnnotation project
         </Typography>
       }

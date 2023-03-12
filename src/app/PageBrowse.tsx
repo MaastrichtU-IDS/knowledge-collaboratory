@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTheme } from '@mui/material/styles';
 import { Typography, Container, CircularProgress, TextField, Box, InputBase, Paper, IconButton, Stack, Autocomplete } from "@mui/material";
 import axios from 'axios';
 
@@ -9,7 +8,6 @@ import DisplayNanopub from '../components/DisplayNanopub';
 import Icon from '../components/Icon';
 
 export default function PageBrowse() {
-  const theme = useTheme();
 
   const resourceTypesList: any = [
     {label: 'PREDICT reference dataset', uri: 'http://purl.org/np/RAWWaT9M_Nd8cVm_-amJErz60Ak__tkS6ROi2P-swdmMw'},
@@ -295,7 +293,7 @@ export default function PageBrowse() {
 
   return(
     <Container className='mainContainer' >
-      {/* <Typography variant="h4" style={{textAlign: 'center', margin: theme.spacing(1, 0)}}>
+      {/* <Typography variant="h4" style={{textAlign: 'center', margin: '8px 0px'}}>
         🔍️ Browse Nanopublications
       </Typography> */}
       <h2>
@@ -303,13 +301,16 @@ export default function PageBrowse() {
       </h2>
 
       {/* Filtering options */}
-      <Stack direction={{sm: "column", md: "row"}} spacing={2} justifyContent="center" style={{margin: theme.spacing(2, 0)}}>
+      <Stack direction={{sm: "column", md: "row"}} spacing={2} justifyContent="center" style={{margin: '16px 0px'}}>
         {/* Search box */}
         <form onSubmit={handleSearch}>
-          <Paper style={{display: 'flex', minWidth: '40ch'}}>
+          <Paper style={{display: 'flex', minWidth: '40ch', height: '100%'}}>
             <InputBase
-              style={{marginLeft: theme.spacing(1), flex: 1,}}
-              inputProps={{ 'aria-label': 'search input' }}
+              style={{marginLeft: '8px', flex: 1,}}
+              inputProps={{
+                'aria-label': 'search input',
+                style: { padding: '0px', fontSize: '14px'}
+              }}
               placeholder={"🔍️ Search text/URI in Nanopublications"}
               onChange={searchChange}
               size="small"
@@ -327,7 +328,10 @@ export default function PageBrowse() {
           // options={state.users_list.sort((a: any, b: any) => -b.firstLetter.localeCompare(a.firstLetter))}
           getOptionLabel={(option: any) => option.name.value}
           // sx={{ width: 250 }}
-          renderInput={(params) => <TextField {...params} label={"👤 Filter per user (" + state.users_list.length + " users)"} />}
+          renderInput={(params) => <TextField {...params}
+            label={"👤 Filter per user (" + state.users_list.length + " users)"}
+            // inputProps={{style: { fontSize: '11px'}}}
+          />}
           onChange={(event, newInputValue: any) => {
             updateState({
               filter_user: newInputValue
@@ -360,6 +364,7 @@ export default function PageBrowse() {
           type="number"
           variant="outlined"
           style={{ backgroundColor: '#ffffff' }}
+          inputProps={{style: { color: 'var(--color-grey-dark)', opacity: '0.9' }}}
           size="small"
         />
       </Stack>
@@ -371,7 +376,7 @@ export default function PageBrowse() {
       }
 
       { state.loading_nanopubs &&
-        <Box sx={{textAlign: 'center', margin: theme.spacing(10, 0)}} >
+        <Box sx={{textAlign: 'center', margin: '80px 0px'}} >
           <CircularProgress style={{textAlign: 'center'}} />
         </Box>
       }

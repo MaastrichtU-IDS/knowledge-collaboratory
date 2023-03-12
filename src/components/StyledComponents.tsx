@@ -5,15 +5,15 @@ import { Typography, FormControl } from "@mui/material";
 // Styled components
 export const Paragraph = styled(Typography)(({ theme }) => ({
   ...theme.typography.body1,
-  marginBottom: theme.spacing(1),
+  marginBottom: '8px',
   textAlign: 'justify',
 }))as typeof Typography;
 
 
 export const Title = styled(Typography)(({ theme }) => ({
   ...theme.typography.h5,
-  marginTop: theme.spacing(5),
-  marginBottom: theme.spacing(2),
+  marginTop: '40px',
+  marginBottom: '16px',
   textAlign: 'center',
   fontWeight: '300',
 })) as typeof Typography;
@@ -24,19 +24,18 @@ export const FormSettings = styled(FormControl)(({ theme }) => ({
   width: '100%',
   // textAlign: 'center',
   '& .MuiFormControl-root': {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
+    marginTop: '8px',
+    marginBottom: '8px',
   },
   '& .MuiFormHelperText-root': {
-    marginTop: theme.spacing(0),
-    marginBottom: theme.spacing(1),
+    marginTop: '0px',
+    marginBottom: '8px',
   },
 })) as typeof FormControl;
 
 
 // export const LinkOut = ({children, ...props}={}) => {
-//   const theme = useTheme();
-
+//
 //   return (
 //     <a
 //       target="_blank"
@@ -56,8 +55,8 @@ export const FormSettings = styled(FormControl)(({ theme }) => ({
 // }
 // export const LinkOut = styled(a)(({ theme }) => ({
 //   ...theme.typography.h5,
-//   marginTop: theme.spacing(5),
-//   marginBottom: theme.spacing(2),
+//   marginTop: '40px',
+//   marginBottom: '16px',
 //   textAlign: 'center',
 //   fontWeight: '300',
 // })) as typeof Typography;

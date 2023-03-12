@@ -20,7 +20,6 @@ const DisplayNanopub = ({
   ...args
 }: any) => {
 
-  const theme = useTheme();
 
   const [state, setState] = React.useState({
     npDict: npDict,
@@ -56,8 +55,8 @@ const DisplayNanopub = ({
   };
 
   return (
-    <Card elevation={4} style={{padding: theme.spacing(1, 1), margin: theme.spacing(1, 0)}} key={index}>
-      <CardContent style={{paddingBottom: theme.spacing(1)}}>
+    <Card elevation={4} style={{padding: '8px 8px', margin: '8px 0px'}} key={index}>
+      <CardContent style={{paddingBottom: '8px'}}>
         {/* General infos about the nanopub */}
         <Typography variant='body1' style={{fontSize: "18px"}}>
           <a href={np} target="_blank" rel="noopener noreferrer">{np}</a>
@@ -79,7 +78,7 @@ const DisplayNanopub = ({
       </CardContent>
 
       {/* Buttons to expand the nanopub RDF or graph */}
-      <CardActions disableSpacing style={{padding: theme.spacing(0, 1), margin: theme.spacing(0, 0)}}>
+      <CardActions disableSpacing style={{padding: '0px 8px', margin: '0px'}}>
         { state.npDict[np]['rdf'] &&
           <IconButton style={{fontSize: '14px'}}
             onClick={handleExpandClick}
@@ -128,8 +127,8 @@ const DisplayNanopub = ({
       {/* unmountOnExit */}
       { state.npDict[np] && state.npDict[np]['rdf'] &&
         <Collapse in={state.npDict[np]['expanded']} timeout="auto">
-          <CardContent style={{margin: theme.spacing(0,0), padding: theme.spacing(0,0)}}>
-            <pre style={{whiteSpace: 'pre-wrap', margin: theme.spacing(0,0)}}>
+          <CardContent style={{margin: '0px', padding: '0px'}}>
+            <pre style={{whiteSpace: 'pre-wrap', margin: '0px'}}>
               <code className="language-turtle">
                 {state.npDict[np]['rdf']}
                 {/* Adding <a> tags don't work in pre code tags */}
@@ -143,8 +142,8 @@ const DisplayNanopub = ({
       {/* Display graph when expanded */}
       { state.npDict[np]['cytoscape'] && state.npDict[np] &&
         <Collapse in={state.npDict[np]['expanded_graph']} timeout="auto" unmountOnExit>
-          <CardContent style={{margin: theme.spacing(0,0), padding: theme.spacing(0,0)}}>
-            <Paper elevation={2} style={{ height: '80vh', textAlign: 'left', padding: theme.spacing(1, 1), margin: theme.spacing(1, 0) }}>
+          <CardContent style={{margin: '0px', padding: '0px'}}>
+            <Paper elevation={2} style={{ height: '80vh', textAlign: 'left', padding: '8px 8px', margin: '8px 0px' }}>
               <CytoscapeRdfGraph
                 cytoscapeElems={state.npDict[np]['cytoscape']}
               />

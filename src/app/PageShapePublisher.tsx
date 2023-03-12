@@ -1,6 +1,5 @@
 import React from 'react';
 // import { useLocation } from "react-router-dom";
-import { useTheme } from '@mui/material/styles';
 import { Typography, Container } from "@mui/material";
 
 import ShapeUploader from "../components/shape-publisher/ShapeUploader";
@@ -13,7 +12,6 @@ import {JsonldForm} from '../components/shape-publisher/JsonldForm';
 export default function ShapePublisher() {
 
   // TODO: use sx https://github.com/mui/material-ui/blob/master/examples/create-react-app-with-typescript/src/index.tsx
-  const theme = useTheme();
 
   // useLocation hook to get URL params
   // let location = useLocation();
@@ -74,11 +72,11 @@ export default function ShapePublisher() {
   return(
     <Container className='mainContainer'>
 
-      {/* <Typography variant="h4" style={{textAlign: 'center', marginBottom: theme.spacing(1)}}>
+      {/* <Typography variant="h4" style={{textAlign: 'center', marginBottom: '8px'}}>
         🧙‍♂️ FAIR Metadata Wizard, a JSON-LD editor 📝
       </Typography> */}
 
-      <Typography variant="body1" style={{textAlign: 'center', marginBottom: theme.spacing(1)}}>
+      <Typography variant="body1" style={{textAlign: 'center', marginBottom: '8px'}}>
         ⚠️ Work in progress, currently available for demo purpose
         {/* Load and edit <a href="https://json-ld.org/" className={classes.link} target="_blank" rel="noopener noreferrer">JSON-LD</a> <a href="https://en.wikipedia.org/wiki/Resource_Description_Framework" className={classes.link} target="_blank" rel="noopener noreferrer">RDF</a> files in a user-friendly web interface, with autocomplete based on the classes and properties of the ontology magically loaded from <code>@context</code> ✨️ */}
       </Typography>

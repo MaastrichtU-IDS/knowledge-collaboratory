@@ -1,6 +1,6 @@
 
 const Icon = ({
-  id: name,
+  name,
 }: any) => {
   return (
     <span className="material-symbols-outlined">

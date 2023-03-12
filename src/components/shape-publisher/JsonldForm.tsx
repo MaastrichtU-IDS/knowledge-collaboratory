@@ -45,8 +45,7 @@ type Props = {
 
 
 export const JsonldForm = ({ shape, target }: Props) => {
-  // const theme = useTheme();
-
+  //
   const parser = new Parser();
   const store = new Store();
 
@@ -134,7 +133,7 @@ export const JsonldForm = ({ shape, target }: Props) => {
           }}
           onMouseEnter={() => {updateState({showJsonBtnHover: true})}}
           onMouseLeave={() => {updateState({showJsonBtnHover: false})}}
-          // style={{ textTransform: 'none', margin: theme.spacing(2, 2) }}
+          // style={{ textTransform: 'none', margin: '16px 16px' }}
         >
           {state.showJsonSchema ? '🥷 Hide' : '🔦 Show'} JSON Schema
         </button>

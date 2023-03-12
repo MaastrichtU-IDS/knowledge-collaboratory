@@ -1,6 +1,5 @@
 // import React from "react";
-// import { useTheme } from '@mui/material/styles';
-// // const $rdf = require('rdflib')
+// // // const $rdf = require('rdflib')
 // import $rdf from 'rdflib';
 // // const $rdf = require('rdflib')
 // import { genericContext } from './settings';

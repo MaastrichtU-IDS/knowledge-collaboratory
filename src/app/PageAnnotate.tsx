@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useContext } from 'react';
-import { useTheme } from '@mui/material/styles';
 import { Typography, Popper, ClickAwayListener, Paper, Container, Box, CircularProgress, Tooltip, IconButton, Button, Card, FormControl, TextField, Grid } from "@mui/material";
 import axios from 'axios';
 
@@ -37,8 +36,7 @@ Return the results as a YAML object with the following fields:
 - associations: <the list of associations between entities in the text, each association is an object with the fields: "subject" for the subject entity, "predicate" for the relation (treats, affects, interacts with, causes, caused by, has evidence), "object" for the object entity>`
 
 export default function PageAnnotate() {
-  const theme = useTheme();
-  const $userProfile = useStore(userProfile);
+    const $userProfile = useStore(userProfile);
 
   // useLocation hook to get URL params
   // let location = useLocation();
@@ -592,14 +590,14 @@ export default function PageAnnotate() {
         also used by the <a href='http://pubannotation.org/' target="_blank" rel="noopener noreferrer">PubAnnotation</a> service.
         Generated annotations can be downloaded in the <a href='https://json-ld.org' target="_blank" rel="noopener noreferrer">JSON-LD</a> format, or published as <a href='https://nanopub.net' target="_blank" rel="noopener noreferrer">Nanopublications</a> after login with your ORCID.
       </p>
-      {/* <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
+      {/* <Typography variant="body1" style={{textAlign: 'left', margin: '8px 0px'}}>
         This service uses extraction models to help you annotate biomedical text using the <a href='https://biolink.github.io/biolink-model/docs/' target="_blank" rel="noopener noreferrer">BioLink model</a>, and
         standard identifiers resolved using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator SRI Name Resolution API</a>, such as MONDO and PubChem.
         The annotations are represented with the <a href='https://www.w3.org/RDF' target="_blank" rel="noopener noreferrer">RDF</a> standard, using the <a href='https://vemonet.github.io/tao' target="_blank" rel="noopener noreferrer">TAO ontology</a>,
         also used by the <a href='http://pubannotation.org/' target="_blank" rel="noopener noreferrer">PubAnnotation</a> service.
         Generated annotations can be downloaded in the <a href='https://json-ld.org' target="_blank" rel="noopener noreferrer">JSON-LD</a> format, or published as <a href='https://nanopub.net' target="_blank" rel="noopener noreferrer">Nanopublications</a> after login with your ORCID.
       </Typography> */}
-      {/* <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
+      {/* <Typography variant="body1" style={{textAlign: 'left', margin: '8px 0px'}}>
         🪄 A machine learning model automatically extracts biomedical entities and relations from the given text, classify them in different types from the BioLink model (chemical, disease, etc),
         and retrieve potential identifiers for those entities using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator SRI Name Resolution API</a>.
       </Typography> */}
@@ -641,7 +639,7 @@ export default function PageAnnotate() {
               variant="outlined"
               onChange={handleTextChange}
               size='small'
-              style={{width: '100%', marginRight: theme.spacing(2)}}
+              style={{width: '100%', marginRight: '16px'}}
               InputProps={{ className: "input" }}
               InputLabelProps={{ required: false }}
             />
@@ -660,7 +658,7 @@ export default function PageAnnotate() {
           </Box>
 
 
-          <div style={{width: '100%', textAlign: 'center', marginBottom: theme.spacing(2)}}>
+          <div style={{width: '100%', textAlign: 'center', marginBottom: '16px'}}>
             <DropdownButton
               options={extractionOptions}
               onChange={(event: React.ChangeEvent<HTMLInputElement>, index: number) => {
@@ -674,7 +672,7 @@ export default function PageAnnotate() {
           </div>
 
           {/* { !$userProfile.id &&
-            <Typography style={{marginBottom: theme.spacing(1), textAlign: "center"}}>
+            <Typography style={{marginBottom: '8px', textAlign: "center"}}>
               🔒️ You need to login with your ORCID to use OpenAI models
             </Typography>
           } */}
@@ -698,7 +696,7 @@ export default function PageAnnotate() {
       </form>
 
       { state.loading &&
-        <Box sx={{textAlign: 'center', margin: theme.spacing(10, 0)}} >
+        <Box sx={{textAlign: 'center', margin: '80px 0px'}} >
           <CircularProgress style={{textAlign: 'center'}} />
         </Box>
       }
@@ -706,14 +704,14 @@ export default function PageAnnotate() {
       {/* Card showing an entity when clicked on */}
       <Popper open={open} anchorEl={anchorEl} style={{zIndex: '1000'}}>
         <ClickAwayListener onClickAway={handleClickAway}>
-          <Card elevation={4} style={{opacity: 1, minWidth: theme.spacing(100), padding: theme.spacing(2, 2), textAlign: 'left', zIndex: '9000'}}>
+          <Card elevation={4} style={{opacity: 1, minWidth: '80px', padding: '16px 16px', textAlign: 'left', zIndex: '9000'}}>
             { state.tagSelected &&
               <>
-                <Typography variant='h5' style={{textAlign: 'center', marginBottom: theme.spacing(3)}}>
+                <Typography variant='h5' style={{textAlign: 'center', marginBottom: '24px'}}>
                   {state.tagSelected.token}
                   <Tooltip title={<Typography style={{textAlign: 'center'}}>Delete the entity</Typography>}>
                     <IconButton onClick={() => handleRemoveEntity(state.tagSelected.index)}
-                      style={{marginLeft: theme.spacing(1), alignContent: 'right'}} color="default">
+                      style={{marginLeft: '8px', alignContent: 'right'}} color="default">
                         <Icon name="delete" />
                     </IconButton>
                   </Tooltip>
@@ -724,7 +722,7 @@ export default function PageAnnotate() {
                   value={state.tagSelected.type}
                   options={ents}
                   groupBy={(option: any) => (option.category ? option.category : null)}
-                  style={{marginBottom: theme.spacing(2)}}
+                  style={{marginBottom: '16px'}}
                   onChange={(event: any, newInputValue: any) => {
                     const tagSelected: any = state.tagSelected
                     if (newInputValue && newInputValue != tagSelected.type) {
@@ -742,7 +740,7 @@ export default function PageAnnotate() {
                   value={state.tagSelected}
                   options={state.tagSelected.curies}
                   // getOptionLabel={(option: any) => `${option.label}${option.altLabel ? `, ${option.altLabel}` : ''} (${option.curie})`}
-                  style={{ marginBottom: theme.spacing(2) }}
+                  style={{ marginBottom: '16px' }}
                   onChange={async (event: any, newInputValue: any) => {
                     // console.log('autocomplete entity newInputValue', newInputValue);
                     const entitiesList: any = state.entitiesList
@@ -789,7 +787,7 @@ export default function PageAnnotate() {
                 />
                 { state.templateSelected !== 'Plain RDF' && state.tagSelected.props &&
                   state.tagSelected.props.map((prop: any, pindex: number) => {
-                    return <Grid container spacing={2} key={'prop:' + prop + pindex} style={{marginLeft: theme.spacing(5), marginBottom: theme.spacing(1)}}>
+                    return <Grid container spacing={2} key={'prop:' + prop + pindex} style={{marginLeft: '40px', marginBottom: '8px'}}>
                     <Grid item xs={5}>
                       <AutocompleteEntity
                         label="Property"
@@ -848,7 +846,7 @@ export default function PageAnnotate() {
                     variant="contained"
                     className="button"
                     startIcon={<Icon name="add_box" />}
-                    style={{marginLeft: theme.spacing(5), marginRight: theme.spacing(4), textTransform: 'none'}}
+                    style={{marginLeft: '40px', marginRight: '32px', textTransform: 'none'}}
                     color="inherit" >
                       Add a property to this entity
                   </Button>
@@ -861,7 +859,7 @@ export default function PageAnnotate() {
 
       { state.extractClicked &&
         <>
-          <Typography variant='body1' style={{textAlign: 'center', marginBottom: theme.spacing(2)}}>
+          <Typography variant='body1' style={{textAlign: 'center', marginBottom: '16px'}}>
             💡 You can edit entities by clicking on their tag, or add new entities by highlighting the text corresponding to the entity. Potential identifiers are automatically retrieved for the highlighted text.
           </Typography>
           <Card className="paperMargin" >
@@ -888,7 +886,7 @@ export default function PageAnnotate() {
             variant="contained"
             className="button"
             startIcon={<Icon name="add_box" />}
-            style={{textTransform: 'none', marginTop: theme.spacing(1)}}
+            style={{textTransform: 'none', marginTop: '8px'}}
             color="inherit" >
               Add an external entity
           </Button>
@@ -903,13 +901,13 @@ export default function PageAnnotate() {
 
       { state.entitiesList.length > 0 &&
       <>
-        <Typography variant='body1' style={{marginBottom: theme.spacing(2), marginTop: theme.spacing(6)}}>
+        <Typography variant='body1' style={{marginBottom: '16px', marginTop: '48px'}}>
           2. Define the statements that represent the assertions made in the text, you can add properties to provide more context:
         </Typography>
 
         { state.statements.map((stmtRow: any, index: number) => {
           return <Box key={'stmt:' + index}>
-            <Grid container spacing={2} key={index} style={{marginBottom: theme.spacing(1), marginTop: theme.spacing(1)}}>
+            <Grid container spacing={2} key={index} style={{marginBottom: '8px', marginTop: '8px'}}>
               <Grid item xs={4}>
                 <AutocompleteEntity
                   label="Subject"
@@ -959,7 +957,7 @@ export default function PageAnnotate() {
             </Grid>
             { state.templateSelected !== 'Plain RDF' && state.statements[index].props &&
               state.statements[index].props.map((prop: any, pindex: number): any => {
-                return <Grid container spacing={2} key={'prop' + index + prop + pindex} style={{marginLeft: theme.spacing(5), marginBottom: theme.spacing(1)}}>
+                return <Grid container spacing={2} key={'prop' + index + prop + pindex} style={{marginLeft: '40px', marginBottom: '8px'}}>
                 <Grid item xs={4}>
                   <AutocompleteEntity
                     label="Property"
@@ -1005,7 +1003,7 @@ export default function PageAnnotate() {
                 variant="contained"
                 className="button"
                 startIcon={<Icon name="add_box" />}
-                style={{marginLeft: theme.spacing(5), marginRight: theme.spacing(4), marginBottom: theme.spacing(1), textTransform: 'none'}}
+                style={{marginLeft: '40px', marginRight: '32px', marginBottom: '8px', textTransform: 'none'}}
                 color="inherit" >
                   Add a property to this statement
               </Button>
@@ -1017,7 +1015,7 @@ export default function PageAnnotate() {
           variant="contained"
           className="button"
           startIcon={<Icon name="add_box" />}
-          style={{textTransform: 'none', marginTop: theme.spacing(1)}}
+          style={{textTransform: 'none', marginTop: '8px'}}
           color="info" >
             Add a statement
         </Button>
