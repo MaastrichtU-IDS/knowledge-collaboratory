@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "dev:local": "PUBLIC_API_URL=http://localhost:8000 astro dev",
+    "dev:gh": "PUBLIC_BASE_URL=/knowledge-collaboratory astro dev",
     "build": "astro build",
     "build:gh": "PUBLIC_BASE_URL=/knowledge-collaboratory astro build",
     "preview": "astro preview",
@@ -18,6 +19,7 @@
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
     "@fluentui/react": "^8.68.0",
+    "@fontsource/open-sans": "^4.5.14",
     "@fontsource/roboto": "^4.5.8",
     "@mui/material": "^5.11.10",
     "@nanostores/react": "^0.4.1",

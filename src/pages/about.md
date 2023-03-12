@@ -15,8 +15,6 @@ The Knowledge Collaboratory is a web service to help annotate biomedical text, q
 
 It is developed by the [Institute of Data Science](https://www.maastrichtuniversity.nl/research/institute-data-science) at Maastricht University.
 
-<!-- <br/> -->
-
 ## ⚙️ How it works
 
 The Knowledge Collaboratory consists in an OpenAPI service and a  user-friendly web UI to query the Nanopublications network, store  Nanopublication authentication keys, and publish Nanopublications.

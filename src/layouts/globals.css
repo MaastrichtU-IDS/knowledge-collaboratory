@@ -1,28 +1,63 @@
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0");
 
-/* Not really using TailwindCSS at the moment, creating too many conflicts with existing styles */
-/* @tailwind base;
-@tailwind components;
-@tailwind utilities; */
-
 /* Check colors at https://docusaurus.io/fr/docs/styling-layout#styling-your-site-with-infima */
 :root {
   --color-primary-light: #6ec6ff;
   --color-primary: #2196f3;
   --color-primary-dark: #0069c0;
+  --color-primary-darker: #12427e;
+
   --color-secondary-light: #76d275;
   --color-secondary: #43a047;
   --color-secondary-dark: #00701a;
   --color-accent: #43a047;
+  --color-grey: #c0bfbc;
+  --color-white: #fff;
 }
 
-/* *, ::before, ::after {
-	box-sizing: border-box;
-} */
+body {
+  font-family: "Roboto", sans-serif;
+  /* font-family: "Open Sans", "Roboto", sans-serif; */
+  margin: 0px;
+}
+a {
+  color: var(--color-primary-dark);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+h2 {
+  font-weight: 300;
+  text-align: center;
+  margin-top: 0px;
+  margin-bottom: 16px;
+}
+p {
+  font-size: small;
+}
 
-/* blockquote, dl, dd, h1, h2, h3, h4, h5, h6, hr, figure, p, pre {
-  margin: inherit;
-} */
+mark {
+  cursor: pointer;
+}
+pre {
+  border: 2px solid grey;
+  padding: 1em;
+}
+code {
+  font-size: 11px;
+  border-radius: 10px;
+  padding: 3px;
+}
+pre, code {
+  font-family: monospace, monospace;
+  border-radius: 6px;
+  color: #adbac7;
+  background: #22272e;
+  /* padding: 5px; */
+  /* background-color: #78909c; */
+}
 
 .flexGrow {
   flex-grow: 1;
@@ -46,59 +81,20 @@
   text-align: 'left';
   margin-bottom: 20px;
 }
-
-body {
-  font-family: "Roboto", sans-serif;
-  margin: 0px;
+.markdownContainer {
+  max-width: 1200px;
+  text-align: left;
+  margin: 32px 16px;
 }
-/* input {
-  font-size: 13px !important;
-} */
-
-footer {
-  padding: 16px;
-  margin-top: auto;
-  color: 'white';
-  background-color: var(--color-primary);
+.markdownContainer h2 {
+  text-align: left;
 }
 
-mark {
-  cursor: pointer;
-}
-
-pre {
-  border: 2px solid grey;
-  padding: 1em;
-}
-code {
-  font-family: monospace, monospace;
-  font-size: 11px;
-  border-radius: 10px;
-  padding: 3px;
-}
-pre, code {
-  font-family: monospace, monospace;
-  border-radius: 6px;
-  color: #adbac7;
-  background: #22272e;
-  /* padding: 5px; */
-  /* background-color: #78909c; */
-}
-
-a {
-  color: #006bb4;
-  text-decoration: none;
-}
-a:hover {
-  color: #64b5f6;
-  text-decoration: none;
-}
 
 .paper {
   padding: 16px;
-  /* margin: 16px 0px; */
 }
-.paperPadding {
+.paperMargin {
   padding: 16px;
   margin: 16px;
 }
@@ -107,9 +103,9 @@ a:hover {
 .whiteSvgIcon {
   filter: invert(100%) sepia(0%) saturate(7500%) hue-rotate(345deg) brightness(104%) contrast(107%);
 }
-.whiteSvgIcon:hover {
+/* .whiteSvgIcon:hover {
   filter: invert(91%) sepia(1%) saturate(798%) hue-rotate(7deg) brightness(76%) contrast(82%);
-}
+} */
 
 .button {
   text-transform: none;
@@ -141,9 +137,6 @@ a:hover {
 }
 
 
-
-/* @import url("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"); */
-/* Bootstrap imported for rjsf default (mui bug) */
 /* CSS for React JSON schema form (rjsf), it bugs and use the root id for some styling */
 fieldset#root {
   display: inline-block;
@@ -153,3 +146,11 @@ fieldset#root {
   margin-bottom: 32px !important;
   border-bottom: 1px solid grey;
 }
+
+/* @import url("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"); */
+/* Bootstrap imported for rjsf default (mui bug) */
+
+/* Not really using TailwindCSS at the moment, creating too many conflicts with existing styles */
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */

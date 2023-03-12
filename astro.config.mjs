@@ -6,8 +6,8 @@ import {settings} from "./src/utils/settings"
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://maastrichtu-ids.github.io',
-  // base: "/knowledge-collaboratory",
+  site: process.env.PUBLIC_SITE_URL || 'https://maastrichtu-ids.github.io',
+  base: process.env.PUBLIC_BASE_URL || "",
   trailingSlash: 'ignore',
   integrations: [
     react(),

@@ -11,6 +11,7 @@ permissions:
   id-token: write
 
 env:
+  PUBLIC_SITE_URL: https://maastrichtu-ids.github.io
   PUBLIC_BASE_URL: /knowledge-collaboratory
 
 jobs:
@@ -19,10 +20,6 @@ jobs:
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v3
-
-      - name: Change the base URL path in astro config to fit GH page
-        run: |
-          sed -i "s/\/\/ base: /base: /g" astro.config.mjs
 
       - name: Install, build, and upload your site
         uses: withastro/action@v0

@@ -1,4 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+
+// NOT USED at the moment, too many conflict with current styling
+
 module.exports = {
 	content: ['./src/**/*.{astro,html,js,jsx,mdx,svelte,ts,tsx,vue}'],
 	darkMode: 'class',

@@ -289,7 +289,7 @@ const PublishNanopubButtons = ({
       }
 
       { user.id &&
-        <Card className="paperPadding" style={{textAlign: 'center'}}>
+        <Card className="paperMargin" style={{textAlign: 'center'}}>
           { user.keyfiles_loaded &&
             <Typography>
               ✅ Your keys have been loaded successfully, you can start publishing Nanopublications

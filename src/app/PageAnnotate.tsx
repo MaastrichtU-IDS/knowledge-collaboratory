@@ -582,16 +582,23 @@ export default function PageAnnotate() {
 
   return(
     <Container className='mainContainer'>
-      <Typography variant="h4" style={{textAlign: 'center', margin: theme.spacing(1, 0)}}>
+      <h2>
         🏷️ Annotate biomedical text
-      </Typography>
-      <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
+      </h2>
+      <p>
         This service uses extraction models to help you annotate biomedical text using the <a href='https://biolink.github.io/biolink-model/docs/' target="_blank" rel="noopener noreferrer">BioLink model</a>, and
         standard identifiers resolved using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator SRI Name Resolution API</a>, such as MONDO and PubChem.
         The annotations are represented with the <a href='https://www.w3.org/RDF' target="_blank" rel="noopener noreferrer">RDF</a> standard, using the <a href='https://vemonet.github.io/tao' target="_blank" rel="noopener noreferrer">TAO ontology</a>,
         also used by the <a href='http://pubannotation.org/' target="_blank" rel="noopener noreferrer">PubAnnotation</a> service.
         Generated annotations can be downloaded in the <a href='https://json-ld.org' target="_blank" rel="noopener noreferrer">JSON-LD</a> format, or published as <a href='https://nanopub.net' target="_blank" rel="noopener noreferrer">Nanopublications</a> after login with your ORCID.
-      </Typography>
+      </p>
+      {/* <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
+        This service uses extraction models to help you annotate biomedical text using the <a href='https://biolink.github.io/biolink-model/docs/' target="_blank" rel="noopener noreferrer">BioLink model</a>, and
+        standard identifiers resolved using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator SRI Name Resolution API</a>, such as MONDO and PubChem.
+        The annotations are represented with the <a href='https://www.w3.org/RDF' target="_blank" rel="noopener noreferrer">RDF</a> standard, using the <a href='https://vemonet.github.io/tao' target="_blank" rel="noopener noreferrer">TAO ontology</a>,
+        also used by the <a href='http://pubannotation.org/' target="_blank" rel="noopener noreferrer">PubAnnotation</a> service.
+        Generated annotations can be downloaded in the <a href='https://json-ld.org' target="_blank" rel="noopener noreferrer">JSON-LD</a> format, or published as <a href='https://nanopub.net' target="_blank" rel="noopener noreferrer">Nanopublications</a> after login with your ORCID.
+      </Typography> */}
       {/* <Typography variant="body1" style={{textAlign: 'left', margin: theme.spacing(1, 0)}}>
         🪄 A machine learning model automatically extracts biomedical entities and relations from the given text, classify them in different types from the BioLink model (chemical, disease, etc),
         and retrieve potential identifiers for those entities using the <a href='https://name-resolution-sri.renci.org/docs' target="_blank" rel="noopener noreferrer">NIH NCATS Translator SRI Name Resolution API</a>.
@@ -857,7 +864,7 @@ export default function PageAnnotate() {
           <Typography variant='body1' style={{textAlign: 'center', marginBottom: theme.spacing(2)}}>
             💡 You can edit entities by clicking on their tag, or add new entities by highlighting the text corresponding to the entity. Potential identifiers are automatically retrieved for the highlighted text.
           </Typography>
-          <Card className="paperPadding" >
+          <Card className="paperMargin" >
             <Taggy text={state.inputText} spans={state.entitiesList}
               ents={ents} onClick={clickTag} onMouseOver={clickTag} onHighlight={highlightCallback} />
           </Card>

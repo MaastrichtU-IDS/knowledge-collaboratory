@@ -295,12 +295,15 @@ export default function PageBrowse() {
 
   return(
     <Container className='mainContainer' >
-      <Typography variant="h4" style={{textAlign: 'center', margin: theme.spacing(1, 0)}}>
+      {/* <Typography variant="h4" style={{textAlign: 'center', margin: theme.spacing(1, 0)}}>
         🔍️ Browse Nanopublications
-      </Typography>
+      </Typography> */}
+      <h2>
+        🔍️ Browse Nanopublications
+      </h2>
 
       {/* Filtering options */}
-      <Stack direction="row" spacing={2} justifyContent="center" style={{margin: theme.spacing(2, 0 )}}>
+      <Stack direction={{sm: "column", md: "row"}} spacing={2} justifyContent="center" style={{margin: theme.spacing(2, 0)}}>
         {/* Search box */}
         <form onSubmit={handleSearch}>
           <Paper style={{display: 'flex', minWidth: '40ch'}}>
@@ -362,9 +365,9 @@ export default function PageBrowse() {
       </Stack>
 
       { !state.loading_nanopubs &&
-        <Typography variant='body2'>
+        <p style={{fontSize: '12.5px'}}>
           🗃️ {Object.keys(state.nanopub_obj).length} nanopublications found
-        </Typography>
+        </p>
       }
 
       { state.loading_nanopubs &&

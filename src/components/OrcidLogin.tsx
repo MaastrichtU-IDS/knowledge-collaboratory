@@ -141,7 +141,7 @@ const OrcidLogin = ({
           onFailure={onFailure}
           className="loginButton"
         >
-            <Button variant='contained' color='success' component="span" size='small' style={{textTransform: 'none'}}>
+            <Button variant='contained' color='success' component="span" size='small' style={{textTransform: 'none', fontSize: "12px"}}>
               Login with ORCID
               <img src={`${settings.basePath}/orcid_logo.svg`} alt="ORCID" width={20} height={20} style={{marginLeft: theme.spacing(1)}} />
             </Button>
