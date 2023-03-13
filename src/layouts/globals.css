@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0");
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0');
 
 /* Check colors at https://docusaurus.io/fr/docs/styling-layout#styling-your-site-with-infima */
 :root {
@@ -12,12 +12,12 @@
   --color-secondary-dark: #00701a;
   --color-accent: #43a047;
   --color-grey: #c0bfbc;
-  --color-grey-dark: #5B5B66;
+  --color-grey-dark: #5b5b66;
   --color-white: #fff;
 }
 
 body {
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
   /* font-family: "Open Sans", "Roboto", sans-serif; */
   margin: 0px;
 }
@@ -51,7 +51,8 @@ code {
   border-radius: 10px;
   padding: 3px;
 }
-pre, code {
+pre,
+code {
   font-family: monospace, monospace;
   border-radius: 6px;
   color: #adbac7;
@@ -90,7 +91,6 @@ pre, code {
 .markdownContainer h2 {
   text-align: left;
 }
-
 
 .paper {
   padding: 16px;
@@ -136,7 +136,6 @@ pre, code {
 .input {
   background: #fff;
 }
-
 
 /* CSS for React JSON schema form (rjsf), it bugs and use the root id for some styling */
 fieldset#root {

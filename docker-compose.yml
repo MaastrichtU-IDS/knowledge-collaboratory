@@ -1,6 +1,5 @@
-version: "3.3"
+version: '3.3'
 services:
-
   frontend:
     build:
       # context: ./frontend
@@ -8,4 +7,4 @@ services:
         FRONTEND_URL: ${FRONTEND_URL:-https://collaboratory.semanticscience.org}
         API_URL: ${API_URL:-https://collaboratory-api.transltr.io}
     ports:
-    - 3000:80
+      - 3000:80

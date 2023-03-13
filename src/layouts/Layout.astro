@@ -1,9 +1,9 @@
 ---
 import './globals.css';
-import "@fontsource/open-sans/400.css";
+import '@fontsource/open-sans/400.css';
 
-import Footer from "./Footer.astro";
-import Header from "./Header.astro";
+import Footer from './Footer.astro';
+import Header from './Header.astro';
 
 // const theme = createTheme({
 //   palette: {
@@ -24,51 +24,49 @@ import Header from "./Header.astro";
 //   },
 // });
 
-
 export interface Props {
-	title: string;
+  title: string;
 }
 
-const { title } = Astro.props;
+const {title} = Astro.props;
 ---
 
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<!-- <link rel="icon" type="image/svg+xml" href="/favicon.svg" /> -->
-		<link rel="icon" href="/icon.png" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-		<!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" /> -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <!-- <link rel="icon" type="image/svg+xml" href="/favicon.svg" /> -->
+    <link rel="icon" href="/icon.png" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" /> -->
+  </head>
 
-	</head>
-
-	<body>
-		<!-- <ThemeProvider client:load theme={theme}> -->
-		<div class="mainView">
-			<!-- <NavBar client:only='react' /> -->
-			<Header />
-			<slot />
-			<Footer />
-			<!-- <Footer client:only='react' /> -->
-		</div>
-		<!-- </ThemeProvider> -->
-	</body>
+  <body>
+    <!-- <ThemeProvider client:load theme={theme}> -->
+    <div class="mainView">
+      <!-- <NavBar client:only='react' /> -->
+      <Header />
+      <slot />
+      <Footer />
+      <!-- <Footer client:only='react' /> -->
+    </div>
+    <!-- </ThemeProvider> -->
+  </body>
 </html>
 
 <style is:global>
-	/* :root {
+  /* :root {
 		--accent: 124, 58, 237;
 		--accent-gradient: linear-gradient(45deg, rgb(var(--accent)), #da62c4 30%, white 60%);
 	} */
-	html {
-		font-family: system-ui, sans-serif;
-		background-color: #F6F6F6;
-	}
-	code {
-		font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
-			Bitstream Vera Sans Mono, Courier New, monospace;
-	}
+  html {
+    font-family: system-ui, sans-serif;
+    background-color: #f6f6f6;
+  }
+  code {
+    font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New,
+      monospace;
+  }
 </style>

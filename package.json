@@ -76,7 +76,7 @@
     "bracketSpacing": false,
     "arrowParens": "avoid",
     "useTabs": false,
-    "printWidth": 100,
+    "printWidth": 120,
     "pluginSearchDirs": [
       "."
     ]

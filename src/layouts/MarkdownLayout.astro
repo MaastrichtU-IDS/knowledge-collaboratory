@@ -1,17 +1,17 @@
 ---
-import Layout from "./Layout.astro";
+import Layout from './Layout.astro';
 
 export interface Props {
-	title: string;
+  title: string;
 }
 
-const { title } = Astro.props;
+const {title} = Astro.props;
 ---
 
 <Layout title="">
-	<div style="display: flex; flex-direction: column; align-items: center;">
-		<div class="markdownContainer">
-			<slot />
-		</div>
-	</div>
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div class="markdownContainer">
+      <slot />
+    </div>
+  </div>
 </Layout>

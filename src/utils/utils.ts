@@ -4,27 +4,26 @@
 // // const $rdf = require('rdflib')
 // import { genericContext } from './settings';
 
-
 // NOT USED, it's in Layout.astro
 export const theme = {
-    palette: {
-        primary: { light: '#6ec6ff', main: '#2196f3', dark: '#0069c0' }, // blue
-        secondary: { light: '#76d275', main: '#43a047', dark: '#00701a' }, // green
-        // default: { light: '#fafafa', main: '#eceff1', dark: grey[600] }
-        // success: { light: '#ffe0b2', main: '#a5d6a7', dark: '#00600f' }, // green
-        // info: { light: '#b3e5fc', main: '#81d4fa', dark: '#00600f' }, // blue
-        // warning: { light: '#c8e6c9', main: '#ffcc80', dark: '#00600f' }, // orange
-        // error: { light: '#ffcdd2', main: '#ef9a9a', dark: '#e57373' }, // red
-    },
-    typography: {
-        "fontFamily": "\"Open Sans\", \"Roboto\", \"Arial\"",
-        "fontWeightLight": 300,
-        "fontWeightRegular": 400,
-        "fontWeightMedium": 500,
-        "fontSize": 11
-    },
-    // spacing: 2
-}
+  palette: {
+    primary: {light: '#6ec6ff', main: '#2196f3', dark: '#0069c0'}, // blue
+    secondary: {light: '#76d275', main: '#43a047', dark: '#00701a'} // green
+    // default: { light: '#fafafa', main: '#eceff1', dark: grey[600] }
+    // success: { light: '#ffe0b2', main: '#a5d6a7', dark: '#00600f' }, // green
+    // info: { light: '#b3e5fc', main: '#81d4fa', dark: '#00600f' }, // blue
+    // warning: { light: '#c8e6c9', main: '#ffcc80', dark: '#00600f' }, // orange
+    // error: { light: '#ffcdd2', main: '#ef9a9a', dark: '#e57373' }, // red
+  },
+  typography: {
+    fontFamily: '"Open Sans", "Roboto", "Arial"',
+    fontWeightLight: 300,
+    fontWeightRegular: 400,
+    fontWeightMedium: 500,
+    fontSize: 11
+  }
+  // spacing: 2
+};
 
 // export const rdfToRdf = (data: any, output: string = 'text/turtle', input: string = 'application/ld+json') => {
 //   // Convert RDF to JSON-LD using rdflib
@@ -46,7 +45,6 @@ export const theme = {
 //       })
 //   })
 // }
-
 
 // export const toJSONLD = (data: any, uri: any) => {
 //   // Convert RDF to JSON-LD using rdflib

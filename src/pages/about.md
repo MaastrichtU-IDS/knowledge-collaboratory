@@ -15,7 +15,7 @@ This service is developed by the [Institute of Data Science](https://www.maastri
 
 ## ⚙️ How it works
 
-The Knowledge Collaboratory consists in an OpenAPI service and a  user-friendly web UI to query the Nanopublications network, store  Nanopublication authentication keys, and publish Nanopublications.
+The Knowledge Collaboratory consists in an OpenAPI service and a user-friendly web UI to query the Nanopublications network, store Nanopublication authentication keys, and publish Nanopublications.
 
 🗄️ **Backend API**: an OpenAPI built with Python and FastAPI, to store the keys on the server, and run the process to publish a Nanopublication.
 

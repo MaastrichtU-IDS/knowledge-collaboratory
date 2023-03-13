@@ -12,7 +12,6 @@ npm create astro@latest -- --template basics
 
 ![basics](https://user-images.githubusercontent.com/4677417/186188965-73453154-fdec-4d6b-9c34-cb35c248ae5b.png)
 
-
 ## 🚀 Project Structure
 
 Inside of your Astro project, you'll see the following folders and files:
@@ -41,15 +40,15 @@ Any static assets, like images, can be placed in the `public/` directory.
 
 All commands are run from the root of the project, from a terminal:
 
-| Command                | Action                                           |
-| :--------------------- | :----------------------------------------------- |
-| `yarn`          | Installs dependencies                            |
-| `yarn vscode`          | Setup VSCode to properly resolve imports from yarn 3                            |
-| `yarn dev`          | Starts local dev server at `localhost:3000`      |
-| `yarn build`        | Build your production site to `./dist/`          |
-| `yarn preview`      | Preview your build locally, before deploying     |
-| `yarn astro ...`    | Run CLI commands like `astro add`, `astro check` |
-| `yarn astro --help` | Get help using the Astro CLI                     |
+| Command             | Action                                               |
+| :------------------ | :--------------------------------------------------- |
+| `yarn`              | Installs dependencies                                |
+| `yarn vscode`       | Setup VSCode to properly resolve imports from yarn 3 |
+| `yarn dev`          | Starts local dev server at `localhost:3000`          |
+| `yarn build`        | Build your production site to `./dist/`              |
+| `yarn preview`      | Preview your build locally, before deploying         |
+| `yarn astro ...`    | Run CLI commands like `astro add`, `astro check`     |
+| `yarn astro --help` | Get help using the Astro CLI                         |
 
 ## 👀 Want to learn more?
 

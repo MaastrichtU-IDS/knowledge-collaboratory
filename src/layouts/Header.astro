@@ -1,6 +1,6 @@
 ---
-import {settings} from '../utils/settings'
-import OrcidLogin from '../components/OrcidLogin'
+import {settings} from '../utils/settings';
+import OrcidLogin from '../components/OrcidLogin';
 
 import Icon from '../components/Icon.astro';
 
@@ -20,45 +20,45 @@ export interface Props {
 const {
   leftLinks = [
     {
-      text: "Browse Nanopubs",
-      tooltip: "🔍️ Browse Nanopublications",
+      text: 'Browse Nanopubs',
+      tooltip: '🔍️ Browse Nanopublications',
       href: `${settings.basePath}/`,
-      icon: "search",
+      icon: 'search'
     },
     {
-      text: "Annotate text",
-      tooltip: "🏷️ Annotate biomedical text, and publish the assertion as Nanopublication",
+      text: 'Annotate text',
+      tooltip: '🏷️ Annotate biomedical text, and publish the assertion as Nanopublication',
       href: `${settings.basePath}/annotate`,
-      icon: "local_offer",
+      icon: 'local_offer'
     },
     {
-      text: "Shape form",
-      tooltip: "📝 Define and publish RDF nanopublications from SHACL shapes",
+      text: 'Shape form',
+      tooltip: '📝 Define and publish RDF nanopublications from SHACL shapes',
       href: `${settings.basePath}/shape-publisher`,
-      icon: "dynamic_form",
-    },
+      icon: 'dynamic_form'
+    }
   ],
 
   rightLinks = [
     {
-      text: "API",
-      tooltip: "📖 Access the OpenAPI documentation of the API used by this service",
+      text: 'API',
+      tooltip: '📖 Access the OpenAPI documentation of the API used by this service',
       href: settings.docsUrl,
       // icon: "search",
-      img: "openapi_logo.svg",
+      img: 'openapi_logo.svg'
     },
     {
-      tooltip: "ℹ️ About the Knowledge Collaboratory",
+      tooltip: 'ℹ️ About the Knowledge Collaboratory',
       href: `${settings.basePath}/about`,
-      icon: "info",
+      icon: 'info'
     },
     {
-      tooltip: "Source code on GitHub",
-      href: "https://github.com/MaastrichtU-IDS/knowledge-collaboratory",
-      img: "github.svg",
-      cssClass: "whiteSvgIcon",
-    },
-  ],
+      tooltip: 'Source code on GitHub',
+      href: 'https://github.com/MaastrichtU-IDS/knowledge-collaboratory',
+      img: 'github.svg',
+      cssClass: 'whiteSvgIcon'
+    }
+  ]
 } = Astro.props;
 ---
 
@@ -67,44 +67,37 @@ const {
     <ul>
       <li>
         <a href={`${settings.basePath}/`}>
-          <img
-            src={`${settings.basePath}/icon.png`}
-            alt="Logo"
-            width={32}
-            height={32}
-          />
+          <img src={`${settings.basePath}/icon.png`} alt="Logo" width={32} height={32} />
         </a>
       </li>
       {
-        leftLinks.map(({ text, href, tooltip, icon }) => (
+        leftLinks.map(({text, href, tooltip, icon}) => (
           <li title={tooltip}>
             <a href={href}>
-              { icon &&
-                <Icon name={icon} />
-              }
+              {icon && <Icon name={icon} />}
               <span>{text}</span>
             </a>
           </li>
         ))
       }
-
     </ul>
 
-    <div style="flex-grow: 1;" />
-    <hr class="menuSeparator">
+    <div style="flex-grow: 1;"></div>
+    <hr class="menuSeparator" />
 
-    <ul style='margin-right: 32px;'>
-      <li title="🔓️ Login with your ORCID to be able to publish text annotations as Nanopublications" style='margin-right: 24px;'>
-        <OrcidLogin client:only='react' />
+    <ul style="margin-right: 32px;">
+      <li
+        title="🔓️ Login with your ORCID to be able to publish text annotations as Nanopublications"
+        style="margin-right: 24px;"
+      >
+        <OrcidLogin client:only="react" />
       </li>
       {
-        rightLinks.map(({ text, href, tooltip, icon, cssClass, img }) => (
+        rightLinks.map(({text, href, tooltip, icon, cssClass, img}) => (
           <li title={tooltip}>
             <a href={href}>
-              { icon &&
-                <Icon name={icon} />
-              }
-              { img &&
+              {icon && <Icon name={icon} />}
+              {img && (
                 <img
                   src={`${settings.basePath}/${img}`}
                   alt={text || tooltip}
@@ -112,10 +105,8 @@ const {
                   height={22}
                   class={cssClass}
                 />
-              }
-              { text &&
-                <span>{text}</span>
-              }
+              )}
+              {text && <span>{text}</span>}
             </a>
           </li>
         ))
@@ -123,12 +114,11 @@ const {
     </ul>
   </nav>
 
-
   <!-- Menu for small screens -->
   <div>
     <div class="toggleMenu">
       <button type="button" aria-label="Toggle menu">
-        <Icon name='menu' class="menuIcon" />
+        <Icon name="menu" class="menuIcon" />
       </button>
     </div>
   </div>
@@ -138,19 +128,19 @@ const {
   const toggle = document.querySelector('div.toggleMenu');
   toggle?.addEventListener('click', () => {
     const menu = document.querySelector('nav.browserNav');
-    if (menu && menu.classList.contains("show")) {
+    if (menu && menu.classList.contains('show')) {
       menu.classList.remove('show');
     } else if (menu) {
-      menu.classList.add("show");
+      menu.classList.add('show');
     }
   });
 </script>
 
-
 <style>
   header {
     transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-    box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2),0px 4px 5px 0px rgba(0,0,0,0.14),0px 1px 10px 0px rgba(0,0,0,0.12);
+    box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14),
+      0px 1px 10px 0px rgba(0, 0, 0, 0.12);
     display: -webkit-box;
     display: -webkit-flex;
     display: -ms-flexbox;
@@ -167,7 +157,8 @@ const {
     background-color: var(--color-primary);
     color: var(--color-white);
   }
-  nav, ul {
+  nav,
+  ul {
     list-style-type: none;
     display: flex;
     flex-direction: row;
