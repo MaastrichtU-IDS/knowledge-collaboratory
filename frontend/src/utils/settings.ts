@@ -1,5 +1,5 @@
 export const settings = {
-  frontendUrl: import.meta.env.PUBLIC_FRONTEND_URL || 'http://localhost:3000',
+  frontendUrl: import.meta.env.PUBLIC_SITE_URL || 'http://localhost:3000',
   apiUrl: import.meta.env.PUBLIC_API_URL || 'https://api.collaboratory.semanticscience.org',
   docsUrl:
     (import.meta.env.PUBLIC_API_URL ? import.meta.env.PUBLIC_API_URL + '/docs' : null) ||

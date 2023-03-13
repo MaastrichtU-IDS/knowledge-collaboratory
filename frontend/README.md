@@ -1,5 +1,9 @@
 # 🌐 Knowledge Collaboratory frontend
 
+[![Deploy frontend to GitHub Pages](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/deploy-frontend.yml/badge.svg)](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/deploy-frontend.yml)
+
+🔗 Deployed at [**maastrichtu-ids.github.io/knowledge-collaboratory**](https://maastrichtu-ids.github.io/knowledge-collaboratory)
+
 Built with [Astro](https://astro.build/), [ReactJS](https://reactjs.org/), and [Material UI for react](https://mui.com/).
 
 ## 🧑‍💻 Development
@@ -36,7 +40,7 @@ yarn lint
 
 ## 🚀 Production deployment
 
-🤖 There is a GitHub Action workflow to automatically build and deploy the website to GitHub Pages.
+🤖 There is a GitHub Action workflow to automatically build and deploy the website to GitHub Pages
 
 Build it locally, generating static pages in `dist/`:
 

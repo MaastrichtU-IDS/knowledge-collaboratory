@@ -1,6 +1,6 @@
 # Knowledge Collaboratory
 
-[![Test production API](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/test-prod.yml/badge.svg)](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/test-prod.yml) [![Run backend tests](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/test-backend.yml/badge.svg)](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/test-backend.yml) [![CodeQL analysis](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/codeql-analysis.yml)
+[![Deploy frontend to GitHub Pages](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/deploy-frontend.yml/badge.svg)](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/deploy-frontend.yml) [![Test production API](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/test-prod.yml/badge.svg)](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/test-prod.yml) [![Run backend tests](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/test-backend.yml/badge.svg)](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/test-backend.yml) [![CodeQL analysis](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/codeql-analysis.yml)
 
 Services to query the Nanopublications network using Translator standards to retrieve the Knowledge Collaboratory graph, a collection of drug indications annotated using preferred identifiers (usually from MONDO, CHEBI, DrugBank, etc).
 
@@ -12,7 +12,7 @@ The extracted entities and relations are then displayed to the users on the webs
 
 Backend built with [FastAPI](https://fastapi.tiangolo.com/), and [RDFLib](https://github.com/RDFLib/rdflib).
 
-Frontend built with [React](https://reactjs.org) and [Material UI](https://mui.com/)
+Frontend built with [Astro](https://astro.build/), [ReactJS](https://reactjs.org/), and [Material UI](https://mui.com/)
 
 ## 📥️ Requirements
 
@@ -63,14 +63,6 @@ unzip "*.zip"
 rm *.zip
 ```
 
-3. Clone and install the custom `react-taggy` library in `/opt`
-
-```bash
-cd /opt
-git clone --branch add-onclick-callback https://github.com/vemonet/react-taggy.git
-yarn
-```
-
 ### Start the stack
 
 Start the backend with Docker Compose from the root folder of this repository:
@@ -82,7 +74,7 @@ docker-compose up -d
 Then start the react frontend:
 
 ```bash
-cd frontend/app
+cd frontend
 yarn
 yarn dev
 ```
@@ -92,7 +84,7 @@ Now you can open your browser and interact with these URLs:
 * Automatic OpenAPI documentation with Swagger UI: http://localhost/docs
 * Alternative OpenAPI documentation with ReDoc: http://localhost/redoc
 * GraphQL endpoint with Strawberry: http://localhost/graphql
-* Frontend: http://localhost:19006
+* Frontend: http://localhost:3000
 
 If you need to completely reset the Python cache:
 
