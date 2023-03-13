@@ -10,6 +10,8 @@
     "build:gh": "PUBLIC_BASE_URL=/knowledge-collaboratory astro build",
     "preview": "astro preview",
     "vscode": "yarn dlx @yarnpkg/sdks vscode",
+    "fmt": "prettier --plugin-search-dir . --write . --ignore-path .gitignore",
+    "lint": "prettier --plugin-search-dir . --check . --ignore-path .gitignore && eslint --ignore-path .gitignore .",
     "astro": "astro"
   },
   "dependencies": {
@@ -57,6 +59,52 @@
     "@types/n3": "^1.10.4",
     "@types/node": "18.14.1",
     "@types/react": "^18.0.21",
-    "@types/react-dom": "^18.0.6"
+    "@types/react-dom": "^18.0.6",
+    "@typescript-eslint/parser": "^5.54.1",
+    "eslint": "^8.36.0",
+    "eslint-plugin-astro": "^0.24.0",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "prettier": "^2.8.4",
+    "prettier-plugin-astro": "^0.8.0"
+  },
+  "prettier": {
+    "trailingComma": "none",
+    "tabWidth": 2,
+    "singleQuote": true,
+    "bracketSpacing": false,
+    "arrowParens": "always",
+    "useTabs": false,
+    "printWidth": 100,
+    "plugins": [
+      "prettier-plugin-svelte"
+    ],
+    "pluginSearchDirs": [
+      "."
+    ],
+    "overrides": [
+      {
+        "files": "*.svelte",
+        "options": {
+          "parser": "svelte"
+        }
+      }
+    ]
+  },
+  "eslintConfig": {
+    "extends": [
+      "plugin:astro/recommended",
+      "react-app"
+    ],
+    "overrides": [
+      {
+        "files": ["*.astro"],
+        "parser": "astro-eslint-parser",
+        "parserOptions": {
+          "parser": "@typescript-eslint/parser",
+          "extraFileExtensions": [".astro"]
+        }
+      }
+    ],
+    "ignorePatterns": ["*.lock"]
   }
 }
