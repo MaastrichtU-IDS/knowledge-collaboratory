@@ -39,7 +39,8 @@ Checkout the `docker-compose.prod.yml` file for more details about the deploymen
 
 ```
 ORCID_CLIENT_ID=APP-XXX
-ORCID_CLIENT_SECRET=XXXX
+ORCID_CLIENT_SECRET=XXX
+OPENAI_APIKEY=sk-XXX
 FRONTEND_URL=https://collaboratory.semanticscience.org
 ```
 
@@ -58,6 +59,7 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```bash
 ORCID_CLIENT_ID=APP-XXX
 ORCID_CLIENT_SECRET=XXXX
+OPENAI_APIKEY=sk-XXX
 FRONTEND_URL=http://localhost:19006
 ```
 

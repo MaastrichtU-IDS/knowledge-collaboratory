@@ -37,7 +37,6 @@ dependencies = [
     "reasoner-pydantic >=2.2.3",
     # "reasoner-pydantic ==3.0.1",
     # TODO: we can remove kgx once poetry finally manage to find 3.1.5
-    "reasoner-validator >=3.4.0",
     # "kgx >=1.6.0",
     "rdflib >=6.1.1",
     "SPARQLWrapper >=1.8.5",
@@ -100,7 +99,7 @@ fmt = [
 check = [
     "ruff app tests",
 ]
-compile = "pip-compile --extra dev --extra test -o requirements.txt pyproject.toml"
+compile = "pip-compile --resolver=backtracking --extra dev --extra test -o requirements.txt pyproject.toml {args}"
 
 
 [tool.hatch.metadata]
