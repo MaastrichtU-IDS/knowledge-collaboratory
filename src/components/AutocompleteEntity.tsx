@@ -1,11 +1,9 @@
 'use client';
 
 import React from 'react';
-// import { useTheme } from "@mui/material/styles";
 import {Autocomplete, TextField} from '@mui/material';
 
 const getAutocompleteLabel = (option: any, displayProp: string = '') => {
-  // console.log('getAutocompleteLabel', option)
   if (displayProp) {
     return option[displayProp];
   }

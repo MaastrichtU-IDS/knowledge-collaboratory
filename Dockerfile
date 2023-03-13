@@ -18,7 +18,7 @@ COPY . .
 
 RUN yarn build
 
-# In case someone want to use this docker image for development
+# In case someone want to use this stage for development
 CMD ["yarn", "dev"]
 
 
