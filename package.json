@@ -10,8 +10,8 @@
     "build:gh": "PUBLIC_BASE_URL=/knowledge-collaboratory astro build",
     "preview": "astro preview",
     "vscode": "yarn dlx @yarnpkg/sdks vscode",
-    "fmt": "prettier --plugin-search-dir . --write . --ignore-path .gitignore",
-    "lint": "prettier --plugin-search-dir . --check . --ignore-path .gitignore && eslint --ignore-path .gitignore .",
+    "fmt": "prettier --write . --ignore-path .gitignore",
+    "lint": "prettier --check . --ignore-path .gitignore && eslint --ignore-path .gitignore .",
     "astro": "astro"
   },
   "dependencies": {
@@ -74,22 +74,11 @@
     "tabWidth": 2,
     "singleQuote": true,
     "bracketSpacing": false,
-    "arrowParens": "always",
+    "arrowParens": "avoid",
     "useTabs": false,
     "printWidth": 100,
-    "plugins": [
-      "prettier-plugin-svelte"
-    ],
     "pluginSearchDirs": [
       "."
-    ],
-    "overrides": [
-      {
-        "files": "*.svelte",
-        "options": {
-          "parser": "svelte"
-        }
-      }
     ]
   },
   "eslintConfig": {
@@ -111,8 +100,7 @@
       "react",
       "@typescript-eslint"
     ],
-    "rules": {
-    },
+    "rules": {},
     "overrides": [
       {
         "files": [
