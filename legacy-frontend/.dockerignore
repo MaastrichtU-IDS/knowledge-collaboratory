@@ -9,7 +9,7 @@ yarn.lock
 .pnp.js
 .yarn
 .next
-# .yarnrc.yml
+.yarnrc.yml
 
 # testing
 /coverage

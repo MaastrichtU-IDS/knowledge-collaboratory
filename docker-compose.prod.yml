@@ -15,18 +15,15 @@ services:
       - /data/knowledge-collaboratory/ner-models:/data/ner-models
       - /data/knowledge-collaboratory/nanopub-keystore:/data/nanopub-keystore
 
+
   frontend:
+    restart: unless-stopped
     build:
       context: ./frontend
       args:
-        API_URL: ${API_URL:-https://api.collaboratory.semanticscience.org}
         FRONTEND_URL: ${FRONTEND_URL:-https://collaboratory.semanticscience.org}
-        ORCID_CLIENT_ID: ${ORCID_CLIENT_ID}
-    restart: unless-stopped
+        API_URL: ${API_URL:-https://collaboratory-api.transltr.io}
     environment:
-      # NEXT_PUBLIC_API_URL: ${API_URL:-https://api.collaboratory.semanticscience.org}
-      # NEXT_PUBLIC_FRONTEND_URL: ${FRONTEND_URL:-https://collaboratory.semanticscience.org}
-      # ORCID_CLIENT_ID: ${ORCID_CLIENT_ID}
       VIRTUAL_HOST: collaboratory.semanticscience.org
       LETSENCRYPT_HOST: collaboratory.semanticscience.org
       VIRTUAL_PORT: 4000

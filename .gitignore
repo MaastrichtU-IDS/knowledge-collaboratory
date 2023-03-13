@@ -1,19 +1,16 @@
-.vscode
-.mypy_cache
-docker-stack.yml
-
-.expo
-node_modules
-
-.yarn/
-.pnp*.[cm]js
-.yarnrc.yml
-pnpm-lock.yaml
+pySHACL/
+ontogpt/
 
 .env
+.env.production
 data
-.venv
 
+.DS_Store
+.vscode
+docker-stack.yml
+
+# Backend
+.venv
 __pycache__
 .pytest_cache
 *.egg-info
@@ -22,5 +19,18 @@ __pycache__
 htmlcov
 
 
-pySHACL/
-ontogpt/
+# Frontend
+node_modules
+.yarn/
+.astro/
+.expo
+.pnp*.[cm]js
+.yarnrc.yml
+pnpm-lock.yaml
+dist/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

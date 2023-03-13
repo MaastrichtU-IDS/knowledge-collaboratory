@@ -15,6 +15,16 @@ services:
       - /data/knowledge-collaboratory/nanopub-keystore:/data/nanopub-keystore
 
 
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        FRONTEND_URL: ${FRONTEND_URL:-https://collaboratory.semanticscience.org}
+        API_URL: ${API_URL:-https://collaboratory-api.transltr.io}
+    ports:
+      - 4000:4000
+
+
   # frontend:
   #   build:
   #     context: ./frontend

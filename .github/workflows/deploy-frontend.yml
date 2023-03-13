@@ -1,53 +1,40 @@
 name: Deploy frontend to GitHub Pages
+
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
-  # push:
-  #   branches: [ main ]
-  #   paths:
-  #   - 'frontend/**'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+env:
+  PUBLIC_SITE_URL: https://maastrichtu-ids.github.io
+  PUBLIC_BASE_URL: /knowledge-collaboratory
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18
+      - name: Checkout your repository using git
+        uses: actions/checkout@v3
 
-    - name: Install dependencies and build
-      env:
-        API_URL: "https://api.collaboratory.semanticscience.org"
-        FRONTEND_URL: "https://maastrichtu-ids.github.io/knowledge-collaboratory"
-      run: |
-        cd frontend
-        yarn install
-        yarn build
-        yarn export
+      - name: Install, build, and upload your site
+        uses: withastro/action@v0
+        with:
+          node-version: 18
+          package-manager: yarn
+          path: ./frontend
 
-    # - name: Deploy on GitHub
-    #   uses: JamesIves/github-pages-deploy-action@3.7.1
-    #   with:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #     BRANCH: gh-pages
-    #     FOLDER: frontend/app/web-build
-    #     CLEAN: true
-
-    # - name: Deploy on GitHub
-    #   run: yarn deploy
-
-    # Docs: https://github.com/peaceiris/actions-gh-pages
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        # Build output to publish to the `gh-pages` branch:
-        publish_dir: ./docs
-        # The following lines assign commit authorship to the official
-        # GH-Actions bot for deploys to `gh-pages` branch
-        # The GH actions bot is used by default if you didn't specify the two fields.
-        user_name: github-actions[bot]
-        user_email: 41898282+github-actions[bot]@users.noreply.github.com
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
