@@ -230,6 +230,7 @@ export default function NavBar() {
               clientId={settings.orcidClientId}
               redirectUri={settings.frontendUrl}
               scope="/authenticate"
+              expiresIn={604800} // 7 days
               onSuccess={onSuccess}
               onFailure={onFailure}>
                 <Button variant='contained' color='secondary' component="span" size='small' style={{textTransform: 'none'}}>

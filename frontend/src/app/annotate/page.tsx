@@ -52,7 +52,7 @@ export default function AnnotateText() {
     inputProject: '',
     editInputText: '',
     editPrompt: defaultPrompt,
-    extractionModel: 1, // LitCoin 1, OpenAI 0
+    extractionModel: 'litcoin', // LitCoin 1, OpenAI 0
     templateSelected: 'RDF reified statements',
     extractClicked: false,
     entitiesList: [],
@@ -114,9 +114,18 @@ export default function AnnotateText() {
 
   }, [])
 
+  // Order is important, litcoin needs to be last for the dropdown
   const extractionOptions = [
-    "Extract entities with the OpenAI GPT-3 davinci model",
+    "Extract entities with the OpenAI GPT-3.5 turbo model",
+    "Extract entities with the OpenAI GPT-3 text-davinci-003 model",
+    "Extract entities with the OpenAI GPT-3 code-davinci-002 code model",
     "Extract entities with the LitCoin model",
+  ]
+  const extractionIds = [
+    "gpt-3.5-turbo",
+    "text-davinci-003",
+    "code-davinci-002",
+    "litcoin",
   ]
   // "drug.DrugMechanism": "OntoGPT drug.DrugMechanism",
   // "ctd.ChemicalToDiseaseDocument": "OntoGPT ctd.ChemicalToDiseaseDocument",
@@ -132,7 +141,10 @@ export default function AnnotateText() {
       {'text': state.editInputText},
       {
         headers: { Authorization: `Bearer ${user['access_token']}` },
-        'params': {'prompt': state.editPrompt}
+        'params': {
+          'prompt': state.editPrompt,
+          'engine': state.extractionModel,
+        }
       }
     )
     .then(async res => {
@@ -240,7 +252,7 @@ export default function AnnotateText() {
       console.log(`⚠️ Text is more than ${maxLengthRelExtract} characters, we will not extract relations with the LitCoin model (too long)`)
       extract_relations = false
     }
-    if (state.extractionModel == 0) {
+    if (state.extractionModel !== 'litcoin') {
       extractOpenAI()
     } else {
       // Extract with Litcoin model
@@ -649,7 +661,7 @@ export default function AnnotateText() {
             <DropdownButton
               options={extractionOptions}
               onChange={(event: React.ChangeEvent<HTMLInputElement>, index: number) => {
-                updateState({extractionModel: index})
+                updateState({extractionModel: extractionIds[index]})
               }}
               onClick={(event: any) => {
                 handleExtract(event)
@@ -663,7 +675,7 @@ export default function AnnotateText() {
               🔒️ You need to login with your ORCID to use OpenAI models
             </Typography>
           } */}
-          { state.extractionModel == 0 &&
+          { state.extractionModel != 'litcoin' &&
             <TextField
               id='editPrompt'
               label='Prompt to use'
