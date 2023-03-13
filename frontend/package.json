@@ -63,6 +63,7 @@
     "@types/react-dom": "^18.0.6",
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
+    "@vite-pwa/astro": "^0.0.5",
     "eslint": "^8.36.0",
     "eslint-plugin-astro": "^0.24.0",
     "eslint-plugin-jsx-a11y": "^6.7.1",

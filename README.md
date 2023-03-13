@@ -14,6 +14,15 @@ Backend built with [FastAPI](https://fastapi.tiangolo.com/), and [RDFLib](https:
 
 Frontend built with [Astro](https://astro.build/), [ReactJS](https://reactjs.org/), and [Material UI](https://mui.com/)
 
+## 🌐 Public deployments
+
+* Experimental frontend on GitHub Pages: https://maastrichtu-ids.github.io/knowledge-collaboratory (uses IDS server as backend)
+* IDS servers: https://collaboratory.semanticscience.org
+* Translator ITRB servers:
+  * Test: https://collaboratory.test.transltr.io
+  * CI: https://collaboratory.ci.transltr.io
+  * Prod: https://collaboratory.transltr.io
+
 ## 📥️ Requirements
 
 * [Docker](https://www.docker.com/)

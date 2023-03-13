@@ -1,7 +1,8 @@
 import {defineConfig} from 'astro/config';
 import react from '@astrojs/react';
 import image from '@astrojs/image';
-import serviceWorker from 'astrojs-service-worker';
+import AstroPWA from '@vite-pwa/astro'
+// import serviceWorker from 'astrojs-service-worker';
 // import tailwind from "@astrojs/tailwind";
 
 // https://astro.build/config
@@ -12,7 +13,8 @@ export default defineConfig({
   integrations: [
     react(),
     image(),
-    serviceWorker()
+    // serviceWorker()
+    AstroPWA()
     // tailwind({
     //   config: {
     //     applyBaseStyles: false,

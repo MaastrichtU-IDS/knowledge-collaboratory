@@ -26,7 +26,9 @@ node_modules
 .expo
 .pnp*.[cm]js
 .yarnrc.yml
+yarn.lock
 pnpm-lock.yaml
+package-lock.json
 dist/
 
 # logs
