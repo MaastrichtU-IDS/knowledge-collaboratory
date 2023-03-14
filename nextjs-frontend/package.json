@@ -7,8 +7,10 @@
     "dev": "next dev -p 4000",
     "dev:prod": "NEXT_PUBLIC_API_URL=https://api.collaboratory.semanticscience.org next dev -p 4000",
     "turbo": "next dev -p 4000 --turbo --show-all",
-    "build": "next build",
+    "build": "next build && next export",
     "export": "next export",
+    "preview": "python -m http.server 3000 --directory ./out",
+    "build:preview": "yarn build && yarn preview",
     "start": "next start -p 4000",
     "lint": "next lint"
   },
@@ -62,6 +64,7 @@
     "babel-preset-expo": "^9.3.0",
     "eslint": "^8.34.0",
     "eslint-config-next": "^13.2.1",
+    "next-pwa": "^5.6.0",
     "prop-types": "^15.8.1",
     "typescript": "^4.9.5",
     "webpack": "^5.75.0"
