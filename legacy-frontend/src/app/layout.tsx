@@ -2,6 +2,7 @@
 
 import React, { useReducer } from "react";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { View } from "react-native";
 
 import './globals.css'
 import NavBar from "../layout/NavBar";
@@ -55,11 +56,13 @@ export default function RootLayout({
       <body>
         <ThemeProvider theme={theme}>
           <UserContext.Provider value={{ user, setUser }}>
-            <div className="mainView">
+            {/* <div className="mainView"> */}
+            <View style={{minHeight: '100vh', height: '100%', backgroundColor: '#eceff1'}}>
               <NavBar />
               {children}
               <Footer />
-            </div>
+            </View>
+            {/* </div> */}
           </UserContext.Provider>
         </ThemeProvider>
       </body>
