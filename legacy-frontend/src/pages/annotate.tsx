@@ -7,15 +7,15 @@ import AddIcon from '@mui/icons-material/AddBox';
 import RemoveIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 
-import { settings, genericContext } from '../../utils/settings';
-import { context, propertiesList, predicatesList, sentenceToAnnotate, ents } from '../../utils/biolinkModel';
-import UserContext from '../../utils/UserContext'
-import PublishNanopubButtons from '../../components/PublishNanopubButtons';
-import { FormSettings } from '../../components/StyledComponents';
-import AutocompleteEntity from './AutocompleteEntity';
-import DropdownButton from './DropdownButton';
-import Taggy from '../../components/ReactTaggy';
-import PubAnnotationProjects from '../../components/PubAnnotationProjects';
+import { settings, genericContext } from '../utils/settings';
+import { context, propertiesList, predicatesList, sentenceToAnnotate, ents } from '../utils/biolinkModel';
+import UserContext from '../utils/UserContext'
+import PublishNanopubButtons from '../components/PublishNanopubButtons';
+import { FormSettings } from '../components/StyledComponents';
+import AutocompleteEntity from '../components/AutocompleteEntity';
+import DropdownButton from '../components/DropdownButton';
+import Taggy from '../components/ReactTaggy';
+import PubAnnotationProjects from '../components/PubAnnotationProjects';
 
 // Define namespaces for building RDF URIs
 const BIOLINK = 'https://w3id.org/biolink/vocab/'

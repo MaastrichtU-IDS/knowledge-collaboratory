@@ -1,10 +1,8 @@
-"use client";
-
 import React, { useReducer } from "react";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { View } from "react-native";
 
-import './globals.css'
+// import './globals.css'
 import NavBar from "../layout/NavBar";
 import Footer from "../layout/Footer";
 import UserContext from "../utils/UserContext";
@@ -36,7 +34,7 @@ function reducer(state: any, item: any) {
   return item
 }
 
-export default function RootLayout({
+export default function Layout({
   children,
 }: {
   children: React.ReactNode
@@ -45,28 +43,16 @@ export default function RootLayout({
   const [user, setUser]: any = useReducer(reducer, []);
 
   return (
-    <html lang="en">
-
-      <head>
-        <title>Knowledge Collaboratory</title>
-        <meta name="description" content="Browse and publish RDF Nanopublications with the Knowledge Collaboratory." />
-        <link rel="icon" href="/icon.png" />
-      </head>
-
-      <body>
-        <ThemeProvider theme={theme}>
-          <UserContext.Provider value={{ user, setUser }}>
-            {/* <div className="mainView"> */}
-            <View style={{minHeight: '100vh', height: '100%', backgroundColor: '#eceff1'}}>
-              <NavBar />
-              {children}
-              <Footer />
-            </View>
-            {/* </div> */}
-          </UserContext.Provider>
-        </ThemeProvider>
-      </body>
-
-    </html>
+    <ThemeProvider theme={theme}>
+      <UserContext.Provider value={{ user, setUser }}>
+        {/* <div className="mainView"> */}
+        <View style={{minHeight: '100vh', height: '100%', backgroundColor: '#eceff1'}}>
+          <NavBar />
+          {children}
+          <Footer />
+        </View>
+        {/* </div> */}
+      </UserContext.Provider>
+    </ThemeProvider>
   )
 }

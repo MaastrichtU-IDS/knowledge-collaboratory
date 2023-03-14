@@ -5,10 +5,10 @@ import React from 'react';
 import { useTheme } from '@mui/material/styles';
 import { Typography, Container } from "@mui/material";
 
-import ShapeUploader from "./ShapeUploader";
+import ShapeUploader from "../components/shape-publisher/ShapeUploader";
 // import CsvUploader from "../../src/components/CsvUploader";
 // import RenderObjectForm from "../../src/components/RenderObjectForm";
-import {JsonldForm} from './JsonldForm';
+import {JsonldForm} from '../components/shape-publisher/JsonldForm';
 // import { JsonldEditor, JsonldForm } from 'json-ld-editor-react';
 
 

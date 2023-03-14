@@ -5,7 +5,7 @@ const withImages = require('next-images')
 const nextConfig = withExpo(withImages({
   // projectRoot: __dirname,
   experimental: {
-    appDir: true,
+    appDir: false,
   },
   webpack: (config) => {
     config.experiments.topLevelAwait = true
