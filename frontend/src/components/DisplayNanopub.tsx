@@ -8,8 +8,8 @@ import hljsDefineTurtle from '../utils/highlightjs-turtle';
 hljs.registerLanguage('turtle', hljsDefineTurtle);
 
 import {CytoscapeRdfGraph} from '../components/CytoscapeRdf';
-// import { CytoscapeRdf } from "cytoscape-rdf";
 // import "cytoscape-rdf";
+// import "nanopub-display";
 
 const DisplayNanopub = ({np, npDict, index, usersPubkeys, ...args}: any) => {
   const [state, setState] = React.useState({
@@ -129,11 +129,10 @@ const DisplayNanopub = ({np, npDict, index, usersPubkeys, ...args}: any) => {
       {state.npDict[np] && state.npDict[np]['rdf'] && (
         <Collapse in={state.npDict[np]['expanded']} timeout="auto">
           <CardContent style={{margin: '0px', padding: '0px'}}>
+            {/* <nanopub-display rdf={state.npDict[np]['rdf']} /> */}
             <pre style={{whiteSpace: 'pre-wrap', margin: '0px'}}>
               <code className="language-turtle">
                 {state.npDict[np]['rdf']}
-                {/* Adding <a> tags don't work in pre code tags */}
-                {/* {npDict[np]['rdf'].replace(/<(http(s)?:\/\/\S*?)>/gm, '<a href="$1">$1</a>')} */}
               </code>
             </pre>
           </CardContent>
@@ -146,7 +145,6 @@ const DisplayNanopub = ({np, npDict, index, usersPubkeys, ...args}: any) => {
           <CardContent style={{margin: '0px', padding: '0px'}}>
             <Paper elevation={2} style={{height: '80vh', textAlign: 'left', padding: '8px 8px', margin: '8px 0px'}}>
               <CytoscapeRdfGraph cytoscapeElems={state.npDict[np]['cytoscape']} />
-              {/* @ts-ignore */}
               {/* <cytoscape-rdf elements={state.npDict[np]['cytoscape']} /> */}
               {/* <cytoscape-rdf url={np + ".trig"} /> */}
             </Paper>

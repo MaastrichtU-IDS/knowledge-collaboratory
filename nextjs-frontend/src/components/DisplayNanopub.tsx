@@ -15,6 +15,7 @@ import {CytoscapeRdfGraph, rdfToCytoscape} from "../components/CytoscapeRdf";
 // import { CytoscapeRdf } from "cytoscape-rdf";
 // import "cytoscape-rdf";
 
+
 const DisplayNanopub = ({
   np,
   npDict,
