@@ -37,7 +37,7 @@
     "cytoscape-euler": "^1.2.2",
     "cytoscape-fcose": "^2.1.0",
     "cytoscape-popper": "^2.0.0",
-    "cytoscape-rdf": "^0.0.4",
+    "cytoscape-rdf": "^0.0.11",
     "cytoscape-spread": "^3.0.0",
     "highlight.js": "^11.2.0",
     "n3": "^1.16.3",

@@ -1,5 +1,6 @@
 import '@/layout/globals.css'
 import type { AppProps } from 'next/app'
+import Head from 'next/head'
 
 import dynamic from 'next/dynamic'
 
@@ -9,8 +10,17 @@ const Layout = dynamic(import ("../layout/layout"), { ssr: false })
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <Layout>
-      <Component {...pageProps} />
-    </Layout>
+    <>
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Knowledge Collaboratory</title>
+        <meta name="description" content="Browse and publish RDF Nanopublications with the Knowledge Collaboratory." />
+        <link rel="icon" href="/icon.png" />
+        <link rel="manifest" href="~/manifest.json" />
+      </Head>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+    </>
   )
 }

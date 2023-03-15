@@ -11,10 +11,11 @@ import 'highlight.js/styles/github-dark-dimmed.css';
 import hljsDefineTurtle from '../utils/highlightjs-turtle';
 hljs.registerLanguage("turtle", hljsDefineTurtle)
 
-import {CytoscapeRdfGraph, rdfToCytoscape} from "../components/CytoscapeRdf";
-// import { CytoscapeRdf } from "cytoscape-rdf";
+import {CytoscapeRdfGraph} from "../components/CytoscapeRdf";
 // import "cytoscape-rdf";
-
+// import 'cytoscape-rdf';
+// import 'nanopub-display';
+// import 'my-element';
 
 const DisplayNanopub = ({
   np,
@@ -133,11 +134,10 @@ const DisplayNanopub = ({
       { state.npDict[np] && state.npDict[np]['rdf'] &&
         <Collapse in={state.npDict[np]['expanded']} timeout="auto">
           <CardContent style={{margin: theme.spacing(0,0), padding: theme.spacing(0,0)}}>
+            {/* <nanopub-display rdf={state.npDict[np]['rdf']} /> */}
             <pre style={{whiteSpace: 'pre-wrap', margin: theme.spacing(0,0)}}>
               <code className="language-turtle">
                 {state.npDict[np]['rdf']}
-                {/* Adding <a> tags don't work in pre code tags */}
-                {/* {npDict[np]['rdf'].replace(/<(http(s)?:\/\/\S*?)>/gm, '<a href="$1">$1</a>')} */}
               </code>
             </pre>
           </CardContent>
