@@ -18,7 +18,6 @@ env:
 #   PUBLIC_SITE_URL: https://maastrichtu-ids.github.io
 #   PUBLIC_BASE_URL: /knowledge-collaboratory
 
-
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -29,8 +28,8 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: 18
-        cache: yarn
-        cache-dependency-path: frontend/yarn.lock
+        # cache: yarn
+        # cache-dependency-path: frontend/yarn.lock
 
     - name: Install dependencies
       run: |
