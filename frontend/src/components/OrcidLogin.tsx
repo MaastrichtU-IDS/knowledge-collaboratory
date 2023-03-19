@@ -7,7 +7,7 @@ import {Popper, ClickAwayListener, Typography, Paper, Checkbox, FormControlLabel
 import LogoutIcon from '@mui/icons-material/Logout';
 // import {useStore} from '@nanostores/react';
 // import {userProfile} from '../utils/userStore';
-import UserContext from '../utils/UserContext'
+import UserContext from '../utils/UserContext';
 
 import axios from 'axios';
 
@@ -16,10 +16,9 @@ import {settings} from '../utils/settings';
 // @ts-ignore
 import OAuth2Login from 'react-simple-oauth2-login';
 
-
 const OrcidLogin = ({...args}: any) => {
   // const auth = useAuth();
-  const { user, setUser }: any = useContext(UserContext)
+  const {user, setUser}: any = useContext(UserContext);
 
   const [state, setState] = React.useState({
     currentUsername: null,
@@ -169,13 +168,7 @@ const OrcidLogin = ({...args}: any) => {
                 }
               </Typography>
               <Typography style={{marginBottom: '8px'}}>Username: {user.username}</Typography>
-              <Button
-                onClick={logout}
-                variant="contained"
-                color="inherit"
-                size="small"
-                startIcon={<LogoutIcon />}
-              >
+              <Button onClick={logout} variant="contained" color="inherit" size="small" startIcon={<LogoutIcon />}>
                 Logout
               </Button>
             </Paper>

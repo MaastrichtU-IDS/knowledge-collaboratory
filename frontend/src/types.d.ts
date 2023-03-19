@@ -8,13 +8,12 @@ declare module 'cytoscape-cola';
 // }
 // declare namespace JSX {JSX};
 
-
 declare namespace JSX {
-    interface NanopubDisplay {
-        url?: string;
-        rdf?: string;
-    }
-    interface IntrinsicElements {
-        'nanopub-display': NanopubDisplay;
-    }
+  interface NanopubDisplay {
+    url?: string;
+    rdf?: string;
+  }
+  interface IntrinsicElements {
+    'nanopub-display': NanopubDisplay;
+  }
 }

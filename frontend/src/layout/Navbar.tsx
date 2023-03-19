@@ -1,10 +1,25 @@
-"use client";
+'use client';
 
-import React from "react";
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useTheme } from '@mui/material/styles';
-import { AppBar, Toolbar, Button, Tooltip, Icon, Typography, Box, Drawer, Divider, List, ListItem, ListItemButton, ListItemText, IconButton } from '@mui/material';
+import {useTheme} from '@mui/material/styles';
+import {
+  AppBar,
+  Toolbar,
+  Button,
+  Tooltip,
+  Icon,
+  Typography,
+  Box,
+  Drawer,
+  Divider,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  IconButton
+} from '@mui/material';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import InfoIcon from '@mui/icons-material/Info';
 import SearchIcon from '@mui/icons-material/Search';
@@ -12,9 +27,8 @@ import ShapePublisherIcon from '@mui/icons-material/DynamicForm';
 import AnnotateIcon from '@mui/icons-material/LocalOffer';
 import MenuIcon from '@mui/icons-material/Menu';
 
-import { settings } from '../utils/settings';
+import {settings} from '../utils/settings';
 import OrcidLogin from '../components/OrcidLogin';
-
 
 const leftLinks = [
   {
@@ -35,21 +49,23 @@ const leftLinks = [
     href: `/shape-publisher`,
     icon: <ShapePublisherIcon />
   }
-]
+];
 const rightLinks = [
   {
     text: 'API',
     tooltip: '📖 Access the OpenAPI documentation of the API used by this service',
     href: settings.docsUrl,
-    icon: <Icon style={{display: 'flex', marginRight: '8px', padding: '0px'}}>
-      <Image
-        src="/openapi_logo.svg"
-        alt="OpenAPI"
-        width={18}
-        height={18}
-        // fill
-      />
-    </Icon>
+    icon: (
+      <Icon style={{display: 'flex', marginRight: '8px', padding: '0px'}}>
+        <Image
+          src="/openapi_logo.svg"
+          alt="OpenAPI"
+          width={18}
+          height={18}
+          // fill
+        />
+      </Icon>
+    )
   },
   {
     tooltip: 'ℹ️ About the Knowledge Collaboratory',
@@ -63,42 +79,45 @@ const rightLinks = [
     href: 'https://github.com/MaastrichtU-IDS/knowledge-collaboratory',
     icon: <GitHubIcon />
   }
-]
-
+];
 
 export default function Navbar(props: any) {
   const theme = useTheme();
-  const { window } = props;
+  const {window} = props;
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   const handleDrawerToggle = () => {
-    setMobileOpen((prevState) => !prevState);
+    setMobileOpen(prevState => !prevState);
   };
 
-
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
+    <Box onClick={handleDrawerToggle} sx={{textAlign: 'center'}}>
+      <Typography variant="h6" sx={{my: 2}}>
         Knowledge Collaboratory
       </Typography>
       <Divider />
       <List>
-        {leftLinks.map((item) => (
+        {leftLinks.map(item => (
           <Link key={item.href} href={item.href} style={{textDecoration: 'none', color: 'inherit'}}>
             <ListItem disablePadding>
-                <ListItemButton sx={{ textAlign: 'center' }}>
-                  {item.icon}
-                  <ListItemText primary={item.text} />
-                </ListItemButton>
+              <ListItemButton sx={{textAlign: 'center'}}>
+                {item.icon}
+                <ListItemText primary={item.text} />
+              </ListItemButton>
             </ListItem>
           </Link>
         ))}
         <Divider />
-        {rightLinks.map((item) => (
-          <Link key={item.href} href={item.href} target={item.href.startsWith('http') ? "_blank" : "_self"} style={{textDecoration: 'none', color: 'inherit'}}>
+        {rightLinks.map(item => (
+          <Link
+            key={item.href}
+            href={item.href}
+            target={item.href.startsWith('http') ? '_blank' : '_self'}
+            style={{textDecoration: 'none', color: 'inherit'}}
+          >
             <ListItem disablePadding>
-              <ListItemButton href={item.href} sx={{ textAlign: 'center' }}>
+              <ListItemButton href={item.href} sx={{textAlign: 'center'}}>
                 {item.icon}
                 <ListItemText primary={item.text || item.smallText} />
               </ListItemButton>
@@ -113,35 +132,29 @@ export default function Navbar(props: any) {
 
   return (
     <>
-      <AppBar title="" position='static' component="nav">
-        <Toolbar variant='dense'>
+      <AppBar title="" position="static" component="nav">
+        <Toolbar variant="dense">
           <IconButton
             color="inherit"
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
+            sx={{mr: 2, display: {sm: 'none'}}}
           >
             <MenuIcon />
           </IconButton>
 
           <Link href="/" style={{alignItems: 'center', display: 'flex'}}>
-            <Tooltip title='☑️ Knowledge Collaboratory'>
-              <Image
-                src="icon.png"
-                alt="Logo"
-                width={32}
-                height={32}
-              />
+            <Tooltip title="☑️ Knowledge Collaboratory">
+              <Image src="icon.png" alt="Logo" width={32} height={32} />
             </Tooltip>
           </Link>
 
-          <Box style={{ width: '100%' }} sx={{ display: { xs: 'none', sm: 'flex' } }}>
-
-            {leftLinks.map((item) => (
+          <Box style={{width: '100%'}} sx={{display: {xs: 'none', sm: 'flex'}}}>
+            {leftLinks.map(item => (
               <Link key={item.href} href={item.href} className="linkButton">
                 <Tooltip title={item.tooltip}>
-                  <Button color="inherit" style={{color: "#fff", textTransform: 'none', marginLeft: theme.spacing(2)}}>
+                  <Button color="inherit" style={{color: '#fff', textTransform: 'none', marginLeft: theme.spacing(2)}}>
                     {item.icon}&nbsp;{item.text}
                   </Button>
                 </Tooltip>
@@ -151,18 +164,21 @@ export default function Navbar(props: any) {
 
             <OrcidLogin />
 
-            {rightLinks.map((item) => (
-              <Link key={item.href} target={item.href.startsWith('http') ? "_blank" : "_self"} href={item.href} className="linkButton">
+            {rightLinks.map(item => (
+              <Link
+                key={item.href}
+                target={item.href.startsWith('http') ? '_blank' : '_self'}
+                href={item.href}
+                className="linkButton"
+              >
                 <Tooltip title={item.tooltip}>
-                  <Button color="inherit" style={{color: "#fff", textTransform: 'none', marginLeft: theme.spacing(2)}}>
+                  <Button color="inherit" style={{color: '#fff', textTransform: 'none', marginLeft: theme.spacing(2)}}>
                     {item.icon}&nbsp;{item.text}
                   </Button>
                 </Tooltip>
               </Link>
             ))}
-
           </Box>
-
         </Toolbar>
       </AppBar>
       <Box component="nav">
@@ -172,11 +188,11 @@ export default function Navbar(props: any) {
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
+            keepMounted: true // Better open performance on mobile.
           }}
           sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 240 },
+            display: {xs: 'block', sm: 'none'},
+            '& .MuiDrawer-paper': {boxSizing: 'border-box', width: 240}
           }}
         >
           {drawer}

@@ -1,54 +1,52 @@
-"use client";
+'use client';
 
-import React from "react";
+import React from 'react';
 // import { useTheme } from "@mui/material/styles";
-import { Autocomplete, TextField } from "@mui/material";
+import {Autocomplete, TextField} from '@mui/material';
 
-
-const getAutocompleteLabel = (option: any, displayProp: string = "") => {
+const getAutocompleteLabel = (option: any, displayProp: string = '') => {
   // console.log('getAutocompleteLabel', option)
   if (displayProp) {
-    return option[displayProp]
+    return option[displayProp];
   }
 
   if (option.id_label && option.id_curie) {
-    return option.id_label + " (" + option.id_curie + ")"
+    return option.id_label + ' (' + option.id_curie + ')';
   }
   if (option.text && option.id_curie) {
-    return option.text + " (" + option.id_curie + ")"
+    return option.text + ' (' + option.id_curie + ')';
   }
   if (option.label && option.curie) {
     if (option.altLabel) {
-      return `${option.label}, ${option.altLabel} (${option.curie})`
+      return `${option.label}, ${option.altLabel} (${option.curie})`;
     }
-    return option.label + " (" + option.curie + ")"
+    return option.label + ' (' + option.curie + ')';
   }
   // getOptionLabel={(option: any) => `${option.label}${option.altLabel ? `, ${option.altLabel}` : ''} (${option.curie})`}
   if (option.label && option.id) {
-    return option.label + " (" + option.id + ")"
+    return option.label + ' (' + option.id + ')';
   }
-  if (option.id_uri) return option.id_uri
-  if (option.text) return option.text
-  if (option.label) return option.label
-  if (option.id) return option.id
-  if (typeof option === "string") {
-    return option
+  if (option.id_uri) return option.id_uri;
+  if (option.text) return option.text;
+  if (option.label) return option.label;
+  if (option.id) return option.id;
+  if (typeof option === 'string') {
+    return option;
   } else {
-    return ""
+    return '';
   }
 };
 
 const checkIfUri = (text: string) => {
-  return /^https?:\/\/[-_\/#:\?=\+%\.0-9a-zA-Z]+$/i.test(text)
-}
-
-const checkIfEntity = (entity: any) => {
-  if (!entity) return false
-  if (entity.id_uri) return checkIfUri(entity.id_uri)
-  if (entity.id) return checkIfUri(entity.id)
-  return checkIfUri(entity)
+  return /^https?:\/\/[-_\/#:\?=\+%\.0-9a-zA-Z]+$/i.test(text);
 };
 
+const checkIfEntity = (entity: any) => {
+  if (!entity) return false;
+  if (entity.id_uri) return checkIfUri(entity.id_uri);
+  if (entity.id) return checkIfUri(entity.id);
+  return checkIfUri(entity);
+};
 
 const AutocompleteEntity = ({
   label,
@@ -58,11 +56,10 @@ const AutocompleteEntity = ({
   options,
   entity,
   validate,
-  getOptionLabel=(option: any) => getAutocompleteLabel(option),
-  groupBy=(option: any) => (option.type ? option.type : null),
+  getOptionLabel = (option: any) => getAutocompleteLabel(option),
+  groupBy = (option: any) => (option.type ? option.type : null),
   ...args
 }: any) => {
-
   // const theme = useTheme();
 
   return (
@@ -78,7 +75,7 @@ const AutocompleteEntity = ({
       // (using label as value instead of the fulle object)
       getOptionLabel={getOptionLabel}
       groupBy={groupBy}
-      renderInput={(params) => (
+      renderInput={params => (
         <TextField
           {...params}
           variant="outlined"
@@ -87,7 +84,11 @@ const AutocompleteEntity = ({
           label={label}
           placeholder={label}
           error={validate == 'entity' && !checkIfEntity(value)}
-          helperText={validate == 'entity' && !checkIfEntity(value) && "This value is not valid, make sure the selected entity has an identifier, or provid a valid URI."}
+          helperText={
+            validate == 'entity' &&
+            !checkIfEntity(value) &&
+            'This value is not valid, make sure the selected entity has an identifier, or provid a valid URI.'
+          }
           // TODO: only works at init
           // try Controller hook? https://stackoverflow.com/questions/69295842/error-validation-with-material-ui-autcomplete-react-hook-form
         />
@@ -95,5 +96,5 @@ const AutocompleteEntity = ({
       {...args}
     />
   );
-}
+};
 export default AutocompleteEntity;

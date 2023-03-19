@@ -1,19 +1,17 @@
-"use client";
+'use client';
 
 import React from 'react';
 // import { useLocation } from "react-router-dom";
-import { useTheme } from '@mui/material/styles';
-import { Typography, Container } from "@mui/material";
+import {useTheme} from '@mui/material/styles';
+import {Typography, Container} from '@mui/material';
 
-import ShapeUploader from "../components/shape-publisher/ShapeUploader";
+import ShapeUploader from '../components/shape-publisher/ShapeUploader';
 // import CsvUploader from "../../src/components/CsvUploader";
 // import RenderObjectForm from "../../src/components/RenderObjectForm";
 import {JsonldForm} from '../components/shape-publisher/JsonldForm';
 // import { JsonldEditor, JsonldForm } from 'json-ld-editor-react';
 
-
 export default function ShapePublisher() {
-
   // TODO: use sx https://github.com/mui/material-ui/blob/master/examples/create-react-app-with-typescript/src/index.tsx
   const theme = useTheme();
 
@@ -22,7 +20,7 @@ export default function ShapePublisher() {
   const [state, setState] = React.useState({
     // shapeFile: shapeFile,
     shapeFile: shapeFile,
-    shapeTarget: "https://w3id.org/kg-metadata/KgMetadataShape" ,
+    shapeTarget: 'https://w3id.org/kg-metadata/KgMetadataShape',
     open: false,
     dialogOpen: false,
     csvwColumnsArray: [],
@@ -33,14 +31,17 @@ export default function ShapePublisher() {
     ontoload_success_open: false,
     sparql_endpoint: '',
     sparql_username: '',
-    sparql_password: '',
+    sparql_password: ''
   });
   const stateRef = React.useRef(state);
   // Avoid conflict when async calls
-  const updateState = React.useCallback((update: any) => {
-    stateRef.current = {...stateRef.current, ...update};
-    setState(stateRef.current);
-  }, [setState]);
+  const updateState = React.useCallback(
+    (update: any) => {
+      stateRef.current = {...stateRef.current, ...update};
+      setState(stateRef.current);
+    },
+    [setState]
+  );
 
   // Original form and output:
   // Questions: https://github.com/kodymoodley/fair-metadata-generator/blob/main/questions.csv
@@ -72,10 +73,8 @@ export default function ShapePublisher() {
 
   // }, [state.wizard_jsonld['@context']])
 
-
-  return(
-    <Container className='mainContainer'>
-
+  return (
+    <Container className="mainContainer">
       {/* <Typography variant="h4" style={{textAlign: 'center', marginBottom: theme.spacing(1)}}>
         🧙‍♂️ FAIR Metadata Wizard, a JSON-LD editor 📝
       </Typography> */}
@@ -89,7 +88,7 @@ export default function ShapePublisher() {
         renderObject={state.shapeFile}
         shapeTarget={state.shapeTarget}
         onChange={(shapeFile: any, shapeTarget: any) => {
-          updateState({shapeFile, shapeTarget})
+          updateState({shapeFile, shapeTarget});
 
           // setTimeout(function() {
           //   console.log('shapeFile state after clicking upload', state.shapeFile)
@@ -98,10 +97,7 @@ export default function ShapePublisher() {
         }}
       />
 
-      <JsonldForm
-        shape={state.shapeFile}
-        target={state.shapeTarget}
-      />
+      <JsonldForm shape={state.shapeFile} target={state.shapeTarget} />
 
       {/* <PublishNanopubButtons
         user={user}
@@ -112,11 +108,9 @@ export default function ShapePublisher() {
         nanopubPublished={state.nanopubPublished}
         errorMessage={state.errorMessage}
       /> */}
-
     </Container>
-  )
+  );
 }
-
 
 // SHACL shapes examples:
 // Articles: https://raw.githubusercontent.com/NCATS-Gamma/omnicorp/master/shacl/omnicorp-shapes.ttl
@@ -286,4 +280,4 @@ const shapeFile = `@prefix : <https://w3id.org/kg-metadata/> .
         sh:nodeKind sh:Literal ;
     ] ;
     .
-`
+`;

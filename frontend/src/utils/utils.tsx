@@ -7,7 +7,7 @@
 
 // NOTE: rdflib not used atm, and it creates issues when running next build
 
-export const dummy = "dummy"
+export const dummy = 'dummy';
 
 // export const rdfToRdf = (data: any, output: string = 'text/turtle', input: string = 'application/ld+json') => {
 //   // Convert RDF to JSON-LD using rdflib
@@ -29,7 +29,6 @@ export const dummy = "dummy"
 //       })
 //   })
 // }
-
 
 // export const toJSONLD = (data: any, uri: any) => {
 //   // Convert RDF to JSON-LD using rdflib
