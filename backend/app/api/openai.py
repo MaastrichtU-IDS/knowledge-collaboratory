@@ -12,11 +12,15 @@ from app.config import logger, settings
 from app.models import User
 
 # Check available engines at https://platform.openai.com/docs/models/overview
-default_engine = "gpt-3.5-turbo"
-engine_list = [
+default_model = "gpt-3.5-turbo"
+model_list = [
     "gpt-3.5-turbo",
     "text-davinci-003",
     "code-davinci-002"
+]
+# Handle differently request for chat models
+chat_models = [
+    "gpt-3.5-turbo",
 ]
 NUM_RETRIES = 3
 
@@ -24,7 +28,7 @@ default_prompt = """From the text below, extract the entities, classify them and
 Entities to extract should be of one of those types: "Chemical Entity", "Disease", "Gene", "Gene Product", "Organism Taxon"
 
 Return the results as a YAML object with the following fields:
-- entities: <the list of entities in the text, each entity is an object with the fields: label, type of the entity>
+- entities: <the list of entities in the text, each entity is an object with the fields: label, type>
 - associations: <the list of associations between entities in the text, each association is an object with the fields: "subject" for the subject entity, "predicate" for the relation (treats, affects, interacts with, causes, caused by, has evidence), "object" for the object entity>
 """
 
@@ -39,14 +43,14 @@ class NerInput(BaseModel):
 @router.post(
     "/openai-extract",
     name="Extract entities and relations from text using OpenAI models",
-    description=f"""Extract entities and relations from text using OpenAI models, engines available are {' ,'.join(engine_list)}""",
+    description=f"""Extract entities and relations from text using OpenAI models, engines available are {' ,'.join(model_list)}""",
     response_description="Entities and relations extracted from the given text",
     response_model={},
 )
-async def get_entities_relations_openai(
+def get_entities_relations_openai(
     input: NerInput = Body(...),
     prompt: str = default_prompt,
-    engine: str = default_engine,
+    model: str = default_model,
     # current_user: User = Depends(get_current_user),
 ):
     # if not current_user or "id" not in current_user.keys():
@@ -54,10 +58,10 @@ async def get_entities_relations_openai(
     #         status_code=403,
     #         detail=f"You need to login with ORCID to publish a Nanopublication",
     #     )
-    if engine not in engine_list:
+    if model not in model_list:
         raise HTTPException(
             status_code=400,
-            detail=f"The provided engine {engine} does not exist, please use on of {' ,'.join(engine_list)}",
+            detail=f"The provided engine {model} does not exist, please use on of {' ,'.join(model_list)}",
         )
 
     prompt = f"""{prompt}
@@ -69,12 +73,24 @@ Text:
     while not response:
         i += 1
         logger.debug(f"Calling OpenAI API (attempt {i})...")
+        print(f"Calling OpenAI API (attempt {i})...")
+        send_prompt = prompt + input.text + '"'
         try:
-            response = openai.Completion.create(
-                engine=engine,
-                prompt=prompt + input.text + '"',
-                max_tokens=3000,
-            )
+            if model in chat_models:
+                response = openai.ChatCompletion.create(
+                    model=model,
+                    messages=[
+                        {"role": "system", "content": "Act like you are a biomedical expert working to extract entities and relations from biomedical text. Return the results as pure YAML, without codeblocks tags"},
+                        {"role": "user", "content": send_prompt}
+                    ]
+                    # max_tokens=5000,
+                )
+            else:
+                response = openai.Completion.create(
+                    model=model,
+                    prompt=send_prompt,
+                    max_tokens=5000,
+                )
         except Exception as e:
             logger.error(f"OpenAI API connection error: {e}")
             if i >= NUM_RETRIES:
@@ -83,8 +99,19 @@ Text:
             logger.info(f"Retrying {i} of {NUM_RETRIES} after {sleep_time} seconds...")
             sleep(sleep_time)
         logger.debug(response)
+        print(response)
 
-    openai_resp = yaml.load(response.choices[0].text, Loader=yaml.Loader)
+    text_resp = response.choices[0].message.content if model in chat_models else response.choices[0].text
+
+    if text_resp.startswith("```yaml\n"):
+        text_resp = text_resp[8:]
+    if text_resp.startswith("```\n"):
+        text_resp = text_resp[4:]
+    if text_resp.endswith("```"):
+        text_resp = text_resp[0:-3]
+
+
+    openai_resp = yaml.load(text_resp, Loader=yaml.Loader)
     return openai_resp
 
 

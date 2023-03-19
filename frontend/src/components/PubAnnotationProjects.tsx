@@ -1,7 +1,11 @@
-import React, {useEffect} from 'react';
-import {Autocomplete, TextField, Button, Typography, Box} from '@mui/material';
+"use client";
+
+import React, {useEffect} from "react";
+import { useTheme } from "@mui/material/styles";
+import { Autocomplete, TextField, Button, Typography, Box } from "@mui/material";
 import axios from 'axios';
-import {settings} from '../utils/settings';
+import { settings } from "../utils/settings";
+
 
 const PubAnnotationProjects = ({
   onClick,
@@ -10,59 +14,75 @@ const PubAnnotationProjects = ({
   // groupBy=(option: any) => (option.type ? option.type : null),
   ...args
 }: any) => {
+  const theme = useTheme();
   const [state, setState] = React.useState({
     projects: [],
     projectSelected: {
-      author: '',
-      created_at: '',
-      license: '',
-      maintainer: '',
-      name: '',
-      updated_at: '',
-      url: '',
-      countPublished: ''
+      author: "", created_at: "", license: "",
+      maintainer: "", name: "", updated_at: "",
+      url: "", countPublished: "",
     },
     countPublished: -1,
     loadedDocs: [],
-    loadDoc: {url: '', sourcedb: '', sourceid: ''},
+    loadDoc: {url: "", sourcedb: "", sourceid: ""},
     loading: false,
     open: false,
     dialogOpen: false,
     published_nanopub: '',
-    errorMessage: '         '
+    errorMessage: '         ',
   });
   const stateRef = React.useRef(state);
   // Avoid conflict when async calls
-  const updateState = React.useCallback(
-    (update: any) => {
-      stateRef.current = {...stateRef.current, ...update};
-      setState(stateRef.current);
-    },
-    [setState]
-  );
+  const updateState = React.useCallback((update: any) => {
+    stateRef.current = {...stateRef.current, ...update};
+    setState(stateRef.current);
+  }, [setState]);
+
 
   useEffect(() => {
-    axios
-      .get('https://pubannotation.org/projects.json', {
-        headers: {
-          accept: 'application/json'
-        }
-      })
-      .then(res => {
-        console.log(res.data);
+
+    fetch("https://pubannotation.org/projects.json", {
+      headers: {
+        Accept: 'application/json',
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        // console.log(data)
         updateState({
-          projects: res.data
-        });
+          projects: data,
+        })
       })
       .catch(error => {
-        console.log(error);
-      });
+        console.log(error)
+      })
+
+    // axios.get("https://pubannotation.org/projects.json",
+    //   {
+    //     // mode: 'no-cors',
+    //     headers: {
+    //       'Access-Control-Allow-Origin': "*",
+    //       'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE',
+    //       'Access-Control-Allow-Headers': 'Content-Type',
+    //       "accept": "application/json",
+    //       "Content-Type": "application/json",
+    //     }
+    //   })
+    //     .then(res => {
+    //       console.log(res.data)
+    //       updateState({
+    //         projects: res.data,
+    //       })
+    //     })
+    //     .catch(error => {
+    //       console.log(error)
+    //     })
   }, []);
 
   const onChange = async (event: any, newInputValue: any) => {
-    console.log('newInputValue', newInputValue);
+    console.log("newInputValue", newInputValue)
     if (newInputValue && newInputValue.name) {
-      newInputValue['url'] = `https://pubannotation.org/projects/${newInputValue.name}`;
+      newInputValue["url"] = `https://pubannotation.org/projects/${newInputValue.name}`
       // TODO: get the number of annotations already done for this project
       // And fetch the annotation for this number + 1 (get the right page by /10)
       const getAlreadyPublishedQuery = `prefix np: <http://www.nanopub.org/nschema#>
@@ -74,46 +94,44 @@ const PubAnnotationProjects = ({
         prefix tao: <http://pubannotation.org/ontology/tao.owl#>
 
         SELECT (count(DISTINCT ?s) AS ?count) WHERE {
-          ?s tao:part_of <${newInputValue['url']}>
-      }`;
-      const alreadyPublished = await axios.get(
-        `${settings.nanopubSparqlUrl}?query=${encodeURIComponent(getAlreadyPublishedQuery)}`
-      );
-      const countPublished = parseInt(alreadyPublished.data.results.bindings[0].count.value);
-      updateState({projectSelected: newInputValue, countPublished: countPublished});
+          ?s tao:part_of <${newInputValue["url"]}>
+      }`
+      const alreadyPublished = await axios.get(`${settings.nanopubSparqlUrl}?query=${encodeURIComponent(getAlreadyPublishedQuery)}`)
+      const countPublished = parseInt(alreadyPublished.data.results.bindings[0].count.value)
+      updateState({projectSelected: newInputValue, countPublished: countPublished})
     }
-  };
+  }
 
   const onClickLoad = async () => {
-    const page = state.countPublished == 0 ? 1 : state.countPublished / 10;
-    const numberInPage = state.countPublished == 0 ? 0 : state.countPublished % 10;
+    const page = (state.countPublished == 0) ? 1 : state.countPublished / 10
+    const numberInPage = (state.countPublished == 0) ? 0 : state.countPublished % 10
 
-    axios
-      .get(`${state.projectSelected.url}/docs.json?page=${page}`, {
+    axios.get(`${state.projectSelected.url}/docs.json?page=${page}`,
+      {
         headers: {
-          accept: 'application/json'
+          "accept": "application/json",
         }
       })
-      .then(res => {
-        getDocToAnnotate(res.data[numberInPage]);
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  };
+        .then(res => {
+          getDocToAnnotate(res.data[numberInPage])
+        })
+        .catch(error => {
+          console.log(error)
+        })
+  }
 
   const getDocToAnnotate = async (annotateDoc: any) => {
-    const res = await axios.get(`${annotateDoc.url.replace('http://', 'https://')}.json`);
-    res.data['project'] = state.projectSelected.url;
-    onClick(res.data);
-    return res.data;
-  };
+    const res = await axios.get(`${annotateDoc.url.replace("http://", "https://")}.json`)
+    res.data['project'] = state.projectSelected.url
+    onClick(res.data)
+    return res.data
+  }
 
-  const label = 'Select a PubAnnotation project to load a document to annotate';
+  const label = "Select a PubAnnotation project to load a document to annotate"
 
   return (
     <>
-      <Box sx={{display: 'flex', justifyContent: 'center', width: '100%', marginTop: '16px', marginBottom: '16px'}}>
+      <Box sx={{ display: 'flex', justifyContent: "center", width: '100%', marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }}>
         <Autocomplete
           key={id}
           id={id}
@@ -125,11 +143,11 @@ const PubAnnotationProjects = ({
           // Automatically update the state value, but cause issue with default values
           // (using label as value instead of the fulle object)
           getOptionLabel={(option: any) => {
-            return option.name;
+            return option.name
           }}
           // groupBy={groupBy}
-          style={{width: '60%', marginRight: '16px'}}
-          renderInput={params => (
+          style={{width: '60%', marginRight: theme.spacing(2)}}
+          renderInput={(params) => (
             <TextField
               {...params}
               variant="outlined"
@@ -146,28 +164,20 @@ const PubAnnotationProjects = ({
           )}
           {...args}
         />
-        <Button
-          onClick={() => {
-            onClickLoad();
-          }}
+        <Button onClick={() => { onClickLoad() }}
           variant="contained"
           className="button"
           // startIcon={<AddIcon />}
-          color="info"
-        >
-          Load a document from this project
+          color="info" >
+            Load a document from this project
         </Button>
       </Box>
-      {state.countPublished >= 0 && (
-        <Typography variant="body1" style={{textAlign: 'center', marginBottom: '16px'}}>
-          📝 {state.countPublished} documents have been annotated for the{' '}
-          <a href={state.projectSelected.url} target="_blank" rel="noopener noreferrer">
-            {state.projectSelected.name}
-          </a>{' '}
-          PubAnnotation project
+      { state.countPublished >= 0 &&
+        <Typography variant="body1" style={{textAlign: 'center', marginBottom: theme.spacing(2)}}>
+          📝 {state.countPublished} documents have been annotated for the <a href={state.projectSelected.url} target="_blank" rel="noopener noreferrer">{state.projectSelected.name}</a> PubAnnotation project
         </Typography>
-      )}
+      }
     </>
   );
-};
+}
 export default PubAnnotationProjects;

@@ -1,14 +1,4 @@
-# 🌐 Knowledge Collaboratory frontend
-
-[![Deploy frontend to GitHub Pages](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/deploy-frontend.yml/badge.svg)](https://github.com/MaastrichtU-IDS/knowledge-collaboratory/actions/workflows/deploy-frontend.yml)
-
-🔗 Deployed at [**maastrichtu-ids.github.io/knowledge-collaboratory**](https://maastrichtu-ids.github.io/knowledge-collaboratory)
-
-Built with [Astro](https://astro.build/), [ReactJS](https://reactjs.org/), and [Material UI for react](https://mui.com/).
-
-## 🧑‍💻 Development
-
-⚠️ All commands needs to be run from the `frontend/` directory.
+## Development
 
 Install dependencies:
 
@@ -16,73 +6,50 @@ Install dependencies:
 yarn
 ```
 
-Run the app in development:
+First, run the development server:
 
 ```bash
 yarn dev
 ```
 
-> Open [localhost:3000](http://localhost:3000) with your browser to see the result. The page auto-updates as you edit the file.
+Open [http://localhost:4000](http://localhost:4000) with your browser to see the result. The page auto-updates as you edit the file.
 
-## ✔️ Formatting
+## Production deployment
 
-Automatically format the code with `prettier`:
-
-```bash
-yarn fmt
-```
-
-Run `eslint` to check for issues in the code:
-
-```bash
-yarn lint
-```
-
-## 🚀 Production deployment
-
-🤖 There is a GitHub Action workflow to automatically build and deploy the website to GitHub Pages
-
-Build it locally, generating static pages in `dist/`:
+Build:
 
 ```bash
 yarn build
 ```
 
-Preview built website:
+Start server:
 
 ```bash
-yarn preview
+yarn start
 ```
 
-🐳 Build and run with docker, served using nginx:
+To generate static pages use:
 
 ```bash
-docker build -t kc .
-docker run -p 4000:4000 kc
+yarn export
 ```
 
-## 🧞 Commands
+> ⚠️ Not supported yet for NextJS 13 new `app` layout that we are using, cf. their [roadmap](https://beta.nextjs.org/docs/app-directory-roadmap#supported-and-planned-features) to check if it has been implemented
 
-All commands are run from the root of the project, from a terminal:
+## Learn more
 
-| Command             | Action                                               |
-| :------------------ | :--------------------------------------------------- |
-| `yarn`              | Installs dependencies                                |
-| `yarn dev`          | Starts local dev server at `localhost:3000`          |
-| `yarn build`        | Build your production site to `./dist/`              |
-| `yarn preview`      | Preview your build locally, before deploying         |
-| `yarn format`       | Format the code with `prettier`                      |
-| `yarn lint`         | Check for issues in the code with `eslint`           |
-| `yarn vscode`       | Setup VSCode to properly resolve imports from yarn 3 |
-| `yarn astro ...`    | Run CLI commands like `astro add`, `astro check`     |
-| `yarn astro --help` | Get help using the Astro CLI                         |
+Project built with [NextJS](https://nextjs.org/), [ReactJS](https://react.dev/) and [Material UI](https://mui.com/). 
 
-## 👀 Want to learn more?
+* Can be installed as a [PWA](https://web.dev/progressive-web-apps/) (Progressive Web App) thanks to [next/pwa](next/pwa).
+* Uses [React Native](https://reactnative.dev/) for the main view
 
-Feel free to check [Astro documentation](https://docs.astro.build) or jump into their [Discord server](https://astro.build/chat).
+> This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-Astro + Tailwind template: https://github.com/onwidget/astrowind
+Next.js collects completely anonymous telemetry data about general usage: https://nextjs.org/telemetry
 
-<!-- [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json) -->
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!

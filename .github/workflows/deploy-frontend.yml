@@ -14,30 +14,62 @@ permissions:
   id-token: write
 
 env:
-  PUBLIC_SITE_URL: https://maastrichtu-ids.github.io
-  PUBLIC_BASE_URL: /knowledge-collaboratory
+  NEXT_PUBLIC_FRONTEND_URL: 'https://collaboratory.semanticscience.org'
+#   PUBLIC_SITE_URL: https://maastrichtu-ids.github.io
+#   PUBLIC_BASE_URL: /knowledge-collaboratory
+
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout your repository using git
-        uses: actions/checkout@v3
 
-      - name: Install, build, and upload your site
-        uses: withastro/action@v0
-        with:
-          node-version: 18
-          package-manager: yarn
-          path: ./frontend
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v1
+    - uses: actions/checkout@v3
+
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18
+        cache: yarn
+        cache-dependency-path: frontend/yarn.lock
+
+    - name: Install dependencies
+      run: |
+        cd frontend
+        yarn
+        # yarn install --frozen-lockfile
+
+    - name: Build website
+      run: |
+        cd frontend
+        yarn build
+
+
+    - name: Setup Pages
+      uses: actions/configure-pages@v3
+
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v1
+      with:
+        path: './frontend/out'
+
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v1
+
+
+  #     - name: Install, build, and upload your site
+  #       uses: withastro/action@v0
+  #       with:
+  #         node-version: 18
+  #         package-manager: yarn
+  #         path: ./frontend
+  # deploy:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   environment:
+  #     name: github-pages
+  #     url: ${{ steps.deployment.outputs.page_url }}
+  #   steps:
+  #     - name: Deploy to GitHub Pages
+  #       id: deployment
+  #       uses: actions/deploy-pages@v1

@@ -47,7 +47,7 @@ dependencies = [
     # "nanopub@git+https://github.com/vemonet/nanopub.git#better-import-keys",
     "pyshacl >=0.20.0",
     # "pyshacl@git+https://github.com/vemonet/pySHACL.git@fix-subclassof-node-constraints",
-    "openai",
+    "openai >=0.27.2 ",
     "PyYAML",
     # "ontogpt@file:///opt/ontogpt",
     # "ontogpt@{root:uri}/ontogpt",
