@@ -303,7 +303,7 @@ export default function BrowseNanopub() {
       </Typography>
 
       {/* Filtering options */}
-      <Stack direction="row" spacing={2} justifyContent="center" style={{margin: theme.spacing(2, 0 )}}>
+      <Stack direction={{sm: 'column', md: 'row'}} spacing={2} justifyContent="center" style={{margin: theme.spacing(2, 0)}}>
         {/* Search box */}
         <form onSubmit={handleSearch}>
           <Paper className='searchPaper'>

@@ -142,7 +142,7 @@ const OrcidLogin = ({...args}: any) => {
               color="success"
               component="span"
               size="small"
-              style={{textTransform: 'none', fontSize: '12px'}}
+              style={{textTransform: 'none', fontSize: '12px', height: '100%', width: '100%'}}
             >
               Login with ORCID
               <Image src="/orcid_logo.svg" alt="ORCID" width={20} height={20} style={{marginLeft: '8px'}} />

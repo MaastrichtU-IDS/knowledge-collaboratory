@@ -14,6 +14,7 @@
     "preview": "python -m http.server 3000 --directory ./out",
     "build:preview": "yarn build && yarn preview",
     "start": "next start -p 4000",
+    "fmt": "prettier \"**/*.{ts,tsx,js,cjs,json,md,html}\" --ignore-path .gitignore --write",
     "lint": "next lint"
   },
   "dependencies": {
@@ -68,8 +69,25 @@
     "eslint": "^8.34.0",
     "eslint-config-next": "^13.2.1",
     "next-pwa": "^5.6.0",
+    "prettier": "^2.8.4",
     "prop-types": "^15.8.1",
     "typescript": "^4.9.5",
     "webpack": "^5.75.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "packageManager": "yarn@3.4.1",
+  "prettier": {
+    "trailingComma": "none",
+    "tabWidth": 2,
+    "singleQuote": true,
+    "bracketSpacing": false,
+    "arrowParens": "avoid",
+    "useTabs": false,
+    "printWidth": 120,
+    "pluginSearchDirs": [
+      "."
+    ]
   }
 }
