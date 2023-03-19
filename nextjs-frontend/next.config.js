@@ -21,14 +21,25 @@ const nextConfig = withPWA(withImages({
   //   forceSwcTransforms: true,
   // },
   reactStrictMode: true,
-  // swcMinify: true,
-  // transpilePackages: [
-  //   "react-native",
-  //   "expo",
-  //   // Add more React Native / Expo packages here...
-  // ],
+  swcMinify: true,
+  transpilePackages: [
+    "react-native",
+    "expo",
+    // Add more React Native / Expo packages here...
+  ],
   webpack: (config) => {
     config.experiments.topLevelAwait = true
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      // Transform all direct `react-native` imports to `react-native-web`
+      'react-native$': 'react-native-web',
+    };
+    config.resolve.extensions = [
+      '.web.js',
+      '.web.ts',
+      '.web.tsx',
+      ...config.resolve.extensions,
+    ]
     return config;
   },
 }))

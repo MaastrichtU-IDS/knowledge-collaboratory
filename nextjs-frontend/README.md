@@ -36,9 +36,14 @@ yarn export
 
 > ⚠️ Not supported yet for NextJS 13 new `app` layout that we are using, cf. their [roadmap](https://beta.nextjs.org/docs/app-directory-roadmap#supported-and-planned-features) to check if it has been implemented
 
-## Learn More
+## Learn more
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Project built with [NextJS](https://nextjs.org/), [ReactJS](https://react.dev/) and [Material UI](https://mui.com/). 
+
+* Can be installed as a [PWA](https://web.dev/progressive-web-apps/) (Progressive Web App) thanks to [next/pwa](next/pwa).
+* Uses [React Native](https://reactnative.dev/) for the main view
+
+> This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 Next.js collects completely anonymous telemetry data about general usage: https://nextjs.org/telemetry
 
