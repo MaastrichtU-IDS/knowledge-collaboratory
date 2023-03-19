@@ -1,6 +1,6 @@
 import React, { useReducer } from "react";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { View } from "react-native";
+// import { View } from "react-native";
 
 // import './globals.css'
 import NavBar from "../layout/NavBar";
@@ -45,13 +45,13 @@ export default function Layout({
   return (
     <ThemeProvider theme={theme}>
       <UserContext.Provider value={{ user, setUser }}>
-        {/* <div className="mainView"> */}
-        <View style={{minHeight: '100vh', height: '100%', backgroundColor: '#eceff1'}}>
+        <div className="mainView">
+        {/* <View style={{minHeight: '100vh', height: '100%', backgroundColor: '#eceff1'}}> */}
           <NavBar />
           {children}
           <Footer />
-        </View>
-        {/* </div> */}
+        {/* </View> */}
+        </div>
       </UserContext.Provider>
     </ThemeProvider>
   )

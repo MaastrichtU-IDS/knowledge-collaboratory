@@ -16,7 +16,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <title>Knowledge Collaboratory</title>
         <meta name="description" content="Browse and publish RDF Nanopublications with the Knowledge Collaboratory." />
         <link rel="icon" href="/icon.png" />
-        <link rel="manifest" href="~/manifest.json" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/icon.png" />
+        <meta name="theme-color" content="#fff" />
       </Head>
       <Layout>
         <Component {...pageProps} />

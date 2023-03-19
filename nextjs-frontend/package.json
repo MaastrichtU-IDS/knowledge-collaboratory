@@ -8,6 +8,7 @@
     "dev:prod": "NEXT_PUBLIC_API_URL=https://api.collaboratory.semanticscience.org next dev -p 4000",
     "turbo": "next dev -p 4000 --turbo --show-all",
     "build": "next build && next export",
+    "serve": "npx serve out",
     "export": "next export",
     "preview": "python -m http.server 3000 --directory ./out",
     "build:preview": "yarn build && yarn preview",
