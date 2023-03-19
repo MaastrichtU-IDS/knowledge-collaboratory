@@ -14,8 +14,9 @@ hljs.registerLanguage("turtle", hljsDefineTurtle)
 import {CytoscapeRdfGraph} from "../components/CytoscapeRdf";
 // import "cytoscape-rdf";
 // import 'cytoscape-rdf';
-// import 'nanopub-display';
+import '@nanopub/display';
 // import 'my-element';
+
 
 const DisplayNanopub = ({
   np,
@@ -134,12 +135,13 @@ const DisplayNanopub = ({
       { state.npDict[np] && state.npDict[np]['rdf'] &&
         <Collapse in={state.npDict[np]['expanded']} timeout="auto">
           <CardContent style={{margin: theme.spacing(0,0), padding: theme.spacing(0,0)}}>
-            {/* <nanopub-display rdf={state.npDict[np]['rdf']} /> */}
-            <pre style={{whiteSpace: 'pre-wrap', margin: theme.spacing(0,0)}}>
+            {/* @ts-ignor */}
+            <nanopub-display rdf={state.npDict[np]['rdf']} />
+            {/* <pre style={{whiteSpace: 'pre-wrap', margin: theme.spacing(0,0)}}>
               <code className="language-turtle">
                 {state.npDict[np]['rdf']}
               </code>
-            </pre>
+            </pre> */}
           </CardContent>
         </Collapse>
       }
