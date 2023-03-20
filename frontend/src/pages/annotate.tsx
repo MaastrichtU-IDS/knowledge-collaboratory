@@ -24,13 +24,15 @@ import axios from 'axios';
 
 import {settings, genericContext} from '../utils/settings';
 import {context, propertiesList, predicatesList, sentenceToAnnotate, ents} from '../utils/biolinkModel';
-import UserContext from '../utils/UserContext';
 import PublishNanopubButtons from '../components/PublishNanopubButtons';
 import {FormSettings} from '../components/StyledComponents';
 import AutocompleteEntity from '../components/AutocompleteEntity';
 import DropdownButton from '../components/DropdownButton';
 import Taggy from '../components/ReactTaggy';
 import PubAnnotationProjects from '../components/PubAnnotationProjects';
+
+import {useStore} from '@nanostores/react';
+import {userProfile, userSettings} from '../utils/nanostores';
 
 // Define namespaces for building RDF URIs
 const BIOLINK = 'https://w3id.org/biolink/vocab/';
@@ -53,7 +55,8 @@ Return the results as a YAML object with the following fields:
 
 export default function AnnotateText() {
   const theme = useTheme();
-  const {user}: any = useContext(UserContext);
+  const $userProfile = useStore(userProfile);
+  const $userSettings = useStore(userSettings);
 
   // useLocation hook to get URL params
   // let location = useLocation();
@@ -148,7 +151,7 @@ export default function AnnotateText() {
 
   const extractOpenAI = () => {
     fetch(
-      `${settings.apiUrl}/openai-extract?prompt=${encodeURIComponent(state.editPrompt)}&model=${encodeURIComponent(
+      `${$userSettings.api}/openai-extract?prompt=${encodeURIComponent(state.editPrompt)}&model=${encodeURIComponent(
         state.extractionModel
       )}`,
       {
@@ -284,7 +287,7 @@ export default function AnnotateText() {
       // Extract with Litcoin model
       axios
         .post(
-          settings.apiUrl + '/get-entities-relations',
+          $userSettings.api + '/get-entities-relations',
           {text: state.editInputText},
           {params: {extract_relations: extract_relations}}
         )
@@ -722,7 +725,7 @@ export default function AnnotateText() {
               // onClick={(event: any) => {
               //   handleExtract(event)
               // }}
-              loggedIn={user.id}
+              loggedIn={$userProfile.id}
             />
           </div>
 
@@ -1126,7 +1129,7 @@ export default function AnnotateText() {
 
       {state.extractClicked && (
         <PublishNanopubButtons
-          user={user}
+          user={$userProfile}
           generateRDF={generateRDF}
           entitiesList={state.entitiesList}
           inputSource={state.inputSource}

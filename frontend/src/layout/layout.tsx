@@ -4,7 +4,6 @@ import {View} from 'react-native';
 
 import Navbar from '../layout/Navbar';
 import Footer from '../layout/Footer';
-import UserContext from '../utils/UserContext';
 
 // Change theme color and typography here
 const theme = createTheme({
@@ -37,15 +36,13 @@ export default function Layout({children}: {children: React.ReactNode}) {
 
   return (
     <ThemeProvider theme={theme}>
-      <UserContext.Provider value={{user, setUser}}>
-        {/* <div className="mainView"> */}
-        <View style={{minHeight: '100vh', height: '100%', backgroundColor: '#eceff1'}}>
-          <Navbar />
-          {children}
-          <Footer />
-        </View>
-        {/* </div> */}
-      </UserContext.Provider>
+      {/* <div className="mainView"> */}
+      <View style={{minHeight: '100vh', height: '100%', backgroundColor: '#eceff1'}}>
+        <Navbar />
+        {children}
+        <Footer />
+      </View>
+      {/* </div> */}
     </ThemeProvider>
   );
 }

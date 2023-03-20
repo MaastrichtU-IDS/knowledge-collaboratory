@@ -5,28 +5,19 @@ const withPWA = require('next-pwa')({
   dest: 'public',
   register: true,
   skipWaiting: true,
-  // reactStrictMode: true,
-  // productionBrowserSourceMaps: true,
   disable: process.env.NODE_ENV === 'development'
 });
 
 // EXPO example: https://github.com/expo/examples/tree/master/with-nextjs/pages
-// PWA: https://codewithmarish.com/post/build-pwa-with-nextjs-under-1-min
 
 // const nextConfig = withExpo(withImages({
 const nextConfig = withPWA(
   withImages({
-    // projectRoot: __dirname,
-    // experimental: {
-    //   appDir: false,
-    //   forceSwcTransforms: true,
-    // },
     reactStrictMode: true,
     swcMinify: true,
     transpilePackages: [
       'react-native',
       'expo'
-      // Add more React Native / Expo packages here...
     ],
     images: {
       unoptimized: true
@@ -40,9 +31,11 @@ const nextConfig = withPWA(
       };
       config.resolve.extensions = ['.web.js', '.web.ts', '.web.tsx', ...config.resolve.extensions];
       return config;
-    }
+    },
+    // experimental: {
+    //   appDir: false,
+    // },
   })
 );
-// })))
 
 module.exports = nextConfig;

@@ -1,5 +1,4 @@
 name: Deploy frontend to GitHub Pages
-
 on:
   push:
     branches: [main]
@@ -15,8 +14,6 @@ permissions:
 
 env:
   NEXT_PUBLIC_FRONTEND_URL: 'https://collaboratory.semanticscience.org'
-#   PUBLIC_SITE_URL: https://maastrichtu-ids.github.io
-#   PUBLIC_BASE_URL: /knowledge-collaboratory
 
 jobs:
   publish:
@@ -54,21 +51,3 @@ jobs:
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v1
-
-
-  #     - name: Install, build, and upload your site
-  #       uses: withastro/action@v0
-  #       with:
-  #         node-version: 18
-  #         package-manager: yarn
-  #         path: ./frontend
-  # deploy:
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   environment:
-  #     name: github-pages
-  #     url: ${{ steps.deployment.outputs.page_url }}
-  #   steps:
-  #     - name: Deploy to GitHub Pages
-  #       id: deployment
-  #       uses: actions/deploy-pages@v1

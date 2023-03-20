@@ -18,12 +18,11 @@ import SearchIcon from '@mui/icons-material/Search';
 import axios from 'axios';
 
 import {settings} from '../utils/settings';
-import {CytoscapeRdfGraph, rdfToCytoscape} from '../components/CytoscapeRdf';
+import {rdfToCytoscape} from '../components/CytoscapeRdf';
 import DisplayNanopub from '../components/DisplayNanopub';
 
 export default function BrowseNanopub() {
   const theme = useTheme();
-  // const { user }: any = useContext(UserContext)
 
   const resourceTypesList: any = [
     {label: 'PREDICT reference dataset', uri: 'http://purl.org/np/RAWWaT9M_Nd8cVm_-amJErz60Ak__tkS6ROi2P-swdmMw'},

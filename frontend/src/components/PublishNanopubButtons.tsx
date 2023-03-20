@@ -12,6 +12,8 @@ import UploadIcon from '@mui/icons-material/FileUpload';
 
 import {settings, genericContext} from '../utils/settings';
 import {FormSettings} from './StyledComponents';
+import {useStore} from '@nanostores/react';
+import {userSettings} from '../utils/nanostores';
 
 import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/github-dark-dimmed.css';
@@ -31,6 +33,7 @@ const PublishNanopubButtons = ({
   ...args
 }: any) => {
   const theme = useTheme();
+  const $userSettings = useStore(userSettings);
 
   const [state, setState] = React.useState({
     shaclValidate: true,
@@ -77,7 +80,7 @@ const PublishNanopubButtons = ({
     if (!user.error) {
       const access_token = user['access_token'];
       axios
-        .post(`${settings.apiUrl}/publish-last-signed`, null, {
+        .post(`${$userSettings.api}/publish-last-signed`, null, {
           headers: {Authorization: `Bearer ${access_token}`}
           // params: requestParams
         })
@@ -124,7 +127,7 @@ const PublishNanopubButtons = ({
       }
       const access_token = user['access_token'];
       axios
-        .post(`${settings.apiUrl}/assertion`, stmtJsonld, {
+        .post(`${$userSettings.api}/assertion`, stmtJsonld, {
           headers: {Authorization: `Bearer ${access_token}`},
           params: requestParams
         })
@@ -162,7 +165,7 @@ const PublishNanopubButtons = ({
     // @ts-ignore
     formData.append('privateKey', event.currentTarget.elements.privateKey.files[0]);
     axios
-      .post(settings.apiUrl + '/upload-keys', formData, {
+      .post($userSettings.api + '/upload-keys', formData, {
         headers: {
           Authorization: `Bearer ${user['access_token']}`,
           'Content-Type': 'multipart/form-data',
@@ -192,7 +195,7 @@ const PublishNanopubButtons = ({
 
     const access_token = user['access_token'];
     axios
-      .get(settings.apiUrl + '/generate-keys', {
+      .get($userSettings.api + '/generate-keys', {
         headers: {
           Authorization: `Bearer ${access_token}`
         }

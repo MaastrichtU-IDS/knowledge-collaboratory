@@ -1,14 +1,9 @@
-import React, {useContext} from 'react';
+import React from 'react';
 // import Link from 'next/link';
 import Image from 'next/image';
-// import { Image } from '@astrojs/image/components';
 import {AppBar, Toolbar, Button, Tooltip, Icon as MuiIcon, IconButton, Box, ButtonBase} from '@mui/material';
 import {Popper, ClickAwayListener, Typography, Paper, Checkbox, FormControlLabel, FormHelperText} from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
-// import {useStore} from '@nanostores/react';
-// import {userProfile} from '../utils/userStore';
-import UserContext from '../utils/UserContext';
-
 import axios from 'axios';
 
 import {settings} from '../utils/settings';
@@ -16,9 +11,13 @@ import {settings} from '../utils/settings';
 // @ts-ignore
 import OAuth2Login from 'react-simple-oauth2-login';
 
+import {useStore} from '@nanostores/react';
+import {userProfile} from '../utils/nanostores';
+
+
 const OrcidLogin = ({...args}: any) => {
   // const auth = useAuth();
-  const {user, setUser}: any = useContext(UserContext);
+  const $userProfile = useStore(userProfile);
 
   const [state, setState] = React.useState({
     currentUsername: null,
@@ -56,7 +55,7 @@ const OrcidLogin = ({...args}: any) => {
 
   const logout = () => {
     localStorage.clear();
-    setUser({});
+    userProfile.set({});
     handleClickAway();
   };
 
@@ -82,7 +81,7 @@ const OrcidLogin = ({...args}: any) => {
           } else {
             current_user['username'] = current_user['sub'];
           }
-          setUser(current_user);
+          userProfile.set(current_user);
           localStorage.setItem('knowledgeCollaboratorySettings', JSON.stringify(current_user));
         } else {
           // The token stored might not be valid anymore, deleting it to avoid spamming the API
@@ -122,8 +121,8 @@ const OrcidLogin = ({...args}: any) => {
 
   return (
     <>
-      {!user ||
-        (!user.username && (
+      {!$userProfile ||
+        (!$userProfile.username && (
           <OAuth2Login
             authorizationUrl="https://orcid.org/oauth/authorize"
             // authorizationUrl="https://orcid.org/.well-known/openid-configuration"
@@ -149,25 +148,25 @@ const OrcidLogin = ({...args}: any) => {
           </OAuth2Login>
         ))}
 
-      {user && user.username && (
+      {$userProfile && $userProfile.username && (
         <Button variant="contained" onClick={showUserInfo} color="success" size="small" style={{textTransform: 'none'}}>
-          🐧 {user.username}
+          🐧 {$userProfile.username}
         </Button>
       )}
 
-      {user && user.username && (
+      {$userProfile && $userProfile.username && (
         <Popper open={open} anchorEl={anchorEl}>
           <ClickAwayListener onClickAway={handleClickAway}>
             <Paper elevation={4} style={{padding: '16px 16px', textAlign: 'left'}}>
               <Typography style={{marginBottom: '8px'}}>
                 Logged in with ORCID:{' '}
                 {
-                  <a href={user.id} target="_blank" rel="noopener noreferrer">
-                    {user.id}
+                  <a href={$userProfile.id} target="_blank" rel="noopener noreferrer">
+                    {$userProfile.id}
                   </a>
                 }
               </Typography>
-              <Typography style={{marginBottom: '8px'}}>Username: {user.username}</Typography>
+              <Typography style={{marginBottom: '8px'}}>Username: {$userProfile.username}</Typography>
               <Button onClick={logout} variant="contained" color="inherit" size="small" startIcon={<LogoutIcon />}>
                 Logout
               </Button>

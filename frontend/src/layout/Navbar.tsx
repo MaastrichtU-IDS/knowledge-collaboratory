@@ -1,6 +1,4 @@
-'use client';
-
-import React from 'react';
+import React, {useContext} from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {useTheme} from '@mui/material/styles';
@@ -18,7 +16,8 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
-  IconButton
+  Popover,
+  IconButton, FormControl, InputLabel, Select, MenuItem, Popper, ClickAwayListener, Paper
 } from '@mui/material';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import InfoIcon from '@mui/icons-material/Info';
@@ -26,9 +25,11 @@ import SearchIcon from '@mui/icons-material/Search';
 import ShapePublisherIcon from '@mui/icons-material/DynamicForm';
 import AnnotateIcon from '@mui/icons-material/LocalOffer';
 import MenuIcon from '@mui/icons-material/Menu';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 import {settings} from '../utils/settings';
 import OrcidLogin from '../components/OrcidLogin';
+import UserSettingsPopper from '../components/UserSettingsPopper';
 
 const leftLinks = [
   {
@@ -85,6 +86,22 @@ export default function Navbar(props: any) {
   const theme = useTheme();
   const {window} = props;
 
+  // Popper for settings
+  const [open, setOpen] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const handleClick = (event: any) => {
+    console.log('Click button!');
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+    setOpen((prev) => !prev);
+  };
+  const handleClickAway = () => {
+    setOpen(false);
+    setAnchorEl(anchorEl ? null : anchorEl);
+    console.log('Click away!');
+  };
+  const id = open ? 'simple-popper' : undefined;
+
+
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   const handleDrawerToggle = () => {
@@ -117,7 +134,7 @@ export default function Navbar(props: any) {
             style={{textDecoration: 'none', color: 'inherit'}}
           >
             <ListItem disablePadding>
-              <ListItemButton href={item.href} sx={{textAlign: 'center'}}>
+              <ListItemButton sx={{textAlign: 'center'}}>
                 {item.icon}
                 <ListItemText primary={item.text || item.smallText} />
               </ListItemButton>
@@ -163,6 +180,8 @@ export default function Navbar(props: any) {
             <div className="flexGrow"></div>
 
             <OrcidLogin />
+
+            <UserSettingsPopper />
 
             {rightLinks.map(item => (
               <Link

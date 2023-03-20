@@ -31,3 +31,14 @@ validator = TRAPIResponseValidator(
     # default validation strictness by validation context unless we override it here
     strict_validation=None
 )
+
+def check_trapi_compliance(response):
+    validator.check_compliance_of_trapi_response(response.json()["message"])
+    # validator.check_compliance_of_trapi_response(response.json())
+    validator_resp = validator.get_messages()
+    print(validator_resp["warnings"])
+    print("REASONER VALIDATOR ERRORS")
+    print(validator_resp["errors"])
+    assert (
+        len(validator_resp["errors"]) == 0
+    )

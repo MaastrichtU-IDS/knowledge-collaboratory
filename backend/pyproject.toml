@@ -93,6 +93,7 @@ features = [
 
 [tool.hatch.envs.default.scripts]
 api = "BACKEND_URL=http://localhost:8000 uvicorn app.main:app --host localhost --port 8000 --reload {args}"
+test = "pytest {args}"
 fmt = [
     "ruff app tests --fix",
 ]

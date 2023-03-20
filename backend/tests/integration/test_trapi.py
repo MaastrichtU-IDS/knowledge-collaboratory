@@ -2,13 +2,10 @@ import json
 import os
 
 from fastapi.testclient import TestClient
-# from reasoner_validator import validate
 
 from app.config import settings
-
-# from src.api import start_api
 from app.main import app
-from tests.conftest import validator
+from tests.conftest import check_trapi_compliance
 
 
 client = TestClient(app)
@@ -20,26 +17,17 @@ def test_post_trapi():
     url = "/query"
 
     for trapi_filename in os.listdir("tests/queries"):
-        with open("tests/queries/" + trapi_filename, "r") as f:
+        with open("tests/queries/" + trapi_filename) as f:
             print(f"☑️ Testing {trapi_filename}")
             reasoner_query = f.read()
             response = client.post(
                 url, data=reasoner_query, headers={"Content-Type": "application/json"}
             )
-
-            # print(response.json)
             edges = response.json()["message"]["knowledge_graph"]["edges"].items()
-            # print(response)
-            print(trapi_filename)
 
-            validator.check_compliance_of_trapi_response(response.json())
-            validator_resp = validator.get_messages()
-            print(validator_resp["warnings"])
-            print("REASONER VALIDATOR ERRORS")
-            print(validator_resp["errors"])
-            assert (
-                len(validator_resp["errors"]) == 0
-            )
+            print(trapi_filename)
+            check_trapi_compliance(response)
+
             if trapi_filename.endswith("limit3.json"):
                 assert len(edges) == 3
             elif trapi_filename.endswith("limit1.json"):
@@ -66,20 +54,10 @@ def test_trapi_empty_response():
             }
         }
     }
-
     response = client.post(
         "/query",
         data=json.dumps(reasoner_query),
         headers={"Content-Type": "application/json"},
     )
-
-    print(response.json())
-    validator.check_compliance_of_trapi_response(response.json())
-    validator_resp = validator.get_messages()
-    print(validator_resp["warnings"])
-    print("REASONER VALIDATOR ERRORS")
-    print(validator_resp["errors"])
-    assert (
-        len(validator_resp["errors"]) == 0
-    )
+    check_trapi_compliance(response)
     assert len(response.json()["message"]["results"]) == 0
