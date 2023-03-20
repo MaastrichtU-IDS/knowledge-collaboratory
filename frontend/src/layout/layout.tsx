@@ -1,9 +1,9 @@
-import React, {useReducer} from 'react';
-import {createTheme, ThemeProvider} from '@mui/material/styles';
-import {View} from 'react-native';
+import React, {useReducer} from 'react'
+import {createTheme, ThemeProvider} from '@mui/material/styles'
+import {View} from 'react-native'
 
-import Navbar from '../layout/Navbar';
-import Footer from '../layout/Footer';
+import Navbar from '../layout/Navbar'
+import Footer from '../layout/Footer'
 
 // Change theme color and typography here
 const theme = createTheme({
@@ -24,15 +24,15 @@ const theme = createTheme({
     fontSize: 11
   }
   // spacing: 2
-});
+})
 
 // context for User
 function reducer(state: any, item: any) {
-  return item;
+  return item
 }
 
 export default function Layout({children}: {children: React.ReactNode}) {
-  const [user, setUser]: any = useReducer(reducer, []);
+  const [user, setUser]: any = useReducer(reducer, [])
 
   return (
     <ThemeProvider theme={theme}>
@@ -44,5 +44,5 @@ export default function Layout({children}: {children: React.ReactNode}) {
       </View>
       {/* </div> */}
     </ThemeProvider>
-  );
+  )
 }

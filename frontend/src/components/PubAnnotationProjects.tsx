@@ -1,10 +1,10 @@
-'use client';
+'use client'
 
-import React, {useEffect} from 'react';
-import {useTheme} from '@mui/material/styles';
-import {Autocomplete, TextField, Button, Typography, Box} from '@mui/material';
-import axios from 'axios';
-import {settings} from '../utils/settings';
+import React, {useEffect} from 'react'
+import {useTheme} from '@mui/material/styles'
+import {Autocomplete, TextField, Button, Typography, Box} from '@mui/material'
+import axios from 'axios'
+import {settings} from '../utils/settings'
 
 const PubAnnotationProjects = ({
   onClick,
@@ -13,7 +13,7 @@ const PubAnnotationProjects = ({
   // groupBy=(option: any) => (option.type ? option.type : null),
   ...args
 }: any) => {
-  const theme = useTheme();
+  const theme = useTheme()
   const [state, setState] = React.useState({
     projects: [],
     projectSelected: {
@@ -34,16 +34,16 @@ const PubAnnotationProjects = ({
     dialogOpen: false,
     published_nanopub: '',
     errorMessage: '         '
-  });
-  const stateRef = React.useRef(state);
+  })
+  const stateRef = React.useRef(state)
   // Avoid conflict when async calls
   const updateState = React.useCallback(
     (update: any) => {
-      stateRef.current = {...stateRef.current, ...update};
-      setState(stateRef.current);
+      stateRef.current = {...stateRef.current, ...update}
+      setState(stateRef.current)
     },
     [setState]
-  );
+  )
 
   useEffect(() => {
     fetch('https://pubannotation.org/projects.json', {
@@ -56,11 +56,11 @@ const PubAnnotationProjects = ({
         // console.log(data)
         updateState({
           projects: data
-        });
+        })
       })
       .catch(error => {
-        console.log(error);
-      });
+        console.log(error)
+      })
 
     // axios.get("https://pubannotation.org/projects.json",
     //   {
@@ -82,12 +82,12 @@ const PubAnnotationProjects = ({
     //     .catch(error => {
     //       console.log(error)
     //     })
-  }, []);
+  }, [])
 
   const onChange = async (event: any, newInputValue: any) => {
-    console.log('newInputValue', newInputValue);
+    console.log('newInputValue', newInputValue)
     if (newInputValue && newInputValue.name) {
-      newInputValue['url'] = `https://pubannotation.org/projects/${newInputValue.name}`;
+      newInputValue['url'] = `https://pubannotation.org/projects/${newInputValue.name}`
       // TODO: get the number of annotations already done for this project
       // And fetch the annotation for this number + 1 (get the right page by /10)
       const getAlreadyPublishedQuery = `prefix np: <http://www.nanopub.org/nschema#>
@@ -100,18 +100,18 @@ const PubAnnotationProjects = ({
 
         SELECT (count(DISTINCT ?s) AS ?count) WHERE {
           ?s tao:part_of <${newInputValue['url']}>
-      }`;
+      }`
       const alreadyPublished = await axios.get(
         `${settings.nanopubSparqlUrl}?query=${encodeURIComponent(getAlreadyPublishedQuery)}`
-      );
-      const countPublished = parseInt(alreadyPublished.data.results.bindings[0].count.value);
-      updateState({projectSelected: newInputValue, countPublished: countPublished});
+      )
+      const countPublished = parseInt(alreadyPublished.data.results.bindings[0].count.value)
+      updateState({projectSelected: newInputValue, countPublished: countPublished})
     }
-  };
+  }
 
   const onClickLoad = async () => {
-    const page = state.countPublished == 0 ? 1 : state.countPublished / 10;
-    const numberInPage = state.countPublished == 0 ? 0 : state.countPublished % 10;
+    const page = state.countPublished == 0 ? 1 : state.countPublished / 10
+    const numberInPage = state.countPublished == 0 ? 0 : state.countPublished % 10
 
     axios
       .get(`${state.projectSelected.url}/docs.json?page=${page}`, {
@@ -120,21 +120,21 @@ const PubAnnotationProjects = ({
         }
       })
       .then(res => {
-        getDocToAnnotate(res.data[numberInPage]);
+        getDocToAnnotate(res.data[numberInPage])
       })
       .catch(error => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   const getDocToAnnotate = async (annotateDoc: any) => {
-    const res = await axios.get(`${annotateDoc.url.replace('http://', 'https://')}.json`);
-    res.data['project'] = state.projectSelected.url;
-    onClick(res.data);
-    return res.data;
-  };
+    const res = await axios.get(`${annotateDoc.url.replace('http://', 'https://')}.json`)
+    res.data['project'] = state.projectSelected.url
+    onClick(res.data)
+    return res.data
+  }
 
-  const label = 'Select a PubAnnotation project to load a document to annotate';
+  const label = 'Select a PubAnnotation project to load a document to annotate'
 
   return (
     <>
@@ -158,7 +158,7 @@ const PubAnnotationProjects = ({
           // Automatically update the state value, but cause issue with default values
           // (using label as value instead of the fulle object)
           getOptionLabel={(option: any) => {
-            return option.name;
+            return option.name
           }}
           // groupBy={groupBy}
           style={{width: '60%', marginRight: theme.spacing(2)}}
@@ -181,7 +181,7 @@ const PubAnnotationProjects = ({
         />
         <Button
           onClick={() => {
-            onClickLoad();
+            onClickLoad()
           }}
           variant="contained"
           className="button"
@@ -201,6 +201,6 @@ const PubAnnotationProjects = ({
         </Typography>
       )}
     </>
-  );
-};
-export default PubAnnotationProjects;
+  )
+}
+export default PubAnnotationProjects

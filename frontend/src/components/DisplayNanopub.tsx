@@ -1,24 +1,24 @@
-'use client';
+'use client'
 
-import React from 'react';
-import {useTheme} from '@mui/material/styles';
-import {Typography, Card, Paper, IconButton, CardContent, CardActions, Collapse} from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import React from 'react'
+import {useTheme} from '@mui/material/styles'
+import {Typography, Card, Paper, IconButton, CardContent, CardActions, Collapse} from '@mui/material'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 
-import hljs from 'highlight.js/lib/core';
-import 'highlight.js/styles/github-dark-dimmed.css';
-import hljsDefineTurtle from '../utils/highlightjs-turtle';
-hljs.registerLanguage('turtle', hljsDefineTurtle);
+import hljs from 'highlight.js/lib/core'
+import 'highlight.js/styles/github-dark-dimmed.css'
+import hljsDefineTurtle from '../utils/highlightjs-turtle'
+hljs.registerLanguage('turtle', hljsDefineTurtle)
 
-import {CytoscapeRdfGraph} from '../components/CytoscapeRdf';
+import {CytoscapeRdfGraph} from '../components/CytoscapeRdf'
 // import "cytoscape-rdf";
 // import 'cytoscape-rdf';
-import '@nanopub/display';
+import '@nanopub/display'
 // import 'my-element';
 
 const DisplayNanopub = ({np, npDict, index, usersPubkeys, ...args}: any) => {
-  const theme = useTheme();
+  const theme = useTheme()
 
   const [state, setState] = React.useState({
     npDict: npDict,
@@ -28,32 +28,32 @@ const DisplayNanopub = ({np, npDict, index, usersPubkeys, ...args}: any) => {
     dialogOpen: false,
     published_nanopub: '',
     errorMessage: '         '
-  });
-  const stateRef = React.useRef(state);
+  })
+  const stateRef = React.useRef(state)
   // Avoid conflict when async calls
   const updateState = React.useCallback(
     (update: any) => {
-      stateRef.current = {...stateRef.current, ...update};
-      setState(stateRef.current);
+      stateRef.current = {...stateRef.current, ...update}
+      setState(stateRef.current)
     },
     [setState]
-  );
+  )
 
   const handleExpandClick = (e: any) => {
-    const expand_nanopub = state.npDict[e.currentTarget.name];
-    expand_nanopub['expanded'] = !expand_nanopub['expanded'];
-    updateState({npDict: {...state.npDict, [e.currentTarget.name]: expand_nanopub}});
-    console.log('expand_nanopub', expand_nanopub);
-    console.log('handleExpandClick', e.currentTarget.name, state.npDict);
+    const expand_nanopub = state.npDict[e.currentTarget.name]
+    expand_nanopub['expanded'] = !expand_nanopub['expanded']
+    updateState({npDict: {...state.npDict, [e.currentTarget.name]: expand_nanopub}})
+    console.log('expand_nanopub', expand_nanopub)
+    console.log('handleExpandClick', e.currentTarget.name, state.npDict)
     setTimeout(function () {
-      hljs.highlightAll();
-    }, 200);
-  };
+      hljs.highlightAll()
+    }, 200)
+  }
   const handleExpandGraphClick = (e: any) => {
-    const expand_nanopub = state.npDict[e.currentTarget.name];
-    expand_nanopub['expanded_graph'] = !expand_nanopub['expanded_graph'];
-    updateState({npDict: {...state.npDict, [e.currentTarget.name]: expand_nanopub}});
-  };
+    const expand_nanopub = state.npDict[e.currentTarget.name]
+    expand_nanopub['expanded_graph'] = !expand_nanopub['expanded_graph']
+    updateState({npDict: {...state.npDict, [e.currentTarget.name]: expand_nanopub}})
+  }
 
   return (
     <Card elevation={4} style={{padding: theme.spacing(1, 1), margin: theme.spacing(1, 0)}} key={index}>
@@ -166,6 +166,6 @@ const DisplayNanopub = ({np, npDict, index, usersPubkeys, ...args}: any) => {
         </Collapse>
       )}
     </Card>
-  );
-};
-export default DisplayNanopub;
+  )
+}
+export default DisplayNanopub

@@ -1,7 +1,7 @@
 // Declare modules with missing types here
-declare module 'cytoscape-spread';
-declare module 'cytoscape-cose-bilkent';
-declare module 'cytoscape-cola';
+declare module 'cytoscape-spread'
+declare module 'cytoscape-cose-bilkent'
+declare module 'cytoscape-cola'
 // import type {JSX} from '@nanopub/display'
 // declare namespace JSX {
 //     LocalJSX
@@ -10,10 +10,10 @@ declare module 'cytoscape-cola';
 
 declare namespace JSX {
   interface NanopubDisplay {
-    url?: string;
-    rdf?: string;
+    url?: string
+    rdf?: string
   }
   interface IntrinsicElements {
-    'nanopub-display': NanopubDisplay;
+    'nanopub-display': NanopubDisplay
   }
 }

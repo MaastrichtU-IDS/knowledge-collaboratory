@@ -1,45 +1,43 @@
-import React from 'react';
-import Image from 'next/image';
-import {Popper, ClickAwayListener, Typography, Paper, Button} from '@mui/material';
-import LogoutIcon from '@mui/icons-material/Logout';
-import axios from 'axios';
-import OAuth2Login from 'react-simple-oauth2-login';
+import React from 'react'
+import Image from 'next/image'
+import {Popper, ClickAwayListener, Typography, Paper, Button} from '@mui/material'
+import LogoutIcon from '@mui/icons-material/Logout'
+import axios from 'axios'
+import OAuth2Login from 'react-simple-oauth2-login'
 
-import {settings} from '../utils/settings';
-import {useStore} from '@nanostores/react';
-import {userProfile, userSettings} from '../utils/nanostores';
-
+import {settings} from '../utils/settings'
+import {useStore} from '@nanostores/react'
+import {userProfile, userSettings} from '../utils/nanostores'
 
 const OrcidLogin = ({...args}: any) => {
   // const auth = useAuth();
-  const $userProfile = useStore(userProfile);
-  const $userSettings = useStore(userSettings);
-
+  const $userProfile = useStore(userProfile)
+  const $userSettings = useStore(userSettings)
 
   // Settings for Popper (switch to Popover if problem)
-  const [open, setOpen] = React.useState(false);
-  const [anchorEl, setAnchorEl]: any = React.useState(null);
+  const [open, setOpen] = React.useState(false)
+  const [anchorEl, setAnchorEl]: any = React.useState(null)
   const showUserInfo = (event: any) => {
-    setAnchorEl(anchorEl ? null : event.currentTarget);
+    setAnchorEl(anchorEl ? null : event.currentTarget)
     // setAnchorEl(anchorEl ? null : document.body);
-    setOpen(prev => !prev);
-  };
+    setOpen(prev => !prev)
+  }
   const handleClickAway = () => {
-    setOpen(false);
-    setAnchorEl(anchorEl ? null : anchorEl);
-  };
-  const id = open ? 'simple-popper' : undefined;
+    setOpen(false)
+    setAnchorEl(anchorEl ? null : anchorEl)
+  }
+  const id = open ? 'simple-popper' : undefined
 
   const onSuccess = (response: any) => {
-    getCurrentUser(response);
-  };
-  const onFailure = (response: any) => console.error(response);
+    getCurrentUser(response)
+  }
+  const onFailure = (response: any) => console.error(response)
 
   const logout = () => {
-    localStorage.clear();
-    userProfile.set({});
-    handleClickAway();
-  };
+    localStorage.clear()
+    userProfile.set({})
+    handleClickAway()
+  }
 
   const getCurrentUser = (configState: any) => {
     axios
@@ -50,23 +48,23 @@ const OrcidLogin = ({...args}: any) => {
         }
       })
       .then((res: any) => {
-        let current_user = res.data;
+        let current_user = res.data
         // console.log('Current user:', current_user)
-        current_user['access_token'] = configState['access_token'];
+        current_user['access_token'] = configState['access_token']
         if (!current_user.error) {
-          current_user['access_token'] = configState['access_token'];
+          current_user['access_token'] = configState['access_token']
           if (current_user['given_name'] || current_user['family_name']) {
-            current_user['username'] = current_user['given_name'] + ' ' + current_user['family_name'];
+            current_user['username'] = current_user['given_name'] + ' ' + current_user['family_name']
           } else if (current_user['name']) {
-            current_user['username'] = current_user['name'];
+            current_user['username'] = current_user['name']
           } else {
-            current_user['username'] = current_user['sub'];
+            current_user['username'] = current_user['sub']
           }
-          userProfile.set(current_user);
-          localStorage.setItem('knowledgeCollaboratorySettings', JSON.stringify(current_user));
+          userProfile.set(current_user)
+          localStorage.setItem('knowledgeCollaboratorySettings', JSON.stringify(current_user))
         } else {
           // The token stored might not be valid anymore, deleting it to avoid spamming the API
-          localStorage.removeItem('knowledgeCollaboratorySettings');
+          localStorage.removeItem('knowledgeCollaboratorySettings')
         }
         // https://stackoverflow.com/questions/25686484/what-is-intent-of-id-token-expiry-time-in-openid-connect
         // If the token is expired, it should make another auth request, except this time with prompt=none in the URL parameter
@@ -78,26 +76,26 @@ const OrcidLogin = ({...args}: any) => {
       .catch((error: any) => {
         if (error.response) {
           // Request made and server responded
-          console.log(error.response.data);
-          console.log(error.response.status);
-          console.log(error.response.headers);
+          console.log(error.response.data)
+          console.log(error.response.status)
+          console.log(error.response.headers)
         } else if (error.request) {
           // The request was made but no response was received
-          console.log(error.request);
+          console.log(error.request)
         } else {
           // Something happened in setting up the request that triggered an Error
-          console.log('Error', error.message);
+          console.log('Error', error.message)
         }
-      });
-  };
+      })
+  }
 
   React.useEffect(() => {
-    const localStorageConfig: any = localStorage.getItem('knowledgeCollaboratorySettings');
-    let configState: any = JSON.parse(localStorageConfig);
+    const localStorageConfig: any = localStorage.getItem('knowledgeCollaboratorySettings')
+    let configState: any = JSON.parse(localStorageConfig)
     if (configState && configState['access_token']) {
-      getCurrentUser(configState);
+      getCurrentUser(configState)
     }
-  });
+  })
 
   return (
     <>
@@ -156,7 +154,7 @@ const OrcidLogin = ({...args}: any) => {
         </Popper>
       )}
     </>
-  );
-};
+  )
+}
 
-export default OrcidLogin;
+export default OrcidLogin

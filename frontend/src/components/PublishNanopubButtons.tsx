@@ -1,24 +1,24 @@
-'use client';
+'use client'
 
-import React from 'react';
-import axios from 'axios';
-import {useTheme} from '@mui/material/styles';
-import {Typography, Paper, Checkbox, FormControlLabel, Button, Card} from '@mui/material';
-import GenerateIcon from '@mui/icons-material/FactCheck';
-import DownloadIcon from '@mui/icons-material/Download';
-import PublishIcon from '@mui/icons-material/Backup';
-import GenerateKeyIcon from '@mui/icons-material/VpnKey';
-import UploadIcon from '@mui/icons-material/FileUpload';
+import React from 'react'
+import axios from 'axios'
+import {useTheme} from '@mui/material/styles'
+import {Typography, Paper, Checkbox, FormControlLabel, Button, Card} from '@mui/material'
+import GenerateIcon from '@mui/icons-material/FactCheck'
+import DownloadIcon from '@mui/icons-material/Download'
+import PublishIcon from '@mui/icons-material/Backup'
+import GenerateKeyIcon from '@mui/icons-material/VpnKey'
+import UploadIcon from '@mui/icons-material/FileUpload'
 
-import {settings, genericContext} from '../utils/settings';
-import {FormSettings} from './StyledComponents';
-import {useStore} from '@nanostores/react';
-import {userSettings} from '../utils/nanostores';
+import {settings, genericContext} from '../utils/settings'
+import {FormSettings} from './StyledComponents'
+import {useStore} from '@nanostores/react'
+import {userSettings} from '../utils/nanostores'
 
-import hljs from 'highlight.js/lib/core';
-import 'highlight.js/styles/github-dark-dimmed.css';
-import hljsDefineTurtle from '../utils/highlightjs-turtle';
-hljs.registerLanguage('turtle', hljsDefineTurtle);
+import hljs from 'highlight.js/lib/core'
+import 'highlight.js/styles/github-dark-dimmed.css'
+import hljsDefineTurtle from '../utils/highlightjs-turtle'
+hljs.registerLanguage('turtle', hljsDefineTurtle)
 
 // import { rdfToRdf } from '../utils/utils';
 
@@ -32,8 +32,8 @@ const PublishNanopubButtons = ({
   errorMessage,
   ...args
 }: any) => {
-  const theme = useTheme();
-  const $userSettings = useStore(userSettings);
+  const theme = useTheme()
+  const $userSettings = useStore(userSettings)
 
   const [state, setState] = React.useState({
     shaclValidate: true,
@@ -44,41 +44,41 @@ const PublishNanopubButtons = ({
     dialogOpen: false,
     published_nanopub: '',
     errorMessage: ''
-  });
-  const stateRef = React.useRef(state);
+  })
+  const stateRef = React.useRef(state)
   // Avoid conflict when async calls
   const updateState = React.useCallback(
     (update: any) => {
-      stateRef.current = {...stateRef.current, ...update};
-      setState(stateRef.current);
+      stateRef.current = {...stateRef.current, ...update}
+      setState(stateRef.current)
     },
     [setState]
-  );
+  )
 
   const handleDownloadRDF = (event: React.FormEvent) => {
     // Trigger JSON-LD file download
-    event.preventDefault();
-    const stmtJsonld: any = generateRDF();
+    event.preventDefault()
+    const stmtJsonld: any = generateRDF()
     // rdfToRdf(stmtJsonld)
     //   .then((formattedRdf: any) => {
     //     console.log(formattedRdf);
     //   })
-    var element = document.createElement('a');
+    var element = document.createElement('a')
     element.setAttribute(
       'href',
       'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(stmtJsonld, null, 4))
-    );
-    element.setAttribute('download', 'annotation.json');
-    element.style.display = 'none';
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-  };
+    )
+    element.setAttribute('download', 'annotation.json')
+    element.style.display = 'none'
+    document.body.appendChild(element)
+    element.click()
+    document.body.removeChild(element)
+  }
 
   const publishSignedNanopub = (event: React.FormEvent) => {
-    event.preventDefault();
+    event.preventDefault()
     if (!user.error) {
-      const access_token = user['access_token'];
+      const access_token = user['access_token']
       axios
         .post(`${$userSettings.api}/publish-last-signed`, null, {
           headers: {Authorization: `Bearer ${access_token}`}
@@ -89,43 +89,43 @@ const PublishNanopubButtons = ({
             open: true,
             nanopubPublished: true,
             published_nanopub: res.data
-          });
+          })
         })
         .catch(error => {
           updateState({
             nanopubPublished: false,
             errorMessage: 'Error publishing the Nanopublication: ' + error
-          });
-          console.log(error);
+          })
+          console.log(error)
         })
         .finally(() => {
           setTimeout(function () {
-            hljs.highlightAll();
-          }, 200);
-        });
+            hljs.highlightAll()
+          }, 200)
+        })
     } else {
-      console.log('You need to be logged in with ORCID to publish a Nanopublication');
+      console.log('You need to be logged in with ORCID to publish a Nanopublication')
     }
-  };
+  }
 
   const handleShaclValidate = (event: React.ChangeEvent<HTMLInputElement>) => {
-    updateState({shaclValidate: event.target.checked});
-  };
+    updateState({shaclValidate: event.target.checked})
+  }
 
   const generateNanopub = (event: React.FormEvent, publish: boolean = false) => {
-    event.preventDefault();
-    updateState({errorMessage: '', published_nanopub: ''});
-    const stmtJsonld: any = generateRDF();
+    event.preventDefault()
+    updateState({errorMessage: '', published_nanopub: ''})
+    const stmtJsonld: any = generateRDF()
     if (!user.error) {
       // console.log('Publishing!', publish, stmtJsonld)
       const requestParams: any = {
         publish: publish
-      };
-      requestParams['shacl_validation'] = state.shaclValidate;
-      if (inputSource) {
-        requestParams['source'] = inputSource;
       }
-      const access_token = user['access_token'];
+      requestParams['shacl_validation'] = state.shaclValidate
+      if (inputSource) {
+        requestParams['source'] = inputSource
+      }
+      const access_token = user['access_token']
       axios
         .post(`${$userSettings.api}/assertion`, stmtJsonld, {
           headers: {Authorization: `Bearer ${access_token}`},
@@ -137,33 +137,33 @@ const PublishNanopubButtons = ({
             nanopubGenerated: true,
             nanopubPublished: false,
             published_nanopub: res.data
-          });
+          })
         })
         .catch(error => {
           updateState({
             errorMessage: `Error generating the Nanopublication:\n${error.response.data.detail}`,
             nanopubGenerated: false,
             nanopubPublished: false
-          });
-          console.log(error.response.data.detail);
+          })
+          console.log(error.response.data.detail)
         })
         .finally(() => {
           setTimeout(function () {
-            hljs.highlightAll();
-          }, 200);
-        });
+            hljs.highlightAll()
+          }, 200)
+        })
     } else {
-      console.log('You need to be logged in with ORCID to publish a Nanopublication');
+      console.log('You need to be logged in with ORCID to publish a Nanopublication')
     }
-  };
+  }
 
   const handleUploadKeys = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData();
+    event.preventDefault()
+    const formData = new FormData()
     // @ts-ignore
-    formData.append('publicKey', event.currentTarget.elements.publicKey.files[0]);
+    formData.append('publicKey', event.currentTarget.elements.publicKey.files[0])
     // @ts-ignore
-    formData.append('privateKey', event.currentTarget.elements.privateKey.files[0]);
+    formData.append('privateKey', event.currentTarget.elements.privateKey.files[0])
     axios
       .post($userSettings.api + '/upload-keys', formData, {
         headers: {
@@ -175,25 +175,25 @@ const PublishNanopubButtons = ({
       .then(res => {
         updateState({
           open: true
-        });
+        })
       })
       .catch(error => {
         updateState({
           open: false,
           errorMessage:
             'Error while uploading keys, please retry. And feel free to create an issue on our GitHub repository if the issue persists.'
-        });
-        console.log('Error while uploading keys', error);
+        })
+        console.log('Error while uploading keys', error)
       })
       .finally(() => {
-        window.location.reload();
-      });
-  };
+        window.location.reload()
+      })
+  }
 
   const handleGenerateKeys = (event: any) => {
-    event.preventDefault();
+    event.preventDefault()
 
-    const access_token = user['access_token'];
+    const access_token = user['access_token']
     axios
       .get($userSettings.api + '/generate-keys', {
         headers: {
@@ -203,20 +203,20 @@ const PublishNanopubButtons = ({
       .then(res => {
         updateState({
           open: true
-        });
+        })
       })
       .catch(error => {
         updateState({
           open: false,
           errorMessage:
             'Error while uploading keys, please retry. And feel free to create an issue on our GitHub repository if the issue persists.'
-        });
-        console.log('Error while uploading keys', error);
+        })
+        console.log('Error while uploading keys', error)
       })
       .finally(() => {
-        window.location.reload();
-      });
-  };
+        window.location.reload()
+      })
+  }
 
   return (
     <>
@@ -373,6 +373,6 @@ const PublishNanopubButtons = ({
         </pre>
       )}
     </>
-  );
-};
-export default PublishNanopubButtons;
+  )
+}
+export default PublishNanopubButtons

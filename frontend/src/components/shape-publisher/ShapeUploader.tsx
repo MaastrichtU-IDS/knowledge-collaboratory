@@ -1,7 +1,7 @@
-'use client';
+'use client'
 
-import React from 'react';
-import {useTheme} from '@mui/material/styles';
+import React from 'react'
+import {useTheme} from '@mui/material/styles'
 import {
   IconButton,
   Typography,
@@ -18,20 +18,20 @@ import {
   ListItemAvatar,
   Avatar,
   ListItemText
-} from '@mui/material';
-import UploadIcon from '@mui/icons-material/CloudUpload';
-import EditParamIcon from '@mui/icons-material/Link';
-import LockFormParamIcon from '@mui/icons-material/Lock';
-import WizardQuestionsIcon from '@mui/icons-material/LiveHelp';
+} from '@mui/material'
+import UploadIcon from '@mui/icons-material/CloudUpload'
+import EditParamIcon from '@mui/icons-material/Link'
+import LockFormParamIcon from '@mui/icons-material/Lock'
+import WizardQuestionsIcon from '@mui/icons-material/LiveHelp'
 // QuestionAnswer
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import MuiAlert from '@mui/material/Alert';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
+import MuiAlert from '@mui/material/Alert'
 
-import {FormSettings} from '../../components/StyledComponents';
+import {FormSettings} from '../../components/StyledComponents'
 
 export default function ShapeUploader({renderObject, shapeTarget, onChange}: any) {
-  const theme = useTheme();
+  const theme = useTheme()
 
   const [state, setState] = React.useState({
     show_info_card: false,
@@ -40,36 +40,36 @@ export default function ShapeUploader({renderObject, shapeTarget, onChange}: any
     shapeFile: renderObject,
     shapeTarget: shapeTarget
     // shapeFile: JSON.stringify(renderObject, null, 4)
-  });
-  const stateRef = React.useRef(state);
+  })
+  const stateRef = React.useRef(state)
   // Avoid conflict when async calls
   const updateState = React.useCallback(
     (update: any) => {
-      stateRef.current = {...stateRef.current, ...update};
-      setState(stateRef.current);
+      stateRef.current = {...stateRef.current, ...update}
+      setState(stateRef.current)
     },
     [setState]
-  );
+  )
 
   const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
+    event.preventDefault()
     try {
       // Call onChange function given by parent
-      onChange(state.shapeFile, state.shapeTarget);
-      updateState({...state, json_loaded_open: true});
+      onChange(state.shapeFile, state.shapeTarget)
+      updateState({...state, json_loaded_open: true})
     } catch (e) {
-      console.log('Invalid shape');
-      updateState({...state, json_error_open: true});
+      console.log('Invalid shape')
+      updateState({...state, json_error_open: true})
     }
-  };
+  }
 
   // Close Snackbar
   const closeJsonError = () => {
-    updateState({...state, json_error_open: false});
-  };
+    updateState({...state, json_error_open: false})
+  }
   const closeJsonLoaded = () => {
-    updateState({...state, json_loaded_open: false});
-  };
+    updateState({...state, json_loaded_open: false})
+  }
 
   return (
     <Card style={{margin: theme.spacing(4, 0)}}>
@@ -79,7 +79,7 @@ export default function ShapeUploader({renderObject, shapeTarget, onChange}: any
           <IconButton
             style={{fontSize: '16px'}}
             onClick={() => {
-              updateState({show_info_card: !state.show_info_card});
+              updateState({show_info_card: !state.show_info_card})
             }}
             name="show_info_card"
             aria-expanded={state.show_info_card}
@@ -108,7 +108,7 @@ export default function ShapeUploader({renderObject, shapeTarget, onChange}: any
                 style={{width: '100%'}}
                 variant="outlined"
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  updateState({shapeFile: event.target.value});
+                  updateState({shapeFile: event.target.value})
                 }}
                 size="small"
                 InputProps={{
@@ -127,7 +127,7 @@ export default function ShapeUploader({renderObject, shapeTarget, onChange}: any
                 style={{width: '100%'}}
                 variant="outlined"
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  updateState({shapeTarget: event.target.value});
+                  updateState({shapeTarget: event.target.value})
                 }}
                 size="small"
                 InputProps={{
@@ -163,5 +163,5 @@ export default function ShapeUploader({renderObject, shapeTarget, onChange}: any
         </CardContent>
       </Collapse>
     </Card>
-  );
+  )
 }

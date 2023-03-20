@@ -1,37 +1,46 @@
-import React, {useContext} from 'react';
-import {useTheme} from '@mui/material/styles';
+import React, {useContext} from 'react'
+import {useTheme} from '@mui/material/styles'
 import {
   Button,
   Tooltip,
   Typography,
   Popover,
-  IconButton, FormControl, InputLabel, Select, MenuItem, Paper
-} from '@mui/material';
-import SettingsIcon from '@mui/icons-material/Settings';
+  IconButton,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Paper
+} from '@mui/material'
+import SettingsIcon from '@mui/icons-material/Settings'
 
-import {useStore} from '@nanostores/react';
-import {userSettings} from '../utils/nanostores';
-
+import {useStore} from '@nanostores/react'
+import {userSettings} from '../utils/nanostores'
 
 export default function UserSettingsPopper() {
-  const theme = useTheme();
-  const $userSettings = useStore(userSettings);
+  const theme = useTheme()
+  const $userSettings = useStore(userSettings)
 
   // Popover settings
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
   const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
+    setAnchorEl(null)
+  }
+  const open = Boolean(anchorEl)
+  const id = open ? 'simple-popover' : undefined
 
   return (
     <div>
-      <Tooltip title='Application settings'>
-        <Button onClick={handleClick} aria-describedby={id} color="inherit" style={{color: '#fff', textTransform: 'none', marginLeft: theme.spacing(2)}}>
+      <Tooltip title="Application settings">
+        <Button
+          onClick={handleClick}
+          aria-describedby={id}
+          color="inherit"
+          style={{color: '#fff', textTransform: 'none', marginLeft: theme.spacing(2)}}
+        >
           <SettingsIcon />
         </Button>
       </Tooltip>
@@ -42,11 +51,11 @@ export default function UserSettingsPopper() {
         onClose={handleClose}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'left',
+          horizontal: 'left'
         }}
       >
         <Paper elevation={4} style={{padding: theme.spacing(2), textAlign: 'center'}}>
-          <Typography variant='h6' style={{marginBottom: theme.spacing(2)}}>
+          <Typography variant="h6" style={{marginBottom: theme.spacing(2)}}>
             Settings
           </Typography>
           {/* Dropdown to choose server */}
@@ -57,8 +66,8 @@ export default function UserSettingsPopper() {
               id="server-select"
               value={$userSettings.api}
               label="Server"
-              size='small'
-              onChange={(event) => {
+              size="small"
+              onChange={event => {
                 event.preventDefault()
                 userSettings.set({...$userSettings, api: event.target.value as string})
               }}
@@ -72,5 +81,5 @@ export default function UserSettingsPopper() {
         </Paper>
       </Popover>
     </div>
-  );
+  )
 }

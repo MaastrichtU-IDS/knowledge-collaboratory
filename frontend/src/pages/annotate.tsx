@@ -1,7 +1,7 @@
-'use client';
+'use client'
 
-import React, {useContext} from 'react';
-import {useTheme} from '@mui/material/styles';
+import React, {useContext} from 'react'
+import {useTheme} from '@mui/material/styles'
 import {
   Typography,
   Popper,
@@ -17,50 +17,50 @@ import {
   FormControl,
   TextField,
   Grid
-} from '@mui/material';
-import AddIcon from '@mui/icons-material/AddBox';
-import RemoveIcon from '@mui/icons-material/Delete';
-import axios from 'axios';
+} from '@mui/material'
+import AddIcon from '@mui/icons-material/AddBox'
+import RemoveIcon from '@mui/icons-material/Delete'
+import axios from 'axios'
 
-import {settings, genericContext} from '../utils/settings';
-import {context, propertiesList, predicatesList, sentenceToAnnotate, ents} from '../utils/biolinkModel';
-import PublishNanopubButtons from '../components/PublishNanopubButtons';
-import {FormSettings} from '../components/StyledComponents';
-import AutocompleteEntity from '../components/AutocompleteEntity';
-import DropdownButton from '../components/DropdownButton';
-import Taggy from '../components/ReactTaggy';
-import PubAnnotationProjects from '../components/PubAnnotationProjects';
+import {settings, genericContext} from '../utils/settings'
+import {context, propertiesList, predicatesList, sentenceToAnnotate, ents} from '../utils/biolinkModel'
+import PublishNanopubButtons from '../components/PublishNanopubButtons'
+import {FormSettings} from '../components/StyledComponents'
+import AutocompleteEntity from '../components/AutocompleteEntity'
+import DropdownButton from '../components/DropdownButton'
+import Taggy from '../components/ReactTaggy'
+import PubAnnotationProjects from '../components/PubAnnotationProjects'
 
-import {useStore} from '@nanostores/react';
-import {userProfile, userSettings} from '../utils/nanostores';
+import {useStore} from '@nanostores/react'
+import {userProfile, userSettings} from '../utils/nanostores'
 
 // Define namespaces for building RDF URIs
-const BIOLINK = 'https://w3id.org/biolink/vocab/';
-const IDO = 'https://identifiers.org/';
+const BIOLINK = 'https://w3id.org/biolink/vocab/'
+const IDO = 'https://identifiers.org/'
 
 const curieToUri = (curie: string) => {
-  const namespace = curie.substring(0, curie.indexOf(':'));
+  const namespace = curie.substring(0, curie.indexOf(':'))
   if (context[namespace]) {
-    return context[namespace] + curie.substring(curie.indexOf(':') + 1);
+    return context[namespace] + curie.substring(curie.indexOf(':') + 1)
   }
-  return IDO + curie;
-};
+  return IDO + curie
+}
 
 const defaultPrompt = `From the text below, extract the entities, classify them and extract associations between those entities
 Entities to extract should be of one of those types: "Chemical Entity", "Disease", "Gene", "Gene Product", "Organism Taxon"
 
 Return the results as a YAML object with the following fields:
 - entities: <the list of entities in the text, each entity is an object with the fields: label, type>
-- associations: <the list of associations between entities in the text, each association is an object with the fields: "subject" for the subject entity, "predicate" for the relation (treats, affects, interacts with, causes, caused by, has evidence), "object" for the object entity>`;
+- associations: <the list of associations between entities in the text, each association is an object with the fields: "subject" for the subject entity, "predicate" for the relation (treats, affects, interacts with, causes, caused by, has evidence), "object" for the object entity>`
 
 export default function AnnotateText() {
-  const theme = useTheme();
-  const $userProfile = useStore(userProfile);
-  const $userSettings = useStore(userSettings);
+  const theme = useTheme()
+  const $userProfile = useStore(userProfile)
+  const $userSettings = useStore(userSettings)
 
   // useLocation hook to get URL params
   // let location = useLocation();
-  const tagSelected: any = null;
+  const tagSelected: any = null
   const [state, setState] = React.useState({
     pubAnnotationProjects: [],
     // inputText: 'Amantadine hydrochloride capsules are indicated in the treatment of idiopathic Parkinson’s disease (Paralysis Agitans), postencephalitic parkinsonism and symptomatic parkinsonism which may follow injury to the nervous system by carbon monoxide intoxication.',
@@ -81,36 +81,36 @@ export default function AnnotateText() {
     nanopubGenerated: false,
     nanopubPublished: false,
     errorMessage: ''
-  });
-  const stateRef = React.useRef(state);
+  })
+  const stateRef = React.useRef(state)
   // Avoid conflict when async calls
   const updateState = React.useCallback(
     (update: any) => {
-      stateRef.current = {...stateRef.current, ...update};
-      setState(stateRef.current);
+      stateRef.current = {...stateRef.current, ...update}
+      setState(stateRef.current)
     },
     [setState]
-  );
+  )
 
   // Settings for Popper
-  const [open, setOpen] = React.useState(false);
-  const [anchorEl, setAnchorEl]: any = React.useState(null);
+  const [open, setOpen] = React.useState(false)
+  const [anchorEl, setAnchorEl]: any = React.useState(null)
   const handleClickAway = () => {
-    setOpen(false);
-    setAnchorEl(anchorEl ? null : anchorEl);
-  };
+    setOpen(false)
+    setAnchorEl(anchorEl ? null : anchorEl)
+  }
 
   React.useEffect(() => {
     // const params = new URLSearchParams(location.search + location.hash);
     // let sentences_url = params.get('sentences');
     // Get a random sentence to annotate
     if (!state.inputText) {
-      const randomSentence = sentenceToAnnotate[Math.floor(Math.random() * sentenceToAnnotate.length)];
+      const randomSentence = sentenceToAnnotate[Math.floor(Math.random() * sentenceToAnnotate.length)]
       updateState({
         inputText: randomSentence.text,
         editInputText: randomSentence.text,
         inputSource: randomSentence.url
-      });
+      })
     }
 
     // Get projects: http://pubannotation.org/projects.json
@@ -131,7 +131,7 @@ export default function AnnotateText() {
     // Questions:
     // Is it possible to increase the amount of rows per page? From the default 10
     // Is it possible to easily get the total count of documents in a project?
-  });
+  })
 
   // Order is important, litcoin needs to be last for the dropdown
   const extractionOptions = [
@@ -139,8 +139,8 @@ export default function AnnotateText() {
     'Extract entities with the OpenAI GPT-3 text-davinci-003 model',
     'Extract entities with the OpenAI GPT-3 code-davinci-002 code model',
     'Extract entities with the LitCoin model'
-  ];
-  const extractionIds = ['gpt-3.5-turbo', 'text-davinci-003', 'code-davinci-002', 'litcoin'];
+  ]
+  const extractionIds = ['gpt-3.5-turbo', 'text-davinci-003', 'code-davinci-002', 'litcoin']
   // "drug.DrugMechanism": "OntoGPT drug.DrugMechanism",
   // "ctd.ChemicalToDiseaseDocument": "OntoGPT ctd.ChemicalToDiseaseDocument",
   // "drug.DrugMechanism": "OntoGPT drug.DrugMechanism",
@@ -171,19 +171,19 @@ export default function AnnotateText() {
     )
       .then(response => response.json())
       .then(async data => {
-        console.log('Object extracted by OpenAI', data);
-        const entities: any = [];
-        const statements: any = [];
+        console.log('Object extracted by OpenAI', data)
+        const entities: any = []
+        const statements: any = []
         // Prepare entities extracted, and retrieve their potential CURIEs with the SRI NameResolution API
         await Promise.all(
           data['entities'].map(async (extractedEntity: any, index: number) => {
-            const label = extractedEntity['label'];
+            const label = extractedEntity['label']
             const type = extractedEntity['type']
               .split(' ')
               .map((word: any) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join('');
-            const start = state.editInputText.toLowerCase().indexOf(label.toLowerCase());
-            const end = start + label.length;
+              .join('')
+            const start = state.editInputText.toLowerCase().indexOf(label.toLowerCase())
+            const end = start + label.length
             const ent: any = {
               index: `${entities.length}:${start}:${end}:${label}`,
               text: label,
@@ -191,25 +191,25 @@ export default function AnnotateText() {
               type: type,
               start: start,
               end: end
-            };
-            const entityCuries: any = await getEntityCuries(label);
-            ent['curies'] = [];
+            }
+            const entityCuries: any = await getEntityCuries(label)
+            ent['curies'] = []
             if (entityCuries && Object.keys(entityCuries).length > 0) {
               Object.keys(entityCuries).map((curie: any) => {
                 const addEnt: any = {
                   curie: curie,
                   label: entityCuries[curie][0],
                   altLabel: entityCuries[curie][1]
-                };
-                ent['curies'].push(addEnt);
-              });
-              ent['id_curie'] = ent['curies'][0]['curie'];
-              ent['id_label'] = ent['curies'][0]['label'];
-              ent['id_uri'] = curieToUri(ent['id_curie']);
+                }
+                ent['curies'].push(addEnt)
+              })
+              ent['id_curie'] = ent['curies'][0]['curie']
+              ent['id_label'] = ent['curies'][0]['label']
+              ent['id_uri'] = curieToUri(ent['id_curie'])
             }
-            entities.push(ent);
+            entities.push(ent)
           })
-        );
+        )
 
         try {
           // Prepare statements extracted
@@ -217,51 +217,51 @@ export default function AnnotateText() {
           // p: { id: "https://w3id.org/biolink/vocab/treats", curie: "biolink:treats", label: "treats" }
           // s: { index: "Tetrabenazine:0:0:13", text: "Tetrabenazine", type: "ChemicalEntity", … }
           data['associations'].map((asso: any, index: number) => {
-            const pred = asso['predicate'].replaceAll(' ', '_');
+            const pred = asso['predicate'].replaceAll(' ', '_')
             const stmt: any = {
               p: {
                 id: BIOLINK + pred,
                 curie: 'biolink:' + pred,
                 label: pred
               }
-            };
+            }
             entities.map((ent: any, index: number) => {
               if (asso['subject'] == ent['text']) {
-                stmt['s'] = ent;
+                stmt['s'] = ent
               }
               if (asso['object'] == ent['text']) {
-                stmt['o'] = ent;
+                stmt['o'] = ent
               }
-            });
-            statements.push(stmt);
-          });
+            })
+            statements.push(stmt)
+          })
         } catch (err) {
-          console.log(`Error extracting statements: ${err}`);
+          console.log(`Error extracting statements: ${err}`)
         }
         updateState({
           loading: false,
           entitiesList: entities,
           statements: statements,
           extractClicked: true
-        });
+        })
       })
       .catch(error => {
-        console.log('Error while extracting entities', error);
-        let errMsg = `Error while extracting entities from the text.\nPlease retry later, and feel free to create an issue on our GitHub repository if the issue persists.`;
+        console.log('Error while extracting entities', error)
+        let errMsg = `Error while extracting entities from the text.\nPlease retry later, and feel free to create an issue on our GitHub repository if the issue persists.`
         if (error.response) {
-          errMsg = `Error while extracting entities from the text because ${error.response.data.detail}.\nPlease retry later, and feel free to create an issue on our GitHub repository if the issue persists.`;
+          errMsg = `Error while extracting entities from the text because ${error.response.data.detail}.\nPlease retry later, and feel free to create an issue on our GitHub repository if the issue persists.`
         }
         updateState({
           loading: false,
           errorMessage: errMsg,
           extractClicked: true
-        });
-      });
-  };
+        })
+      })
+  }
 
   const handleExtract = (event: React.FormEvent) => {
     if (event) {
-      event.preventDefault();
+      event.preventDefault()
     }
     updateState({
       loading: true,
@@ -271,18 +271,18 @@ export default function AnnotateText() {
       statements: [],
       nanopubGenerated: false,
       nanopubPublished: false
-    });
-    let extract_relations = true;
-    const maxLengthRelExtract = 1000;
+    })
+    let extract_relations = true
+    const maxLengthRelExtract = 1000
     if (state.editInputText.length > maxLengthRelExtract) {
       // We don't extract relations if text too long
       console.log(
         `⚠️ Text is more than ${maxLengthRelExtract} characters, we will not extract relations with the LitCoin model (too long)`
-      );
-      extract_relations = false;
+      )
+      extract_relations = false
     }
     if (state.extractionModel !== 'litcoin') {
-      extractOpenAI();
+      extractOpenAI()
     } else {
       // Extract with Litcoin model
       axios
@@ -296,11 +296,11 @@ export default function AnnotateText() {
             loading: false,
             entitiesList: res.data.entities,
             extractClicked: true
-          });
+          })
           if (res.data.statements) {
             updateState({
               statements: res.data.statements
-            });
+            })
           }
           // console.log("LITCOIN model returns", res.data)
         })
@@ -309,26 +309,26 @@ export default function AnnotateText() {
             loading: false,
             errorMessage: `Error while extracting entities from the text because ${error.response.data.detail}.\nPlease retry later, and feel free to create an issue on our GitHub repository if the issue persists.`,
             extractClicked: true
-          });
-        });
+          })
+        })
     }
-  };
+  }
 
   const getPropValue = (prop: any) => {
     if (prop['id_uri']) {
-      return prop.id_uri;
+      return prop.id_uri
     }
     if (prop['id']) {
-      return prop.id;
+      return prop.id
     }
     if (prop['text']) {
-      return prop.text;
+      return prop.text
     }
-    return prop;
-  };
+    return prop
+  }
   const checkIfUri = (text: string) => {
-    return /^https?:\/\/[-_\/#:\?=\+%\.0-9a-zA-Z]+$/i.test(text);
-  };
+    return /^https?:\/\/[-_\/#:\?=\+%\.0-9a-zA-Z]+$/i.test(text)
+  }
   // const getUri  = (prop: any) => {
   //   if (prop['id_uri']) return prop.id_uri
   //   if (prop['id']) return prop.id
@@ -337,8 +337,8 @@ export default function AnnotateText() {
 
   // Main function to generate JSON-LD RDF from the statements and entities provided through the tool
   const generateRDF = () => {
-    const stmtJsonld: any = [];
-    const taoAnnotations: any = [];
+    const stmtJsonld: any = []
+    const taoAnnotations: any = []
 
     if (state.templateSelected === 'RDF reified statements') {
       stmtJsonld.push({
@@ -346,7 +346,7 @@ export default function AnnotateText() {
         '@type': 'biolink:InformationResource',
         'biolink:category': 'biolink:InformationResource',
         'biolink:id': 'infores:knowledge-collaboratory'
-      });
+      })
       state.statements.map((stmt: any, index: number) => {
         // console.log("Iterating state.statements for generateRDF", stmt)
         // Generate spo statement
@@ -361,58 +361,58 @@ export default function AnnotateText() {
           // "rdf:object": {'@id': stmt.o.id_curie},
           'biolink:id': `collaboratory:${stmt.s.id_curie}-${stmt.p.curie}-${stmt.o.id_curie}`,
           'biolink:aggregator_knowledge_source': {'@id': 'infores:knowledge-collaboratory'}
-        };
+        }
         if (state.inputSource) {
-          reifiedStmt[BIOLINK + 'publications'] = {'@id': state.inputSource};
+          reifiedStmt[BIOLINK + 'publications'] = {'@id': state.inputSource}
           stmtJsonld.push({
             '@id': state.inputSource,
             '@type': 'biolink:Publication',
             'biolink:category': 'biolink:Publication',
             'biolink:id': state.inputSource
-          });
+          })
         }
         // Add props to the statement
         if (stmt.props) {
           stmt.props.map((prop: any, pindex: number) => {
-            const addProp = getPropValue(prop.p);
-            const addValue = getPropValue(prop.o);
+            const addProp = getPropValue(prop.p)
+            const addValue = getPropValue(prop.o)
             if (addProp && addValue) {
               if (!reifiedStmt[addProp]) {
-                reifiedStmt[addProp] = [];
+                reifiedStmt[addProp] = []
               }
               if (checkIfUri(addValue)) {
-                reifiedStmt[addProp].push({'@id': addValue});
+                reifiedStmt[addProp].push({'@id': addValue})
               } else {
-                reifiedStmt[addProp].push(addValue);
+                reifiedStmt[addProp].push(addValue)
               }
             }
-          });
+          })
         }
-        stmtJsonld.push(reifiedStmt);
-      });
+        stmtJsonld.push(reifiedStmt)
+      })
     } else {
       // If Plain RDF mode enabled (disabled atm)
       state.statements.map((stmt: any) => {
         stmtJsonld.push({
           '@id': getPropValue(stmt.s),
           [getPropValue(stmt.p)]: getPropValue(stmt.o)
-        });
-      });
+        })
+      })
     }
 
-    const docUri = state.inputDocument ? state.inputDocument : 'http://purl.org/nanopub/temp/np#document';
+    const docUri = state.inputDocument ? state.inputDocument : 'http://purl.org/nanopub/temp/np#document'
     const taoDoc: any = {
       '@id': docUri,
       '@type': 'tao:document_text',
       'tao:has_value': state.inputText
-    };
+    }
     if (state.inputSource) {
-      taoDoc['rdfs:seeAlso'] = {'@id': state.inputSource};
+      taoDoc['rdfs:seeAlso'] = {'@id': state.inputSource}
     }
     if (state.inputProject) {
-      taoDoc['tao:part_of'] = {'@id': state.inputProject};
+      taoDoc['tao:part_of'] = {'@id': state.inputProject}
     }
-    taoAnnotations.push(taoDoc);
+    taoAnnotations.push(taoDoc)
 
     // Generate triples for the entities
     state.entitiesList.map((entity: any) => {
@@ -423,7 +423,7 @@ export default function AnnotateText() {
           'biolink:id': entity.id_curie,
           'biolink:category': `biolink:${entity.type}`,
           'rdfs:label': entity.text
-        };
+        }
         taoAnnotations.push({
           '@type': 'tao:text_span',
           'tao:begins_at': entity.start,
@@ -431,28 +431,28 @@ export default function AnnotateText() {
           'tao:has_value': entity.text,
           'tao:denotes': {'@id': entity.id_uri},
           'tao:part_of': {'@id': docUri}
-        });
+        })
         // Generate the props of the entity
         if (entity.props) {
           entity.props.map((prop: any, pindex: number) => {
-            const addProp = getPropValue(prop.p);
-            const addValue = getPropValue(prop.o);
+            const addProp = getPropValue(prop.p)
+            const addValue = getPropValue(prop.o)
             if (addProp && addValue) {
               if (!entityJsonld[addProp]) {
-                entityJsonld[addProp] = [];
+                entityJsonld[addProp] = []
               }
               if (checkIfUri(addValue)) {
                 // Quick check if URI
-                entityJsonld[addProp].push({'@id': addValue});
+                entityJsonld[addProp].push({'@id': addValue})
               } else {
-                entityJsonld[addProp].push(addValue);
+                entityJsonld[addProp].push(addValue)
               }
             }
-          });
+          })
         }
-        stmtJsonld.push(entityJsonld);
+        stmtJsonld.push(entityJsonld)
       }
-    });
+    })
     return {
       '@context': genericContext,
       '@graph': stmtJsonld,
@@ -463,78 +463,78 @@ export default function AnnotateText() {
         },
         '@graph': taoAnnotations
       }
-    };
-  };
+    }
+  }
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    updateState({[event.target.id]: event.target.value});
-  };
+    updateState({[event.target.id]: event.target.value})
+  }
 
   const addStatement = (event: React.FormEvent) => {
-    event.preventDefault();
-    const stmts: any = state.statements;
-    stmts.push({s: '', p: '', o: '', props: []});
-    updateState({statements: stmts});
-  };
+    event.preventDefault()
+    const stmts: any = state.statements
+    stmts.push({s: '', p: '', o: '', props: []})
+    updateState({statements: stmts})
+  }
   const addProperty = (event: React.FormEvent) => {
     // event.preventDefault();
-    const stmts: any = state.statements;
+    const stmts: any = state.statements
     // @ts-ignore
-    const stmtIndex = event.target.id.split('-')[0].split(':')[1];
+    const stmtIndex = event.target.id.split('-')[0].split(':')[1]
     if (!stmts[stmtIndex]['props']) {
-      stmts[stmtIndex]['props'] = [];
+      stmts[stmtIndex]['props'] = []
     }
-    stmts[stmtIndex]['props'].push({p: '', o: ''});
-    updateState({statements: stmts});
-  };
+    stmts[stmtIndex]['props'].push({p: '', o: ''})
+    updateState({statements: stmts})
+  }
 
   const handleRemoveStmt = (index: number) => {
     // TODO: entities that are not anymore relevant are removed when a statement is removed
-    const stmts = state.statements;
-    stmts.splice(index, 1);
-    updateState({statements: stmts});
-  };
+    const stmts = state.statements
+    stmts.splice(index, 1)
+    updateState({statements: stmts})
+  }
 
   const addEntityProperty = (event: React.FormEvent, editEnt: any) => {
     // event.preventDefault();
-    const entitiesList: any = state.entitiesList;
+    const entitiesList: any = state.entitiesList
     if (!editEnt['props']) {
-      editEnt['props'] = [];
+      editEnt['props'] = []
     }
-    editEnt['props'].push({p: '', o: ''});
-    const entityIndex = entitiesList.findIndex((ent: any) => ent.index === editEnt.index);
-    entitiesList[entityIndex] = editEnt;
-    updateState({entitiesList: entitiesList, tagSelected: editEnt});
-  };
+    editEnt['props'].push({p: '', o: ''})
+    const entityIndex = entitiesList.findIndex((ent: any) => ent.index === editEnt.index)
+    entitiesList[entityIndex] = editEnt
+    updateState({entitiesList: entitiesList, tagSelected: editEnt})
+  }
   const handleRemoveEntity = (index: any) => {
-    const entitiesList = state.entitiesList;
+    const entitiesList = state.entitiesList
     // Delete the entity with the same index
     entitiesList.splice(
       entitiesList.findIndex((ent: any) => ent.index === index),
       1
-    );
-    updateState({entitiesList: entitiesList, tagSelected: null});
-    handleClickAway();
-  };
+    )
+    updateState({entitiesList: entitiesList, tagSelected: null})
+    handleClickAway()
+  }
   const handleRemoveProp = (stmtIndex: number, pindex: number) => {
-    const stmts = state.statements;
-    stmts[stmtIndex].props.splice(pindex, 1);
-    updateState({statements: stmts});
-  };
+    const stmts = state.statements
+    stmts[stmtIndex].props.splice(pindex, 1)
+    updateState({statements: stmts})
+  }
   const handleRemoveEntityProp = (editEnt: any, pindex: number) => {
-    const entitiesList: any = state.entitiesList;
-    editEnt.props.splice(pindex, 1);
+    const entitiesList: any = state.entitiesList
+    editEnt.props.splice(pindex, 1)
     // editEnt.props.splice(entitiesList.findIndex((ent: any) => ent.index === editEnt.index), 1);
-    const entityIndex = entitiesList.findIndex((ent: any) => ent.index === editEnt.index);
-    entitiesList[entityIndex] = editEnt;
-    updateState({entitiesList: entitiesList, tagSelected: editEnt});
-  };
+    const entityIndex = entitiesList.findIndex((ent: any) => ent.index === editEnt.index)
+    entitiesList[entityIndex] = editEnt
+    updateState({entitiesList: entitiesList, tagSelected: editEnt})
+  }
 
   const clickTag = (event: any, tag: any, elemIndex: any) => {
-    setAnchorEl(anchorEl ? null : event.currentTarget);
-    setOpen(prev => !prev);
-    updateState({tagSelected: tag});
-  };
+    setAnchorEl(anchorEl ? null : event.currentTarget)
+    setOpen(prev => !prev)
+    updateState({tagSelected: tag})
+  }
 
   const getEntityCuries = async (text: string) => {
     const data = await axios
@@ -550,21 +550,21 @@ export default function AnnotateText() {
         }
       )
       .then(res => {
-        return res.data;
+        return res.data
       })
       .catch(error => {
-        console.log(error);
-        return null;
-      });
-    return data;
-  };
+        console.log(error)
+        return null
+      })
+    return data
+  }
 
   const highlightCallback = async (event: any, text: string, spanIndex: number, start: number, end: number) => {
-    const entIndex = `${text}:${spanIndex}:${start}:${end}`;
-    setAnchorEl(anchorEl ? null : event.currentTarget);
-    setOpen(prev => !prev);
+    const entIndex = `${text}:${spanIndex}:${start}:${end}`
+    setAnchorEl(anchorEl ? null : event.currentTarget)
+    setOpen(prev => !prev)
     if (text.length > 1 && state.entitiesList.findIndex((ent: any) => ent.index === entIndex) === -1) {
-      const curies: any = [];
+      const curies: any = []
       const newEntity = {
         index: entIndex,
         text: text,
@@ -577,44 +577,44 @@ export default function AnnotateText() {
         id_label: '',
         id_uri: '',
         props: []
-      };
-      const entityCuries = await getEntityCuries(text);
+      }
+      const entityCuries = await getEntityCuries(text)
       if (entityCuries && Object.keys(entityCuries).length > 0) {
         Object.keys(entityCuries).map((curie: any) => {
           const addEnt: any = {
             curie: curie,
             label: entityCuries[curie][0],
             altLabel: entityCuries[curie][1]
-          };
-          newEntity['curies'].push(addEnt);
-        });
-        newEntity['id_curie'] = Object.keys(entityCuries)[0];
-        newEntity['id_label'] = entityCuries[newEntity['id_curie']][0];
-        newEntity['id_uri'] = curieToUri(newEntity['id_curie']);
+          }
+          newEntity['curies'].push(addEnt)
+        })
+        newEntity['id_curie'] = Object.keys(entityCuries)[0]
+        newEntity['id_label'] = entityCuries[newEntity['id_curie']][0]
+        newEntity['id_uri'] = curieToUri(newEntity['id_curie'])
       }
       if (state.entitiesList.findIndex((ent: any) => ent.index === entIndex) == -1) {
-        const entitiesList: any = state.entitiesList;
-        entitiesList.push(newEntity);
-        updateState({tagSelected: newEntity, entitiesList: entitiesList});
+        const entitiesList: any = state.entitiesList
+        entitiesList.push(newEntity)
+        updateState({tagSelected: newEntity, entitiesList: entitiesList})
       }
     }
-  };
+  }
 
   const addToStatements = (property: string, newInputValue: any, index: any, pindex: any = null) => {
-    const stmts: any = state.statements;
+    const stmts: any = state.statements
     if (newInputValue) {
       if (pindex == null) {
         if (typeof newInputValue === 'object' || checkIfUri(newInputValue)) {
-          stmts[index][property] = newInputValue as string;
+          stmts[index][property] = newInputValue as string
         }
       } else {
         if (typeof newInputValue === 'object' || checkIfUri(newInputValue)) {
-          stmts[index]['props'][pindex][property] = newInputValue as string;
+          stmts[index]['props'][pindex][property] = newInputValue as string
         }
       }
     }
-    updateState({statements: stmts});
-  };
+    updateState({statements: stmts})
+  }
 
   return (
     <Container className="mainContainer">
@@ -665,7 +665,7 @@ export default function AnnotateText() {
             inputSource: document.source_url,
             inputDocument: document.target,
             inputProject: document.project
-          });
+          })
         }}
       />
 
@@ -720,7 +720,7 @@ export default function AnnotateText() {
             <DropdownButton
               options={extractionOptions}
               onChange={(event: React.ChangeEvent<HTMLInputElement>, index: number) => {
-                updateState({extractionModel: extractionIds[index]});
+                updateState({extractionModel: extractionIds[index]})
               }}
               // onClick={(event: any) => {
               //   handleExtract(event)
@@ -783,13 +783,13 @@ export default function AnnotateText() {
                   groupBy={(option: any) => (option.category ? option.category : null)}
                   style={{marginBottom: theme.spacing(2)}}
                   onChange={(event: any, newInputValue: any) => {
-                    const tagSelected: any = state.tagSelected;
+                    const tagSelected: any = state.tagSelected
                     if (newInputValue && newInputValue != tagSelected.type) {
-                      const entitiesList: any = state.entitiesList;
-                      const entityIndex = entitiesList.findIndex((ent: any) => ent.index === tagSelected.index);
-                      entitiesList[entityIndex].type = newInputValue.type;
-                      tagSelected.type = newInputValue.type;
-                      updateState({tagSelected: tagSelected, entitiesList: entitiesList});
+                      const entitiesList: any = state.entitiesList
+                      const entityIndex = entitiesList.findIndex((ent: any) => ent.index === tagSelected.index)
+                      entitiesList[entityIndex].type = newInputValue.type
+                      tagSelected.type = newInputValue.type
+                      updateState({tagSelected: tagSelected, entitiesList: entitiesList})
                     }
                   }}
                 />
@@ -802,44 +802,44 @@ export default function AnnotateText() {
                   style={{marginBottom: theme.spacing(2)}}
                   onChange={async (event: any, newInputValue: any) => {
                     // console.log('autocomplete entity newInputValue', newInputValue);
-                    const entitiesList: any = state.entitiesList;
-                    const tagSelected = state.tagSelected;
-                    const entityIndex = entitiesList.findIndex((ent: any) => ent.index === tagSelected.index);
+                    const entitiesList: any = state.entitiesList
+                    const tagSelected = state.tagSelected
+                    const entityIndex = entitiesList.findIndex((ent: any) => ent.index === tagSelected.index)
 
                     if (newInputValue && (typeof newInputValue === 'object' || checkIfUri(newInputValue))) {
                       if (newInputValue.curie) {
-                        entitiesList[entityIndex].id_curie = newInputValue.curie;
-                        entitiesList[entityIndex].id_label = newInputValue.label;
-                        entitiesList[entityIndex].id_uri = curieToUri(newInputValue.curie);
-                        tagSelected.id_curie = newInputValue.curie;
-                        tagSelected.id_label = newInputValue.label;
-                        tagSelected.id_uri = curieToUri(newInputValue.curie);
+                        entitiesList[entityIndex].id_curie = newInputValue.curie
+                        entitiesList[entityIndex].id_label = newInputValue.label
+                        entitiesList[entityIndex].id_uri = curieToUri(newInputValue.curie)
+                        tagSelected.id_curie = newInputValue.curie
+                        tagSelected.id_label = newInputValue.label
+                        tagSelected.id_uri = curieToUri(newInputValue.curie)
                       } else {
-                        delete entitiesList[entityIndex].id_curie;
-                        delete entitiesList[entityIndex].id_label;
-                        entitiesList[entityIndex].id_uri = newInputValue;
-                        delete tagSelected.id_curie;
-                        delete tagSelected.id_label;
-                        tagSelected.id_uri = newInputValue;
+                        delete entitiesList[entityIndex].id_curie
+                        delete entitiesList[entityIndex].id_label
+                        entitiesList[entityIndex].id_uri = newInputValue
+                        delete tagSelected.id_curie
+                        delete tagSelected.id_label
+                        tagSelected.id_uri = newInputValue
                       }
-                      updateState({tagSelected: tagSelected, entitiesList: entitiesList});
+                      updateState({tagSelected: tagSelected, entitiesList: entitiesList})
                     }
 
                     // If newInputValue is str len() > 2: we search in SRI API
                     // and update the "curies" options from the result for the autocomplete
                     if (newInputValue && typeof newInputValue === 'string' && newInputValue.length > 2) {
-                      const entityCuries = await getEntityCuries(newInputValue);
+                      const entityCuries = await getEntityCuries(newInputValue)
                       if (entityCuries && Object.keys(entityCuries).length > 0) {
-                        tagSelected.curies = [];
+                        tagSelected.curies = []
                         Object.keys(entityCuries).map((curie: any) => {
                           const addEnt: any = {
                             curie: curie,
                             label: entityCuries[curie][0],
                             altLabel: entityCuries[curie][1]
-                          };
-                          tagSelected.curies.push(addEnt);
-                        });
-                        updateState({tagSelected: tagSelected});
+                          }
+                          tagSelected.curies.push(addEnt)
+                        })
+                        updateState({tagSelected: tagSelected})
                       }
                     }
                   }}
@@ -866,12 +866,12 @@ export default function AnnotateText() {
                             onChange={(event: any, newInputValue: any) => {
                               // if (newInputValue && newInputValue != tagSelected.type) {
                               if (typeof newInputValue === 'object' || checkIfUri(newInputValue)) {
-                                const entitiesList: any = state.entitiesList;
-                                const tagSelected = state.tagSelected;
-                                tagSelected.props[pindex]['p'] = newInputValue;
-                                const entityIndex = entitiesList.findIndex((ent: any) => ent.index === pindex);
-                                entitiesList[entityIndex] = tagSelected;
-                                updateState({entitiesList: entitiesList, tagSelected: tagSelected});
+                                const entitiesList: any = state.entitiesList
+                                const tagSelected = state.tagSelected
+                                tagSelected.props[pindex]['p'] = newInputValue
+                                const entityIndex = entitiesList.findIndex((ent: any) => ent.index === pindex)
+                                entitiesList[entityIndex] = tagSelected
+                                updateState({entitiesList: entitiesList, tagSelected: tagSelected})
                               }
                             }}
                           />
@@ -886,12 +886,12 @@ export default function AnnotateText() {
                             options={state.entitiesList}
                             onChange={(event: any, newInputValue: any) => {
                               if (typeof newInputValue === 'object' || checkIfUri(newInputValue)) {
-                                const entitiesList: any = state.entitiesList;
-                                const tagSelected = state.tagSelected;
-                                tagSelected.props[pindex]['o'] = newInputValue;
-                                const entityIndex = entitiesList.findIndex((ent: any) => ent.index === pindex);
-                                entitiesList[entityIndex] = tagSelected;
-                                updateState({entitiesList: entitiesList, tagSelected: tagSelected});
+                                const entitiesList: any = state.entitiesList
+                                const tagSelected = state.tagSelected
+                                tagSelected.props[pindex]['o'] = newInputValue
+                                const entityIndex = entitiesList.findIndex((ent: any) => ent.index === pindex)
+                                entitiesList[entityIndex] = tagSelected
+                                updateState({entitiesList: entitiesList, tagSelected: tagSelected})
                               }
                             }}
                           />
@@ -907,7 +907,7 @@ export default function AnnotateText() {
                           </Tooltip>
                         </Grid>
                       </Grid>
-                    );
+                    )
                   })}
 
                 <div style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap'}}>
@@ -1000,7 +1000,7 @@ export default function AnnotateText() {
                       value={state.statements[index].s}
                       options={state.entitiesList}
                       onChange={(event: any, newInputValue: any) => {
-                        addToStatements('s', newInputValue, index);
+                        addToStatements('s', newInputValue, index)
                       }}
                       validate="entity"
                     />
@@ -1015,7 +1015,7 @@ export default function AnnotateText() {
                         (a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase())
                       )}
                       onChange={(event: any, newInputValue: any) => {
-                        addToStatements('p', newInputValue, index);
+                        addToStatements('p', newInputValue, index)
                       }}
                       validate="entity"
                     />
@@ -1028,7 +1028,7 @@ export default function AnnotateText() {
                       value={state.statements[index].o}
                       options={state.entitiesList}
                       onChange={(event: any, newInputValue: any) => {
-                        addToStatements('o', newInputValue, index);
+                        addToStatements('o', newInputValue, index)
                       }}
                       validate="entity"
                     />
@@ -1062,7 +1062,7 @@ export default function AnnotateText() {
                               (a: any, b: any) => -b.type[0].toUpperCase().localeCompare(a.type[0].toUpperCase())
                             )}
                             onChange={(event: any, newInputValue: any) => {
-                              addToStatements('p', newInputValue, index, pindex);
+                              addToStatements('p', newInputValue, index, pindex)
                             }}
                             validate="entity"
                           />
@@ -1076,7 +1076,7 @@ export default function AnnotateText() {
                             value={state.statements[index].props[pindex].o}
                             options={state.entitiesList}
                             onChange={(event: any, newInputValue: any) => {
-                              addToStatements('o', newInputValue, index, pindex);
+                              addToStatements('o', newInputValue, index, pindex)
                             }}
                             validate="entity"
                           />
@@ -1089,7 +1089,7 @@ export default function AnnotateText() {
                           </Tooltip>
                         </Grid>
                       </Grid>
-                    );
+                    )
                   })}
                 {state.templateSelected !== 'Plain RDF' && (
                   <div style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap'}}>
@@ -1112,7 +1112,7 @@ export default function AnnotateText() {
                   </div>
                 )}
               </Box>
-            );
+            )
           })}
           <Button
             onClick={addStatement}
@@ -1139,5 +1139,5 @@ export default function AnnotateText() {
         />
       )}
     </Container>
-  );
+  )
 }

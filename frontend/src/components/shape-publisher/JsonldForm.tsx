@@ -1,15 +1,15 @@
-'use client';
+'use client'
 
-import React, {useEffect} from 'react';
+import React, {useEffect} from 'react'
 
-import {Parser, Store} from 'n3';
+import {Parser, Store} from 'n3'
 // import { DataFactory, Parser } from 'n3';
 
 // import hljs from 'highlight.js/lib/core';
 // import json from 'highlight.js/lib/languages/json';
 // import 'highlight.js/styles/github-dark-dimmed.css';
 
-import {shacl2jsonschema} from './shacl2jsonschema';
+import {shacl2jsonschema} from './shacl2jsonschema'
 
 // https://github.com/rjsf-team/react-jsonschema-form/tree/master/packages
 // import Form from "@rjsf/core";
@@ -18,7 +18,7 @@ import {shacl2jsonschema} from './shacl2jsonschema';
 // import Form from '@rjsf/material-ui/v5';
 // Can't find module for mui v5
 
-import Form from '@rjsf/fluent-ui';
+import Form from '@rjsf/fluent-ui'
 // import validator from "@rjsf/validator-ajv8";
 // Works! But look like Microsoft UI, and subshapes not distinguishable from parent
 
@@ -40,15 +40,15 @@ import Form from '@rjsf/fluent-ui';
 // import { materialCells, materialRenderers } from '@jsonforms/material-renderers';
 
 type Props = {
-  shape: string;
-  target: string;
-};
+  shape: string
+  target: string
+}
 
 export const JsonldForm = ({shape, target}: Props) => {
   // const theme = useTheme();
 
-  const parser = new Parser();
-  const store = new Store();
+  const parser = new Parser()
+  const store = new Store()
 
   const [state, setState] = React.useState({
     // shape: shape,
@@ -63,17 +63,17 @@ export const JsonldForm = ({shape, target}: Props) => {
     showJsonSchema: false,
     targetClass: '',
     showJsonBtnHover: false
-  });
+  })
 
-  const stateRef = React.useRef(state);
+  const stateRef = React.useRef(state)
   // Avoid conflict when async calls
   const updateState = React.useCallback(
     (update: any) => {
-      stateRef.current = {...stateRef.current, ...update};
-      setState(stateRef.current);
+      stateRef.current = {...stateRef.current, ...update}
+      setState(stateRef.current)
     },
     [setState]
-  );
+  )
 
   useEffect(() => {
     // hljs.registerLanguage('json', json);
@@ -87,24 +87,24 @@ export const JsonldForm = ({shape, target}: Props) => {
     //   jsonForm.dispatchEvent(event)
     // }, 2000);
 
-    console.log('Parsing the SHACL shape to generate the JSON schema');
+    console.log('Parsing the SHACL shape to generate the JSON schema')
     parser.parse(shape, (error: any, quad: any, prefixes: any) => {
       if (quad) {
-        store.add(quad);
+        store.add(quad)
       } else {
-        console.log('Prefixes:', prefixes);
+        console.log('Prefixes:', prefixes)
 
-        const {jsonschema, jsonld, context} = shacl2jsonschema(store, target, prefixes);
+        const {jsonschema, jsonld, context} = shacl2jsonschema(store, target, prefixes)
 
-        console.log('🏁 Final JSON Schema generated for the SHACL shape:', jsonschema);
+        console.log('🏁 Final JSON Schema generated for the SHACL shape:', jsonschema)
         updateState({
           prefixes: context,
           jsonschema: jsonschema,
           jsonld: jsonld
-        });
+        })
       }
-    });
-  }, [shape, target]);
+    })
+  }, [shape, target])
 
   return (
     <div style={{display: 'inline-block'}}>
@@ -113,7 +113,7 @@ export const JsonldForm = ({shape, target}: Props) => {
         {/* https://stackoverflow.com/questions/56646500/add-hover-effect-to-react-div-using-inline-styling */}
         <button
           onClick={() => {
-            updateState({showJsonSchema: !state.showJsonSchema});
+            updateState({showJsonSchema: !state.showJsonSchema})
           }}
           // style={styles.btn}
           style={{
@@ -129,10 +129,10 @@ export const JsonldForm = ({shape, target}: Props) => {
             ...(state.showJsonBtnHover && {cursor: 'pointer', background: '#4f9a94'})
           }}
           onMouseEnter={() => {
-            updateState({showJsonBtnHover: true});
+            updateState({showJsonBtnHover: true})
           }}
           onMouseLeave={() => {
-            updateState({showJsonBtnHover: false});
+            updateState({showJsonBtnHover: false})
           }}
           // style={{ textTransform: 'none', margin: theme.spacing(2, 2) }}
         >
@@ -162,22 +162,22 @@ export const JsonldForm = ({shape, target}: Props) => {
           liveValidate
           // validator={validator}
           onChange={(event: any) => {
-            console.log('changed', event);
+            console.log('changed', event)
             // updateState({
             //   jsonld: data.formData
             // })
           }}
           onSubmit={(event: any) => {
             // event.
-            console.log('submitted', event);
+            console.log('submitted', event)
             updateState({
               jsonld: event.formData,
               showJsonld: true,
               jsonValid: true
-            });
+            })
           }}
           onError={(event: any) => {
-            console.log('errors', event);
+            console.log('errors', event)
             // updateState({
             //   jsonErrors: event.errors,
             //   jsonValid: false,
@@ -231,5 +231,5 @@ export const JsonldForm = ({shape, target}: Props) => {
         </pre>
       } */}
     </div>
-  );
-};
+  )
+}

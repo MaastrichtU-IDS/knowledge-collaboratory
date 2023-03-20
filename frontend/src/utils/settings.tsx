@@ -3,7 +3,7 @@ export const settings = {
   nanopubGrlcUrl: process.env.GRLC_URL || 'https://grlc.np.dumontierlab.com/api/local/local',
   nanopubSparqlUrl: 'https://virtuoso.nps.petapico.org/sparql',
   orcidClientId: process.env.ORCID_CLIENT_ID || 'APP-TEANCMSUOPYZOGJ3'
-};
+}
 
 export const genericContext = {
   rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
@@ -11,7 +11,7 @@ export const genericContext = {
   biolink: 'https://w3id.org/biolink/vocab/',
   infores: 'https://w3id.org/biolink/infores/',
   dct: 'http://purl.org/dc/terms/'
-};
+}
 
 // https://purl.org/np/RAuN1kyW1BD9754LCUVWozDOhkrUaLUyb5LTu0HcsulIE
 export const samples: any = {
@@ -188,4 +188,4 @@ export const samples: any = {
       }
     }
   }
-};
+}

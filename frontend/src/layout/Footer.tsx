@@ -1,6 +1,6 @@
-import React from 'react';
-import {useTheme} from '@mui/material/styles';
-import {Container, Typography} from '@mui/material';
+import React from 'react'
+import {useTheme} from '@mui/material/styles'
+import {Container, Typography} from '@mui/material'
 
 function Copyright() {
   return (
@@ -11,11 +11,11 @@ function Copyright() {
       </a>{' '}
       {'2020.'}
     </Typography>
-  );
+  )
 }
 
 export default function Footer() {
-  const theme = useTheme();
+  const theme = useTheme()
 
   return (
     <footer
@@ -40,5 +40,5 @@ export default function Footer() {
         <Copyright />
       </Container>
     </footer>
-  );
+  )
 }

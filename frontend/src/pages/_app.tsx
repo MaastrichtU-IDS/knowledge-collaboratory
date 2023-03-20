@@ -1,10 +1,10 @@
-import '@/layout/globals.css';
-import type {AppProps} from 'next/app';
-import Head from 'next/head';
+import '@/layout/globals.css'
+import type {AppProps} from 'next/app'
+import Head from 'next/head'
 
-import dynamic from 'next/dynamic';
+import dynamic from 'next/dynamic'
 
-const Layout = dynamic(import('../layout/layout'), {ssr: false});
+const Layout = dynamic(import('../layout/layout'), {ssr: false})
 
 // https://nextjs.org/docs/basic-features/layouts
 
@@ -24,5 +24,5 @@ export default function App({Component, pageProps}: AppProps) {
         <Component {...pageProps} />
       </Layout>
     </>
-  );
+  )
 }

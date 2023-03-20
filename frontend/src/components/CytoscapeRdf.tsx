@@ -1,24 +1,24 @@
-'use client';
+'use client'
 
-import React, {useEffect, useRef} from 'react';
-import {Card, Typography} from '@mui/material';
-import {renderToStaticMarkup} from 'react-dom/server';
-import {Parser} from 'n3';
-import cytoscape from 'cytoscape';
-import fcose from 'cytoscape-fcose';
-import cola from 'cytoscape-cola';
-import dagre from 'cytoscape-dagre';
-import spread from 'cytoscape-spread';
-import COSEBilkent from 'cytoscape-cose-bilkent';
-import popper from 'cytoscape-popper';
+import React, {useEffect, useRef} from 'react'
+import {Card, Typography} from '@mui/material'
+import {renderToStaticMarkup} from 'react-dom/server'
+import {Parser} from 'n3'
+import cytoscape from 'cytoscape'
+import fcose from 'cytoscape-fcose'
+import cola from 'cytoscape-cola'
+import dagre from 'cytoscape-dagre'
+import spread from 'cytoscape-spread'
+import COSEBilkent from 'cytoscape-cose-bilkent'
+import popper from 'cytoscape-popper'
 // import euler from 'cytoscape-euler';
 
-cytoscape.use(fcose);
-cytoscape.use(dagre);
-cytoscape.use(cola);
-spread(cytoscape);
-cytoscape.use(COSEBilkent);
-cytoscape.use(popper);
+cytoscape.use(fcose)
+cytoscape.use(dagre)
+cytoscape.use(cola)
+spread(cytoscape)
+cytoscape.use(COSEBilkent)
+cytoscape.use(popper)
 // Cytoscape.use(euler) // out of memory
 
 // Install dependencies:
@@ -30,22 +30,22 @@ cytoscape.use(popper);
 const replacePrefix = (uri: string, prefixes: any) => {
   // const namespace = (uri.lastIndexOf('#') > 0) ? uri.lastIndexOf('#') : uri.lastIndexOf('/')
   for (let i = 0; i < Object.keys(prefixes).length; i++) {
-    const prefix = Object.keys(prefixes)[i];
+    const prefix = Object.keys(prefixes)[i]
     if (uri.startsWith(prefixes[prefix])) {
-      return uri.replace(prefixes[prefix], prefix + ':');
+      return uri.replace(prefixes[prefix], prefix + ':')
     }
   }
-  return uri;
-};
+  return uri
+}
 
 export const rdfToCytoscape = (text: string) => {
-  const parser = new Parser({format: 'application/trig'});
-  const cytoscapeElems: any = [];
-  const graphs: any = {};
+  const parser = new Parser({format: 'application/trig'})
+  const cytoscapeElems: any = []
+  const graphs: any = {}
   parser.parse(text, (error, quad, prefixes) => {
     if (error) {
-      console.log(error);
-      return null;
+      console.log(error)
+      return null
     }
     if (quad && quad.subject.value && quad.object.value) {
       // console.log("quad", quad.object.termType)
@@ -64,12 +64,12 @@ export const rdfToCytoscape = (text: string) => {
           textColor: '#212121'
           // https://stackoverflow.com/questions/58557196/group-nodes-together-in-cytoscape-js
         }
-      });
+      })
       // For literal that are too long without spaces, like public keys
       const cutLongObject =
         !quad.object.value.includes(' ') && quad.object.value.length > 100
           ? quad.object.value.replace(/(.{60})/g, '$1\n')
-          : quad.object.value;
+          : quad.object.value
       cytoscapeElems.push({
         data: {
           id: quad.object.value,
@@ -83,7 +83,7 @@ export const rdfToCytoscape = (text: string) => {
           fontSize: '30px',
           fontWeight: '300'
         }
-      });
+      })
       // Add Predicate edge to cytoscape graph
       cytoscapeElems.push({
         data: {
@@ -91,25 +91,25 @@ export const rdfToCytoscape = (text: string) => {
           target: quad.object.value,
           label: quad.predicate.value
         }
-      });
+      })
       // Add the graph to the list of graphs
-      graphs[quad.graph.value] = quad.graph.value;
+      graphs[quad.graph.value] = quad.graph.value
     } else {
       Object.keys(graphs).map((g: string) => {
-        let graphColor = '#eceff1';
-        let graphTextColor = '#000000';
+        let graphColor = '#eceff1'
+        let graphTextColor = '#000000'
         if (g.endsWith('assertion')) {
           // blue
-          graphColor = '#e3f2fd';
-          graphTextColor = '#0d47a1';
+          graphColor = '#e3f2fd'
+          graphTextColor = '#0d47a1'
         } else if (g.endsWith('provenance')) {
           // Red
-          graphColor = '#ffebee';
-          graphTextColor = '#b71c1c';
+          graphColor = '#ffebee'
+          graphTextColor = '#b71c1c'
         } else if (g.toLowerCase().endsWith('pubinfo')) {
           // Yellow
-          graphColor = '#fffde7';
-          graphTextColor = '#f57f17';
+          graphColor = '#fffde7'
+          graphTextColor = '#f57f17'
         }
         // Add Graph node at start of cytoscape graph
         cytoscapeElems.unshift({
@@ -124,22 +124,22 @@ export const rdfToCytoscape = (text: string) => {
             fontSize: '50px',
             fontWeight: '700'
           }
-        });
-      });
+        })
+      })
 
-      const allPrefixes = {...prefixes, rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'};
+      const allPrefixes = {...prefixes, rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'}
       // Resolve prefixes
       cytoscapeElems.map((elem: any) => {
         if (elem.data.label) {
-          elem.data.label = replacePrefix(elem.data.label, allPrefixes);
+          elem.data.label = replacePrefix(elem.data.label, allPrefixes)
         }
-      });
+      })
     }
-  });
+  })
 
   // console.log('cytoscapeElems:', cytoscapeElems)
-  return cytoscapeElems;
-};
+  return cytoscapeElems
+}
 
 const displayLink = (urlString: string) => {
   if (/^(?:node[0-9]+)|((https?|ftp):.*)$/.test(urlString)) {
@@ -147,11 +147,11 @@ const displayLink = (urlString: string) => {
       <a href={urlString} target="_blank" rel="noopener noreferrer" style={{textDecoration: 'none'}}>
         {urlString}
       </a>
-    );
+    )
   } else {
-    return urlString;
+    return urlString
   }
-};
+}
 
 // Component to display RDF as a graph with Cytoscape
 // export default function CytoscapeRdfGraph(props: any) {
@@ -160,7 +160,7 @@ export function CytoscapeRdfGraph({
   cytoscapeElems = rdfToCytoscape(rdf),
   layout = defaultLayout['cose-bilkent']
 }: any) {
-  const containerRef: any = useRef();
+  const containerRef: any = useRef()
 
   useEffect(() => {
     const config = {
@@ -173,10 +173,10 @@ export function CytoscapeRdfGraph({
       autoungrabify: false,
       wheelSensitivity: 0.1,
       showOverlay: true
-    };
+    }
 
     // @ts-ignore
-    const cy = cytoscape(config);
+    const cy = cytoscape(config)
 
     // Add on click actions to show cards with more details on an object
     cy.$('node').on('tap', function (e: any) {
@@ -186,28 +186,28 @@ export function CytoscapeRdfGraph({
         width: 2,
         'target-arrow-color': '#263238',
         'font-size': '30px'
-      }); // Grey
-      var ele = e.target;
+      }) // Grey
+      var ele = e.target
       ele.connectedEdges().style({
         'line-color': '#c62828',
         color: '#c62828', // red
         width: 4,
         'target-arrow-color': '#c62828',
         'font-size': '40px'
-      });
-    });
+      })
+    })
     // Show a card with the value of the node (e.g. clickable link for URI)
     cy.$('node').on('tap', function (e: any) {
-      const oldEle = document.getElementById('cytoPop');
-      if (oldEle) oldEle.remove();
-      var ele = e.target;
+      const oldEle = document.getElementById('cytoPop')
+      if (oldEle) oldEle.remove()
+      var ele = e.target
       // const elementLabel = (ele.id().startsWith('graph-http')) ? ele.id().replace('graph-http', '') : ele.id()
       ele.popper({
         content: () => {
           // console.log(ele)
-          let div = document.createElement('div');
+          let div = document.createElement('div')
           // Replace the start "graph-http" for graphs nodes URIs
-          const elementLabel = ele.id().startsWith('graph-http') ? ele.id().replace('graph-http', 'http') : ele.id();
+          const elementLabel = ele.id().startsWith('graph-http') ? ele.id().replace('graph-http', 'http') : ele.id()
 
           // const staticElement = renderToStaticMarkup(
           const staticElement = renderToStaticMarkup(
@@ -221,23 +221,23 @@ export function CytoscapeRdfGraph({
               <Typography variant="body2">{displayLink(elementLabel)}</Typography>
               {/* </CardContent> */}
             </Card>
-          );
-          div.innerHTML = `<div id="cytoPop">${staticElement}</div>`;
-          document.body.appendChild(div);
+          )
+          div.innerHTML = `<div id="cytoPop">${staticElement}</div>`
+          document.body.appendChild(div)
           // ReactDOM.render(staticElement, document.getElementById('root'));
-          return div;
+          return div
         }
-      });
-    });
+      })
+    })
     // Remove Card when click on the canvas
     cy.on('tap', function (event: any) {
       if (event.target === cy) {
         // tap on background
-        const oldEle = document.getElementById('cytoPop');
-        if (oldEle) oldEle.remove();
+        const oldEle = document.getElementById('cytoPop')
+        if (oldEle) oldEle.remove()
       }
-    });
-  }, []);
+    })
+  }, [])
 
   const cytoStyles = [
     {
@@ -301,13 +301,13 @@ export function CytoscapeRdfGraph({
         // "color": 'data(color)',
       }
     }
-  ];
+  ]
 
   return (
     <>
       <div ref={containerRef} style={{height: '100%', width: '100%'}} />
     </>
-  );
+  )
 }
 
 // Change Cytoscape layout: https://js.cytoscape.org/#layouts
@@ -455,10 +455,10 @@ const defaultLayout = {
     // A feedback arc set is a set of edges that can be removed to make a graph acyclic.
     ranker: 'network-simplex', // Type of algorithm to assign a rank to each node in the input graph. Possible values: 'network-simplex', 'tight-tree' or 'longest-path'
     minLen: function (edge: any) {
-      return 2;
+      return 2
     }, // number of ranks to keep between the source and target of the edge
     edgeWeight: function (edge: any) {
-      return 1;
+      return 1
     }, // higher weight edges are generally made shorter and straighter than lower weight edges
 
     // general layout options
@@ -468,13 +468,13 @@ const defaultLayout = {
     nodeDimensionsIncludeLabels: true, // whether labels should be included in determining the space used by a node
     animate: false, // whether to transition the node positions
     animateFilter: function (node: any, i: any) {
-      return true;
+      return true
     }, // whether to animate specific nodes when animation is on; non-animated nodes immediately go to their final positions
     animationDuration: 500, // duration of animation in ms if enabled
     animationEasing: undefined, // easing of animation if enabled
     boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
     transform: function (node: any, pos: any) {
-      return pos;
+      return pos
     }, // a function that applies a transform to the final node position
     ready: function () {}, // on layoutready
     stop: function () {} // on layoutstop
@@ -506,4 +506,4 @@ const defaultLayout = {
     boundingBox: undefined, // Constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
     randomize: false // Uses random initial node positions on true
   }
-};
+}

@@ -1,21 +1,21 @@
-'use client';
+'use client'
 
-import React from 'react';
-import {useTheme} from '@mui/material/styles';
-import {Container, Typography, List, ListItem, ListItemAvatar, Avatar, ListItemText} from '@mui/material';
-import WebappIcon from '@mui/icons-material/Computer';
-import ApiIcon from '@mui/icons-material/Storage';
-import SearchIcon from '@mui/icons-material/Search';
-import PublishIcon from '@mui/icons-material/Outbox';
+import React from 'react'
+import {useTheme} from '@mui/material/styles'
+import {Container, Typography, List, ListItem, ListItemAvatar, Avatar, ListItemText} from '@mui/material'
+import WebappIcon from '@mui/icons-material/Computer'
+import ApiIcon from '@mui/icons-material/Storage'
+import SearchIcon from '@mui/icons-material/Search'
+import PublishIcon from '@mui/icons-material/Outbox'
 
 export default function About() {
-  const theme = useTheme();
+  const theme = useTheme()
   const [state, setState] = React.useState({
     open: false,
     dialogOpen: false,
     project_license: '',
     language_autocomplete: []
-  });
+  })
   // const form_category_dropdown = React.createRef();
 
   return (
@@ -100,5 +100,5 @@ export default function About() {
         </ListItem>
       </List>
     </Container>
-  );
+  )
 }

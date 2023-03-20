@@ -1,4 +1,4 @@
-const BIOLINK = 'https://w3id.org/biolink/vocab/';
+const BIOLINK = 'https://w3id.org/biolink/vocab/'
 // const IDO = 'https://identifiers.org/'
 // const RDFS = 'http://www.w3.org/2000/01/rdf-schema#'
 
@@ -84,7 +84,7 @@ export const ents = [
     curie: 'biolink:NamedEntity',
     color: {r: 255, g: 102, b: 102}
   } // Red
-];
+]
 
 // https://biolink.github.io/biolink-model/docs/predicates.html
 export const predicatesList = [
@@ -1710,7 +1710,7 @@ export const predicatesList = [
     label: 'xenologous to',
     type: 'BioLink'
   }
-];
+]
 
 // https://biolink.github.io/biolink-model/docs/edge_properties.html
 export const propertiesList = [
@@ -2001,7 +2001,7 @@ export const propertiesList = [
   },
   {id: 'https://w3id.org/biolink/vocab/strand', curie: 'biolink:strand', label: 'strand', type: 'BioLink'},
   {id: 'https://w3id.org/biolink/vocab/subject', curie: 'biolink:subject', label: 'subject', type: 'BioLink'}
-];
+]
 
 export const context: any = {
   APO: 'http://purl.obolibrary.org/obo/APO_',
@@ -2246,7 +2246,7 @@ export const context: any = {
   skos: 'http://www.w3.org/2004/02/skos/core#',
   wgs: 'http://www.w3.org/2003/01/geo/wgs84_pos',
   xsd: 'http://www.w3.org/2001/XMLSchema#'
-};
+}
 
 export const sentenceToAnnotate = [
   {
@@ -2893,4 +2893,4 @@ export const sentenceToAnnotate = [
     text: 'Paroxetine tablets are indicated for the treatment of major depressive disorder.',
     url: 'https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=89dd7e24-85fc-4152-89ea-47ec2b48a1ed'
   }
-];
+]

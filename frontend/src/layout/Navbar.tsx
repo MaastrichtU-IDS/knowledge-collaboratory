@@ -1,7 +1,7 @@
-import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import {useTheme} from '@mui/material/styles';
+import React from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
+import {useTheme} from '@mui/material/styles'
 import {
   AppBar,
   Toolbar,
@@ -17,22 +17,22 @@ import {
   ListItemButton,
   ListItemText,
   IconButton
-} from '@mui/material';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import InfoIcon from '@mui/icons-material/Info';
-import SearchIcon from '@mui/icons-material/Search';
-import ShapePublisherIcon from '@mui/icons-material/DynamicForm';
-import AnnotateIcon from '@mui/icons-material/LocalOffer';
-import MenuIcon from '@mui/icons-material/Menu';
+} from '@mui/material'
+import GitHubIcon from '@mui/icons-material/GitHub'
+import InfoIcon from '@mui/icons-material/Info'
+import SearchIcon from '@mui/icons-material/Search'
+import ShapePublisherIcon from '@mui/icons-material/DynamicForm'
+import AnnotateIcon from '@mui/icons-material/LocalOffer'
+import MenuIcon from '@mui/icons-material/Menu'
 
-import OrcidLogin from '../components/OrcidLogin';
-import UserSettingsPopper from '../components/UserSettingsPopper';
-import {useStore} from '@nanostores/react';
-import {userSettings} from '../utils/nanostores';
+import OrcidLogin from '../components/OrcidLogin'
+import UserSettingsPopper from '../components/UserSettingsPopper'
+import {useStore} from '@nanostores/react'
+import {userSettings} from '../utils/nanostores'
 
 export default function Navbar(props: any) {
-  const {window} = props;
-  const theme = useTheme();
+  const {window} = props
+  const theme = useTheme()
   const $userSettings = useStore(userSettings)
 
   // Links shown in the nav
@@ -55,7 +55,7 @@ export default function Navbar(props: any) {
       href: `/shape-publisher`,
       icon: <ShapePublisherIcon />
     }
-  ];
+  ]
   const rightLinks = [
     {
       text: 'API',
@@ -85,13 +85,13 @@ export default function Navbar(props: any) {
       href: 'https://github.com/MaastrichtU-IDS/knowledge-collaboratory',
       icon: <GitHubIcon />
     }
-  ];
+  ]
 
   // Drawer nav for small screens
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [mobileOpen, setMobileOpen] = React.useState(false)
   const handleDrawerToggle = () => {
-    setMobileOpen(prevState => !prevState);
-  };
+    setMobileOpen(prevState => !prevState)
+  }
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{textAlign: 'center'}}>
@@ -128,8 +128,8 @@ export default function Navbar(props: any) {
         ))}
       </List>
     </Box>
-  );
-  const container = window !== undefined ? () => window().document.body : undefined;
+  )
+  const container = window !== undefined ? () => window().document.body : undefined
 
   return (
     <>
@@ -203,5 +203,5 @@ export default function Navbar(props: any) {
         </Drawer>
       </Box>
     </>
-  );
+  )
 }

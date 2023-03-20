@@ -1,15 +1,15 @@
-'use client';
+'use client'
 
-import React from 'react';
-import {styled} from '@mui/material/styles';
-import {Typography, FormControl} from '@mui/material';
+import React from 'react'
+import {styled} from '@mui/material/styles'
+import {Typography, FormControl} from '@mui/material'
 
 // Styled components
 export const Paragraph = styled(Typography)(({theme}) => ({
   ...theme.typography.body1,
   marginBottom: theme.spacing(1),
   textAlign: 'justify'
-})) as typeof Typography;
+})) as typeof Typography
 
 export const Title = styled(Typography)(({theme}) => ({
   ...theme.typography.h5,
@@ -17,7 +17,7 @@ export const Title = styled(Typography)(({theme}) => ({
   marginBottom: theme.spacing(2),
   textAlign: 'center',
   fontWeight: '300'
-})) as typeof Typography;
+})) as typeof Typography
 
 export const FormSettings = styled(FormControl)(({theme}) => ({
   ...theme.components?.MuiFormControl,
@@ -31,7 +31,7 @@ export const FormSettings = styled(FormControl)(({theme}) => ({
     marginTop: theme.spacing(0),
     marginBottom: theme.spacing(1)
   }
-})) as typeof FormControl;
+})) as typeof FormControl
 
 // export const LinkOut = ({children, ...props}={}) => {
 //   const theme = useTheme();
