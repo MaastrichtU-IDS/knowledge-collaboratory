@@ -21,19 +21,18 @@ services:
         DEV_MODE: "true"
 
 
-  ## We recommend to use `yarn dev` locally to start it (easier than in docker for dev)
+
   # frontend:
   #   build:
   #     context: ./frontend
   #     args:
-  #       FRONTEND_ENV: dev
-  #       API_URL: http://localhost
+  #       FRONTEND_URL: ${FRONTEND_URL:-https://collaboratory.semanticscience.org}
+  #       API_URL: ${API_URL:-https://api.collaboratory.semanticscience.org}
+  #       ORCID_CLIENT_ID: ${ORCID_CLIENT_ID}
   #   ports:
-  #     - 19006:19006
-  #     - 4000:4000
+  #   - 4000:4000
   #   command: "yarn dev"
   #   environment:
-  #     - API_URL=http://localhost
-  #   # volumes:
-  #   #   - ./frontend:/webapp
-
+  #     NEXT_PUBLIC_API_URL: https://api.collaboratory.semanticscience.org
+  #   volumes:
+  #   - ./frontend:/webapp

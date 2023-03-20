@@ -2,7 +2,6 @@ version: "3.3"
 services:
 
   backend:
-    # image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -13,26 +12,3 @@ services:
     volumes:
       - /data/knowledge-collaboratory/ner-models:/data/ner-models
       - /data/knowledge-collaboratory/nanopub-keystore:/data/nanopub-keystore
-
-
-  frontend:
-    build:
-      context: ./frontend
-      args:
-        FRONTEND_URL: ${FRONTEND_URL:-https://collaboratory.semanticscience.org}
-        API_URL: ${API_URL:-https://collaboratory-api.transltr.io}
-    ports:
-      - 4000:4000
-
-
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     args:
-  #       FRONTEND_URL: ${FRONTEND_URL:-https://collaboratory.semanticscience.org}
-  #       API_URL: ${API_URL:-https://api.collaboratory.semanticscience.org}
-  #       ORCID_CLIENT_ID: ${ORCID_CLIENT_ID}
-  #   ports:
-  #   - 4000:4000
-  #   environment:
-  #     NEXT_PUBLIC_API_URL: https://api.collaboratory.semanticscience.org
