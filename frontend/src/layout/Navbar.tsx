@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {useTheme} from '@mui/material/styles';
@@ -16,8 +16,7 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
-  Popover,
-  IconButton, FormControl, InputLabel, Select, MenuItem, Popper, ClickAwayListener, Paper
+  IconButton
 } from '@mui/material';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import InfoIcon from '@mui/icons-material/Info';
@@ -25,85 +24,71 @@ import SearchIcon from '@mui/icons-material/Search';
 import ShapePublisherIcon from '@mui/icons-material/DynamicForm';
 import AnnotateIcon from '@mui/icons-material/LocalOffer';
 import MenuIcon from '@mui/icons-material/Menu';
-import SettingsIcon from '@mui/icons-material/Settings';
 
-import {settings} from '../utils/settings';
 import OrcidLogin from '../components/OrcidLogin';
 import UserSettingsPopper from '../components/UserSettingsPopper';
-
-const leftLinks = [
-  {
-    text: 'Browse Nanopubs',
-    tooltip: '🔍️ Browse Nanopublications',
-    href: `/`,
-    icon: <SearchIcon />
-  },
-  {
-    text: 'Annotate text',
-    tooltip: '🏷️ Annotate biomedical text, and publish the assertion as Nanopublication',
-    href: `/annotate`,
-    icon: <AnnotateIcon />
-  },
-  {
-    text: 'Shape form',
-    tooltip: '📝 Define and publish RDF nanopublications from SHACL shapes',
-    href: `/shape-publisher`,
-    icon: <ShapePublisherIcon />
-  }
-];
-const rightLinks = [
-  {
-    text: 'API',
-    tooltip: '📖 Access the OpenAPI documentation of the API used by this service',
-    href: settings.docsUrl,
-    icon: (
-      <Icon style={{display: 'flex', marginRight: '8px', padding: '0px'}}>
-        <Image
-          src="/openapi_logo.svg"
-          alt="OpenAPI"
-          width={18}
-          height={18}
-          // fill
-        />
-      </Icon>
-    )
-  },
-  {
-    tooltip: 'ℹ️ About the Knowledge Collaboratory',
-    smallText: 'About',
-    href: '/about',
-    icon: <InfoIcon />
-  },
-  {
-    tooltip: '🛸 Source code on GitHub',
-    smallText: 'Source code',
-    href: 'https://github.com/MaastrichtU-IDS/knowledge-collaboratory',
-    icon: <GitHubIcon />
-  }
-];
+import {useStore} from '@nanostores/react';
+import {userSettings} from '../utils/nanostores';
 
 export default function Navbar(props: any) {
-  const theme = useTheme();
   const {window} = props;
+  const theme = useTheme();
+  const $userSettings = useStore(userSettings)
 
-  // Popper for settings
-  const [open, setOpen] = React.useState(false);
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const handleClick = (event: any) => {
-    console.log('Click button!');
-    setAnchorEl(anchorEl ? null : event.currentTarget);
-    setOpen((prev) => !prev);
-  };
-  const handleClickAway = () => {
-    setOpen(false);
-    setAnchorEl(anchorEl ? null : anchorEl);
-    console.log('Click away!');
-  };
-  const id = open ? 'simple-popper' : undefined;
+  // Links shown in the nav
+  const leftLinks = [
+    {
+      text: 'Browse Nanopubs',
+      tooltip: '🔍️ Browse Nanopublications',
+      href: `/`,
+      icon: <SearchIcon />
+    },
+    {
+      text: 'Annotate text',
+      tooltip: '🏷️ Annotate biomedical text, and publish the assertion as Nanopublication',
+      href: `/annotate`,
+      icon: <AnnotateIcon />
+    },
+    {
+      text: 'Shape form',
+      tooltip: '📝 Define and publish RDF nanopublications from SHACL shapes',
+      href: `/shape-publisher`,
+      icon: <ShapePublisherIcon />
+    }
+  ];
+  const rightLinks = [
+    {
+      text: 'API',
+      tooltip: '📖 Access the OpenAPI documentation of the API used by this service',
+      href: `${$userSettings.api}/docs`,
+      icon: (
+        <Icon style={{display: 'flex', marginRight: '8px', padding: '0px'}}>
+          <Image
+            src="/openapi_logo.svg"
+            alt="OpenAPI"
+            width={18}
+            height={18}
+            // fill
+          />
+        </Icon>
+      )
+    },
+    {
+      tooltip: 'ℹ️ About the Knowledge Collaboratory',
+      smallText: 'About',
+      href: '/about',
+      icon: <InfoIcon />
+    },
+    {
+      tooltip: '🛸 Source code on GitHub',
+      smallText: 'Source code',
+      href: 'https://github.com/MaastrichtU-IDS/knowledge-collaboratory',
+      icon: <GitHubIcon />
+    }
+  ];
 
-
+  // Drawer nav for small screens
   const [mobileOpen, setMobileOpen] = React.useState(false);
-
   const handleDrawerToggle = () => {
     setMobileOpen(prevState => !prevState);
   };
@@ -144,7 +129,6 @@ export default function Navbar(props: any) {
       </List>
     </Box>
   );
-
   const container = window !== undefined ? () => window().document.body : undefined;
 
   return (
@@ -200,6 +184,7 @@ export default function Navbar(props: any) {
           </Box>
         </Toolbar>
       </AppBar>
+
       <Box component="nav">
         <Drawer
           container={container}

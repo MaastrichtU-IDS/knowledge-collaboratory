@@ -42,6 +42,7 @@ Project built with [NextJS](https://nextjs.org/), [ReactJS](https://react.dev/) 
 
 - Can be installed as a [PWA](https://web.dev/progressive-web-apps/) (Progressive Web App) thanks to [next/pwa](next/pwa).
 - Uses [React Native](https://reactnative.dev/) for the main view
+- Uses [Nano Stores](https://github.com/nanostores/nanostores) to share state between components
 
 > This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 

@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import {useTheme} from '@mui/material/styles';
 import {Container, Typography} from '@mui/material';
@@ -18,25 +16,6 @@ function Copyright() {
 
 export default function Footer() {
   const theme = useTheme();
-
-  // Set state in functional style:
-  // const [state, setState] = React.useState({search: '', name: 'Vincent'});
-  // console.log(state.search);
-  // // Set search without chaging name
-  // setState({...state, search: 'yo'})
-  // const onNameChange = React.useCallback((filterName) => {
-  //   console.log('callback', state.name);
-  // },
-  // [state.name]);
-  // // Tells callback to reload when change to state.name
-
-  // React.useEffect(() => {
-  //   console.log('componentDID mount');
-  //   return () => {
-  //     console.log('willMount');
-  //   }
-  // }, [])
-  // Empty dep list: will only run when componentDidMount
 
   return (
     <footer
@@ -57,7 +36,6 @@ export default function Footer() {
           >
             MIT license
           </a>
-          {/* <img src={require('../assets/images/mit_license.png')} /> */}
         </Typography>
         <Copyright />
       </Container>

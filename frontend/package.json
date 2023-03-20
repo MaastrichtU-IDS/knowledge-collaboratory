@@ -68,6 +68,7 @@
     "@types/node": "18.14.1",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
+    "@types/react-simple-oauth2-login": "^0.5.0",
     "babel-preset-expo": "^9.3.0",
     "eslint": "^8.34.0",
     "eslint-config-next": "^13.2.1",

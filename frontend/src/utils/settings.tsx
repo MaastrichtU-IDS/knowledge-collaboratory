@@ -1,12 +1,6 @@
 export const settings = {
   frontendUrl: process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:4000',
-  apiUrl: process.env.NEXT_PUBLIC_API_URL || 'https://api.collaboratory.semanticscience.org',
-  // apiUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
-  docsUrl:
-    (process.env.NEXT_PUBLIC_API_URL ? process.env.NEXT_PUBLIC_API_URL + '/docs' : null) ||
-    'https://api.collaboratory.semanticscience.org/docs',
   nanopubGrlcUrl: process.env.GRLC_URL || 'https://grlc.np.dumontierlab.com/api/local/local',
-  ontogptUrl: process.env.ONTOGPT_URL || 'http://localhost:8001/extract',
   nanopubSparqlUrl: 'https://virtuoso.nps.petapico.org/sparql',
   orcidClientId: process.env.ORCID_CLIENT_ID || 'APP-TEANCMSUOPYZOGJ3'
 };

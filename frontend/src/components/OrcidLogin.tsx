@@ -1,40 +1,22 @@
 import React from 'react';
-// import Link from 'next/link';
 import Image from 'next/image';
-import {AppBar, Toolbar, Button, Tooltip, Icon as MuiIcon, IconButton, Box, ButtonBase} from '@mui/material';
-import {Popper, ClickAwayListener, Typography, Paper, Checkbox, FormControlLabel, FormHelperText} from '@mui/material';
+import {Popper, ClickAwayListener, Typography, Paper, Button} from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import axios from 'axios';
-
-import {settings} from '../utils/settings';
-// import { useAuth } from 'oidc-react';
-// @ts-ignore
 import OAuth2Login from 'react-simple-oauth2-login';
 
+import {settings} from '../utils/settings';
 import {useStore} from '@nanostores/react';
-import {userProfile} from '../utils/nanostores';
+import {userProfile, userSettings} from '../utils/nanostores';
 
 
 const OrcidLogin = ({...args}: any) => {
   // const auth = useAuth();
   const $userProfile = useStore(userProfile);
+  const $userSettings = useStore(userSettings);
 
-  const [state, setState] = React.useState({
-    currentUsername: null,
-    accessToken: null,
-    loggedIn: false
-  });
-  const stateRef = React.useRef(state);
-  // Avoid conflict when async calls
-  const updateState = React.useCallback(
-    (update: any) => {
-      stateRef.current = {...stateRef.current, ...update};
-      setState(stateRef.current);
-    },
-    [setState]
-  );
 
-  // Settings for Popper
+  // Settings for Popper (switch to Popover if problem)
   const [open, setOpen] = React.useState(false);
   const [anchorEl, setAnchorEl]: any = React.useState(null);
   const showUserInfo = (event: any) => {
@@ -60,9 +42,8 @@ const OrcidLogin = ({...args}: any) => {
   };
 
   const getCurrentUser = (configState: any) => {
-    console.log('CURRENT USER ACCESS TOKEN', configState);
     axios
-      .get(settings.apiUrl + '/current-user', {
+      .get(`${$userSettings.api}/current-user`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + configState['access_token']
@@ -116,8 +97,7 @@ const OrcidLogin = ({...args}: any) => {
     if (configState && configState['access_token']) {
       getCurrentUser(configState);
     }
-    // }, [user])
-  }, []);
+  });
 
   return (
     <>
@@ -135,6 +115,7 @@ const OrcidLogin = ({...args}: any) => {
             onFailure={onFailure}
             className="loginButton"
           >
+            {/* @ts-ignore */}
             <Button
               variant="contained"
               color="success"
