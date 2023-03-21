@@ -426,6 +426,7 @@ export default function AnnotateText() {
         }
         taoAnnotations.push({
           '@type': 'tao:text_span',
+          '@id': `http://purl.org/nanopub/temp/np#annotation-${entity.start}:${entity.end}`,
           'tao:begins_at': entity.start,
           'tao:ends_at': entity.end,
           'tao:has_value': entity.text,
