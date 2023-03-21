@@ -76,6 +76,9 @@ export default function UserSettingsPopper() {
               <MenuItem value="https://collaboratory-api.ci.transltr.io">ITRB CI server</MenuItem>
               <MenuItem value="https://collaboratory-api.test.transltr.io">ITRB test server</MenuItem>
               <MenuItem value="https://collaboratory-api.transltr.io">ITRB production server</MenuItem>
+              {/* {
+                <MenuItem value="http://localhost:8000">Localhost</MenuItem>
+              } */}
             </Select>
           </FormControl>
         </Paper>

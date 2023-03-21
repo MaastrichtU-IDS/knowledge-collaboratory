@@ -15,7 +15,7 @@ import ExtractIcon from '@mui/icons-material/AutoFixHigh'
 export default function DropdownButton({onChange, onClick, options, loggedIn}: any) {
   const [open, setOpen] = React.useState(false)
   const anchorRef = React.useRef<HTMLDivElement>(null)
-  const [selectedIndex, setSelectedIndex] = React.useState(options.length - 1)
+  const [selectedIndex, setSelectedIndex] = React.useState(options.length - 1) // for litcoin
 
   const handleClick = () => {
     if (onClick) onClick()

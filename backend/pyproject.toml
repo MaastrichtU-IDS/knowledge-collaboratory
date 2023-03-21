@@ -28,7 +28,7 @@ dependencies = [
     "python-multipart >=0.0.5",
     "requests >=2.23.0",
     "httpx >=0.21.1",
-    "pydantic >=1.9",
+    "pydantic[dotenv] >=1.9",
     "fastapi >=0.68.1",
     "uvicorn >=0.15.0",
     "gunicorn >=20.0.4",
@@ -92,6 +92,7 @@ features = [
 
 
 [tool.hatch.envs.default.scripts]
+dev = "uvicorn app.main:app --reload"
 api = "BACKEND_URL=http://localhost:8000 uvicorn app.main:app --host localhost --port 8000 --reload {args}"
 test = "pytest {args}"
 fmt = [
@@ -132,7 +133,7 @@ select = [
     "N",
     "PLC",
     "PLE",
-    "PLR",
+    # "PLR",
     "PLW",
     "Q",
     "RUF",

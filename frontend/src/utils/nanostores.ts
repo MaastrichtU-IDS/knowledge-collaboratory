@@ -16,5 +16,5 @@ interface UserSettings {
 }
 
 export const userSettings = atom<UserSettings>({
-  api: 'https://api.collaboratory.semanticscience.org'
+  api: process.env.NEXT_PUBLIC_API_URL ? process.env.NEXT_PUBLIC_API_URL : 'https://api.collaboratory.semanticscience.org'
 })

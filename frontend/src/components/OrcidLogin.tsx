@@ -95,7 +95,7 @@ const OrcidLogin = ({...args}: any) => {
     if (configState && configState['access_token']) {
       getCurrentUser(configState)
     }
-  })
+  }, [])
 
   return (
     <>
