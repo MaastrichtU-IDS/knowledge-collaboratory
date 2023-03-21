@@ -941,7 +941,7 @@ export default function AnnotateText() {
               spans={state.entitiesList}
               ents={ents}
               onClick={clickTag}
-              onMouseOver={clickTag}
+              // onMouseOver={clickTag}
               onHighlight={highlightCallback}
             />
           </Card>
