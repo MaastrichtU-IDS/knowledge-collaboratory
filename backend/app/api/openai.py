@@ -2,14 +2,10 @@ from time import sleep
 
 import openai
 import yaml
-from fastapi import APIRouter, Body, Depends, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Body, HTTPException
 from pydantic import BaseModel
-from transformers import BertForSequenceClassification, BertTokenizer
 
-from app.api.login import get_current_user
 from app.config import logger, settings
-from app.models import User
 
 # Check available engines at https://platform.openai.com/docs/models/overview
 default_model = "gpt-3.5-turbo"

@@ -1,12 +1,11 @@
 import json
 import os
 
-from fastapi.testclient import TestClient
-
 from app.config import settings
 from app.main import app
-from tests.conftest import check_trapi_compliance
+from fastapi.testclient import TestClient
 
+from tests.conftest import check_trapi_compliance
 
 client = TestClient(app)
 

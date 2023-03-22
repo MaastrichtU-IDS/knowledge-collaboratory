@@ -1,7 +1,8 @@
 # from typing import Dict, Generator
 
-from reasoner_validator import TRAPIResponseValidator
 from app.config import settings
+from reasoner_validator import TRAPIResponseValidator
+
 # from app.main import app
 # from app.config import settings
 

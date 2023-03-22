@@ -2,9 +2,8 @@ import json
 import urllib.request
 
 import requests
-from SPARQLWrapper import JSON, SPARQLWrapper
-
 from app.config import settings
+from SPARQLWrapper import JSON, SPARQLWrapper
 
 KNOWLEDGE_PROVIDER = "https://w3id.org/biolink/infores/knowledge-collaboratory"
 
@@ -162,10 +161,10 @@ with urllib.request.urlopen(
 
 namespace_resolver = {}
 context = data["@context"]
-for prefix in context.keys():
+for prefix in context:
     if isinstance(context[prefix], str):
         namespace_resolver[prefix] = context[prefix]
-    elif "@id" in context[prefix].keys():
+    elif "@id" in context[prefix]:
         namespace_resolver[prefix] = context[prefix]["@id"]
 
 uri_resolver = {v: k for k, v in namespace_resolver.items()}
@@ -181,7 +180,7 @@ uri_resolver["https://w3id.org/um/neurodkg/"] = "neurodkg"
 
 def resolve_uri_with_context(uri_string):
     """Take an URI and return its CURIE form, using the BioLink JSON-LD Context previously loaded"""
-    for ns_uri in uri_resolver.keys():
+    for ns_uri in uri_resolver:
         if uri_string.startswith("http://purl.obolibrary.org/obo/"):
             # Handle OBO URIs
             return uri_string.replace("http://purl.obolibrary.org/obo/", "").replace(
@@ -208,7 +207,7 @@ def resolve_curie(curie_string):
 
     ns = curie_string.split(":")[0]
     id = curie_string.split(":")[1]
-    if ns in namespace_resolver.keys():
+    if ns in namespace_resolver:
         return namespace_resolver[ns] + id
     else:
         return "http://identifiers.org/" + curie_string
@@ -245,7 +244,7 @@ def get_predicates_from_nanopubs():
 
         if not predicates[np_subject].get(np_object):
             predicates[np_subject][np_object] = []
-        if not np_predicate in predicates[np_subject][np_object]:
+        if np_predicate not in predicates[np_subject][np_object]:
             predicates[np_subject][np_object].append(np_predicate)
 
     return predicates
@@ -327,7 +326,7 @@ def reasonerapi_to_sparql(reasoner_query):
     query_options = {}
     n_results = None
     in_index = None
-    if "query_options" in reasoner_query.keys():
+    if "query_options" in reasoner_query:
         query_options = reasoner_query["query_options"]
         if "n_results" in query_options:
             n_results = int(query_options["n_results"])
@@ -375,7 +374,7 @@ def reasonerapi_to_sparql(reasoner_query):
     #   knowledge_source_block = f"biolink:aggregator_knowledge_source <{KNOWLEDGE_PROVIDER}> ;"
     #   sparql_query_get_nanopubs = sparql_query_get_nanopubs.replace('?_knowledge_source', knowledge_source_block)
 
-    for edge_id in query_graph["edges"].keys():
+    for edge_id in query_graph["edges"]:
         edge_props = query_graph["edges"][edge_id]
         predicate_edge_id = edge_id
         subject_node_id = edge_props["subject"]
@@ -386,9 +385,7 @@ def reasonerapi_to_sparql(reasoner_query):
             predicate_curies = edge_props["predicates"]
             if not isinstance(predicate_curies, list):
                 predicate_curies = [predicate_curies]
-            predicate_curies = list(
-                map(lambda curie: "?predicate = " + curie, predicate_curies)
-            )
+            predicate_curies = ["?predicate = " + curie for curie in predicate_curies]
             predicate_curies = " || ".join("?predicate = " + predicate_curies)
             entity_filters = entity_filters + "FILTER ( " + predicate_curies + " )\n"
         except Exception:
@@ -400,9 +397,7 @@ def reasonerapi_to_sparql(reasoner_query):
             ]
             if not isinstance(subject_categories, list):
                 subject_categories = [subject_categories]
-            subject_categories = list(
-                map(lambda curie: "?subject_category = " + curie, subject_categories)
-            )
+            subject_categories = ["?subject_category = " + curie for curie in subject_categories]
             subject_categories = " || ".join(subject_categories)
             entity_filters = entity_filters + "FILTER ( " + subject_categories + " )\n"
         except Exception:
@@ -412,9 +407,7 @@ def reasonerapi_to_sparql(reasoner_query):
             object_categories = query_graph["nodes"][edge_props["object"]]["categories"]
             if not isinstance(object_categories, list):
                 object_categories = [object_categories]
-            object_categories = list(
-                map(lambda curie: "?object_category = " + curie, object_categories)
-            )
+            object_categories = ["?object_category = " + curie for curie in object_categories]
             object_categories = " || ".join(object_categories)
             entity_filters = entity_filters + "FILTER ( " + object_categories + " )\n"
         except Exception:
@@ -423,12 +416,7 @@ def reasonerapi_to_sparql(reasoner_query):
         # Resolve provided CURIE to the BioLink context and https://identifiers.org/CURIE:ID
         try:
             subject_curies = query_graph["nodes"][edge_props["subject"]]["ids"]
-            subject_curies = list(
-                map(
-                    lambda curie: f"?subject = <{resolve_curie(curie)}> || ?subject =<{resolve_curie_identifiersorg(curie)}>",
-                    subject_curies,
-                )
-            )
+            subject_curies = [f"?subject = <{resolve_curie(curie)}> || ?subject =<{resolve_curie_identifiersorg(curie)}>" for curie in subject_curies]
             subject_curies = " || ".join(subject_curies)
             entity_filters = entity_filters + "FILTER ( " + subject_curies + " )\n"
         except Exception:
@@ -436,12 +424,7 @@ def reasonerapi_to_sparql(reasoner_query):
 
         try:
             object_curies = query_graph["nodes"][edge_props["object"]]["ids"]
-            object_curies = list(
-                map(
-                    lambda curie: f"?object = <{resolve_curie(curie)}> || ?object =<{resolve_curie_identifiersorg(curie)}>",
-                    object_curies,
-                )
-            )
+            object_curies = [f"?object = <{resolve_curie(curie)}> || ?object =<{resolve_curie_identifiersorg(curie)}>" for curie in object_curies]
             object_curies = " || ".join(object_curies)
             entity_filters = entity_filters + "FILTER ( " + object_curies + " )\n"
         except Exception:
@@ -463,7 +446,7 @@ def reasonerapi_to_sparql(reasoner_query):
     query_results = []
     kg_edge_count = 0
 
-    if settings.DEV_MODE == True:
+    if settings.DEV_MODE is True:
         print(
             f"Running the following SPARQL query to retrieve nanopublications from {settings.NANOPUB_SPARQL_URL}"
         )

@@ -113,8 +113,6 @@ allow-direct-references = true
 [tool.coverage.run]
 source = ["app"]
 branch = true
-[tool.coverage.report]
-omit = ["tests/*"]
 
 
 [tool.ruff]

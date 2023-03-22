@@ -50,39 +50,32 @@ FRONTEND_URL=https://collaboratory.semanticscience.org
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
-## 🐳 Local development with docker
+## 🐳 Local development
 
-### Prepare the data
+Requirements: python >=3.9 with [`hatch`](https://hatch.pypa.io/latest/), and node >=16 with [`yarn`](https://yarnpkg.com/)
 
-1. Create a `.env` file with your development settings in the root folder of this repository (you can copy `.env.sample`):
+⚠️ Create a `.env` file with your development settings in the `backend` folder of this repository:
 
 ```bash
 ORCID_CLIENT_ID=APP-XXX
 ORCID_CLIENT_SECRET=XXXX
 OPENAI_APIKEY=sk-XXX
-FRONTEND_URL=http://localhost:19006
+FRONTEND_URL=http://localhost:4000
+DATA_PATH=./data
 ```
 
-2. Download and unzip the NER models in the `/data/knowledge-collaboratory/ner-models` folder:
+### Start the backend
+
+Start the FastAPI python backend from the `backend/` folder:
 
 ```bash
-mkdir -p /data/knowledge-collaboratory/ner-models
-cd /data/knowledge-collaboratory/ner-models
-wget https://download.dumontierlab.com/ner-models/litcoin-ner-model.zip
-wget https://download.dumontierlab.com/ner-models/litcoin-relations-extraction-model.zip
-unzip "*.zip"
-rm *.zip
+cd backend
+hatch run dev
 ```
 
-### Start the stack
+### Start the frontend
 
-Start the backend with Docker Compose from the root folder of this repository:
-
-```bash
-docker-compose up -d
-```
-
-Then start the react frontend:
+Then install and start the react frontend with nextjs from the `frontend/` folder:
 
 ```bash
 cd frontend
@@ -92,18 +85,8 @@ yarn dev
 
 Now you can open your browser and interact with these URLs:
 
-* Automatic OpenAPI documentation with Swagger UI: http://localhost/docs
-* Alternative OpenAPI documentation with ReDoc: http://localhost/redoc
-* GraphQL endpoint with Strawberry: http://localhost/graphql
-* Frontend: http://localhost:3000
-
-If you need to completely reset the Python cache:
-
-```bash
-docker-compose down
-sudo rm -rf **/__pycache__
-docker-compose build --no-cache
-```
+* Frontend: http://localhost:4000
+* Backend OpenAPI documentation: http://localhost:8000/docs
 
 ## ✅ Tests
 
@@ -112,61 +95,24 @@ docker-compose build --no-cache
 You can run the tests in docker when the backend is already running:
 
 ```bash
-docker-compose exec backend poetry run pytest tests/integration -s
+hatch run test tests/integration -s
 ```
 
 Or locally directly with poetry:
 
 ```bash
-poetry install
-poetry run pytest tests/integration -s
-```
-
-## 🔧 Maintenance
-
-### 📦️ Add new packages
-
-By default, the dependencies for the backend are managed with [Poetry](https://python-poetry.org/), install it if necessary.
-
-In the `backend` folder you can install all the dependencies with:
-
-```bash
-poetry install
-```
-
-To add a new dependencies, run:
-
-```bash
-poetry add my-package@^1.0.0
-```
-
-You can also directly change the `pyproject.toml` file, and update the installed dependencies with:
-
-```bash
-poetry update
-```
-
-> If you don't have poetry installed locally or are facing issue with it, you can also add new packages with `docker-compose`, while the docker-compose is running run:
->
-> ```bash
-> docker-compose exec backend poetry add my-package
-> ```
-
-If you install a new package you will need to stop the current docker-compose running, then restarting it to rebuild the docker image:
-
-```bash
-docker-compose up --build --force-recreate
+hatch run test tests/integration -s
 ```
 
 You can start a shell session with the new environment with:
 
 ```bash
-poetry shell
+hatch shell
 ```
 
-Next, open your editor at `./backend/` (instead of the project root: `./`), so that you see an `./app/` directory with your code inside. That way, your editor will be able to find all the imports, etc. Make sure your editor uses the environment you just created with Poetry.
 
-During development, you can change Docker Compose settings that will only affect the local development environment, in the file `docker-compose.override.yml`
+
+## 🔧 Maintenance
 
 ### ⏫ Upgrade TRAPI version
 
@@ -178,16 +124,12 @@ For the reasoner_validator tests:
 
 1. Change `TRAPI_VERSION_TEST` in `backend/app/config.py`
 
-2. In `pyproject.toml` upgrade the version for the [reasoner-validator](https://pypi.org/project/reasoner-validator/), and update the dependencies locally:
-
-```bash
-poetry update
-```
+2. In `pyproject.toml` upgrade the version for the [reasoner-validator](https://pypi.org/project/reasoner-validator/)
 
 3. Run the tests:
 
 ```bash
-poetry run pytest tests/integration -s
+hatch run test tests/integration -s
 ```
 
 ## 🐳 Docker Compose files and env vars

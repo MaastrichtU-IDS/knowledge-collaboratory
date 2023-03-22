@@ -33,7 +33,7 @@ def get_current_user(token: str = Depends(reusable_oauth2)) -> models.User:
     else:
         return None
     current_user = orcid_user.json()
-    if "sub" in current_user.keys():
+    if "sub" in current_user:
         keyfile_pub = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}/id_rsa.pub")
         keyfile_priv = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}/id_rsa")
         if keyfile_pub.exists() and keyfile_priv.exists():

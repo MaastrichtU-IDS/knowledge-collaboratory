@@ -1,11 +1,10 @@
 import time
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
+from app.config import settings
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
-
-from app.config import settings
 
 unordered_servers_list = [
     {
@@ -97,7 +96,7 @@ class TRAPI(FastAPI):
 
 
 
-    def openapi(self) -> Dict[str, Any]:
+    def openapi(self) -> dict[str, Any]:
         """Build custom OpenAPI schema."""
         if self.openapi_schema:
             return self.openapi_schema
@@ -138,7 +137,7 @@ This service is supported by the [NIH NCATS Biomedical Data Translator project](
                         break
                 # Add other servers
                 for server in unordered_servers_list:
-                    if not settings.VIRTUAL_HOST in server["url"]:
+                    if settings.VIRTUAL_HOST not in server["url"]:
                         servers_list.append(server)
             else:
                 servers_list = []

@@ -1,3 +1,4 @@
+import os
 from typing import Optional
 
 import numpy as np
@@ -42,15 +43,24 @@ try:
     # Send model to device
     model.to(device)
     print("✅ Models for NER and relations extraction loaded")
-except Exception as e:
-    print("⚠️ Could not load the models for NER and relations extraction")
-    print(e)
+except Exception:
+    print(f"⚠️ Could not load the Litcoin models for NER and relations extraction, downloading them in {settings.NER_MODELS_PATH}")
+    try:
+        os.system(f'mkdir -p {settings.NER_MODELS_PATH}')
+        os.system(f'mkdir -p {settings.KEYSTORE_PATH}')
+        os.system(f"wget -q --show-progress https://download.dumontierlab.com/ner-models/litcoin-ner-model.zip -O {settings.NER_MODELS_PATH}/litcoin-ner-model.zip")
+        os.system(f"wget -q --show-progress https://download.dumontierlab.com/ner-models/litcoin-relations-extraction-model.zip -O {settings.NER_MODELS_PATH}/litcoin-relations-extraction-model.zip")
+        os.system(f'unzip "{settings.NER_MODELS_PATH}/*.zip" -d {settings.NER_MODELS_PATH}')
+        os.system(f"rm {settings.NER_MODELS_PATH}/*.zip")
+    except Exception as e:
+        print(f"Error while downloading Litcoin models: {e}")
+
 
 IDO = "https://identifiers.org/"
 
 
 class NerInput(BaseModel):
-    text: str = "Amantadine hydrochloride capsules are indicated in the treatment of idiopathic Parkinson’s disease (Paralysis Agitans), postencephalitic parkinsonism and symptomatic parkinsonism which may follow injury to the nervous system by carbon monoxide intoxication."
+    text: str = "Amantadine hydrochloride capsules are indicated in the treatment of idiopathic Parkinson`s disease (Paralysis Agitans), postencephalitic parkinsonism and symptomatic parkinsonism which may follow injury to the nervous system by carbon monoxide intoxication."
 
 
 # Copy large models from the DSRI:
@@ -98,11 +108,11 @@ async def get_entities_relations(
                 timeout=120
             ).json()
             entity["curies"] = []
-        except Exception as e:
+        except Exception:
             # raise Exception(f"the SRI NameResolution API is down https://name-resolution-sri.renci.org: {e}")
             raise HTTPException(
                 status_code=400,
-                detail=f"the SRI NameResolution API is down (https://name-resolution-sri.renci.org)",
+                detail="the SRI NameResolution API is down (https://name-resolution-sri.renci.org)",
             )
         if len(name_res.keys()) > 0:
             # entity['curies'] = name_res
@@ -142,7 +152,7 @@ async def get_entities_relations(
                         ):
                             rel_exists = True
                             break
-                    if rel_exists == False:
+                    if rel_exists is False:
                         potential_relations.append(
                             {
                                 "sentence": input.text,
@@ -164,7 +174,7 @@ async def get_entities_relations(
             ent1 = rel["entity1"]
             ent2 = rel["entity2"]
             for ent in entities_extracted:
-                if "curies" in ent.keys():
+                if "curies" in ent:
                     # Take the first ID returned by the NCATS API
                     if ent["text"] == rel["entity1"]:
                         ent1 = ent
@@ -207,7 +217,7 @@ def classify_relation(rel, device, tokenizer, model):
     sentence = rel["sentence"]
     entity1 = rel["entity1"]
     entity2 = rel["entity2"]
-    text = sentence + str("[SEP]") + entity1 + str("[SEP]") + entity2
+    text = sentence + "[SEP]" + entity1 + "[SEP]" + entity2
     input_ids = torch.tensor(
         tokenizer.encode(text, add_special_tokens=True, max_length=128)
     ).unsqueeze(

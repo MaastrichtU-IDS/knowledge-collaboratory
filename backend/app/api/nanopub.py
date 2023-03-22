@@ -1,14 +1,14 @@
 import json
 import os
 from pathlib import Path
-from typing import Dict, List, Union
+from typing import Union
 
 import pyshacl
-from fastapi import APIRouter, Body, Depends, HTTPException, Response, File, UploadFile
+from fastapi import APIRouter, Body, Depends, File, HTTPException, Response, UploadFile
 from fastapi.encoders import jsonable_encoder
-from nanopub import load_profile, Nanopub, NanopubClient, NanopubConf, Profile, NanopubIntroduction
-from rdflib import Graph, Literal, Namespace, URIRef, ConjunctiveGraph
-from rdflib.namespace import DCTERMS, PROV, RDFS
+from nanopub import Nanopub, NanopubConf, NanopubIntroduction, Profile, load_profile
+from rdflib import ConjunctiveGraph, Graph, Literal, Namespace, URIRef
+from rdflib.namespace import DCTERMS, PROV
 from starlette.responses import JSONResponse
 
 from app.api.login import get_current_user
@@ -75,7 +75,7 @@ ASSERTION_EXAMPLE = {
     response_model={},
 )
 async def publish_assertion(
-    nanopub_rdf: Union[Dict, List] = Body(..., example=ASSERTION_EXAMPLE),
+    nanopub_rdf: Union[dict, list] = Body(..., example=ASSERTION_EXAMPLE),
     current_user: User = Depends(get_current_user),
     publish: bool = False,
     add_biolink_version: bool = True,
@@ -87,14 +87,14 @@ async def publish_assertion(
     if not current_user or "id" not in current_user.keys():
         raise HTTPException(
             status_code=403,
-            detail=f"You need to login with ORCID to publish a Nanopublication",
+            detail="You need to login with ORCID to publish a Nanopublication",
         )
 
     keyfile_path = f"{settings.KEYSTORE_PATH}/{current_user['sub']}/id_rsa"
     if not os.path.isfile(keyfile_path):
         raise HTTPException(
             status_code=403,
-            detail=f"You need to first store a Nanopub key with the /authentication-key call",
+            detail="You need to first store a Nanopub key with the /authentication-key call",
         )
 
     ## TODO: this should be fixed in the rdflib release after 6.0.2
@@ -243,14 +243,14 @@ async def publish_nanopub(
     if not current_user or "id" not in current_user.keys():
         raise HTTPException(
             status_code=403,
-            detail=f"You need to login with ORCID to publish a Nanopublication",
+            detail="You need to login with ORCID to publish a Nanopublication",
         )
 
     keyfile_path = f"{settings.KEYSTORE_PATH}/{current_user['sub']}/id_rsa"
     if not os.path.isfile(keyfile_path):
         raise HTTPException(
             status_code=403,
-            detail=f"You need to first store a Nanopub key with the /authentication-key call",
+            detail="You need to first store a Nanopub key with the /authentication-key call",
         )
 
     g = ConjunctiveGraph()
@@ -280,7 +280,7 @@ async def publish_last_signed(
     if not current_user or "id" not in current_user.keys():
         raise HTTPException(
             status_code=403,
-            detail=f"You need to login with ORCID to publish a Nanopublication",
+            detail="You need to login with ORCID to publish a Nanopublication",
         )
 
     signed_path = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}/signed.nanopub.trig")
@@ -288,7 +288,7 @@ async def publish_last_signed(
     if not os.path.isfile(signed_path):
         raise HTTPException(
             status_code=403,
-            detail=f"You need to first sign a Nanopub with the /assertion or /nanopub call",
+            detail="You need to first sign a Nanopub with the /assertion or /nanopub call",
         )
 
     np_conf = get_np_config(current_user["sub"])
@@ -318,7 +318,7 @@ async def generate_keyfile(current_user: User = Depends(get_current_user)):
     if not current_user or "id" not in current_user.keys():
         raise HTTPException(
             status_code=403,
-            detail=f"You need to login to generate and register authentication keys to your ORCID",
+            detail="You need to login to generate and register authentication keys to your ORCID",
         )
 
     user_dir = f"{settings.KEYSTORE_PATH}/{current_user['sub']}"
@@ -376,7 +376,7 @@ async def store_keyfile(
     if not current_user or "id" not in current_user.keys():
         raise HTTPException(
             status_code=403,
-            detail=f"You need to login to upload the authentication keys bound to your ORCID",
+            detail="You need to login to upload the authentication keys bound to your ORCID",
         )
 
     user_dir = f"{settings.KEYSTORE_PATH}/{current_user['sub']}"

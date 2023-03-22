@@ -1,6 +1,6 @@
-import secrets
 import logging
-from typing import List, Optional, Union
+import secrets
+from typing import Optional, Union
 
 from pydantic import BaseSettings, validator
 
@@ -24,8 +24,9 @@ class Settings(BaseSettings):
     # Those defaults are used by GitHub Actions for testing
     # The settings used by Docker deployment are in the .env file
     PROJECT_NAME: str = "Knowledge Collaboratory API"
-    KEYSTORE_PATH: str = "/data/nanopub-keystore"
-    NER_MODELS_PATH: str = "/data/ner-models"
+    DATA_PATH: str = "/data"
+    KEYSTORE_PATH: Optional[str]
+    NER_MODELS_PATH: Optional[str]
 
     NANOPUB_GRLC_URL: str = "https://grlc.np.dumontierlab.com/api/local/local"
     NANOPUB_SPARQL_URL: str = "https://virtuoso.nps.petapico.org/sparql"
@@ -52,10 +53,10 @@ class Settings(BaseSettings):
     # BACKEND_CORS_ORIGINS is a JSON-formatted list of origins
     # e.g: '["http://localhost", "http://localhost:4200", "http://localhost:3000", \
     # "http://localhost:8080", "http://local.dockertoolbox.tiangolo.com"]'
-    BACKEND_CORS_ORIGINS: List[str] = ["*"]
+    BACKEND_CORS_ORIGINS: list[str] = ["*"]
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
-    def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
+    def assemble_cors_origins(cls, v: Union[str, list[str]]) -> Union[list[str], str]:
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]
         elif isinstance(v, (list, str)):
@@ -73,6 +74,19 @@ class Settings(BaseSettings):
     class Config:
         case_sensitive = True
         env_file = ".env"
+
+    def __init__(
+        self,
+        *args,
+        **kwargs
+    ) -> None:
+        super().__init__(
+            *args,
+            **kwargs,
+        )
+        self.KEYSTORE_PATH = self.DATA_PATH + "/nanopub-keystore"
+        self.NER_MODELS_PATH = self.DATA_PATH + "/ner-models"
+
 
 
 settings = Settings()
