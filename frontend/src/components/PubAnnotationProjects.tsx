@@ -85,7 +85,6 @@ const PubAnnotationProjects = ({
   }, [])
 
   const onChange = async (event: any, newInputValue: any) => {
-    console.log('newInputValue', newInputValue)
     if (newInputValue && newInputValue.name) {
       newInputValue['url'] = `https://pubannotation.org/projects/${newInputValue.name}`
       // TODO: get the number of annotations already done for this project

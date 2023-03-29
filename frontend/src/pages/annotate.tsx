@@ -171,18 +171,22 @@ export default function AnnotateText() {
     )
       .then(response => response.json())
       .then(async data => {
-        console.log('Object extracted by OpenAI', data)
+        console.log('Object extracted by OpenAI:', data)
         const entities: any = []
         const statements: any = []
+        const alreadyExtracted = new Set()
         // Prepare entities extracted, and retrieve their potential CURIEs with the SRI NameResolution API
         await Promise.all(
           data['entities'].map(async (extractedEntity: any, index: number) => {
             const label = extractedEntity['label']
+            if (alreadyExtracted.has(label)) return;
+            // TODO: check the type is a valid BioLink category
             const type = extractedEntity['type']
               .split(' ')
               .map((word: any) => word.charAt(0).toUpperCase() + word.slice(1))
               .join('')
             const start = state.editInputText.toLowerCase().indexOf(label.toLowerCase())
+            if (start < 0) return;
             const end = start + label.length
             const ent: any = {
               index: `${entities.length}:${start}:${end}:${label}`,
@@ -208,15 +212,17 @@ export default function AnnotateText() {
               ent['id_uri'] = curieToUri(ent['id_curie'])
             }
             entities.push(ent)
+            alreadyExtracted.add(extractedEntity['label'])
           })
         )
+        console.log('OpenAI entities after resolution:', entities)
 
         try {
           // Prepare statements extracted
           // o: { index: "chorea:1:57:63", text: "chorea", type: "DiseaseOrPhenotypicFeature", … }
           // p: { id: "https://w3id.org/biolink/vocab/treats", curie: "biolink:treats", label: "treats" }
           // s: { index: "Tetrabenazine:0:0:13", text: "Tetrabenazine", type: "ChemicalEntity", … }
-          data['associations'].map((asso: any, index: number) => {
+          data['associations'].forEach((asso: any, index: number) => {
             const pred = asso['predicate'].replaceAll(' ', '_')
             const stmt: any = {
               p: {
@@ -276,9 +282,9 @@ export default function AnnotateText() {
     const maxLengthRelExtract = 1000
     if (state.editInputText.length > maxLengthRelExtract) {
       // We don't extract relations if text too long
-      console.log(
-        `⚠️ Text is more than ${maxLengthRelExtract} characters, we will not extract relations with the LitCoin model (too long)`
-      )
+      // console.log(
+      //   `⚠️ Text is more than ${maxLengthRelExtract} characters, we will not extract relations with the LitCoin model (too long)`
+      // )
       extract_relations = false
     }
     if (state.extractionModel !== 'litcoin') {
