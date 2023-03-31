@@ -44,7 +44,7 @@ dependencies = [
     "spacy[cuda110] >=3.2.3",
     "spacy-transformers >=1.1.5",
     # "nanopub >=2.0.0",
-    "nanopub@git+https://github.com/vemonet/nanopub.git#better-import-keys",
+    "nanopub@git+https://github.com/vemonet/nanopub.git@1cf9eea429b203ffee52f5fa0f24c4b4e80672b0",
     "pyshacl >=0.20.0",
     # "pyshacl@git+https://github.com/vemonet/pySHACL.git@fix-subclassof-node-constraints",
     "openai >=0.27.2 ",
