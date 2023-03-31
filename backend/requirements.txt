@@ -266,7 +266,7 @@ mypy-extensions==1.0.0
     #   mypy
 myst-parser==1.0.0
     # via linkml
-nanopub==2.0.0
+# nanopub==2.0.0
     # via knowledge-collaboratory-api (pyproject.toml)
 neo4j==4.3.0
     # via kgx
