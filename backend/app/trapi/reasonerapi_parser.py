@@ -610,30 +610,44 @@ def reasonerapi_to_sparql(reasoner_query):
             "knowledge_graph": knowledge_graph,
             "query_graph": query_graph,
             "results": query_results,
-        }
+        },
+        "query_options": query_options,
+        "reasoner_id": "infores:knowledge-collaboratory",
+        "schema_version": settings.TRAPI_VERSION,
+        "biolink_version": settings.BIOLINK_VERSION,
+        "status": "Success",
+        # "tool_version": "OpenPredict 0.1.0",
+        # "logs": [
+        #     {
+        #         "code": None,
+        #         "level": "INFO",
+        #         "message": "No descendants found from Ontology KP for QNode 'n00'.",
+        #         "timestamp": "2023-04-05T07:24:26.646711"
+        #     },
+        # ]
     }
 
 
-array_json = {
-    "message": {
-        "query_graph": {
-            "edges": {
-                "e01": {
-                    "object": "n1",
-                    "predicate": ["biolink:treated_by", "biolink:treats"],
-                    "subject": "n0",
-                }
-            },
-            "nodes": {
-                "n0": {
-                    "category": ["biolink:ChemicalEntity", "biolink:Drug"],
-                    "id": ["CHEBI:75725", "DRUGBANK:DB00394"],
-                },
-                "n1": {"category": ["biolink:Drug", "biolink:Disease"]},
-            },
-        }
-    }
-}
+# array_json = {
+#     "message": {
+#         "query_graph": {
+#             "edges": {
+#                 "e01": {
+#                     "object": "n1",
+#                     "predicate": ["biolink:treated_by", "biolink:treats"],
+#                     "subject": "n0",
+#                 }
+#             },
+#             "nodes": {
+#                 "n0": {
+#                     "category": ["biolink:ChemicalEntity", "biolink:Drug"],
+#                     "id": ["CHEBI:75725", "DRUGBANK:DB00394"],
+#                 },
+#                 "n1": {"category": ["biolink:Drug", "biolink:Disease"]},
+#             },
+#         }
+#     }
+# }
 
 ## Get for rdf:type and biolink:category
 # get_metakg_edges_query = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
