@@ -597,7 +597,7 @@ def reasonerapi_to_sparql(reasoner_query):
             'analyses': [{
                 "resource_id": "infores:knowledge-collaboratory",
                 "edge_bindings": {
-                    [predicate_edge_id]: [
+                    predicate_edge_id: [
                         {
                             "id": edge_uri
                         }
