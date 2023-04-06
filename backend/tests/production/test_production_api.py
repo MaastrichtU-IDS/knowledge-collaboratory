@@ -2,6 +2,8 @@ import os
 
 import requests
 
+from tests.conftest import check_trapi_compliance
+
 PROD_API_URL = "https://api.collaboratory.semanticscience.org"
 # PROD_API_URL = 'http://localhost:8808'
 
@@ -17,15 +19,17 @@ def test_post_trapi():
             trapi_query = f.read()
         print(PROD_API_URL)
         print(trapi_query)
-        trapi_results = requests.post(
+        response = requests.post(
             PROD_API_URL + "/query", data=trapi_query, headers=headers
-        ).json()
+        )
         print("TRAPI results")
-        print(trapi_results)
-        edges = trapi_results["message"]["knowledge_graph"]["edges"].items()
+        print(response.json())
+        edges = response.json()["message"]["knowledge_graph"]["edges"].items()
 
         # Validating attributes bug, the JSON schema only accepts subject, predicate, object. Which does not make sense
         # assert validate(trapi_results['message'], "Message", settings.TRAPI_VERSION_TEST) == None
+
+        check_trapi_compliance(response)
 
         if trapi_filename.endswith("limit1.json"):
             assert len(edges) == 1

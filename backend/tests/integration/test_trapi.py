@@ -12,7 +12,7 @@ client = TestClient(app)
 
 def test_post_trapi():
     """Test Translator ReasonerAPI query POST operation to get predictions"""
-    print(f"Testing for TRAPI version {settings.TRAPI_VERSION_TEST} 🏷️")
+    print(f"Testing for TRAPI version {settings.TRAPI_VERSION} 🏷️")
     url = "/query"
 
     for trapi_filename in os.listdir("tests/queries"):

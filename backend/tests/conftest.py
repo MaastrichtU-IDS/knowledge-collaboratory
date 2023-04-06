@@ -37,9 +37,13 @@ def check_trapi_compliance(response):
     validator.check_compliance_of_trapi_response(response.json()["message"])
     # validator.check_compliance_of_trapi_response(response.json())
     validator_resp = validator.get_messages()
+    print("⚠️ REASONER VALIDATOR WARNINGS:")
     print(validator_resp["warnings"])
-    print("REASONER VALIDATOR ERRORS")
-    print(validator_resp["errors"])
+    if len(validator_resp["errors"]) == 0:
+        print("✅ NO REASONER VALIDATOR ERRORS")
+    else:
+        print("🧨 REASONER VALIDATOR ERRORS")
+        print(validator_resp["errors"])
     assert (
         len(validator_resp["errors"]) == 0
     )

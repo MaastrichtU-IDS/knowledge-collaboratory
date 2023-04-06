@@ -15,8 +15,8 @@ class Settings(BaseSettings):
 
     BIOLINK_VERSION: str = "3.1.0"
     # BIOLINK_VERSION: str = "3.0.3"
-    TRAPI_VERSION: str = "1.3.0"
-    TRAPI_VERSION_TEST: str = "1.3.0"
+    TRAPI_VERSION: str = "1.4.0-beta"
+    # TRAPI_VERSION_TEST: str = "1.4.0-beta"
 
     OPENAI_APIKEY: str = ""
     BIOPORTAL_APIKEY: str = ""
