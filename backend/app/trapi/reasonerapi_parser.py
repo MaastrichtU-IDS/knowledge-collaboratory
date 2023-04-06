@@ -592,8 +592,21 @@ def reasonerapi_to_sparql(reasoner_query):
         }
 
         # Add the bindings to the results object
-        result = {"edge_bindings": {}, "node_bindings": {}}
-        result["edge_bindings"][predicate_edge_id] = [{"id": edge_uri}]
+        result = {
+            'node_bindings': {},
+            'analyses': [{
+                "resource_id": "infores:knowledge-collaboratory",
+                "edge_bindings": {
+                    [predicate_edge_id]: [
+                        {
+                            "id": edge_uri
+                        }
+                    ]
+                }
+            }],
+            # 'edge_bindings': {},
+        }
+        # result["edge_bindings"][predicate_edge_id] = [{"id": edge_uri}]
         result["node_bindings"][subject_node_id] = [
             {"id": resolve_uri_with_context(edge_result["subject"]["value"])}
         ]
