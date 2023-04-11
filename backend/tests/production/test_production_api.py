@@ -11,16 +11,13 @@ def test_post_trapi(pytestconfig):
     headers = {"Content-type": "application/json"}
 
     for trapi_filename in os.listdir("tests/queries"):
-        # for trapi_test in tests_list:
-        # trapi_filename = 'tests/queries/trapi_' + trapi_test['class'] + '_limit' + str(trapi_test['limit']) + '.json'
         with open("tests/queries/" + trapi_filename) as f:
             trapi_query = f.read()
         print(trapi_query)
         response = requests.post(
             pytestconfig.getoption("server") + "/query", data=trapi_query, headers=headers
         )
-        print("TRAPI results")
-        print(response.json())
+        print("TRAPI results", response.json())
         edges = response.json()["message"]["knowledge_graph"]["edges"].items()
 
         # Validating attributes bug, the JSON schema only accepts subject, predicate, object. Which does not make sense

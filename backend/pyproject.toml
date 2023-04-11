@@ -96,8 +96,8 @@ dev = "uvicorn app.main:app --reload"
 api = "BACKEND_URL=http://localhost:8000 uvicorn app.main:app --host localhost --port 8000 --reload {args}"
 test = "pytest {args}"
 test-prod = "pytest tests/production {args}"
-test-ci = "pytest tests/production --server https://openpredict.ci.transltr.io {args}"
-test-itrb-prod = "pytest tests/production --server https://openpredict.transltr.io {args}"
+test-ci = "pytest tests/production --server https://collaboratory-api.ci.transltr.io {args}"
+test-itrb-prod = "pytest tests/production --server https://collaboratory-api.transltr.io {args}"
 fmt = [
     "ruff app tests --fix",
 ]
