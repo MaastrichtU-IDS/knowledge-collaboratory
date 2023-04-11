@@ -3,11 +3,9 @@
 from app.config import settings
 from reasoner_validator import TRAPIResponseValidator
 
-# from app.main import app
-# from app.config import settings
 
-# client = TestClient(app)
-
+def pytest_addoption(parser):
+    parser.addoption("--server", action="store", default='https://api.collaboratory.semanticscience.org')
 
 # @pytest.fixture(scope="session")
 # def test_client():

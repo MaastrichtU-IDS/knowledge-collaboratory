@@ -4,12 +4,10 @@ import requests
 
 from tests.conftest import check_trapi_compliance
 
-PROD_API_URL = "https://api.collaboratory.semanticscience.org"
-# PROD_API_URL = 'http://localhost:8808'
 
-
-def test_post_trapi():
+def test_post_trapi(pytestconfig):
     """Test Translator ReasonerAPI query POST operation to get predictions"""
+    print(f'🧪 Testing API: {pytestconfig.getoption("server")}')
     headers = {"Content-type": "application/json"}
 
     for trapi_filename in os.listdir("tests/queries"):
@@ -17,10 +15,9 @@ def test_post_trapi():
         # trapi_filename = 'tests/queries/trapi_' + trapi_test['class'] + '_limit' + str(trapi_test['limit']) + '.json'
         with open("tests/queries/" + trapi_filename) as f:
             trapi_query = f.read()
-        print(PROD_API_URL)
         print(trapi_query)
         response = requests.post(
-            PROD_API_URL + "/query", data=trapi_query, headers=headers
+            pytestconfig.getoption("server") + "/query", data=trapi_query, headers=headers
         )
         print("TRAPI results")
         print(response.json())
