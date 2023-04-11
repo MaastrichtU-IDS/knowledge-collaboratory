@@ -472,7 +472,7 @@ def reasonerapi_to_sparql(reasoner_query):
             "sources": [
                 {
                     "resource_id": "infores:knowledge-collaboratory",
-                    "resource_role": "biolink:primary_knowledge_source"
+                    "resource_role": "primary_knowledge_source"
                 },
             ]
         }
