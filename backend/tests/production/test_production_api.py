@@ -3,6 +3,8 @@ import os
 from reasoner_validator import TRAPIResponseValidator
 import requests
 
+from app.config import settings
+
 
 validator = TRAPIResponseValidator(
     trapi_version=settings.TRAPI_VERSION,
@@ -23,8 +25,8 @@ validator = TRAPIResponseValidator(
 )
 
 def check_trapi_compliance(response):
-    validator.check_compliance_of_trapi_response(response.json()["message"])
-    # validator.check_compliance_of_trapi_response(response.json())
+    validator.check_compliance_of_trapi_response(response.json())
+    # validator.check_compliance_of_trapi_response(response.json()["message"])
     validator_resp = validator.get_messages()
     print("⚠️ REASONER VALIDATOR WARNINGS:")
     print(validator_resp["warnings"])
