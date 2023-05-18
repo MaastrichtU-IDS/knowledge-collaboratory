@@ -37,7 +37,7 @@ Checkout the `docker-compose.prod.yml` file for more details about the deploymen
 
 1. Create a `.env` file with your production settings:
 
-```
+```bash
 ORCID_CLIENT_ID=APP-XXX
 ORCID_CLIENT_SECRET=XXX
 OPENAI_APIKEY=sk-XXX
@@ -92,25 +92,17 @@ Now you can open your browser and interact with these URLs:
 
 2 sets of tests are available: `integration` tests to test local changes, and `production` tests to test the API deployed in production
 
-You can run the tests in docker when the backend is already running:
+You can run the integration tests locally:
 
 ```bash
 hatch run test tests/integration -s
 ```
 
-Or locally directly with poetry:
+And the tests against the API deployed in production:
 
 ```bash
-hatch run test tests/integration -s
+hatch run prod:test -s
 ```
-
-You can start a shell session with the new environment with:
-
-```bash
-hatch shell
-```
-
-
 
 ## 🔧 Maintenance
 
