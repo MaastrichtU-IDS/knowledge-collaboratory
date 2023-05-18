@@ -37,7 +37,7 @@ jobs:
     - name: Install dependencies
       run: |
         cd backend
-        pip install .[test]
+        pip install .[test,test-prod]
 
     - name: Test with pytest
       run: |

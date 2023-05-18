@@ -35,7 +35,7 @@ RUN pip install -r requirements.txt
 
 COPY . /app/
 
-RUN pip install -e ".[test,dev]"
+RUN pip install -e ".[test,dev,deploy]"
 
 ENV PYTHONPATH=/app
 # ENV PORT=8000
