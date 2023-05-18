@@ -43,7 +43,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-deploy = [
+app = [
     "transformers >=4.17.0",
     "spacy[cuda110] >=3.2.3",
     "spacy-transformers >=1.1.5",
@@ -89,6 +89,7 @@ Source = "https://github.com/MaastrichtU-IDS/knowledge-collaboratory"
 features = [
     "test",
     "dev",
+    "app",
 ]
 # post-install-commands = [
 #     "pre-commit install",
@@ -108,7 +109,7 @@ fmt = [
 check = [
     "ruff app tests",
 ]
-compile = "pip-compile --resolver=backtracking --extra dev --extra test --extra deploy -o requirements.txt pyproject.toml {args}"
+compile = "pip-compile --resolver=backtracking --extra dev --extra test --extra app -o requirements.txt pyproject.toml {args}"
 
 
 [tool.hatch.metadata]
