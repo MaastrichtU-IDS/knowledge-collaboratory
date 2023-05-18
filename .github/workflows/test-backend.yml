@@ -37,7 +37,7 @@ jobs:
     - name: Install dependencies
       run: |
         cd backend
-        pip install .[test]
+        pip install .[test,deploy]
 
     - name: Run tests
       run: |
