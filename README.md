@@ -98,10 +98,13 @@ You can run the integration tests locally:
 hatch run test tests/integration -s
 ```
 
-And the tests against the API deployed in production:
+And the tests against the APIs deployed in production:
 
 ```bash
-hatch run prod:test -s
+hatch run test:ids -s
+hatch run test:itrb-ci -s
+hatch run test:itrb-test -s
+hatch run test:itrb-prod -s
 ```
 
 ## 🔧 Maintenance

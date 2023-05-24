@@ -105,19 +105,20 @@ fmt = [
 check = [
     "ruff app tests",
 ]
-compile = "pip-compile --resolver=backtracking --extra dev --extra test --extra app -o requirements.txt pyproject.toml {args}"
+compile = "pip-compile --resolver=backtracking --extra app -o requirements.txt pyproject.toml {args}"
 
 
-[tool.hatch.envs.prod]
+[tool.hatch.envs.test]
 features = [
     "test",
     "test-prod",
 ]
 
-[tool.hatch.envs.prod.scripts]
-test = "pytest tests/production {args}"
-test-ci = "pytest tests/production --server https://collaboratory-api.ci.transltr.io {args}"
-test-itrb = "pytest tests/production --server https://collaboratory-api.transltr.io {args}"
+[tool.hatch.envs.test.scripts]
+ids = "pytest tests/production {args}"
+itrb-ci = "pytest tests/production --server https://collaboratory-api.ci.transltr.io {args}"
+itrb-test = "pytest tests/production --server https://collaboratory-api.test.transltr.io {args}"
+itrb-prod = "pytest tests/production --server https://collaboratory-api.transltr.io {args}"
 
 
 [tool.hatch.metadata]
