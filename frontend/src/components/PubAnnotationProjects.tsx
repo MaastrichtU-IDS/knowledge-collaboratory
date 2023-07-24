@@ -109,11 +109,12 @@ const PubAnnotationProjects = ({
   }
 
   const onClickLoad = async () => {
-    const page = state.countPublished == 0 ? 1 : state.countPublished / 10
+    const docsPerPage = 1000  // Max per 10000
+    const page = state.countPublished <= 0 ? 1 : state.countPublished / docsPerPage
     const numberInPage = state.countPublished == 0 ? 0 : state.countPublished % 10
 
     axios
-      .get(`${state.projectSelected.url}/docs.json?page=${page}`, {
+      .get(`${state.projectSelected.url}/docs.json?per=${docsPerPage}&page=${page}`, {
         headers: {
           accept: 'application/json'
         }
