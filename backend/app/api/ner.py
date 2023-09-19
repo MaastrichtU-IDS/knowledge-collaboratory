@@ -1,5 +1,6 @@
 import os
 from typing import Optional
+from pathlib import Path
 
 import numpy as np
 import requests
@@ -28,23 +29,8 @@ label2id = {
     "Negative": 8,
 }
 
-# Loading models for NER
-try:
-    ner = spacy.load(Rf"{settings.NER_MODELS_PATH}/litcoin-ner-model")
-    # Loading models for relations extraction
-    relation_model = Rf"{settings.NER_MODELS_PATH}/litcoin-relations-extraction-model"
-    # Instantiate the Bert tokenizer
-    tokenizer = BertTokenizer.from_pretrained(relation_model, do_lower_case=False)
-    model = BertForSequenceClassification.from_pretrained(
-        relation_model, num_labels=len(label2id)
-    )
-    device = torch.device("cpu")
-    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # Send model to device
-    model.to(device)
-    print("✅ Models for NER and relations extraction loaded")
-except Exception:
-    print(f"⚠️ Could not load the Litcoin models for NER and relations extraction, downloading them in {settings.NER_MODELS_PATH}")
+if not Path(f"{settings.NER_MODELS_PATH}/litcoin-ner-model").exists() or not Path(f"{settings.NER_MODELS_PATH}/litcoin-relations-extraction-model").exists():
+    print(f"⚠️ Could not find the Litcoin models for NER and relations extraction, downloading them in {settings.NER_MODELS_PATH}")
     try:
         os.system(f'mkdir -p {settings.NER_MODELS_PATH}')
         os.system(f'mkdir -p {settings.KEYSTORE_PATH}')
@@ -54,7 +40,6 @@ except Exception:
         os.system(f"rm {settings.NER_MODELS_PATH}/*.zip")
     except Exception as e:
         print(f"Error while downloading Litcoin models: {e}")
-
 
 IDO = "https://identifiers.org/"
 
@@ -84,6 +69,21 @@ def curie_to_uri(curie: str):
 async def get_entities_relations(
     input: NerInput = Body(...), extract_relations: Optional[bool] = True
 ):
+    # Loading models for NER
+    ner = spacy.load(Rf"{settings.NER_MODELS_PATH}/litcoin-ner-model")
+    # Loading models for relations extraction
+    relation_model = Rf"{settings.NER_MODELS_PATH}/litcoin-relations-extraction-model"
+    # Instantiate the Bert tokenizer
+    tokenizer = BertTokenizer.from_pretrained(relation_model, do_lower_case=False)
+    model = BertForSequenceClassification.from_pretrained(
+        relation_model, num_labels=len(label2id)
+    )
+    device = torch.device("cpu")
+    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # Send model to device
+    model.to(device)
+    print("✅ Models for NER and relations extraction loaded")
+
     ner_res = ner(input.text)
 
     entities_extracted = []
