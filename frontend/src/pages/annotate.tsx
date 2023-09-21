@@ -463,7 +463,7 @@ export default function AnnotateText() {
     return {
       '@context': genericContext,
       '@graph': stmtJsonld,
-      '@annotations': {
+      '@provenance': {
         '@context': {
           tao: 'http://pubannotation.org/ontology/tao.owl#',
           rdfs: 'http://www.w3.org/2000/01/rdf-schema#'

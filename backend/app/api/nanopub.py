@@ -54,7 +54,7 @@ ASSERTION_EXAMPLE = {
     "rdf:subject": {"@id": "drugbank:DB00001"},
     "rdf:predicate": {"@id": "biolink:treats"},
     "rdf:object": {"@id": "MONDO:0004975"},
-    # "@annotations": {
+    # "@provenance": {
     #     "@context": {
     #         "ml": "https://w3id.org/YOUR_ML_SCHEMA/"
     #     },
@@ -115,9 +115,9 @@ async def publish_assertion(
     # nanopub_rdf = jsonld.expand(nanopub_rdf)
     # nanopub_rdf = json.dumps(nanopub_rdf, ensure_ascii=False).encode("utf-8")
 
-    annotations_rdf = nanopub_rdf["@annotations"]
+    annotations_rdf = nanopub_rdf["@provenance"]
 
-    del nanopub_rdf["@annotations"]
+    del nanopub_rdf["@provenance"]
     nanopub_rdf = json.dumps(nanopub_rdf)
 
     g = Graph()
@@ -173,7 +173,8 @@ async def publish_assertion(
 
     if annotations_rdf:
         # Make sure annotations have the assertion as subject
-        annotations_rdf["@id"] = np.assertion.identifier
+        if "@graph" not in annotations_rdf and "@id" not in annotations_rdf:
+            annotations_rdf["@id"] = str(np.assertion.identifier)
         np.provenance.parse(data=annotations_rdf, format="json-ld")
     if source:
         np.provenance.add((np.assertion.identifier, PROV.hadPrimarySource, URIRef(source)))
