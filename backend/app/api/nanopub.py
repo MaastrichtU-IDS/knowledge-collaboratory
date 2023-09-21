@@ -49,11 +49,18 @@ ASSERTION_EXAMPLE = {
         "dct": "http://purl.org/dc/terms/",
         "biolink": "https://w3id.org/biolink/vocab/"
     },
-    "@type": "biolink:Drug",
-    "biolink:category": "biolink:Drug",
-    "biolink:id": "drugbank:DB00001",
-    "rdfs:label": "Lepirudin",
-    "dct:description": "Lepirudin is a protein-based direct thrombin inhibitor."
+    "@type": "biolink:Association",
+    "biolink:category": "biolink:Association",
+    "rdf:subject": {"@id": "drugbank:DB00001"},
+    "rdf:predicate": {"@id": "biolink:treats"},
+    "rdf:object": {"@id": "MONDO:0004975"},
+    # "@annotations": {
+    #     "@context": {
+    #         "ml": "https://w3id.org/YOUR_ML_SCHEMA/"
+    #     },
+    #     "ml:algorithm": "nearest neightbor",
+    #     "ml:weight": 0.6,
+    # }
 }
 # ASSERTION_EXAMPLE = [
 #     {
@@ -165,6 +172,8 @@ async def publish_assertion(
     )
 
     if annotations_rdf:
+        # Make sure annotations have the assertion as subject
+        annotations_rdf["@id"] = np.assertion.identifier
         np.provenance.parse(data=annotations_rdf, format="json-ld")
     if source:
         np.provenance.add((np.assertion.identifier, PROV.hadPrimarySource, URIRef(source)))
@@ -448,15 +457,12 @@ introduction_nanopub_uri:
 #     response_model={},
 # )
 # async def download_keyfile(current_user: models.User = Depends(get_current_user)):
-
 #     if not current_user or "id" not in current_user.keys():
 #         raise HTTPException(
 #             status_code=403,
 #             detail=f"You need to login to download the keys associated with your ORCID",
 #         )
-
 #     user_dir = Path(f"{settings.KEYSTORE_PATH}/{current_user['sub']}")
-
 #     if user_dir.exists():
 #         # shutil.make_archive(f"{user_dir}/nanopub_profile.zip", 'zip', user_dir)
 #         zip_filename = "nanopub_profile.zip"
@@ -470,14 +476,12 @@ introduction_nanopub_uri:
 #                 print(os.path.join(root, fpath))
 #                 zf.write(os.path.join(root, fpath), fpath)
 #         zf.close()
-
 #         # Grab ZIP file from in-memory, make response with correct MIME-type
 #         return Response(
 #             s.getvalue(),
 #             media_type="application/x-zip-compressed",
 #             headers={"Content-Disposition": f"attachment;filename={zip_filename}"},
 #         )
-
 #     return JSONResponse(
 #         {
 #             "message": "No files has been found on our servers for the ORCID user "

@@ -151,13 +151,11 @@ WHERE {
 )
 
 # Load BioLink JSON-LD Context to resolve URIs to BioLink CURIEs
-# try:
 with urllib.request.urlopen(
     f"https://raw.githubusercontent.com/biolink/biolink-model/v{settings.BIOLINK_VERSION}/context.jsonld"
 ) as url:
     data = json.loads(url.read().decode())
-# except Exception:
-#   print('Error download BioLink model JSON-LD from GitHub')
+
 
 namespace_resolver = {}
 context = data["@context"]
