@@ -92,7 +92,6 @@ async def publish_assertion(
 ) -> Response:
     nanopub_rdf = jsonable_encoder(nanopub_rdf)
 
-    print(current_user)
     if not current_user or "id" not in current_user.keys():
         raise HTTPException(
             status_code=403,
@@ -117,9 +116,11 @@ async def publish_assertion(
     # nanopub_rdf = jsonld.expand(nanopub_rdf)
     # nanopub_rdf = json.dumps(nanopub_rdf, ensure_ascii=False).encode("utf-8")
 
-    annotations_rdf = nanopub_rdf["@provenance"]
+    annotations_rdf = None
+    if "@provenance" in nanopub_rdf:
+        annotations_rdf = nanopub_rdf["@provenance"]
+        del nanopub_rdf["@provenance"]
 
-    del nanopub_rdf["@provenance"]
     nanopub_rdf = json.dumps(nanopub_rdf)
 
     g = Graph()
