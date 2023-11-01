@@ -28,14 +28,14 @@ dependencies = [
     "python-multipart >=0.0.5",
     "requests >=2.23.0",
     "httpx >=0.21.1",
-    "pydantic[dotenv] >=1.9",
+    "pydantic[dotenv] <2.0.0", # reasoner-pydantic not updated to v2 https://github.com/TranslatorSRI/reasoner-pydantic/issues/63
+    # "pydantic-settings",
     "fastapi >=0.68.1",
     "uvicorn >=0.15.0",
     "gunicorn >=20.0.4",
     "Authlib >=0.15.4",
     "itsdangerous >=2.0.1",
     "reasoner-pydantic >=2.2.3",
-    # "reasoner-pydantic ==3.0.1",
     # TODO: we can remove kgx once poetry finally manage to find 3.1.5
     # "kgx >=1.6.0",
     "rdflib >=6.1.1",

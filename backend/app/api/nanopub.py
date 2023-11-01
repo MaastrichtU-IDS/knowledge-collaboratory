@@ -77,7 +77,8 @@ ASSERTION_EXAMPLE = {
 @router.post(
     "/assertion",
     name="Publish an Assertion",
-    description="""Post an RDF assertion as JSON-LD (only triples, no graph) that will be published in a Nanopublication using the key previously stored with your ORCID user""",
+    description="""Post an RDF assertion as JSON-LD that will be published in a Nanopublication using the key previously stored with your ORCID user.
+You can also provide additional provenance using the special `@provenance` key.""",
     response_description="Operation result",
     response_model={},
 )
@@ -91,6 +92,7 @@ async def publish_assertion(
 ) -> Response:
     nanopub_rdf = jsonable_encoder(nanopub_rdf)
 
+    print(current_user)
     if not current_user or "id" not in current_user.keys():
         raise HTTPException(
             status_code=403,

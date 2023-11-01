@@ -2,7 +2,9 @@ import logging
 import secrets
 from typing import Optional, Union
 
-from pydantic import BaseSettings, validator
+from pydantic import validator, BaseSettings
+# from pydantic_settings import BaseSettings
+# from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -11,7 +13,7 @@ class Settings(BaseSettings):
     STAGING_URL: str = "https://collaboratory-api.ci.transltr.io"
     DEV_URL: str = "https://api.collaboratory.semanticscience.org"
 
-    VIRTUAL_HOST: str = None
+    VIRTUAL_HOST: Optional[str] = None
 
     BIOLINK_VERSION: str = "3.1.0"
     TRAPI_VERSION: str = "1.4.0"
@@ -23,8 +25,8 @@ class Settings(BaseSettings):
     # The settings used by Docker deployment are in the .env file
     PROJECT_NAME: str = "Knowledge Collaboratory API"
     DATA_PATH: str = "/data"
-    KEYSTORE_PATH: Optional[str]
-    NER_MODELS_PATH: Optional[str]
+    KEYSTORE_PATH: str = "./nanopub-keystore"
+    NER_MODELS_PATH: str = "./ner-models"
 
     NANOPUB_GRLC_URL: str = "https://grlc.np.dumontierlab.com/api/local/local"
     NANOPUB_SPARQL_URL: str = "https://virtuoso.nps.petapico.org/sparql"
@@ -72,6 +74,7 @@ class Settings(BaseSettings):
     class Config:
         case_sensitive = True
         env_file = ".env"
+    # model_config = SettingsConfigDict(env_file=".env", env_file_encoding='utf-8')
 
     def __init__(
         self,

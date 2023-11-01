@@ -126,6 +126,7 @@ const PublishNanopubButtons = ({
         requestParams['source'] = inputSource
       }
       const access_token = user['access_token']
+      console.log(user)
       axios
         .post(`${$userSettings.api}/assertion`, stmtJsonld, {
           headers: {Authorization: `Bearer ${access_token}`},
