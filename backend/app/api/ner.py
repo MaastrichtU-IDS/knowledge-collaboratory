@@ -114,22 +114,22 @@ async def get_entities_relations(
                 status_code=400,
                 detail="the SRI NameResolution API is down (https://name-resolution-sri.renci.org)",
             )
-        if len(name_res.keys()) > 0:
+        if len(name_res) > 0:
             # entity['curies'] = name_res
-            for curie, labels in name_res.items():
+            for match in name_res:
                 alt_label = None
-                if len(labels) > 1:
-                    alt_label = labels[1]
+                if len(match["synonyms"]) > 1:
+                    alt_label = match["synonyms"][0]
                 entity["curies"].append(
                     {
-                        "curie": curie,
-                        "label": labels[0],
+                        "curie": match["curie"],
+                        "label": match["label"],
                         "altLabel": alt_label,
                     }
                 )
-            entity["id_curie"] = list(name_res.keys())[0]
-            entity["id_label"] = name_res[list(name_res.keys())[0]][0]
-            entity["id_uri"] = curie_to_uri(list(name_res.keys())[0])
+            entity["id_curie"] = entity["curies"][0]["curie"]
+            entity["id_label"] = entity["curies"][0]["label"]
+            entity["id_uri"] = curie_to_uri(entity["id_curie"])
 
         # else:
         # If not ID found with NCATS API, check RXCUIS: https://rxnav.nlm.nih.gov/REST/rxcui.json?name=Xyrem

@@ -198,12 +198,12 @@ export default function AnnotateText() {
             }
             const entityCuries: any = await getEntityCuries(label)
             ent['curies'] = []
-            if (entityCuries && Object.keys(entityCuries).length > 0) {
-              Object.keys(entityCuries).map((curie: any) => {
+            if (entityCuries.length > 0) {
+              entityCuries.map((match: any) => {
                 const addEnt: any = {
-                  curie: curie,
-                  label: entityCuries[curie][0],
-                  altLabel: entityCuries[curie][1]
+                  curie: match["curie"],
+                  label: match["label"],
+                  altLabel: match["synonyms"][0]
                 }
                 ent['curies'].push(addEnt)
               })
@@ -586,12 +586,12 @@ export default function AnnotateText() {
         props: []
       }
       const entityCuries = await getEntityCuries(text)
-      if (entityCuries && Object.keys(entityCuries).length > 0) {
-        Object.keys(entityCuries).map((curie: any) => {
+      if (entityCuries.length > 0) {
+        entityCuries.map((match: any) => {
           const addEnt: any = {
-            curie: curie,
-            label: entityCuries[curie][0],
-            altLabel: entityCuries[curie][1]
+            curie: match["curie"],
+            label: match["label"],
+            altLabel: match["synonyms"][0]
           }
           newEntity['curies'].push(addEnt)
         })
@@ -836,13 +836,13 @@ export default function AnnotateText() {
                     // and update the "curies" options from the result for the autocomplete
                     if (newInputValue && typeof newInputValue === 'string' && newInputValue.length > 2) {
                       const entityCuries = await getEntityCuries(newInputValue)
-                      if (entityCuries && Object.keys(entityCuries).length > 0) {
+                      if (entityCuries.length > 0) {
                         tagSelected.curies = []
-                        Object.keys(entityCuries).map((curie: any) => {
+                        entityCuries.map((match: any) => {
                           const addEnt: any = {
-                            curie: curie,
-                            label: entityCuries[curie][0],
-                            altLabel: entityCuries[curie][1]
+                            curie: match["curie"],
+                            label: match["label"],
+                            altLabel: match["synonyms"][0]
                           }
                           tagSelected.curies.push(addEnt)
                         })
