@@ -145,8 +145,6 @@ const DisplayNanopub = ({np, npDict, index, usersPubkeys, ...args}: any) => {
           <CardContent style={{margin: '0px', padding: '0px'}}>
             <Paper elevation={2} style={{height: '80vh', textAlign: 'left', padding: '8px 8px', margin: '8px 0px'}}>
               <CytoscapeRdfGraph cytoscapeElems={state.npDict[np]['cytoscape']} />
-              {/* <cytoscape-rdf elements={state.npDict[np]['cytoscape']} /> */}
-              {/* <cytoscape-rdf url={np + ".trig"} /> */}
             </Paper>
           </CardContent>
         </Collapse>

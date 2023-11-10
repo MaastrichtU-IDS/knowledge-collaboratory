@@ -206,18 +206,6 @@ export function CytoscapeRdfGraph({
         content: () => {
           // Replace the start "graph-http" for graphs nodes URIs
           const elementLabel = ele.id().startsWith('graph-http') ? ele.id().replace('graph-http', 'http') : ele.id()
-          // console.log(ele)
-          // let div = document.createElement('div')
-          // const staticElement = renderToStaticMarkup(
-          // const staticElement = renderToString(
-          //   <Card className="paper">
-          //     <Typography variant="body2">{displayLink(elementLabel)}</Typography>
-          //   </Card>
-          // )
-          // div.innerHTML = `<div id="cytoPop">${staticElement}</div>`
-          // document.body.appendChild(div)
-          // ReactDOM.render(staticElement, document.getElementById('root'));
-          // return div
           return <div id="cytoPop">
             <Card className="paper">
               <Typography variant="body2">{displayLink(elementLabel)}</Typography>
