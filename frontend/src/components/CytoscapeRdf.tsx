@@ -2,7 +2,7 @@
 
 import React, {useEffect, useRef} from 'react'
 import {Card, Typography} from '@mui/material'
-import {renderToStaticMarkup} from 'react-dom/server'
+import {renderToStaticMarkup, renderToString} from 'react-dom/server'
 import {Parser} from 'n3'
 import cytoscape from 'cytoscape'
 import fcose from 'cytoscape-fcose'
@@ -204,28 +204,25 @@ export function CytoscapeRdfGraph({
       // const elementLabel = (ele.id().startsWith('graph-http')) ? ele.id().replace('graph-http', '') : ele.id()
       ele.popper({
         content: () => {
-          // console.log(ele)
-          let div = document.createElement('div')
           // Replace the start "graph-http" for graphs nodes URIs
           const elementLabel = ele.id().startsWith('graph-http') ? ele.id().replace('graph-http', 'http') : ele.id()
-
+          // console.log(ele)
+          // let div = document.createElement('div')
           // const staticElement = renderToStaticMarkup(
-          const staticElement = renderToStaticMarkup(
-            <Card className="paper">
-              {/* <CardHeader
-                action={<IconButton aria-label="hide" onClick={removePopper}>
-                  <CloseIcon />
-                </IconButton>}
-                style={{paddingBottom: '0px'}}/> */}
-              {/* <CardContent> */}
-              <Typography variant="body2">{displayLink(elementLabel)}</Typography>
-              {/* </CardContent> */}
-            </Card>
-          )
-          div.innerHTML = `<div id="cytoPop">${staticElement}</div>`
-          document.body.appendChild(div)
+          // const staticElement = renderToString(
+          //   <Card className="paper">
+          //     <Typography variant="body2">{displayLink(elementLabel)}</Typography>
+          //   </Card>
+          // )
+          // div.innerHTML = `<div id="cytoPop">${staticElement}</div>`
+          // document.body.appendChild(div)
           // ReactDOM.render(staticElement, document.getElementById('root'));
-          return div
+          // return div
+          return <div id="cytoPop">
+            <Card className="paper">
+              <Typography variant="body2">{displayLink(elementLabel)}</Typography>
+            </Card>
+          </div>
         }
       })
     })
