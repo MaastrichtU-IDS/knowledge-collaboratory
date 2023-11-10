@@ -108,10 +108,10 @@ const OrcidLogin = ({...args}: any) => {
             clientId={settings.orcidClientId}
             redirectUri={settings.frontendUrl}
             scope="/authenticate"
-            expiresIn={604800} // 7 days
             onSuccess={onSuccess}
             onFailure={onFailure}
             className="loginButton"
+            // expiresIn={604800} // 7 days
           >
             {/* @ts-ignore */}
             <Button
