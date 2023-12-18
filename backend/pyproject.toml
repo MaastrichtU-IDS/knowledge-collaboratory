@@ -40,6 +40,11 @@ dependencies = [
     # "kgx >=1.6.0",
     "rdflib >=6.1.1",
     "SPARQLWrapper >=1.8.5",
+
+    "opentelemetry-sdk",
+    "opentelemetry-exporter-otlp-proto-http",
+    "opentelemetry-instrumentation-fastapi",
+    "opentelemetry-instrumentation-httpx",
 ]
 
 [project.optional-dependencies]
@@ -121,11 +126,12 @@ itrb-test = "pytest tests/production --server https://collaboratory-api.test.tra
 itrb-prod = "pytest tests/production --server https://collaboratory-api.transltr.io {args}"
 
 
+# OTHER TOOLS
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
 [tool.hatch.metadata]
 allow-direct-references = true
-
-
-# OTHER TOOLS
 
 [tool.coverage.run]
 source = ["app"]

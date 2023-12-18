@@ -13,6 +13,7 @@ services:
       - FRONTEND_URL=http://localhost:19006
       - INSTALL_DEV=true
       - DEV_MODE=true
+      - NO_JAEGER=true
     build:
       context: ./backend
       dockerfile: Dockerfile

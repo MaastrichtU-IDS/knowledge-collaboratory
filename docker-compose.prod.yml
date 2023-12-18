@@ -11,6 +11,7 @@ services:
       VIRTUAL_PORT: 80
       VIRTUAL_HOST: api.collaboratory.semanticscience.org
       LETSENCRYPT_HOST: api.collaboratory.semanticscience.org
+      NO_JAEGER: "true"
     volumes:
       - /data/knowledge-collaboratory/ner-models:/data/ner-models
       - /data/knowledge-collaboratory/nanopub-keystore:/data/nanopub-keystore
