@@ -85,8 +85,8 @@ def configure_otel(app):
         trace.get_tracer_provider().add_span_processor(
             BatchSpanProcessor(jaeger_exporter)
         )
-        # tracer = trace.get_tracer(__name__)
-        FastAPIInstrumentor.instrument_app(app, tracer_provider=trace, excluded_urls="docs,openapi.json")
+        trace.get_tracer(__name__)
+        FastAPIInstrumentor.instrument_app(app, excluded_urls="docs,openapi.json")
         HTTPXClientInstrumentor().instrument()
 
 # Configure open telemetry if enabled
