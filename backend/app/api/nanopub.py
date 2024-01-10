@@ -32,7 +32,7 @@ shacl_g.parse(
 
 biolink_g = Graph()
 biolink_g.parse(
-    "https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.owl.ttl",
+    "https://raw.githubusercontent.com/biolink/biolink-model/master/project/owl/biolink_model.owl.ttl",
     format="ttl"
 )
 
