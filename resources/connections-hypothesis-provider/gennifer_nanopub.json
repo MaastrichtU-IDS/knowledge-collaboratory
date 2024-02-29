@@ -1,0 +1,120 @@
+{
+  "@id": "#Head",
+  "@graph": {
+    "@type": "np:Nanopublication",
+    "@id": "#",
+    "np:hasAssertion": {
+      "@id": "#assertion",
+      "@graph": [
+        {
+          "@id": "ENSEMBL:ENSG00000132155",
+          "@type": "biolink:Gene",
+          "biolink:category": {"@id": "biolink:Gene"}
+        },
+        {
+          "@id": "ENSEMBL:ENSG00000174775",
+          "@type": "biolink:Gene",
+          "biolink:category": {"@id": "biolink:Gene"}
+        },
+        {
+          "@id": "#1c164fe23bee",
+          "@type": "biolink:GeneToGeneAssociation",
+          "biolink:categories": {"@id": "biolink:GeneToGeneAssociation"},
+          "biolink:subject": {"@id": "ENSEMBL:ENSG00000132155"},
+          "biolink:predicate": {"@id": "biolink:regulates"},
+          "biolink:object": {"@id": "ENSEMBL:ENSG00000174775"},
+
+          "biolink:qualified_predicate": {"@id": "biolink:causes"},
+          "biolink:object_aspect_qualifier": "activity",
+          "biolink:object_direction_qualifier": "upregulated",
+
+          "biolink:has_attribute": [
+            {
+              "@type": "biolink:Attribute",
+              "biolink:has_attribute_type": {"@id": "biolink:knowledge_level"},
+              "biolink:value": "curated",
+              "biolink:provided_by": {"@id": "infores:knowledge-collaboratory"}
+            },
+            {
+              "@type": "biolink:Attribute",
+              "biolink:has_attribute_type": {"@id": "biolink:publications"},
+              "biolink:value": {"@id": "#"},
+              "biolink:provided_by": {"@id": "infores:knowledge-collaboratory"}
+            },
+            {
+              "@type": "biolink:Attribute",
+              "biolink:has_attribute_type": {"@id": "biolink:has_author"},
+              "biolink:value": "<SME_ORCHID>",
+              "biolink:provided_by": {"@id": "infores:connections-hypothesis"}
+            },
+            {
+              "@type": "biolink:Attribute",
+              "biolink:has_attribute_type": {"@id": "biolink:algorithm"},
+              "biolink:value": "<ALGORITHM_PUB>",
+              "biolink:provided_by": {"@id": "infores:connections-hypothesis"}
+            }
+          ],
+
+          "biolink:primary_knowledge_source": {
+            "@type": "biolink:RetrievalSource",
+            "biolink:resource_id": {"@id": "infores:knowledge-collaboratory"},
+            "biolink:resource_role": "primary_knowledge_source",
+            "biolink:upstream_resource_ids": [
+              {"@id": "infores:connections-hypothesis"}
+            ]
+          },
+          "biolink:supporting_data_source": [
+            {
+              "@type": "biolink:RetrievalSource",
+              "biolink:resource_id": {"@id": "infores:connections-hypothesis"},
+              "biolink:resource_role": "supporting_data_source",
+              "biolink:upstream_resource_ids": [
+                {"@id": "infores:zenodo"}
+              ]
+            },
+            {
+              "@type": "biolink:RetrievalSource",
+              "biolink:resource_id": {"@id": "infores:zenodo"},
+              "biolink:resource_role": "supporting_data_source",
+              "biolink:source_record_urls": ["<DOITOSTUDY>"]
+            }
+          ]
+        }
+      ]
+    },
+
+    "np:hasProvenance": {
+      "@id": "#provenance",
+      "@graph": [
+        {
+          "@id": "#assertion",
+          "dct:conformsTo": {"@id": "biolink:"}
+        },
+        {
+          "@id": "biolink:",
+          "pav:version": "3.1.0"
+        }
+      ]
+    },
+    "np:hasPublicationInfo": {
+      "@id": "#pubinfo",
+      "@graph": []
+    }
+  },
+  "@context": {
+    "@base": "http://purl.org/nanopub/temp/mynanopub#",
+    "np": "http://www.nanopub.org/nschema#",
+    "npx": "http://purl.org/nanopub/x/",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "dct": "http://purl.org/dc/terms/",
+    "prov": "http://www.w3.org/ns/prov#",
+    "pav": "http://purl.org/pav/",
+    "orcid": "https://orcid.org/",
+    "biolink": "https://w3id.org/biolink/vocab/",
+    "infores": "https://w3id.org/biolink/infores/",
+    "ENSEMBL": "http://identifiers.org/ensembl/"
+  }
+}
