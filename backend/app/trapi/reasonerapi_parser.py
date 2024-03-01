@@ -7,10 +7,13 @@ from SPARQLWrapper import JSON, SPARQLWrapper
 
 KNOWLEDGE_PROVIDER = "https://w3id.org/biolink/infores/knowledge-collaboratory"
 
-get_nanopubs_select_query = (
+
+# Query to get nanopublications that uses the older BioLink model (NeuroDKG)
+select_np_query_old = (
     """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX biolink: <https://w3id.org/biolink/vocab/>
+PREFIX infores: <https://w3id.org/biolink/infores/>
 PREFIX np: <http://www.nanopub.org/nschema#>
 PREFIX npx: <http://purl.org/nanopub/x/>
 PREFIX npa: <http://purl.org/nanopub/admin/>
@@ -69,10 +72,100 @@ WHERE {
 }"""
 )
 
+select_np_query = (
+    """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX biolink: <https://w3id.org/biolink/vocab/>
+PREFIX infores: <https://w3id.org/biolink/infores/>
+PREFIX np: <http://www.nanopub.org/nschema#>
+PREFIX npx: <http://purl.org/nanopub/x/>
+PREFIX npa: <http://purl.org/nanopub/admin/>
+SELECT DISTINCT ?association ?subject ?predicate ?object ?subject_category ?object_category
+    ?primary_knowledge_source ?primary_upstream_resource_ids ?primary_source_record_urls
+    ?supporting_data_source ?supporting_upstream_resource_ids ?supporting_source_record_urls
+    ?attribute_type ?attribute_provider ?attribute_value
+    ?qualifier ?qualifier_value
+    ?label ?description ?population_has_phenotype ?has_population_context ?provided_by ?publications
+WHERE {
+  graph ?np_assertion {
+    ?association biolink:subject ?subject ;
+      biolink:predicate ?predicate ;
+      biolink:object ?object .
+    OPTIONAL {
+      ?association biolink:primary_knowledge_source ?pks .
+      ?pks biolink:resource_id ?primary_knowledge_source .
+      OPTIONAL { ?pks biolink:upstream_resource_ids ?primary_upstream_resource_ids . }
+      OPTIONAL { ?pks biolink:source_record_urls ?primary_source_record_urls . }
+    }
+    OPTIONAL {
+      ?association biolink:supporting_data_source ?sks .
+      ?sds biolink:resource_id ?supporting_data_source .
+      OPTIONAL { ?sds biolink:upstream_resource_ids ?supporting_upstream_resource_ids . }
+      OPTIONAL { ?sds biolink:source_record_urls ?supporting_source_record_urls . }
+    }
+    OPTIONAL {
+      ?association biolink:has_attribute [
+        biolink:has_attribute_type ?attribute_type ;
+        biolink:provided_by ?attribute_provider ;
+        biolink:value ?attribute_value
+      ]
+    }
+    OPTIONAL {
+      ?association biolink:publications ?publications .
+    }
+    OPTIONAL {
+      ?association biolink:provided_by ?provided_by .
+    }
+    OPTIONAL {
+      ?association biolink:publications ?publications .
+    }
+    OPTIONAL {
+      ?association biolink:name ?label .
+    }
+    OPTIONAL {
+      ?association biolink:description ?description .
+    }
+    OPTIONAL {
+      ?association biolink:has_population_context|biolink:population_context_qualifier [
+        rdfs:label ?has_population_context ;
+        biolink:has_phenotype ?population_has_phenotype ;
+      ] .
+    }
+    {
+      ?subject a ?subject_category .
+      ?object a ?object_category .
+    } UNION {
+      ?subject biolink:category ?subject_category .
+      ?object biolink:category ?object_category .
+    }
+    VALUES ?qualifier {
+        biolink:qualified_predicate biolink:subject_aspect_qualifier biolink:object_aspect_qualifier biolink:subject_direction_qualifier biolink:object_direction_qualifier
+        biolink:subject_part_qualifier biolink:object_part_qualifier biolink:subject_context_qualifier biolink:subject_part_qualifier biolink:object_part_qualifier biolink:object_context_qualifier
+        biolink:population_context_qualifier biolink:temporal_context_qualifier biolink:form_or_variant_qualifier
+        biolink:derivative_qualifier biolink:statement_qualifier
+        biolink:frequency_qualifier biolink:severity_qualifier biolink:sex_qualifier biolink:onset_qualifier
+    }
+    OPTIONAL { ?association ?qualifier ?qualifier_value . }
+  }
+  ?_entity_filters
+  ?_prov_block
+  ?_np_index_filter
+  graph ?np_head {
+    ?np_uri np:hasAssertion ?np_assertion ;
+      np:hasProvenance ?np_prov .
+  }
+  graph npa:graph {
+    ?np_uri npa:hasValidSignatureForPublicKey ?pubkey .
+  }
+  FILTER NOT EXISTS { ?creator npx:retracts ?np_uri }
+}"""
+)
+
 get_metakg_edges_query = (
     """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX biolink: <https://w3id.org/biolink/vocab/>
+PREFIX infores: <https://w3id.org/biolink/infores/>
 PREFIX np: <http://www.nanopub.org/nschema#>
 PREFIX npx: <http://purl.org/nanopub/x/>
 SELECT DISTINCT ?subject_category ?predicate_category ?object_category
@@ -81,21 +174,9 @@ WHERE {
     ?subject biolink:category ?subject_category .
     ?object biolink:category ?object_category .
     ?association
-      biolink:aggregator_knowledge_source <"""
-    + KNOWLEDGE_PROVIDER
-    + """> ;
-      rdf:subject ?subject ;
-      rdf:predicate ?predicate_category ;
-      rdf:object ?object .
-    FILTER (datatype(?subject_category) = xsd:string)
-    FILTER (datatype(?object_category) = xsd:string)
-    #{
-    #  ?subject a ?subject_category .
-    #  ?object a ?object_category .
-    #} UNION {
-    #  ?subject biolink:category ?subject_category .
-    #  ?object biolink:category ?object_category .
-    #}
+      rdf:subject|biolink:subject ?subject ;
+      rdf:predicate|biolink:predicate ?predicate_category ;
+      rdf:object|biolink:object ?object .
   }
   graph ?np_head {
     ?np_uri np:hasAssertion ?np_assertion .
@@ -108,6 +189,7 @@ get_metakg_prefixes_query = (
     """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX biolink: <https://w3id.org/biolink/vocab/>
+PREFIX infores: <https://w3id.org/biolink/infores/>
 PREFIX np: <http://www.nanopub.org/nschema#>
 PREFIX npx: <http://purl.org/nanopub/x/>
 SELECT DISTINCT ?node_category ?node_prefix
@@ -115,23 +197,16 @@ WHERE {
   graph ?np_assertion {
     {
       ?association
-        biolink:aggregator_knowledge_source <"""
-    + KNOWLEDGE_PROVIDER
-    + """> ;
-        rdf:subject ?node ;
-        rdf:predicate ?predicate_category ;
-        rdf:object ?object .
+        rdf:subject|biolink:subject ?node ;
+        rdf:predicate|biolink:predicate ?predicate_category ;
+        rdf:object|biolink:object ?object .
     } UNION {
       ?association
-        biolink:aggregator_knowledge_source <"""
-    + KNOWLEDGE_PROVIDER
-    + """> ;
-        rdf:subject ?subject ;
-        rdf:predicate ?predicate_category ;
-        rdf:object ?node .
+        rdf:subject|biolink:subject ?subject ;
+        rdf:predicate|biolink:predicate ?predicate_category ;
+        rdf:object|biolink:object ?node .
     }
     ?node biolink:category ?node_category .
-    FILTER (datatype(?node_category) = xsd:string)
 
     VALUES (?namespace ?separator) {
       ("//identifiers.org/" "/")
@@ -164,6 +239,7 @@ for prefix in context:
         namespace_resolver[prefix] = context[prefix]
     elif "@id" in context[prefix]:
         namespace_resolver[prefix] = context[prefix]["@id"]
+namespace_resolver["infores"] = "https://w3id.org/biolink/infores/"
 
 uri_resolver = {v: k for k, v in namespace_resolver.items()}
 uri_resolver["https://identifiers.org/mim/"] = "OMIM"
@@ -176,7 +252,7 @@ uri_resolver["https://w3id.org/um/neurodkg/"] = "neurodkg"
 # http://www.ebi.ac.uk/efo/EFO_000985
 
 
-def resolve_uri_with_context(uri_string):
+def resolve_uri(uri_string):
     """Take an URI and return its CURIE form, using the BioLink JSON-LD Context previously loaded"""
     for ns_uri in uri_resolver:
         if uri_string.startswith("http://purl.obolibrary.org/obo/"):
@@ -234,9 +310,9 @@ def get_predicates_from_nanopubs():
     sparqlwrapper_results = sparql.query().convert()
     sparql_results = sparqlwrapper_results["results"]["bindings"]
     for result in sparql_results:
-        np_subject = resolve_uri_with_context(result["subject_category"]["value"])
-        np_predicate = resolve_uri_with_context(result["predicate_category"]["value"])
-        np_object = resolve_uri_with_context(result["object_category"]["value"])
+        np_subject = resolve_uri(result["subject_category"]["value"])
+        np_predicate = resolve_uri(result["predicate_category"]["value"])
+        np_object = resolve_uri(result["object_category"]["value"])
         if not predicates.get(np_subject):
             predicates[np_subject] = {}
 
@@ -259,19 +335,20 @@ def get_metakg_from_nanopubs():
     sparql.setQuery(get_metakg_edges_query)
     sparqlwrapper_results = sparql.query().convert()
     sparql_results = sparqlwrapper_results["results"]["bindings"]
-    # print(get_metakg_edges_query)
-    # print(sparql_results)
+    if settings.DEV_MODE:
+        print(get_metakg_edges_query)
+        print(sparql_results)
     edges_array = []
     for result in sparql_results:
         edges_array.append(
             {
-                "subject": resolve_uri_with_context(
+                "subject": resolve_uri(
                     result["subject_category"]["value"]
                 ),
-                "predicate": resolve_uri_with_context(
+                "predicate": resolve_uri(
                     result["predicate_category"]["value"]
                 ),
-                "object": resolve_uri_with_context(result["object_category"]["value"]),
+                "object": resolve_uri(result["object_category"]["value"]),
             }
         )
 
@@ -281,7 +358,7 @@ def get_metakg_from_nanopubs():
     prefixes_results = sparqlwrapper_results["results"]["bindings"]
     nodes_obj = {}
     for result in prefixes_results:
-        node_category = resolve_uri_with_context(result["node_category"]["value"])
+        node_category = resolve_uri(result["node_category"]["value"])
         if node_category not in nodes_obj.keys():
             nodes_obj[node_category] = {"id_prefixes": [result["node_prefix"]["value"]]}
         else:
@@ -339,153 +416,249 @@ def reasonerapi_to_sparql(reasoner_query):
             Contact us if you are interested in running multiple hop queries"""
         }
 
-    sparql_query_get_nanopubs = get_nanopubs_select_query
+    sparql_queries = [
+        select_np_query_old,
+        select_np_query,
+    ]
     predicate_edge_id = ""
     subject_node_id = ""
     object_node_id = ""
     prov_block = ""
     np_index_block = ""
+    transformed_queries = []
 
-    if in_index == "infores:knowledge-collaboratory":
-        # TODO: filter just on nanopubs created via annotate tool, maybe use prov?
-        # knowledge_source_block = f"biolink:primary_knowledge_source <{KNOWLEDGE_PROVIDER}> ;"
-        prov_block = """graph ?np_prov {
-        ?np_assertion prov:wasQuotedFrom ?wasQuotedFrom .
-      }"""
-    elif in_index:
-        np_index_block = f"""graph ?indexAssertionGraph {{
-            {{
-                <{in_index}> npx:appendsIndex* ?index .
-                ?index npx:includesElement ?np .
-            }} UNION {{
-                <{in_index}> npx:includesElement ?np .
-            }}
-        }}"""
+    for query_template in sparql_queries:
+        if in_index == "infores:knowledge-collaboratory":
+            # TODO: filter just on nanopubs created via annotate tool, maybe use prov?
+            # knowledge_source_block = f"biolink:primary_knowledge_source <{KNOWLEDGE_PROVIDER}> ;"
+            prov_block = """graph ?np_prov {
+            ?np_assertion prov:wasQuotedFrom ?wasQuotedFrom .
+        }"""
+        elif in_index:
+            np_index_block = f"""graph ?indexAssertionGraph {{
+                {{
+                    <{in_index}> npx:appendsIndex* ?index .
+                    ?index npx:includesElement ?np .
+                }} UNION {{
+                    <{in_index}> npx:includesElement ?np .
+                }}
+            }}"""
 
-    sparql_query_get_nanopubs = sparql_query_get_nanopubs.replace(
-        "?_np_index_filter", np_index_block
-    )
-    sparql_query_get_nanopubs = sparql_query_get_nanopubs.replace(
-        "?_prov_block", prov_block
-    )
-    # else:
-    #   knowledge_source_block = f"biolink:aggregator_knowledge_source <{KNOWLEDGE_PROVIDER}> ;"
-    #   sparql_query_get_nanopubs = sparql_query_get_nanopubs.replace('?_knowledge_source', knowledge_source_block)
-
-    for edge_id in query_graph["edges"]:
-        edge_props = query_graph["edges"][edge_id]
-        predicate_edge_id = edge_id
-        subject_node_id = edge_props["subject"]
-        object_node_id = edge_props["object"]
-
-        entity_filters = ""
-        try:
-            predicate_curies = edge_props["predicates"]
-            if not isinstance(predicate_curies, list):
-                predicate_curies = [predicate_curies]
-            predicate_curies = ["?predicate = " + curie for curie in predicate_curies]
-            predicate_curies = " || ".join("?predicate = " + predicate_curies)
-            entity_filters = entity_filters + "FILTER ( " + predicate_curies + " )\n"
-        except Exception:
-            pass
-
-        try:
-            subject_categories = query_graph["nodes"][edge_props["subject"]][
-                "categories"
-            ]
-            if not isinstance(subject_categories, list):
-                subject_categories = [subject_categories]
-            subject_categories = ["?subject_category = " + curie for curie in subject_categories]
-            subject_categories = " || ".join(subject_categories)
-            entity_filters = entity_filters + "FILTER ( " + subject_categories + " )\n"
-        except Exception:
-            pass
-
-        try:
-            object_categories = query_graph["nodes"][edge_props["object"]]["categories"]
-            if not isinstance(object_categories, list):
-                object_categories = [object_categories]
-            object_categories = ["?object_category = " + curie for curie in object_categories]
-            object_categories = " || ".join(object_categories)
-            entity_filters = entity_filters + "FILTER ( " + object_categories + " )\n"
-        except Exception:
-            pass
-
-        # Resolve provided CURIE to the BioLink context and https://identifiers.org/CURIE:ID
-        try:
-            subject_curies = query_graph["nodes"][edge_props["subject"]]["ids"]
-            subject_curies = [f"?subject = <{resolve_curie(curie)}> || ?subject =<{resolve_curie_identifiersorg(curie)}>" for curie in subject_curies]
-            subject_curies = " || ".join(subject_curies)
-            entity_filters = entity_filters + "FILTER ( " + subject_curies + " )\n"
-        except Exception:
-            pass
-
-        try:
-            object_curies = query_graph["nodes"][edge_props["object"]]["ids"]
-            object_curies = [f"?object = <{resolve_curie(curie)}> || ?object =<{resolve_curie_identifiersorg(curie)}>" for curie in object_curies]
-            object_curies = " || ".join(object_curies)
-            entity_filters = entity_filters + "FILTER ( " + object_curies + " )\n"
-        except Exception:
-            pass
-        sparql_query_get_nanopubs = sparql_query_get_nanopubs.replace(
-            "?_entity_filters", entity_filters
+        query = query_template.replace(
+            "?_np_index_filter", np_index_block
         )
-        sparql_query_get_nanopubs = sparql_query_get_nanopubs.replace(
+        query = query.replace(
             "?_prov_block", prov_block
         )
+        # else:
+        #   knowledge_source_block = f"biolink:aggregator_knowledge_source <{KNOWLEDGE_PROVIDER}> ;"
+        #   sparql_query_get_nanopubs = sparql_query_get_nanopubs.replace('?_knowledge_source', knowledge_source_block)
 
-    # Add LIMIT to the SPARQL query if n_results provided
-    if n_results:
-        sparql_query_get_nanopubs = (
-            sparql_query_get_nanopubs + " LIMIT " + str(n_results)
-        )
+        for edge_id in query_graph["edges"]:
+            edge_props = query_graph["edges"][edge_id]
+            predicate_edge_id = edge_id
+            subject_node_id = edge_props["subject"]
+            object_node_id = edge_props["object"]
 
-    knowledge_graph = {"nodes": {}, "edges": {}}
+            entity_filters = ""
+            # Generate SPARQL query filters based on TRAPI query graph
+            try:
+                predicate_curies = edge_props["predicates"]
+                if not isinstance(predicate_curies, list):
+                    predicate_curies = [predicate_curies]
+                predicate_curies = ["?predicate = " + curie for curie in predicate_curies]
+                predicate_curies = " || ".join("?predicate = " + predicate_curies)
+                entity_filters = entity_filters + "FILTER ( " + predicate_curies + " )\n"
+            except Exception:
+                pass
+            try:
+                subject_categories = query_graph["nodes"][edge_props["subject"]][
+                    "categories"
+                ]
+                if not isinstance(subject_categories, list):
+                    subject_categories = [subject_categories]
+                subject_categories = ["?subject_category = " + curie for curie in subject_categories]
+                subject_categories = " || ".join(subject_categories)
+                entity_filters = entity_filters + "FILTER ( " + subject_categories + " )\n"
+            except Exception:
+                pass
+            try:
+                object_categories = query_graph["nodes"][edge_props["object"]]["categories"]
+                if not isinstance(object_categories, list):
+                    object_categories = [object_categories]
+                object_categories = ["?object_category = " + curie for curie in object_categories]
+                object_categories = " || ".join(object_categories)
+                entity_filters = entity_filters + "FILTER ( " + object_categories + " )\n"
+            except Exception:
+                pass
+            # Resolve provided CURIE to the BioLink context and https://identifiers.org/CURIE:ID
+            try:
+                subject_curies = query_graph["nodes"][edge_props["subject"]]["ids"]
+                subject_curies = [f"?subject = <{resolve_curie(curie)}> || ?subject =<{resolve_curie_identifiersorg(curie)}>" for curie in subject_curies]
+                subject_curies = " || ".join(subject_curies)
+                entity_filters = entity_filters + "FILTER ( " + subject_curies + " )\n"
+            except Exception:
+                pass
+            try:
+                object_curies = query_graph["nodes"][edge_props["object"]]["ids"]
+                object_curies = [f"?object = <{resolve_curie(curie)}> || ?object =<{resolve_curie_identifiersorg(curie)}>" for curie in object_curies]
+                object_curies = " || ".join(object_curies)
+                entity_filters = entity_filters + "FILTER ( " + object_curies + " )\n"
+            except Exception:
+                pass
+            query = query.replace(
+                "?_entity_filters", entity_filters
+            )
+            query = query.replace(
+                "?_prov_block", prov_block
+            )
+        # NOTE: arbitrary limit to prevent requesting too much from the SPARQL endpoint
+        query = query + " LIMIT 10000"
+        transformed_queries.append(query)
+
+    kg = {"nodes": {}, "edges": {}}
     query_results = []
     kg_edge_count = 0
 
-    if settings.DEV_MODE is True:
-        print(
-            f"Running the following SPARQL query to retrieve nanopublications from {settings.NANOPUB_SPARQL_URL}"
-        )
-        print(sparql_query_get_nanopubs)
-
     sparql = SPARQLWrapper(settings.NANOPUB_SPARQL_URL)
     sparql.setReturnFormat(JSON)
-    sparql.setQuery(sparql_query_get_nanopubs)
-    sparqlwrapper_results = sparql.query().convert()
-    sparql_results = sparqlwrapper_results["results"]["bindings"]
+    sparql_results = []
+    for query in transformed_queries:
+        if settings.DEV_MODE is True:
+            print(
+                f"Running the following SPARQL query to retrieve nanopublications from {settings.NANOPUB_SPARQL_URL}"
+            )
+            print(query)
+        sparql.setQuery(query)
+        sparqlwrapper_results = sparql.query().convert()
+        sparql_results.extend(sparqlwrapper_results["results"]["bindings"])
 
+    # Build TRAPI KG from SPARQL results
     # Check current official example of Reasoner query results: https://github.com/NCATSTranslator/ReasonerAPI/blob/master/examples/Message/simple.json
     # Now iterates the Nanopubs SPARQL query results:
     for edge_result in sparql_results:
         # print(edge_result)
+        if kg_edge_count >= n_results:
+            break
         edge_uri = edge_result["association"]["value"]
+        # Conflict when multiple nanopubs use the same edge ID: edge_uri = edge_result["association"]["value"].split("#")[-1]
         # Create edge object in knowledge_graph
-        knowledge_graph["edges"][edge_uri] = {
-            "predicate": resolve_uri_with_context(edge_result["predicate"]["value"]),
-            "subject": resolve_uri_with_context(edge_result["subject"]["value"]),
-            "object": resolve_uri_with_context(edge_result["object"]["value"]),
-            "attributes": [],
-            "sources": [
-                {
-                    "resource_id": "infores:knowledge-collaboratory",
-                    "resource_role": "primary_knowledge_source"
-                },
-            ]
-        }
+        add_binding = False
+        if edge_uri not in kg["edges"]:
+            add_binding = True
+            kg["edges"][edge_uri] = {
+                "predicate": [resolve_uri(edge_result["predicate"]["value"])],
+                "subject": resolve_uri(edge_result["subject"]["value"]),
+                "object": resolve_uri(edge_result["object"]["value"]),
+                "attributes": [],
+                "qualifiers": [],
+                "sources": [],
+            }
+
+        # Get author based on nanopub pubkey?
         if (
             "pubkey" in edge_result
             and "user" in np_users[edge_result["pubkey"]["value"]]
         ):
-            knowledge_graph["edges"][edge_uri]["attributes"].append(
+            kg["edges"][edge_uri]["attributes"].append(
                 {
                     "attribute_type_id": "biolink:author",
                     "value": np_users[edge_result["pubkey"]["value"]]["user"]["value"],
                 }
             )
 
-        # TODO: refactor to use a list and a loop
+        # Add Sources
+        if "primary_knowledge_source" in edge_result:
+            new_src = {
+                "resource_id": resolve_uri(edge_result["primary_knowledge_source"]["value"]),
+                "resource_role": "primary_knowledge_source",
+            }
+            if "primary_upstream_resource_ids" in edge_result:
+                if "upstream_resource_ids" not in new_src:
+                    new_src["upstream_resource_ids"] = []
+                new_src["upstream_resource_ids"].append(resolve_uri(
+                    edge_result["primary_upstream_resource_ids"]["value"]
+                ))
+            if "primary_source_record_urls" in edge_result:
+                if "source_record_urls" not in new_src:
+                    new_src["source_record_urls"] = []
+                new_src["source_record_urls"].append(resolve_uri(
+                    edge_result["primary_source_record_urls"]["value"]
+                ))
+            if not any(
+                attribute for attribute in kg["edges"][edge_uri]["sources"]
+                if attribute["resource_id"] == new_src["resource_id"]
+            ):
+                kg["edges"][edge_uri]["sources"].append(new_src)
+
+        if "supporting_data_source" in edge_result:
+            new_src = {
+                "resource_id": resolve_uri(edge_result["supporting_data_source"]["value"]),
+                "resource_role": "supporting_data_source",
+            }
+            if "supporting_upstream_resource_ids" in edge_result:
+                if "upstream_resource_ids" not in new_src:
+                    new_src["upstream_resource_ids"] = []
+                new_src["upstream_resource_ids"].append(resolve_uri(
+                    edge_result["supporting_upstream_resource_ids"]["value"]
+                ))
+            if "supporting_source_record_urls" in edge_result:
+                if "source_record_urls" not in new_src:
+                    new_src["source_record_urls"] = []
+                new_src["source_record_urls"].append(resolve_uri(
+                    edge_result["supporting_source_record_urls"]["value"]
+                ))
+            if not any(
+                attribute for attribute in kg["edges"][edge_uri]["sources"]
+                if attribute["resource_id"] == new_src["resource_id"]
+            ):
+                kg["edges"][edge_uri]["sources"].append(new_src)
+
+        # Add Attributes
+        if "attribute_type" in edge_result:
+            new_attribute = {
+                "attribute_type_id": resolve_uri(edge_result["attribute_type"]["value"]),
+                "value": resolve_uri(edge_result["attribute_value"]["value"]),
+                "attribute_source": resolve_uri(edge_result["attribute_provider"]["value"])
+            }
+            if not any(
+                attribute for attribute in kg["edges"][edge_uri]["attributes"]
+                if attribute["attribute_type_id"] == new_attribute["attribute_type_id"] and attribute["value"] == new_attribute["value"]
+            ):
+                kg["edges"][edge_uri]["attributes"].append(new_attribute)
+
+        # Add Qualifiers
+        if "qualifier_value" in edge_result:
+            new_qualifier = {
+                "qualifier_type_id": resolve_uri(edge_result["qualifier"]["value"]),
+                "qualifier_value": resolve_uri(edge_result["qualifier_value"]["value"]),
+            }
+            if not any(
+                qualifier for qualifier in kg["edges"][edge_uri]["qualifiers"]
+                if qualifier["qualifier_type_id"] == new_qualifier["qualifier_type_id"] and qualifier["qualifier_value"] == new_qualifier["qualifier_value"]
+            ):
+                kg["edges"][edge_uri]["qualifiers"].append(new_qualifier)
+
+        if "label" in edge_result:
+            kg["edges"][edge_uri]["attributes"].append(
+                {
+                    "attribute_type_id": "biolink:name",
+                    "value": resolve_uri(edge_result["label"]["value"]),
+                }
+            )
+        if "description" in edge_result:
+            kg["edges"][edge_uri]["attributes"].append(
+                {
+                    "attribute_type_id": "biolink:description",
+                    "value": resolve_uri(
+                        edge_result["description"]["value"]
+                    ),
+                    # 'value_type_id': 'biolink:Cohort',
+                }
+            )
+
+        # NOTE: below properties are mainly for the old query
+        # TODO: refactor to use a list and a loop?
         # extract_attributes = [
         #   'relation', 'publications', 'knowledge_source', 'label', 'provided_by',
         #   'description', 'has_population_context', 'population_has_phenotype'
@@ -499,125 +672,93 @@ def reasonerapi_to_sparql(reasoner_query):
         #         }
         #     )
         if "publications" in edge_result:
-            knowledge_graph["edges"][edge_uri]["attributes"].append(
+            # Only for the old query
+            kg["edges"][edge_uri]["attributes"].append(
                 {
                     "attribute_type_id": "biolink:publications",
-                    "value": resolve_uri_with_context(
+                    "value": resolve_uri(
                         edge_result["publications"]["value"]
                     ),
                 }
             )
-        # NOTE: not used anymore, primary is always the knowledge collaboratory
-        # if "primary_knowledge_source" in edge_result:
-        #     knowledge_graph["edges"][edge_uri]["attributes"].append(
-        #         {
-        #             "attribute_type_id": "biolink:primary_knowledge_source",
-        #             "value": resolve_uri_with_context(
-        #                 edge_result["primary_knowledge_source"]["value"]
-        #             ),
-        #         }
-        #     )
-
-        if "label" in edge_result:
-            knowledge_graph["edges"][edge_uri]["attributes"].append(
-                {
-                    "attribute_type_id": "biolink:name",
-                    "value": resolve_uri_with_context(edge_result["label"]["value"]),
-                }
-            )
-        if "description" in edge_result:
-            knowledge_graph["edges"][edge_uri]["attributes"].append(
-                {
-                    "attribute_type_id": "biolink:description",
-                    "value": resolve_uri_with_context(
-                        edge_result["description"]["value"]
-                    ),
-                    # 'value_type_id': 'biolink:Cohort',
-                }
-            )
-
         if "has_population_context" in edge_result:
-            knowledge_graph["edges"][edge_uri]["attributes"].append(
+            kg["edges"][edge_uri]["attributes"].append(
                 {
                     "attribute_type_id": "biolink:population_context_qualifier",
-                    "value": resolve_uri_with_context(
+                    "value": resolve_uri(
                         edge_result["has_population_context"]["value"]
                     ),
                     # 'value_type_id': 'biolink:Cohort',
                 }
             )
-
         if "population_has_phenotype" in edge_result:
             # TODO: fix the key
-            knowledge_graph["edges"][edge_uri]["attributes"].append(
+            kg["edges"][edge_uri]["attributes"].append(
                 {
                     "attribute_type_id": "biolink:has_phenotype",
-                    "value": resolve_uri_with_context(
+                    "value": resolve_uri(
                         edge_result["population_has_phenotype"]["value"]
                     ),
                     # 'value_type_id': 'biolink:Phenotype',
                 }
             )
-
-        # if edge_result['association_type']:
-        #   knowledge_graph['edges'][edge_uri]['association_type'] = resolve_uri_with_context(edge_result['association_type']['value'])
-
         if "provided_by" in edge_result:
             # Add provided_by attribute
-            knowledge_graph["edges"][edge_uri]["attributes"].append(
+            kg["edges"][edge_uri]["attributes"].append(
                 {
                     "attribute_type_id": "biolink:provided_by",
-                    "value": resolve_uri_with_context(
+                    "value": resolve_uri(
                         edge_result["provided_by"]["value"]
                     ),
                     # 'value_type_id': 'biolink:Agent',
                 }
             )
 
-        knowledge_graph["nodes"][
-            resolve_uri_with_context(edge_result["subject"]["value"])
+        # Add nodes to the knowledge_graph
+        kg["nodes"][
+            resolve_uri(edge_result["subject"]["value"])
         ] = {
             "categories": [
-                resolve_uri_with_context(edge_result["subject_category"]["value"])
+                resolve_uri(edge_result["subject_category"]["value"])
             ]
         }
-        knowledge_graph["nodes"][
-            resolve_uri_with_context(edge_result["object"]["value"])
+        kg["nodes"][
+            resolve_uri(edge_result["object"]["value"])
         ] = {
             "categories": [
-                resolve_uri_with_context(edge_result["object_category"]["value"])
+                resolve_uri(edge_result["object_category"]["value"])
             ]
         }
 
         # Add the bindings to the results object
-        result = {
-            'node_bindings': {},
-            'analyses': [{
-                "resource_id": "infores:knowledge-collaboratory",
-                "edge_bindings": {
-                    predicate_edge_id: [
-                        {
-                            "id": edge_uri
-                        }
-                    ]
-                }
-            }],
-            # 'edge_bindings': {},
-        }
-        # result["edge_bindings"][predicate_edge_id] = [{"id": edge_uri}]
-        result["node_bindings"][subject_node_id] = [
-            {"id": resolve_uri_with_context(edge_result["subject"]["value"])}
-        ]
-        result["node_bindings"][object_node_id] = [
-            {"id": resolve_uri_with_context(edge_result["object"]["value"])}
-        ]
-        query_results.append(result)
-
-        kg_edge_count += 1
+        if add_binding:
+            result = {
+                'node_bindings': {},
+                'analyses': [{
+                    "resource_id": "infores:knowledge-collaboratory",
+                    "edge_bindings": {
+                        predicate_edge_id: [
+                            {
+                                "id": edge_uri
+                            }
+                        ]
+                    }
+                }],
+                # 'edge_bindings': {},
+            }
+            # result["edge_bindings"][predicate_edge_id] = [{"id": edge_uri}]
+            result["node_bindings"][subject_node_id] = [
+                {"id": resolve_uri(edge_result["subject"]["value"])}
+            ]
+            result["node_bindings"][object_node_id] = [
+                {"id": resolve_uri(edge_result["object"]["value"])}
+            ]
+            query_results.append(result)
+            kg_edge_count += 1
 
     return {
         "message": {
-            "knowledge_graph": knowledge_graph,
+            "knowledge_graph": kg,
             "query_graph": query_graph,
             "results": query_results,
         },
@@ -626,7 +767,6 @@ def reasonerapi_to_sparql(reasoner_query):
         "schema_version": settings.TRAPI_VERSION,
         "biolink_version": settings.BIOLINK_VERSION,
         "status": "Success",
-        # "tool_version": "OpenPredict 0.1.0",
         # "logs": [
         #     {
         #         "code": None,
@@ -636,52 +776,3 @@ def reasonerapi_to_sparql(reasoner_query):
         #     },
         # ]
     }
-
-
-# array_json = {
-#     "message": {
-#         "query_graph": {
-#             "edges": {
-#                 "e01": {
-#                     "object": "n1",
-#                     "predicate": ["biolink:treated_by", "biolink:treats"],
-#                     "subject": "n0",
-#                 }
-#             },
-#             "nodes": {
-#                 "n0": {
-#                     "category": ["biolink:ChemicalEntity", "biolink:Drug"],
-#                     "id": ["CHEBI:75725", "DRUGBANK:DB00394"],
-#                 },
-#                 "n1": {"category": ["biolink:Drug", "biolink:Disease"]},
-#             },
-#         }
-#     }
-# }
-
-## Get for rdf:type and biolink:category
-# get_metakg_edges_query = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-# PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-# PREFIX biolink: <https://w3id.org/biolink/vocab/>
-# PREFIX np: <http://www.nanopub.org/nschema#>
-# PREFIX npx: <http://purl.org/nanopub/x/>
-# SELECT DISTINCT ?subject_category ?predicate_category ?object_category
-# WHERE {
-#   graph ?np_assertion {
-#     ?association
-#       rdf:subject ?subject ;
-#       rdf:predicate ?predicate_category ;
-#       rdf:object ?object .
-#     {
-#       ?subject a ?subject_category .
-#       ?object a ?object_category .
-#     } UNION {
-#       ?subject biolink:category ?subject_category .
-#       ?object biolink:category ?object_category .
-#     }
-#   }
-#   graph ?np_head {
-#     ?np_uri np:hasAssertion ?np_assertion .
-#   }
-#   FILTER NOT EXISTS { ?creator npx:retracts ?np_uri }
-# }"""

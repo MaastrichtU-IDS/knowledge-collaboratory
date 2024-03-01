@@ -1,8 +1,9 @@
-# Connections Hypothesis provider integration 
+# 🧬 Connections Hypothesis provider integration 
 
-Integration of the Connections Hypothesis provider Gennifer service that generates genes associations.
+Integration of the [Connections Hypothesis provider](https://github.com/NCATSTranslator/Translator-All/wiki/Connections-Hypothesis-Provider) Gennifer service that generates genes associations.
 
-Expected TRAPI KG for Gennifer gene-gene associations:
+<details><summary>Click here to see the expected TRAPI KG for Gennifer gene-gene associations</summary>
+
 
 ```json
 {
@@ -90,15 +91,20 @@ Expected TRAPI KG for Gennifer gene-gene associations:
     }
 }
 ```
+</details>
 
-## As Nanopub
+## ✉️ As Nanopub
 
-Example existing BioLink association as nanopub: https://np.knowledgepixels.com/RALF3OirR77buyLNA6Ehu_5RGYBQKIVEK5_yOLooqkZl4.html
+Gennifer gene to gene association defined as Nanopub RDF using the JSON-LD format
 
-BioLink classes used:
-
-* Sources: https://biolink.github.io/biolink-model/RetrievalSource/
-* Attributes: https://biolink.github.io/biolink-model/Attribute/
+> [!NOTE]
+>
+> BioLink classes used:
+>
+> * GeneToGeneAssociation
+> * Sources: https://biolink.github.io/biolink-model/RetrievalSource/
+> * Attributes: https://biolink.github.io/biolink-model/Attribute/
+> * Qualifiers are provided directly as predicate-object on the association
 
 
 ```json
@@ -196,7 +202,7 @@ BioLink classes used:
         },
         {
           "@id": "biolink:",
-          "pav:version": "3.1.0"
+          "pav:version": "4.1.3"
         }
       ]
     },
@@ -238,111 +244,115 @@ In the biolink model it is `has_attribute_type` and `has_quantitative_value`/`ha
 
 Not sure if it is normal
 
-## Example signed Nanopub
+## ✍️ Nanopub signed and published to test server
 
-Check the nanopub is valid and generate the signed version: https://vemonet.github.io/nanopub-rs/demo.html
+Website to sign and publish the Nanopub to the test server: https://vemonet.github.io/nanopub-rs/demo.html
 
-In RDF trig format:
+Example published on the test server: https://np.test.knowledgepixels.com/RAxEVUFRa69bSiCd4_KkO4YteCQ3Jq3_qnQWmdApLWBO0
 
-```turtle
-PREFIX this: <https://w3id.org/np/RAzcda-64zCC9iyGDz95T87DC3tmyo1IevKnIrJCIfYus>
-PREFIX sub: <https://w3id.org/np/RAzcda-64zCC9iyGDz95T87DC3tmyo1IevKnIrJCIfYus#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-PREFIX schema: <http://schema.org/>
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-PREFIX biolink: <https://w3id.org/biolink/vocab/>
-PREFIX np: <http://www.nanopub.org/nschema#>
-PREFIX prov: <http://www.w3.org/ns/prov#>
-PREFIX pav: <http://purl.org/pav/>
-PREFIX dcterms: <http://purl.org/dc/terms/>
-PREFIX orcid: <https://orcid.org/>
-PREFIX npx: <http://purl.org/nanopub/x/>
+## 🏁 Knowledge Collaboratory TRAPI results
 
-GRAPH sub:Head {
-  <https://w3id.org/np/RAzcda-64zCC9iyGDz95T87DC3tmyo1IevKnIrJCIfYus> a np:Nanopublication;
-    np:hasAssertion sub:assertion;
-    np:hasProvenance sub:provenance;
-    np:hasPublicationInfo sub:pubinfo.
+Running the TRAPI query on the Knowledge Collaboratory TRAPI endpoint in test environment:
+
+```json
+{
+  "message": {
+    "query_graph": {
+      "edges": {
+        "e01": {
+          "object": "n1",
+          "subject": "n0"
+        }
+      },
+      "nodes": {
+        "n0": {
+          "categories": [
+            "biolink:Gene"
+          ]
+        },
+        "n1": {
+          "categories": [
+            "biolink:Gene"
+          ]
+        }
+      }
+    }
+  },
+  "query_options": {
+    "n_results": 1
+  }
 }
+```
 
-GRAPH sub:assertion {
-  <http://identifiers.org/ensembl/ENSG00000132155> a biolink:Gene;
-    biolink:category biolink:Gene.
+We get the result:
 
-  <http://identifiers.org/ensembl/ENSG00000174775> a biolink:Gene;
-    biolink:category biolink:Gene.
-
-  sub:1c164fe23bee a biolink:GeneToGeneAssociation;
-    biolink:categories biolink:GeneToGeneAssociation;
-    biolink:has_attribute sub:_1,
-      sub:_2,
-      sub:_3,
-      sub:_4;
-    biolink:object <http://identifiers.org/ensembl/ENSG00000174775>;
-    biolink:object_aspect_qualifier "activity";
-    biolink:object_direction_qualifier "upregulated";
-    biolink:predicate biolink:regulates;
-    biolink:primary_knowledge_source sub:_5;
-    biolink:qualified_predicate biolink:causes;
-    biolink:subject <http://identifiers.org/ensembl/ENSG00000132155>;
-    biolink:supporting_data_source sub:_6,
-      sub:_7.
-
-  sub:_1 a biolink:Attribute;
-    biolink:has_attribute_type biolink:knowledge_level;
-    biolink:provided_by <https://w3id.org/biolink/infores/knowledge-collaboratory>;
-    biolink:value "curated".
-
-  sub:_2 a biolink:Attribute;
-    biolink:has_attribute_type biolink:publications;
-    biolink:provided_by <https://w3id.org/biolink/infores/knowledge-collaboratory>;
-    biolink:value <https://w3id.org/np/RAzcda-64zCC9iyGDz95T87DC3tmyo1IevKnIrJCIfYus>.
-
-  sub:_3 a biolink:Attribute;
-    biolink:has_attribute_type biolink:has_author;
-    biolink:provided_by <https://w3id.org/biolink/infores/connections-hypothesis>;
-    biolink:value "<SME_ORCHID>".
-
-  sub:_4 a biolink:Attribute;
-    biolink:has_attribute_type biolink:algorithm;
-    biolink:provided_by <https://w3id.org/biolink/infores/connections-hypothesis>;
-    biolink:value "<ALGORITHM_PUB>".
-
-  sub:_5 a biolink:RetrievalSource;
-    biolink:resource_id <https://w3id.org/biolink/infores/knowledge-collaboratory>;
-    biolink:resource_role "primary_knowledge_source";
-    biolink:upstream_resource_ids <https://w3id.org/biolink/infores/connections-hypothesis>.
-
-  sub:_6 a biolink:RetrievalSource;
-    biolink:resource_id <https://w3id.org/biolink/infores/connections-hypothesis>;
-    biolink:resource_role "supporting_data_source";
-    biolink:upstream_resource_ids <https://w3id.org/biolink/infores/zenodo>.
-
-  sub:_7 a biolink:RetrievalSource;
-    biolink:resource_id <https://w3id.org/biolink/infores/zenodo>;
-    biolink:resource_role "supporting_data_source";
-    biolink:source_record_urls "<DOITOSTUDY>".
-}
-
-GRAPH sub:provenance {
-  <https://w3id.org/biolink/vocab/>
-    pav:version "3.1.0".
-
-  sub:assertion
-    dcterms:conformsTo <https://w3id.org/biolink/vocab/>.
-}
-
-GRAPH sub:pubinfo {
-  <https://w3id.org/np/RAzcda-64zCC9iyGDz95T87DC3tmyo1IevKnIrJCIfYus>
-    dcterms:created "2024-02-29T08:51:45.454Z"^^xsd:dateTime.
-
-  sub:sig
-    npx:hasAlgorithm "RSA";
-    npx:hasPublicKey "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQD3RHyHR7WWKBYevw1qK86B6RVzI7oKlvghqXvbpOAX1KueDE6Itru34HRhrVy4OMLCRQWBE3VXktKdbgOxD3vC4cIxz5LX+XOgGWzv5WKSjOfXu/yIeJrzsuIkyHvw7/tToGrE0itJ1wGylJv+YieizmGvNiUHhP0J0+YFMNnvewIDAQAB";
-    npx:hasSignature "HH5BAsSzPqeDtH13aV/RKP2OY2WEZKLfbE5Ldp29jAhg6gqVE8z+ypyEhNESaw7W3SjCzf2y2v2/zEiuK44btBVNnh86IqRDsnoJr++xDLNYciO/Y74hpSWSofdpShzFXVQt5Id4rizUlFuAiylirJUNEJxRwKuBwte3kBooYlM=";
-    npx:hasSignatureTarget <https://w3id.org/np/RAzcda-64zCC9iyGDz95T87DC3tmyo1IevKnIrJCIfYus>.
+```json
+{
+    "knowledge_graph": {
+      "nodes": {
+        "ENSEMBL:ENSG00000132155": {
+          "categories": [
+            "biolink:Gene"
+          ]
+        },
+        "ENSEMBL:ENSG00000174775": {
+          "categories": [
+            "biolink:Gene"
+          ]
+        }
+      },
+      "edges": {
+        "https://w3id.org/np/RA0bcmOxDs0pMzb1csOaEiQ6F82dOpLibgqA-htAiUUdA#1c164fe23bee": {
+          "predicate": [
+            "biolink:regulates"
+          ],
+          "subject": "ENSEMBL:ENSG00000132155",
+          "object": "ENSEMBL:ENSG00000174775",
+          "attributes": [
+            {
+              "attribute_type_id": "biolink:knowledge_level",
+              "value": "curated",
+              "attribute_source": "infores:knowledge-collaboratory"
+            },
+            {
+              "attribute_type_id": "biolink:publications",
+              "value": "https://w3id.org/np/RA0bcmOxDs0pMzb1csOaEiQ6F82dOpLibgqA-htAiUUdA",
+              "attribute_source": "infores:knowledge-collaboratory"
+            },
+            {
+              "attribute_type_id": "biolink:has_author",
+              "value": "<SME_ORCHID>",
+              "attribute_source": "infores:connections-hypothesis"
+            },
+            {
+              "attribute_type_id": "biolink:algorithm",
+              "value": "<ALGORITHM_PUB>",
+              "attribute_source": "infores:connections-hypothesis"
+            }
+          ],
+          "qualifiers": [
+            {
+              "qualifier_type_id": "biolink:object_aspect_qualifier",
+              "qualifier_value": "activity"
+            }
+          ],
+          "sources": [
+            {
+              "resource_id": "infores:knowledge-collaboratory",
+              "resource_role": "primary_knowledge_source",
+              "upstream_resource_ids": [
+                "infores:connections-hypothesis"
+              ]
+            },
+            {
+              "resource_id": "infores:zenodo",
+              "resource_role": "supporting_data_source",
+              "source_record_urls": [
+                "<DOITOSTUDY>"
+              ]
+            }
+          ]
+        }
 }
 ```
 

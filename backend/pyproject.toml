@@ -102,8 +102,14 @@ features = [
 #     "pre-commit install",
 # ]
 
+[tool.hatch.envs.default.env-vars]
+NO_JAEGER = "True"
+DEV_MODE = "True"
+# Uncomment the line below to use the Nanopub test server
+NANOPUB_SPARQL_URL = "https://virtuoso.test.nps.knowledgepixels.com/sparql"
+
 [tool.hatch.envs.default.scripts]
-dev = "uvicorn app.main:app --reload"
+dev = "uvicorn app.main:app --reload {args}"
 api = "BACKEND_URL=http://localhost:8000 uvicorn app.main:app --host localhost --port 8000 --reload {args}"
 test = "pytest {args}"
 fmt = [

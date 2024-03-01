@@ -30,7 +30,7 @@ class Settings(BaseSettings):
 
     NANOPUB_GRLC_URL: str = "https://grlc.np.dumontierlab.com/api/local/local"
     NANOPUB_SPARQL_URL: str = "https://virtuoso.nps.petapico.org/sparql"
-    # NANOPUB_SPARQL_URL: str = 'http://virtuoso.np.dumontierlab.137.120.31.101.nip.io/sparql'
+    # NANOPUB_SPARQL_URL: str = "https://virtuoso.test.nps.knowledgepixels.com/sparql"
 
     # SERVER_NAME: str = 'localhost'
     # SERVER_HOST: AnyHttpUrl = 'http://localhost'

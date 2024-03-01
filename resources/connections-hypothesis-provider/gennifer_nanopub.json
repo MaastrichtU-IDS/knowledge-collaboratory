@@ -92,7 +92,7 @@
         },
         {
           "@id": "biolink:",
-          "pav:version": "3.1.0"
+          "pav:version": "4.1.3"
         }
       ]
     },
