@@ -284,7 +284,7 @@ Running the TRAPI query on the Knowledge Collaboratory TRAPI endpoint in test en
 }
 ```
 
-We get the result:
+We get the result, we use the complete nanopub URI for the edge to avoid conflicts if multiple associations have been defined using the exact same ID:
 
 ```json
 {
