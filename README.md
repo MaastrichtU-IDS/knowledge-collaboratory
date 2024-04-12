@@ -12,7 +12,7 @@ The extracted entities and relations are then displayed to the users on the webs
 
 Backend built with [FastAPI](https://fastapi.tiangolo.com/), and [RDFLib](https://github.com/RDFLib/rdflib).
 
-Frontend built with [Astro](https://astro.build/), [ReactJS](https://reactjs.org/), and [Material UI](https://mui.com/)
+Frontend built with NextJS, [ReactJS](https://reactjs.org/), and [Material UI](https://mui.com/)
 
 ## 🌐 Public deployments
 

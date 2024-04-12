@@ -25,6 +25,7 @@ export default function BrowseNanopub() {
   const theme = useTheme()
 
   const resourceTypesList: any = [
+    {label: 'All nanopublications', uri: 'All nanopublications'},
     {label: 'PREDICT reference dataset', uri: 'http://purl.org/np/RAWWaT9M_Nd8cVm_-amJErz60Ak__tkS6ROi2P-swdmMw'},
     {
       label: 'Off-Label drug indication dataset',
@@ -34,7 +35,6 @@ export default function BrowseNanopub() {
       label: 'Claims published with Annotate biomedical text',
       uri: 'https://w3id.org/biolink/infores/knowledge-collaboratory'
     },
-    {label: 'All nanopublications', uri: 'All nanopublications'}
   ]
   const users_pubkeys: any = {}
   const nanopub_obj: any = {}
@@ -159,10 +159,11 @@ export default function BrowseNanopub() {
           }
         }`
       }
-    } else {
-      // By default we show all nanopubs in the Knowledge Collaboratory
-      assertionBlocks.push(`?association biolink:aggregator_knowledge_source <${knowledgeProvider}> .`)
     }
+    // else {
+    //   // By default we were showing all nanopubs in the Knowledge Collaboratory. Not anymore (there no new, so we just show all nanopubs)
+    //   assertionBlocks.push(`?association biolink:aggregator_knowledge_source <${knowledgeProvider}> .`)
+    // }
 
     let assertionGraphBlock = ''
     if (assertionBlocks.length > 0) {
