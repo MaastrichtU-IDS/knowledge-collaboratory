@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     VIRTUAL_HOST: Optional[str] = None
 
     BIOLINK_VERSION: str = "3.1.0"
-    TRAPI_VERSION: str = "1.4.0"
+    TRAPI_VERSION: str = "1.5.0" #1.4.0
 
     OPENAI_APIKEY: str = ""
     BIOPORTAL_APIKEY: str = ""
