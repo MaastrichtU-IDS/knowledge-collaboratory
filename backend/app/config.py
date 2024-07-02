@@ -29,7 +29,7 @@ class Settings(BaseSettings):
     NER_MODELS_PATH: str = "./ner-models"
 
     NANOPUB_GRLC_URL: str = "https://grlc.np.dumontierlab.com/api/local/local"
-    NANOPUB_SPARQL_URL: str = "https://virtuoso.nps.petapico.org/sparql"
+    NANOPUB_SPARQL_URL: str = "https://virtuoso.nps.knowledgepixels.com/sparql"
     # NANOPUB_SPARQL_URL: str = "https://virtuoso.test.nps.knowledgepixels.com/sparql"
 
     # SERVER_NAME: str = 'localhost'

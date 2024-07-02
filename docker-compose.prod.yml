@@ -12,6 +12,11 @@ services:
       VIRTUAL_HOST: api.collaboratory.semanticscience.org
       LETSENCRYPT_HOST: api.collaboratory.semanticscience.org
       NO_JAEGER: "true"
+      HTTP_PROXY: http://proxy.unimaas.nl:3128
+      HTTPS_PROXY: http://proxy.unimaas.nl:3128
+      http_proxy: http://proxy.unimaas.nl:3128
+      https_proxy: http://proxy.unimaas.nl:3128
+      NO_PROXY: 127.0.0.1,localhost,137.120.0.0/16
     volumes:
       - /data/knowledge-collaboratory/ner-models:/data/ner-models
       - /data/knowledge-collaboratory/nanopub-keystore:/data/nanopub-keystore
