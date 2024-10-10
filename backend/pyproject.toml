@@ -106,7 +106,7 @@ features = [
 NO_JAEGER = "True"
 DEV_MODE = "True"
 # Uncomment the line below to use the Nanopub test server
-NANOPUB_SPARQL_URL = "https://virtuoso.test.nps.knowledgepixels.com/sparql"
+#NANOPUB_SPARQL_URL = "https://virtuoso.test.nps.knowledgepixels.com/sparql"
 
 [tool.hatch.envs.default.scripts]
 dev = "uvicorn app.main:app --reload {args}"
