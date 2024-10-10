@@ -372,18 +372,33 @@ def get_metakg_from_nanopubs():
 def get_np_users():
     pubkeys = {}
     headers = {"Accept": "application/json"}
-    res = requests.get(
-        f"{settings.NANOPUB_GRLC_URL}/get_all_users", headers=headers
-    ).json()
-    for user in res["results"]["bindings"]:
-        # print(user)
-        # Remove bad ORCID URLs
-        if not user["user"]["value"].startswith("https://orcid.org/https://orcid.org/"):
-            if "name" not in user:
-                user["name"] = {"value": user["user"]["value"]}
+    try:
+        res = requests.get(
+            f"{settings.NANOPUB_GRLC_URL}/get_all_users", headers=headers
+        ).json()
+    except Exception() as e:
+        print(f"error in getting np_users {e}")
+        return pubkeys
+    
+    if "results" in res and "bindings" in res["results"]:
+        for user in res["results"]["bindings"]:
+            # print(user)
+            # Remove bad ORCID URLs
+            if not user["user"]["value"].startswith("https://orcid.org/https://orcid.org/"):
+                if "name" not in user:
+                    user["name"] = {"value": user["user"]["value"]}
 
-            pubkeys[user["pubkey"]["value"]] = user
-            # users_orcid[user['user']['value']] = user
+                pubkeys[user["pubkey"]["value"]] = user
+                # users_orcid[user['user']['value']] = user
+    else:
+        if settings.DEV_MODE is True:
+            print(
+                f"Error in getting all users from {settings.NANOPUB_GRLC_URL}/get_all_users"
+            )
+    if settings.DEV_MODE is True:
+        print(
+            f"Found {len(pubkeys)} users in the nanopublication network"
+        )
     return pubkeys
 
 
@@ -395,8 +410,9 @@ def reasonerapi_to_sparql(reasoner_query):
     :param: reasoner_query Query from Reasoner API
     :return: Results as ReasonerAPI object
     """
-    np_users = get_np_users()
-    # print(np_users)
+    np_users = {}
+    np_users = get_np_users() # this is just to (optionally) add the author to the edge
+    
     query_graph = reasoner_query["message"]["query_graph"]
     query_options = {}
     n_results = None
