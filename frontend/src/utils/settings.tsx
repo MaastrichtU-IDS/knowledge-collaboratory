@@ -1,7 +1,7 @@
 export const settings = {
   frontendUrl: process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:4000',
   nanopubGrlcUrl: process.env.GRLC_URL || 'https://grlc.np.dumontierlab.com/api/local/local',
-  nanopubSparqlUrl: 'https://virtuoso.nps.petapico.org/sparql',
+  nanopubSparqlUrl: 'https://virtuoso.nps.knowledgepixels.com/sparql',
   orcidClientId: process.env.ORCID_CLIENT_ID || 'APP-TEANCMSUOPYZOGJ3'
 }
 

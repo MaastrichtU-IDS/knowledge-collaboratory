@@ -1,6 +1,6 @@
 #+ summary: List of curated drug indications from dailymed product labels using the knowledge collaboratory.
 #+ description: A SPARQL query to retrieve a list of curated drug indications from dailymed product labels using the knowledge collaboratory.
-#+ endpoint: https://virtuoso.nps.petapico.org/sparql
+#+ endpoint: https://virtuoso.nps.knowledgepixels.com/sparql
 #+ endpoint_in_url: False
 #+ tags:
 #+   - Drug Discovery
