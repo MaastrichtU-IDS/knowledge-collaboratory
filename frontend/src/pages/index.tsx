@@ -82,7 +82,7 @@ export default function BrowseNanopub() {
 
     // First call to get users
     axios
-      .get(settings.nanopubGrlcUrl + '/get_all_users', {
+      .get("https://query.petapico.org/api/RA6BiFFxwugYhi0T5KbtTEFJBNltxe0Syl7CU9C5DFVHM/get-all-users", {
         headers: {
           accept: 'application/json'
         }
@@ -129,8 +129,8 @@ export default function BrowseNanopub() {
   }, [])
 
   const getNanopubs = (search: string = '') => {
-    let get_nanopubs_url = settings.nanopubGrlcUrl + '/find_valid_signed_nanopubs?'
-    const knowledgeProvider = 'https://w3id.org/biolink/infores/knowledge-collaboratory'
+    // let get_nanopubs_url = settings.nanopubGrlcUrl + '/find_valid_signed_nanopubs?'
+    // const knowledgeProvider = 'https://w3id.org/biolink/infores/knowledge-collaboratory'
     const assertionBlocks = []
     const provBlocks = []
 
@@ -236,7 +236,7 @@ export default function BrowseNanopub() {
         ${filterPubkey}
       } ORDER BY desc(?date) LIMIT ` + state.results_count
 
-    get_nanopubs_url = `${settings.nanopubSparqlUrl}?query=${encodeURIComponent(getLatestNanopubsQuery)}`
+    const get_nanopubs_url = `${settings.nanopubSparqlUrl}?query=${encodeURIComponent(getLatestNanopubsQuery)}`
     console.log(`Search: sending SPARQL query to ${settings.nanopubSparqlUrl}`)
     console.log(getLatestNanopubsQuery)
 

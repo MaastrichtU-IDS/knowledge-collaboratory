@@ -372,14 +372,16 @@ def get_metakg_from_nanopubs():
 def get_np_users():
     pubkeys = {}
     headers = {"Accept": "application/json"}
+    get_users_api_url = "https://query.petapico.org/api/RA6BiFFxwugYhi0T5KbtTEFJBNltxe0Syl7CU9C5DFVHM/get-all-users"
     try:
         res = requests.get(
-            f"{settings.NANOPUB_GRLC_URL}/get_all_users", headers=headers
+            # f"{settings.NANOPUB_GRLC_URL}/get_all_users", headers=headers
+            get_users_api_url, headers=headers
         ).json()
     except Exception() as e:
         print(f"error in getting np_users {e}")
         return pubkeys
-    
+
     if "results" in res and "bindings" in res["results"]:
         for user in res["results"]["bindings"]:
             # print(user)
@@ -393,7 +395,7 @@ def get_np_users():
     else:
         if settings.DEV_MODE is True:
             print(
-                f"Error in getting all users from {settings.NANOPUB_GRLC_URL}/get_all_users"
+                f"Error in getting all users from {get_users_api_url}"
             )
     if settings.DEV_MODE is True:
         print(
@@ -412,7 +414,7 @@ def reasonerapi_to_sparql(reasoner_query):
     """
     np_users = {}
     np_users = get_np_users() # this is just to (optionally) add the author to the edge
-    
+
     query_graph = reasoner_query["message"]["query_graph"]
     query_options = {}
     n_results = None
